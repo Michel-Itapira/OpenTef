@@ -64,7 +64,7 @@ end;
 
 function login(host : AnsiString; porta : integer; chave : AnsiString; versao_comunicacao : integer) : integer; stdcall;
 begin
-  //testa parametros
+  //testa parametros do login
   if Length(host)=0 then
   begin
      result :=9;
