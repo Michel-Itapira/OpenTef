@@ -1,0 +1,28 @@
+object FApp: TFApp
+  Left = 753
+  Height = 374
+  Top = 287
+  Width = 613
+  Caption = 'Open Tef'
+  ClientHeight = 374
+  ClientWidth = 613
+  LCLVersion = '2.2.0.2'
+  object BIniciar: TButton
+    Left = 45
+    Height = 25
+    Top = 37
+    Width = 75
+    Caption = 'Iniciar'
+    OnClick = BIniciarClick
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 135
+    Height = 25
+    Top = 37
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+end

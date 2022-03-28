@@ -1,0 +1,7 @@
+object DNucleo: TDNucleo
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 308
+  VerticalOffset = 119
+  Width = 150
+end

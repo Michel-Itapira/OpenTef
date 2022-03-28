@@ -10,24 +10,21 @@ uses
 
 type
   { TFprincipal }
-  tTipoComando = (tcLogin,tcVenda);
 
-  tConteudo = array of string;
-
-  TResposta = record
+   TResposta = record
     Codigo:Integer;
     Dados:String;
 
   end;
    PResposta=^TResposta;
 
-   TPResposta = procedure (codigo:integer;dados:ansistring);stdcall;
+   TPResposta = procedure (VP_Codigo:integer;VP_Dados:ansistring);stdcall;
 
 
   TFprincipal = class(TForm)
+    BInicializar: TButton;
     BLogin: TButton;
     BVenda: TButton;
-    DBGrid1: TDBGrid;
     EDataHora: TDateTimePicker;
     ECartao: TEdit;
     EChave: TMemo;
@@ -46,6 +43,7 @@ type
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
+    GroupBox4: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
@@ -61,10 +59,11 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    EXml: TMemo;
     MStatus: TMemo;
+    procedure BInicializarClick(Sender: TObject);
     procedure BLoginClick(Sender: TObject);
     procedure BVendaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -75,19 +74,29 @@ type
 
   end;
 
-  TLogin = function (host : AnsiString; porta : integer; chave : AnsiString; versao_comunicacao : integer) : integer;  stdcall;
-  TSolicitacao = function (dados : AnsiString; procedimento:TPResposta):Integer;  stdcall;
+  TTefInicializar = function () : integer;  stdcall;
+  TTLogin = function (VP_Host : AnsiString; VP_Porta : integer; VP_Chave : AnsiString;
+                     VP_Versao_Comunicacao : integer) : integer;  stdcall;
 
-procedure p_retorno(codigo:integer;dados:ansistring); stdcall;
+  TTSolicitacao = function (VP_Dados : AnsiString; VP_Procedimento:TPResposta):Integer;  stdcall;
+  TTSolicitacaoBlocante = function (VP_Dados : AnsiString; var VO_Retorno:AnsiString):Integer;  stdcall;
+
+procedure P_Retorno(VP_Codigo:integer;VP_Dados:ansistring); stdcall;
+
 var
   Fprincipal: TFprincipal;
-  VSolicitacao:TSolicitacao;
-  V_Resposta:PResposta;
-  VProcedure:TPResposta;
-  VMensagem : TMensagem;
+  v_Solicitacao:TTSolicitacao;
+  v_Resposta:PResposta;
+  V_Procedure:TPResposta;
+  V_Mensagem : TMensagem;
+  TefLib:THandle;
+  TefInicializar:TTefInicializar;
+  TLogin:TTLogin;
+
 const
-  vVersao_TefLib = '1.1.1';
-  vVersao_Mensagem = '1.1.1';
+  c_Versao_TefLib = '1.1.1';
+  c_Versao_Mensagem = 1;
+
 
 
 implementation
@@ -95,6 +104,7 @@ implementation
 {$R *.lfm}
 
 { TFprincipal }
+
 
 procedure TFprincipal.FormShow(Sender: TObject);
 var
@@ -106,23 +116,22 @@ begin
     begin
        if Components[i] is TEdit then
           TEdit(Components[i]).Text := '';
-       if Components[i] is TMemo then
-          TMemo(Components[i]).Text:='';
     end;
   end;
 EHost.Text:='127.0.0.1';
 EPorta.Text:='1000';
+EChave.Text:='OK';
 EDataHora.DateTime:=now;
 end;
 
 
-procedure p_retorno(codigo:integer;dados:ansistring); stdcall;
+procedure P_Retorno(VP_Codigo:integer;VP_Dados:ansistring); stdcall;
 var
-   s:AnsiString;
+   VL_S:AnsiString;
 
 begin
-  s:=dados;
-   Fprincipal.Caption:=s;
+  VL_S:=vp_Dados;
+   Fprincipal.Caption:=VL_S;
 
   //V_Resposta^.Dados:=s^;
   //V_Resposta^.Codigo:=  LongInt(@V_Resposta);
@@ -133,47 +142,57 @@ end;
 
 procedure TFprincipal.BLoginClick(Sender: TObject);
 var
-   LibTef : THandle;
-   Login : TLogin;
-   Codigo:Integer;
-   p:pointer;
-   vErro : integer;
-   vTag : string;
+   VL_Codigo:Integer;
+   VL_P:pointer;
+   VL_Erro : integer;
+   VL_Tag : string;
 begin
- //monta Tag login
  MStatus.Clear;
  MStatus.Lines.add('Iniciando login...');
- VMensagem.AddComando('0001','');
- VMensagem.AddTag('0002',EChave.Lines.Text);
- VMensagem.AddTag('0003',EHost.Text);
- VMensagem.AddTag('0004',EPorta.Text);
- VMensagem.AddTag('0005',vVersao_TefLib);
- VMensagem.AddTag('0006',vVersao_Mensagem);
 
- vErro:=VMensagem.TagToStr(vTag);
+ VL_Codigo:=TLogin(EHost.Text,StrToInt(EPorta.text),EChave.Lines.Text,c_Versao_Mensagem);
 
- if vErro <> 0 then
+ if VL_Codigo<>0 then
+ begin
+ MStatus.Lines.add('erro:'+IntToStr(VL_Codigo));
+ exit;
+ end;
+
+
+ //monta TAG
+ V_Mensagem.AddComando('0001','');
+ V_Mensagem.AddTag('0002',EChave.Lines.Text);
+ V_Mensagem.AddTag('0003',EHost.Text);
+ V_Mensagem.AddTag('0004',EPorta.Text);
+ V_Mensagem.AddTag('0005',c_Versao_TefLib);
+ //VMensagem.AddTag('0006',vVersao_Mensagem);
+ //VMensagem.AddTag('0007',vVersao_Mensagem);
+ //VMensagem.AddTag('0008',vVersao_Mensagem);
+ //VMensagem.AddTag('0009',vVersao_Mensagem);
+ //
+ VL_Erro:=V_Mensagem.TagToStr(VL_Tag);
+
+ if VL_Erro <> 0 then
   begin
-  ShowMessage('erro '+inttostr(vErro));
+  ShowMessage('erro '+inttostr(VL_Erro));
   MStatus.Lines.add('erro na montagem do pacote');
   Exit;
  end;
- MStatus.Lines.add(vTag);
+
+ MStatus.Lines.add(VL_Tag);
  MStatus.Lines.add('pacote montado...');
 
- vErro:=VMensagem.CarregaTags(vTag);
- if vErro <> 0 then
+ VL_Erro:=V_Mensagem.CarregaTags(VL_Tag);
+ if VL_Erro <> 0 then
    begin
-   ShowMessage('erro '+inttostr(vErro));
+   ShowMessage('erro '+inttostr(VL_Erro));
    MStatus.Lines.add('erro ao carregar pacote');
    Exit;
   end;
  MStatus.Lines.add('pacote carregado...');
 
- VMensagem.Free;
 
- {
-    libtef := LoadLibrary(pChar(Trim('tef_lib.dll')));
+  {  libtef := LoadLibrary(pChar(Trim('tef_lib.dll')));
 
     Pointer(VSolicitacao) := GetProcAddress (Libtef, 'solicitacao');
 
@@ -182,28 +201,81 @@ begin
     VProcedure:= TPResposta(@p_retorno);
 
     codigo:= VSolicitacao('teste', VProcedure);
+     }
 
-    }
  end;
+
+procedure TFprincipal.BInicializarClick(Sender: TObject);
+var
+   VL_Codigo:Integer;
+begin
+
+ TefLib:= LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'..\lib\tef_lib.dll'));
+
+ Pointer(TefInicializar) := GetProcAddress (TefLib, 'inicializar');
+ Pointer(TLogin) := GetProcAddress (TefLib, 'login');
+
+ VL_Codigo:=TefInicializar();
+
+ if VL_Codigo<>0 then
+ begin
+   ShowMessage('erro '+inttostr(VL_Codigo));
+   exit;
+ end;
+
+end;
 
 procedure TFprincipal.BVendaClick(Sender: TObject);
 var
-   vTag : tConteudo;
+   VL_Tag : String;
+   VL_Erro : integer;
 begin
- MStatus.Clear;
- MStatus.Lines.add('Inicia uma venda');
- //prepara a tag venda
 
- SetLength(vParametro,12);
- vParametro[0] := ensu.Text;
- vParametro[1] := DateToStr(EDataHora.Date);
- vParametro[2] := TimeToStr(EDataHora.Time);
-// vParametro[3] := Format('#.00',EValor.text);
+ MStatus.Clear;
+ MStatus.Lines.add('Inicia tag venda');
+ //prepara a tag venda
+ V_Mensagem.AddComando('000A','');
+ V_Mensagem.AddTag('000B',ensu.Text);
+ V_Mensagem.AddTag('000C',DateToStr(EDataHora.Date));
+ V_Mensagem.AddTag('000D',Timetostr(EDataHora.Time));
+ V_Mensagem.AddTag('000E',EValor.Text);
+ V_Mensagem.AddTag('000F',EParcela.Text);
+ V_Mensagem.AddTag('0010',ECupomFiscal.Text);
+ V_Mensagem.AddTag('0011',ECaixa.Text);
+ V_Mensagem.AddTag('0012',EOperador.Text);
+ V_Mensagem.AddTag('0013',EValorItens.Text);
+ V_Mensagem.AddTag('0014',EValorAlimentacao.Text);
+ V_Mensagem.AddTag('0015',EValorRefeicao.text);
+ V_Mensagem.AddTag('0016',EValorValeCultura.Text);
+ V_Mensagem.AddTag('0017',EXml.lines.Text);
+
+ VL_Erro:=V_Mensagem.TagToStr(VL_Tag);
+ MStatus.Lines.Add(VL_Tag);
+ if VL_Erro <> 0 then
+ begin
+  ShowMessage('erro '+inttostr(VL_Erro));
+  MStatus.Lines.add('erro na montagem do pacote');
+  Exit;
+ end;
+ MStatus.Lines.add(VL_Tag);
+ MStatus.Lines.add('pacote montado...');
+
+ VL_Erro:=V_Mensagem.CarregaTags(VL_Tag);
+
+ if VL_Erro <> 0 then
+ begin
+  ShowMessage('erro '+inttostr(VL_Erro));
+  MStatus.Lines.add('erro ao carregar pacote');
+  Exit;
+ end;
+ MStatus.Lines.add('pacote carregado...');
+ MStatus.Lines.add('encerra tag venda');
+
 end;
 
 procedure TFprincipal.FormCreate(Sender: TObject);
 begin
- VMensagem:=TMensagem.Create;
+ V_Mensagem:=TMensagem.Create;
 end;
 
 end.

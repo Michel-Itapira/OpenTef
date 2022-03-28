@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="E:\Lazarus_IDE\fpc\bin\x86_64-win64\fpc.exe" Date="1402503502"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -l -vewnhibq -FiE:\Lazarus\OpenTef\publica\fontes\servico_app\lib\x86_64-win64 -FuE:\Lazarus\OpenTef\publica\fontes\libs\func -FuE:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\lib\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\components\daemon\lib\x86_64-win64\win32 -FuE:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\lib\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\components\ideintf\units\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\components\lazcontrols\lib\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\lcl\units\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\lcl\units\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\components\freetype\lib\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\components\buildintf\units\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\components\lazutils\lib\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\packager\units\x86_64-win64 -FuE:\Lazarus\OpenTef\publica\fontes\servico_app\ -FUE:\Lazarus\OpenTef\publica\fontes\servico_app\lib\x86_64-win64\ -FEE:\Lazarus\OpenTef\publica\binarios\servico_app\ -oE:\Lazarus\OpenTef\publica\binarios\servico_app\opentef.exe -dLCL -dLCLwin32 opentef.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>

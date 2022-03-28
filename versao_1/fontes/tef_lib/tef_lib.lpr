@@ -9,7 +9,8 @@ exports
       inicializar,
       finalizar,
       login,
-      solicitacao;
+      solicitacao,
+      solicitacaoblocante;
 
 begin
 end.

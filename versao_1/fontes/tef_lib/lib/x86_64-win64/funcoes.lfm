@@ -1,15 +1,7 @@
-object DataModule1: TDataModule1
+object DFuncoes: TDFuncoes
   OldCreateOrder = False
   Height = 312
-  HorizontalOffset = 679
-  VerticalOffset = 219
+  HorizontalOffset = 1283
+  VerticalOffset = 277
   Width = 375
-  object DFuncoes: TDCP_3des
-    Id = 24
-    Algorithm = '3DES'
-    MaxKeySize = 192
-    BlockSize = 64
-    Left = 32
-    Top = 8
-  end
 end

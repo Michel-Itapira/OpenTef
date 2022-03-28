@@ -9,8 +9,8 @@
         <Filename Value="tef_lib.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <CursorPos X="8" Y="9"/>
-        <UsageCount Value="55"/>
+        <CursorPos X="67" Y="17"/>
+        <UsageCount Value="82"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,61 +19,25 @@
         <ComponentName Value="DTef"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="41"/>
-        <CursorPos Y="67"/>
-        <UsageCount Value="55"/>
+        <TopLine Value="104"/>
+        <CursorPos X="21" Y="124"/>
+        <UsageCount Value="82"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="DataModule1"/>
+        <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="58"/>
-        <CursorPos X="2" Y="126"/>
-        <UsageCount Value="31"/>
+        <TopLine Value="100"/>
+        <CursorPos X="22"/>
+        <UsageCount Value="58"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\componentes\acbr\trunk2\Fontes\ACBrTCP\ACBrSocket.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="59"/>
-        <CursorPos Y="77"/>
-        <UsageCount Value="8"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1942"/>
-        <CursorPos X="17" Y="1959"/>
-        <UsageCount Value="8"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\componentes\acbr\trunk2\Fontes\Terceiros\synalist\blcksock.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="180"/>
-        <CursorPos X="17" Y="181"/>
-        <UsageCount Value="8"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\teste\Indy10Demo\eliza10\ElizaWeb.lpr"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="3"/>
-        <UsageCount Value="8"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\rtl-objpas\src\inc\strutils.pp"/>
-        <UnitName Value="StrUtils"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="201"/>
-        <CursorPos X="10" Y="219"/>
-        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.pas"/>
@@ -81,152 +45,191 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="82"/>
-        <CursorPos X="42" Y="105"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="285"/>
+        <CursorPos X="24" Y="300"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\componentes\acbr\trunk2\Fontes\ACBrTCP\ACBrSocket.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="59"/>
+        <CursorPos Y="77"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1942"/>
+        <CursorPos X="17" Y="1959"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\componentes\acbr\trunk2\Fontes\Terceiros\synalist\blcksock.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="180"/>
+        <CursorPos X="17" Y="181"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\teste\Indy10Demo\eliza10\ElizaWeb.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="3"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\rtl-objpas\src\inc\strutils.pp"/>
+        <UnitName Value="StrUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="201"/>
+        <CursorPos X="10" Y="219"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdComponent.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="53"/>
         <CursorPos X="3" Y="72"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.lfm"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="4"/>
         <CursorPos X="24" Y="41"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="188"/>
+        <CursorPos X="23" Y="206"/>
+        <UsageCount Value="13"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="27" Column="34" TopLine="8"/>
+        <Caret Line="204" Column="30" TopLine="182"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="52" TopLine="19"/>
+        <Caret Line="51" Column="40" TopLine="32"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="54" TopLine="19"/>
+        <Caret Line="198" Column="30" TopLine="187"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="16" TopLine="40"/>
+        <Caret Line="117" Column="38" TopLine="99"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="25" Column="17" TopLine="6"/>
+        <Caret Line="124" Column="19" TopLine="105"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="13" Column="4"/>
+        <Caret Line="200" Column="45" TopLine="181"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="65" Column="3" TopLine="48"/>
+        <Caret Line="208" Column="52" TopLine="190"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="59" Column="3" TopLine="48"/>
+        <Caret Line="209" TopLine="192"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="25" Column="9" TopLine="10"/>
+        <Caret Line="73" Column="5" TopLine="55"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="26" Column="61"/>
+        <Caret Line="209" Column="21" TopLine="191"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="8" Column="10" TopLine="4"/>
+        <Caret Line="51" Column="34" TopLine="38"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="11" Column="53"/>
+        <Caret Line="207" Column="37" TopLine="190"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="55" Column="80" TopLine="36"/>
+        <Caret Line="50" Column="32" TopLine="38"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="25" Column="7" TopLine="10"/>
+        <Caret Line="208" Column="35" TopLine="191"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="68" Column="28" TopLine="37"/>
+        <Caret Line="311" Column="39" TopLine="299"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="31" Column="10" TopLine="49"/>
+        <Caret Line="578" Column="45" TopLine="562"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="56" Column="46" TopLine="37"/>
+        <Caret Line="537" Column="13" TopLine="519"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="59" Column="4" TopLine="40"/>
+        <Caret Line="569" Column="44" TopLine="552"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="66" Column="23" TopLine="47"/>
+        <Caret Line="583" Column="70" TopLine="562"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="97" Column="50" TopLine="63"/>
+        <Caret Line="51" Column="34" TopLine="34"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="102" Column="4" TopLine="61"/>
+        <Caret Line="207" Column="37" TopLine="179"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="79" Column="7" TopLine="51"/>
+        <Caret Line="583" Column="51" TopLine="555"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="81" Column="19" TopLine="57"/>
+        <Caret Line="50" Column="32" TopLine="33"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="66" Column="14" TopLine="51"/>
+        <Caret Line="208" Column="35" TopLine="180"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="109" Column="16" TopLine="57"/>
+        <Caret Line="308" Column="37" TopLine="279"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="76" Column="29" TopLine="57"/>
+        <Caret Line="582" Column="49" TopLine="554"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="25" Column="23" TopLine="25"/>
+        <Caret Line="50" Column="32" TopLine="32"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="106" Column="27" TopLine="87"/>
+        <Caret Line="208" Column="35" TopLine="180"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="43" Column="49" TopLine="24"/>
+        <Caret Line="203" Column="35" TopLine="190"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="44" Column="20" TopLine="19"/>
+        <Caret Line="300" Column="24" TopLine="285"/>
       </Position>
     </JumpHistory>
     <RunParams>
