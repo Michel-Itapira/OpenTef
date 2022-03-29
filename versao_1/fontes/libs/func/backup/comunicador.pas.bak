@@ -15,29 +15,32 @@ type
 
  TRecebe = procedure (VP_Dados:String);
  TKey = array [0..31] of Byte;
- TConexaoStatus= (csDesconectado,csLink,csAutenticado);
+ TConexaoStatus= (csDesconectado,csLink,csChaveado,csLogado);
+ TTConexaoTipo = (cFConexaoEscuta,cFConexaoSolicita);
 
- TTChaves = record
+ TTChaveComunicacao = record
   ID:Integer;
-  Key :TKey;
+  ChaveComunicacao :String;
  end;
 
  TTChaveConexao = class
    private
-   fChaves : array of TTChaves;
+   fChaveComunicacao : array of TTChaveComunicacao;
    fContador:Integer;
    public
     constructor Create;
-    function getChave(VP_ID:Integer):TTChaves;
-    function addChave(VP_Key:TKey):Integer;
+    function getChave(VP_ID:Integer):TTChaveComunicacao;
+    function addChave(VP_ChaveComunicacao:String):Integer;
 
  end;
 
  TTConexao = class
    Aes:TLbRijndael;
    Rsa:TLbRSA;
-   Ip:String;
-   Porta:Integer;
+   ClienteIp:String;
+   ClientePorta:Integer;
+   ServidorHost:String;
+   ServidorPorta:Integer;
    Hora:TDateTime;
    ID:Integer;
    ChaveComunicacaoIDX:Integer;
@@ -49,9 +52,9 @@ type
      destructor Destroy; override;
      procedure setModuloPublico(VP_Dados:string);
      procedure setExpoentePublico(VP_Dados:string);
-     procedure setChaveConexao(VP_Chave:string);
+     procedure setChaveComunicacao(VP_Chave:string);
      function getChavePublica:string;
-     function getChaveConexao:String;
+     function getChaveComunicacao:String;
  end;
 
  TThRecebe = class(TThread)
@@ -84,67 +87,62 @@ type
   private
 
   public
-    v_Chave_Terminal : String;
-    v_Versao_Comunicacao : Integer;
-    function Conectar(VP_Host : AnsiString; VP_Porta: Integer):Integer;
-    function enviar(VP_Dados:AnsiString;var VO_Retorno:AnsiString):Integer;
+    V_Chave_Terminal : String;
+    V_Versao_Comunicacao : Integer;
+    V_ThRecebe:TThRecebe;
+    V_ConexaoEscuta,V_ConexaoSolicita:TTConexao;
+    V_ChavesDasConexoes:TTChaveConexao;
+
+    function ConectarSolicitacao:Integer;
+    function TransmiteSolicitacaoCliente(var VO_Dados:TMensagem;var VO_Retorno:TMensagem; VP_Procedimento:TRecebe):Integer;
     procedure iniciaescuta(VP_Procedimento:TRecebe);
     function conectaescuta:Integer;
+    function comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando0021(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 
   end;
 
 var
   DComunicador: TDComunicador;
-  ThRecebe:TThRecebe;
-  V_NumeroConexoes:Integer = 0;
-  bConexaoEscuta,ConexaoSolicita:TTConexao;
-  FChaveConexao:TTChaveConexao;
 implementation
 
 {$R *.lfm}
 
 { TDComunicador }
 
-function TDComunicador.Conectar(VP_Host : AnsiString; VP_Porta : Integer):Integer;
+function TDComunicador.ConectarSolicitacao:Integer;
 var
   VL_Mensagem:TMensagem;
   VL_S:String;
   VL_Dados:String;
-  VL_ChaveSimetrica:String;
+  VL_ChaveComunicacao:String;
   VL_OK:String;
-  VL_ChaveSimetricaIDX:String;
+  VL_ChaveComunicacaoIDX:String;
   VL_ExpoentePublico,VL_ModuloPublico:String;
-  VL_Key:TKey;
+
 begin
 
 VL_Mensagem:=TMensagem.Create;
 VL_S:='';
 VL_ModuloPublico:='';
 VL_ExpoentePublico:='';
-VL_ChaveSimetrica:='';
-VL_ChaveSimetricaIDX:='';
+VL_ChaveComunicacao:='';
+VL_ChaveComunicacaoIDX:='';
 VL_OK:='';
 VL_Dados:='';
 try
- if ConexaoSolicita.Status=csAutenticado then
+ if (V_ConexaoSolicita.Status=csChaveado) or (V_ConexaoSolicita.Status=csLogado) then
  begin
   Result:=0;
   exit;
  end;
 
+
  if DComunicador.IdTCPSolicita.Connected then
  DComunicador.IdTCPSolicita.Disconnect;
 
- DComunicador.IdTCPSolicita.Host:=VP_Host;
- DComunicador.IdTCPSolicita.Port:=VP_Porta;
-
- if DComunicador.IdTCPEscuta.Connected then
-  DComunicador.IdTCPEscuta.Disconnect;
-
-  DComunicador.IdTCPEscuta.Host:=VP_Host;
-  DComunicador.IdTCPEscuta.Port:=VP_Porta;
-
+ DComunicador.IdTCPSolicita.Host:=V_ConexaoSolicita.ServidorHost;
+ DComunicador.IdTCPSolicita.Port:=V_ConexaoSolicita.ServidorPorta;
 
  DComunicador.IdTCPSolicita.Connect;
 
@@ -157,12 +155,12 @@ try
  VL_Mensagem.Limpar;
 
  VL_Mensagem.AddComando('0021','');
- VL_Mensagem.AddTag('0022',IntToStr(ConexaoSolicita.ChaveComunicacaoIDX));
- VL_Mensagem.AddTag('0008',ConexaoSolicita.ModuloPublico);
- VL_Mensagem.AddTag('0027',ConexaoSolicita.ExpoentePublico);
+ VL_Mensagem.AddTag('0022',IntToStr(V_ConexaoSolicita.ChaveComunicacaoIDX));
+ VL_Mensagem.AddTag('0008',V_ConexaoSolicita.ModuloPublico);
+ VL_Mensagem.AddTag('0027',V_ConexaoSolicita.ExpoentePublico);
 
- if ConexaoSolicita.ChaveComunicacaoIDX>0 then
- VL_Mensagem.AddTag('0023',ConexaoSolicita.Aes.EncryptString('OK'));
+ if V_ConexaoSolicita.ChaveComunicacaoIDX>0 then
+ VL_Mensagem.AddTag('0023',V_ConexaoSolicita.Aes.EncryptString('OK'));
 
  Result:=VL_Mensagem.TagToStr(VL_S);
  if Result<>0 then
@@ -181,7 +179,7 @@ try
 
  if VL_Dados='0024' then
  begin
-   ConexaoSolicita.Status:=csAutenticado;
+   V_ConexaoSolicita.Status:=csChaveado;
    Result:=0;
    Exit;
  end;
@@ -197,16 +195,16 @@ try
   begin
   VL_Mensagem.GetTag('0008',VL_ModuloPublico);
   VL_Mensagem.GetTag('0027',VL_ExpoentePublico);
-  VL_Mensagem.GetTag('0009',VL_ChaveSimetrica);
-  VL_Mensagem.GetTag('0022',VL_ChaveSimetricaIDX);
+  VL_Mensagem.GetTag('0009',VL_ChaveComunicacao);
+  VL_Mensagem.GetTag('0022',VL_ChaveComunicacaoIDX);
   VL_Mensagem.GetTag('0023',VL_OK);
 
-  ConexaoSolicita.ChaveComunicacaoIDX:=StrToInt(VL_ChaveSimetricaIDX);
-  ConexaoSolicita.setExpoentePublico(VL_ExpoentePublico);
-  ConexaoSolicita.setModuloPublico(VL_ModuloPublico);
-  VL_ChaveSimetrica:=ConexaoSolicita.Rsa.DecryptString(VL_ChaveSimetrica);
-  ConexaoSolicita.setChaveConexao(VL_ChaveSimetrica);
-  VL_OK:=ConexaoSolicita.Aes.DecryptString(VL_OK);
+  V_ConexaoSolicita.setExpoentePublico(VL_ExpoentePublico);
+  V_ConexaoSolicita.setModuloPublico(VL_ModuloPublico);
+  VL_ChaveComunicacao:=V_ConexaoSolicita.Rsa.DecryptString(VL_ChaveComunicacao);
+  V_ConexaoSolicita.setChaveComunicacao(VL_ChaveComunicacao);
+  V_ConexaoSolicita.ChaveComunicacaoIDX:=StrToInt(VL_ChaveComunicacaoIDX);
+  VL_OK:=V_ConexaoSolicita.Aes.DecryptString(VL_OK);
 
 
   if VL_OK<>'OK' then
@@ -214,6 +212,7 @@ try
    Result:=32;
    Exit
    end;
+  V_ConexaoSolicita.Status:=csChaveado;
   end;
 
 
@@ -232,26 +231,26 @@ end;
 
 
 
-function TTChaveConexao.getChave(VP_ID:Integer):TTChaves;
+function TTChaveConexao.getChave(VP_ID:Integer):TTChaveComunicacao;
 var
 i:Integer;
 begin
- for i:=0 to Length(fChaves)-1 do
+ for i:=0 to Length(fChaveComunicacao)-1 do
  begin
-  if VP_ID=fChaves[i].ID then
+  if VP_ID=fChaveComunicacao[i].ID then
   begin
-   Result:=fChaves[i];
+   Result:=fChaveComunicacao[i];
    Exit;
   end;
  end;
 end;
 
-function TTChaveConexao.addChave(VP_Key:TKey):Integer;
+function TTChaveConexao.addChave(VP_ChaveComunicacao:String):Integer;
 begin
  fContador:=fContador+1;
- SetLength(fChaves,Length(fChaves)+1);
- fChaves[Length(fChaves)-1].ID:=fContador;
- fChaves[Length(fChaves)-1].Key:=VP_Key;
+ SetLength(fChaveComunicacao,Length(fChaveComunicacao)+1);
+ fChaveComunicacao[Length(fChaveComunicacao)-1].ID:=fContador;
+ fChaveComunicacao[Length(fChaveComunicacao)-1].ChaveComunicacao:=VP_ChaveComunicacao;
  Result:=fContador;
 
 end;
@@ -263,16 +262,20 @@ var
 begin
   Status:=csDesconectado;
 
-  Ip:='';
-  Porta:=0;
+  ServidorHost:='';
+  ServidorPorta:=0;
 
-  V_NumeroConexoes:=V_NumeroConexoes+1;
-  ID:=V_NumeroConexoes;
+  ClienteIp:='';
+  ClientePorta:=0;
 
 
   VL_Key:=TMemoryStream.Create;
   Aes:=TLbRijndael.Create(nil);
   Rsa:=TLbRSA.Create(nil);
+
+  Aes.KeySize:=DComunicador.CriptoAes.KeySize;
+  Aes.CipherMode:=DComunicador.CriptoAes.CipherMode;
+  Aes.GenerateRandomKey;
 
   Rsa.KeySize:=DComunicador.CriptoRsa.KeySize;
 
@@ -283,9 +286,6 @@ begin
 
   ExpoentePublico:=DComunicador.CriptoRsa.PublicKey.ExponentAsString;
   ModuloPublico:=DComunicador.CriptoRsa.PublicKey.ModulusAsString;
-
-  Aes.KeySize:=DComunicador.CriptoAes.KeySize;
-  Aes.GenerateRandomKey;
 
   inherited Create;
 end;
@@ -336,7 +336,7 @@ begin
 end;
 
 
-function TTConexao.getChaveConexao:String;
+function TTConexao.getChaveComunicacao:String;
 var
  s:string;
  i:Integer;
@@ -351,7 +351,7 @@ begin
   Result:=s;
 end;
 
-procedure TTConexao.setChaveConexao(VP_Chave:string);
+procedure TTConexao.setChaveComunicacao(VP_Chave:string);
 var
  i:Integer;
  c:string;
@@ -398,7 +398,7 @@ end;
 
 procedure TDComunicador.DataModuleCreate(Sender: TObject);
 begin
-  FChaveConexao:=TTChaveConexao.Create;
+  V_ChavesDasConexoes:=TTChaveConexao.Create;
 end;
 
 procedure TDComunicador.DataModuleDestroy(Sender: TObject);
@@ -406,24 +406,24 @@ begin
   if IdTCPSolicita.Connected then
   IdTCPSolicita.Disconnect;
 
-  FChaveConexao.free;
-  BConexaoEscuta.Free;
-  ConexaoSolicita.Free;
+  V_ChavesDasConexoes.free;
+  V_ConexaoEscuta.Free;
+  V_ConexaoSolicita.Free;
 
 
-  if Assigned(ThRecebe) then
-  ThRecebe.Terminate;
+  if Assigned(V_ThRecebe) then
+  V_ThRecebe.Terminate;
 
 end;
 
 procedure TDComunicador.IdTCPEscutaConnected(Sender: TObject);
 begin
-  bConexaoEscuta.Status:=csLink;
+  V_ConexaoEscuta.Status:=csLink;
 end;
 
 procedure TDComunicador.IdTCPEscutaDisconnected(Sender: TObject);
 begin
-   ConexaoSolicita.Status:=csDesconectado;
+   V_ConexaoSolicita.Status:=csDesconectado;
 end;
 
 procedure TDComunicador.IdTCPServerCaixaConnect(AContext: TIdContext);
@@ -432,8 +432,10 @@ var
 begin
  TConexao:=TTConexao.Create;
  TConexao.Hora:=Now;
- TConexao.Ip:=AContext.Connection.Socket.Binding.PeerIP;
- TConexao.Porta:=AContext.Connection.Socket.Binding.PeerPort;
+ TConexao.ClienteIp:=AContext.Connection.Socket.Binding.PeerIP;
+ TConexao.ClientePorta:=AContext.Connection.Socket.Binding.PeerPort;
+ TConexao.Status:=csLink;
+ TConexao.ChaveComunicacaoIDX:=V_ChavesDasConexoes.addChave(TConexao.getChaveComunicacao);
  AContext.Data:=TConexao;
  end;
 
@@ -443,13 +445,15 @@ var
  VL_DadosRecebidos:String;
  VL_Comando:String;
  VL_Mensagem:TMensagem;
- VL_Dados:String;
 
 begin
-
+ VL_Comando:='';
  VL_Mensagem:=TMensagem.Create;
 
  VL_DadosRecebidos:=AContext.Connection.Socket.ReadLn;
+
+ if (TTConexao(AContext.Data).Status=csChaveado) or (TTConexao(AContext.Data).Status=csLogado) then
+ VL_DadosRecebidos:=Copy(VL_DadosRecebidos,1,5)+TTConexao(AContext.Data).Aes.DecryptString(Copy(VL_DadosRecebidos,6,MaxInt));
 
  if VL_Mensagem.CarregaTags(VL_DadosRecebidos)<>0 then
  begin
@@ -464,6 +468,7 @@ begin
  end;
 
  case VL_Comando of
+   '0001': comando0001(VL_Mensagem,AContext);
    '0021': comando0021(VL_Mensagem,AContext);
  else ;
    AContext.Connection.Disconnect;
@@ -477,8 +482,8 @@ var
 begin
  TConexao:=TTConexao.Create;
  TConexao.Hora:=Now;
- TConexao.Ip:=AContext.Connection.Socket.Binding.PeerIP;
- TConexao.Porta:=AContext.Connection.Socket.Binding.PeerPort;
+ TConexao.ClienteIp:=AContext.Connection.Socket.Binding.PeerIP;
+ TConexao.ClientePorta:=AContext.Connection.Socket.Binding.PeerPort;
  AContext.Data:=TConexao;
  end;
 
@@ -489,22 +494,38 @@ end;
 
 procedure TDComunicador.IdTCPSolicitaConnected(Sender: TObject);
 begin
-
-   ConexaoSolicita.Status:=csLink;
-
+   V_ConexaoSolicita.Status:=csLink;
 end;
 
 procedure TDComunicador.IdTCPSolicitaDisconnected(Sender: TObject);
 begin
-     ConexaoSolicita.Status:=csDesconectado;
+   V_ConexaoSolicita.Status:=csDesconectado;
 end;
 
-function TDComunicador.enviar(VP_Dados:AnsiString;var VO_Retorno:AnsiString):Integer;
+function TDComunicador.TransmiteSolicitacaoCliente(var VO_Dados:TMensagem;var VO_Retorno:TMensagem; VP_Procedimento:TRecebe):Integer;
+var
+ VL_DadosCriptografado:String;
+ VL_Dados:String;
 begin
   Result:=0;
+  VL_Dados:='';
   try
-  IdTCPSolicita.Socket.WriteLn(VP_Dados);
-  IdTCPSolicita.Socket.ReadLn(VO_Retorno);
+  if (V_ConexaoSolicita.Status<>csChaveado) and (V_ConexaoSolicita.Status<>csLogado) then
+  begin
+       Result:=DComunicador.ConectarSolicitacao;
+       if Result<>0 then
+       Exit;
+  end;
+  Result:=VO_Dados.TagToStr(VL_Dados);
+  if Result<>0 then
+  Exit;
+  VL_DadosCriptografado:=Copy(VL_Dados,1,5)+DComunicador.V_ConexaoSolicita.Aes.EncryptString(Copy(VL_Dados,6,MaxInt));
+  IdTCPSolicita.Socket.WriteLn(VL_DadosCriptografado);
+  VL_Dados:=IdTCPSolicita.Socket.ReadLn;
+  VL_DadosCriptografado:=Copy(VL_Dados,1,5)+DComunicador.V_ConexaoSolicita.Aes.DecryptString(Copy(VL_Dados,6,MaxInt));
+  VO_Retorno.CarregaTags(VL_Dados);
+  if Assigned(VP_Procedimento) then
+  VP_Procedimento(VL_Dados);
   except
     Result:=24;
   end;
@@ -512,8 +533,8 @@ end;
 
 procedure TDComunicador.iniciaescuta(VP_Procedimento:TRecebe);
 begin
- ThRecebe:=TThRecebe.Create(True,VP_Procedimento);
- ThRecebe.Start;
+ V_ThRecebe:=TThRecebe.Create(True,VP_Procedimento);
+ V_ThRecebe.Start;
 end;
 
 function TDComunicador.conectaescuta:Integer;
@@ -531,30 +552,35 @@ end;
 function TDComunicador.comando0021(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 var
  VL_Dados:String;
- VL_ChaveSimetrica:String;
  VL_ExpoentePublico,VL_ModuloPublico:String;
- VL_ChaveIDX:String;
- VL_TChaves:TTChaves;
+ VL_TChaves:TTChaveComunicacao;
  VL_Mensage:TMensagem;
- VL_Key:TKey;
+
 begin
 VL_Mensage:=TMensagem.Create;
+VL_Dados:='';
+VL_TChaves.ID:=0;
+VL_TChaves.ChaveComunicacao:='';
+VL_ModuloPublico:='';
+VL_ExpoentePublico:='';
 try
   VP_Mensagem.GetTag('0023',VL_Dados);
-
+  Result:=33;
+  if TTConexao(VP_AContext.Data).Status=csDesconectado then
+  Exit;
   if VL_Dados<>'' then
   begin
-    VP_Mensagem.GetTag('0022',VL_ChaveIDX);
-    VL_TChaves:= FChaveConexao.getChave(StrToInt(VL_ChaveIDX));
+    VP_Mensagem.GetTag('0022',VL_TChaves.ID);
+    VL_TChaves:= V_ChavesDasConexoes.getChave((VL_TChaves.ID));
     if VL_TChaves.ID>0 then
     begin
-     CriptoAes.SetKey(VL_TChaves.Key);
+     TTConexao(VP_AContext.Data).setChaveComunicacao(VL_TChaves.ChaveComunicacao);
      try
-       if CriptoAes.DecryptString(VL_Dados)='OK' then
+       if TTConexao(VP_AContext.Data).Aes.DecryptString(VL_Dados)='OK' then
        begin
         VL_Mensage.AddComando('0024','');
-        TTConexao(VP_AContext.Data).Aes.SetKey(VL_TChaves.Key);
         VL_Mensage.TagToStr(VL_Dados);
+        TTConexao(VP_AContext.Data).Status:=csChaveado;
         VP_AContext.Connection.Socket.WriteLn(VL_Dados);
         Exit;
        end;
@@ -580,22 +606,19 @@ try
     TTConexao(VP_AContext.Data).setModuloPublico(VL_ModuloPublico);
     TTConexao(VP_AContext.Data).setExpoentePublico(VL_ExpoentePublico);
 
-    VL_ChaveSimetrica:=TTConexao(VP_AContext.Data).getChaveConexao;
+    VL_TChaves.ChaveComunicacao:=TTConexao(VP_AContext.Data).getChaveComunicacao;
+    VL_TChaves.ID:=TTConexao(VP_AContext.Data).ChaveComunicacaoIDX;
 
-    VL_Dados:=TTConexao(VP_AContext.Data).Rsa.EncryptString(VL_ChaveSimetrica);
-
-    VL_ChaveIDX:=IntToStr(FChaveConexao.addChave(VL_Key));
+    VL_Dados:=TTConexao(VP_AContext.Data).Rsa.EncryptString(VL_TChaves.ChaveComunicacao);
 
     VL_Mensage.AddTag('0009',VL_Dados);
-    TTConexao(VP_AContext.Data).Aes.SetKey(VL_Key);
-    TTConexao(VP_AContext.Data).ChaveComunicacaoIDX:=StrToInt(VL_ChaveIDX);
-    VL_Mensage.AddTag('0022',VL_ChaveIDX);
+    VL_Mensage.AddTag('0022',VL_TChaves.ID);
     VL_Mensage.AddTag('0008',TTConexao(VP_AContext.Data).ModuloPublico);
     VL_Mensage.AddTag('0027',TTConexao(VP_AContext.Data).ExpoentePublico);
     VL_Mensage.AddTag('0023',TTConexao(VP_AContext.Data).Aes.EncryptString('OK'));
+
     VL_Mensage.TagToStr(VL_Dados);
-
-
+    TTConexao(VP_AContext.Data).Status:=csChaveado;
     VP_AContext.Connection.Socket.WriteLn(VL_Dados);
     Result:=0;
 
@@ -603,6 +626,43 @@ try
 finally
   VL_Mensage.Free;
 end;
+
+end;
+
+function TDComunicador.comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+var
+ VL_Dados:String;
+ VL_ChaveTerminal:String;
+ VL_Mensage:TMensagem;
+
+begin
+VL_Mensage:=TMensagem.Create;
+VL_Dados:='';
+VL_ChaveTerminal:='';
+try
+
+
+  VP_Mensagem.GetTag('0002',VL_ChaveTerminal);
+
+  if VL_ChaveTerminal='MICHEL' then
+
+  VL_Mensage.AddComando('0028','OK');
+  VL_Mensage.TagToStr(VL_Dados);
+
+  VL_Dados:= Copy(VL_Dados,1,5)+TTConexao(VP_AContext.Data).Aes.EncryptString(Copy(VL_Dados,6,MaxInt));
+
+  VP_AContext.Connection.Socket.WriteLn(VL_Dados);
+
+
+
+
+
+
+
+finally
+  VL_Mensage.Free;
+end;
+
 
 end;
 

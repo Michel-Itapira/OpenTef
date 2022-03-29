@@ -80,7 +80,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="opentefapp"/>
+      <Filename Value="..\..\binarios\opentef_app\opentefapp"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

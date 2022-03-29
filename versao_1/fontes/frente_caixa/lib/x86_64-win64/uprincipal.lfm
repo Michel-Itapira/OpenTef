@@ -6,7 +6,6 @@ object Fprincipal: TFprincipal
   Caption = 'Fprincipal'
   ClientHeight = 599
   ClientWidth = 798
-  OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '2.2.0.2'
   object GroupBox1: TGroupBox
@@ -70,8 +69,7 @@ object Fprincipal: TFprincipal
       Top = 80
       Width = 158
       Lines.Strings = (
-        'Memo1'
-        'ok'
+        '123456'
       )
       TabOrder = 2
     end

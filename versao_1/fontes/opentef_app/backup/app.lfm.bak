@@ -1,11 +1,12 @@
 object FApp: TFApp
-  Left = 753
+  Left = 769
   Height = 374
-  Top = 287
+  Top = 288
   Width = 613
   Caption = 'Open Tef'
   ClientHeight = 374
   ClientWidth = 613
+  OnCreate = FormCreate
   LCLVersion = '2.2.0.2'
   object BIniciar: TButton
     Left = 45

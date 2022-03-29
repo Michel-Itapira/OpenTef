@@ -22,7 +22,6 @@ object FApp: TFApp
     Top = 37
     Width = 75
     Caption = 'Button1'
-    OnClick = Button1Click
     TabOrder = 1
   end
 end

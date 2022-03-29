@@ -16,6 +16,7 @@ type
     Button1: TButton;
     procedure BIniciarClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
 
   public
@@ -37,10 +38,6 @@ begin
    DNucleo.iniciar;
 end;
 
-procedure TFApp.Button1Click(Sender: TObject);
-begin
-
-end;
 
 end.
 

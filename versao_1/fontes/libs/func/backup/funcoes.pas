@@ -22,11 +22,13 @@ type
    public
    function CarregaTags(VP_Dados:string):Integer;
    function TagToStr(var VO_Dados:string):Integer;
-   function AddComando(VP_Tag,VP_Dados:string):integer;
+   function AddComando(VP_Tag,VP_Dados:string):Integer;
    function GetComando(var VO_Tag:string):Integer;
-   function GetComandoInt(var VO_Tag:integer):Integer;
+   function GetComandoInt(var VO_Tag:Integer):Integer;
    function GetTag(VP_Tag:string;var VO_Dados :string):Integer;
-   function AddTag(VP_Tag,VP_Dados:string):integer;
+   function GetTag(VP_Tag:string;var VO_Dados :Integer):Integer;
+   function AddTag(VP_Tag,VP_Dados:string):Integer;
+   function AddTag(VP_Tag:String;VP_Dados:Integer):Integer;
    procedure Limpar;
   end;
 
@@ -132,7 +134,7 @@ end;
 
 function TMensagem.TagToStr(var VO_Dados:string):Integer;
 var
- i : Integer;
+ VL_Digitos,i : Integer;
  VL_TamanhoPacote : LongInt;
  VL_Dados : String;
 
@@ -148,8 +150,14 @@ begin
   VL_Dados:=VL_Dados+fTags[i].Tag+fTags[i].Qt+inttostr(fTags[i].Tamanho)+fTags[i].Dados;
  end;
  VL_TamanhoPacote:=length(VL_Dados)+5;
- VL_TamanhoPacote:=VL_TamanhoPacote+length(inttostr(VL_TamanhoPacote));
- VL_Dados:='0000'+HexStr(length(inttostr(VL_TamanhoPacote)),1)+inttostr(VL_TamanhoPacote)+VL_Dados;
+
+ VL_Digitos:=Length(Inttostr(VL_TamanhoPacote));
+
+ VL_Digitos:=Length(Inttostr(VL_TamanhoPacote+VL_Digitos));
+
+ VL_TamanhoPacote:=VL_TamanhoPacote+VL_Digitos;
+
+ VL_Dados:='0000'+HexStr((VL_Digitos),1)+inttostr(VL_TamanhoPacote)VL_Dados;
  VO_Dados := VL_Dados;
  result := 0;
 end;
@@ -183,8 +191,37 @@ begin
  Result:=29;
 end;
 
+function TMensagem.GetTag(VP_Tag:string;var VO_Dados :Integer):Integer;
+var
+   i : integer;
+begin
+ //Verifica se existe o pacote
+ if length(fTags)=0 then
+ begin
+  Result:=22;
+  Exit;
+ end;
+ //Verifica se o parametro é nulo ou diferente da estrutura
+ if Length(VP_Tag)<>4 then
+ begin
+  Result:=28;
+  Exit;
+ end;
+ for i := 0 to length(fTags)-1 do
+ begin
+  if fTags[i].Tag=VP_Tag then
+  begin
+   VO_Dados := StrToInt(fTags[i].Dados);
+   Result :=0;
+   Exit;
+  end;
+ end;
+ //Tag não encontrada no pacote
+ Result:=29;
+end;
 
-function TMensagem.AddTag(VP_Tag,VP_Dados:string):integer;
+
+function TMensagem.AddTag(VP_Tag,VP_Dados:string):Integer;
 var
    i : Integer;
 procedure incluir(VP_Posicao:Integer);
@@ -218,12 +255,47 @@ begin
 
 end;
 
+function TMensagem.AddTag(VP_Tag:String;VP_Dados:Integer):Integer;
+var
+   i : Integer;
+procedure incluir(VP_Posicao:Integer);
+begin
+     fTags[VP_Posicao].Tag:=VP_Tag;
+     fTags[VP_Posicao].Qt:=HexStr(length(inttostr(Length(IntToStr(VP_Dados)))),1);
+     fTags[VP_Posicao].Tamanho:=Length(IntToStr(VP_Dados));
+     fTags[VP_Posicao].Dados:=IntToStr(VP_Dados);
+end;
+
+begin
+
+ //Verifica se existe o pacote
+ if length(fTags)=0 then
+ begin
+  Result:=27;
+  Exit;
+ end;
+ //verifica se o parametro dados contem valor
+ for i := 0 to length(fTags)-1 do
+ begin
+  if fTags[i].Tag=VP_Tag then
+  begin
+   incluir(i);
+   Result :=0;
+   Exit;
+  end;
+ end;
+ SetLength(fTags,Length(fTags)+1);
+ incluir(Length(fTags)-1);
+
+end;
+
+
 procedure TMensagem.Limpar;
 begin
  SetLength(fTags,0);
 end;
 
-function TMensagem.AddComando(VP_Tag,VP_Dados:string):integer;
+function TMensagem.AddComando(VP_Tag,VP_Dados:string):Integer;
 begin
 
  //Verifica se existe o pacote
