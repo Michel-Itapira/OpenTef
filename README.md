@@ -1,5 +1,5 @@
-# OpenTef
-Desenvolvido 100% em Lazarus, para efeito de compatibilidade serão usdos componentes do prório repositorio do lazarus.
+﻿# OpenTef
+Desenvolvido 100% em Lazarus, para efeito de compatibilidade serão usados componentes do prório repositorio do lazarus.
 
 Se destina a
   
