@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, app, opentefnucleo, indylaz, comunicador, funcoes
+  Forms, app, opentefnucleo, zcomponent, indylaz, comunicador, funcoes
   { you can add units after this };
 
 {$R *.res}

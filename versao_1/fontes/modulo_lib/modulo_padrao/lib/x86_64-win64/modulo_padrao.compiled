@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="E:\Lazarus_IDE\fpc\bin\x86_64-win64\fpc.exe" Date="1402503502"/>
+  <Params Value=" -MObjFPC -Scghi -WR -O1 -g -gl -l -vewnhibq -FiE:\Lazarus\OpenTef\publica\fontes\modulo_lib\modulo_padrao\lib\x86_64-win64 -FuE:\Lazarus\OpenTef\publica\fontes\modulo_lib\modulo_padrao\ -FUE:\Lazarus\OpenTef\publica\fontes\modulo_lib\modulo_padrao\lib\x86_64-win64\ -FEE:\Lazarus\OpenTef\publica\binarios\modulo\padrao\win64\ -oE:\Lazarus\OpenTef\publica\binarios\modulo\padrao\win64\modulo_padrao.dll modulo_padrao.lpr"/>
+</CONFIG>

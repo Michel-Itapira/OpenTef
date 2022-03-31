@@ -1,0 +1,8 @@
+object fprincipal: Tfprincipal
+  Left = 592
+  Height = 416
+  Top = 255
+  Width = 663
+  Caption = 'Configurador OpenTef'
+  LCLVersion = '2.2.0.2'
+end

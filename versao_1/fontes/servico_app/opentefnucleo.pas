@@ -5,21 +5,66 @@ unit opentefnucleo;
 interface
 
 uses
-  Classes, SysUtils,IniFiles,comunicador;
+  Classes, SysUtils,IniFiles,comunicador, ZConnection, ZDataset;
 
 type
+
+  { TDNucleo }
+
+  TMenuCompativel = function (VP_Menu:String;var VO_Compativel:Boolean):Integer; stdcall;
+  TGetFuncao     = function (VP_TagFuncao:String; var VO_Implementada:Boolean):Integer; stdcall;
+
+  TRegModulo = record
+    Tag:String;
+    Handle:THandle;
+    Biblioteca:String;
+    ModuloConfig_ID:Integer;
+    MenuCompativel:TMenuCompativel;
+    GetFuncoes:TGetFuncao;
+
+  end;
+
+  { TModulos }
+
+  TModulos = class
+  private
+  fModulos: array of TRegModulo;
+  public
+  function AddModulo(ModuloConfig_ID:Integer):Integer;
+
+
+  end;
+
   TDNucleo = class(TDataModule)
+    ZConexao: TZConnection;
+    ZConsulta: TZQuery;
+    procedure DataModuleDestroy(Sender: TObject);
   private
 
   public
   procedure iniciar;
   end;
 
+
+
 var
   DNucleo: TDNucleo;
   Conf:TIniFile;
+  VMenuCompativel:TMenuCompativel;
 
 implementation
+
+{ TModulos }
+
+function TModulos.AddModulo(ModuloConfig_ID: Integer): Integer;
+begin
+  //
+end;
+
+procedure TDNucleo.DataModuleDestroy(Sender: TObject);
+begin
+  //for DComunicador.IdTCPServerCaixa.Contexts.;
+end;
 
 procedure TDNucleo.iniciar;
 begin
@@ -49,6 +94,25 @@ begin
           DComunicador.IdTCPServerLib.DefaultPort:=Conf.ReadInteger('Servidor','LibPorta',0);
           DComunicador.IdTCPServerLib.Active:=Conf.ReadBool('Servidor','LibAtiva',False);
      end;
+
+     ZConexao.LibraryLocation:=pChar(ExtractFilePath(ParamStr(0))+'firebird\fbclient.dll');
+     ZConexao.Database:=pChar(ExtractFilePath(ParamStr(0))+'opentef.fdb');
+     ZConexao.Connect;
+
+
+     {
+     var
+        VL_Codigo:Integer;
+     begin
+
+      TefLib:= LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'modulo\tef_lib.dll'));
+
+      Pointer(TefInicializar) := GetProcAddress (TefLib, 'inicializar');
+      Pointer(TLogin) := GetProcAddress (TefLib, 'login');
+      Pointer(v_SolicitacaoBlocante):=GetProcAddress (TefLib, 'solicitacaoblocante');
+      Pointer(VStatusOpenTef):=GetProcAddress(TefLib,'opentefstatus');
+
+    }
 
 
 end;

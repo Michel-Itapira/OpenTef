@@ -26,6 +26,12 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="lr_zeosdb"/>
+      </Item>
+      <Item>
+        <PackageName Value="dcpcrypt"/>
+      </Item>
+      <Item>
         <PackageName Value="indylaz"/>
       </Item>
       <Item>
@@ -70,6 +76,7 @@
         <Filename Value="opentefnucleo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DNucleo"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
       </Unit>
     </Units>

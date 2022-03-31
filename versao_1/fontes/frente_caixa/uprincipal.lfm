@@ -1,7 +1,7 @@
 object Fprincipal: TFprincipal
-  Left = 364
+  Left = 445
   Height = 599
-  Top = 155
+  Top = 177
   Width = 798
   Caption = 'Fprincipal'
   ClientHeight = 599
@@ -109,7 +109,7 @@ object Fprincipal: TFprincipal
       Top = 15
       Width = 350
       TabOrder = 0
-      Text = 'ECartao'
+      Text = '000000123456'
     end
     object Label1: TLabel
       Left = 13

@@ -16,6 +16,8 @@ type
     Dados:String;
 
   end;
+   TConexaoStatus= (csDesconectado,csLink,csChaveado,csLogado);
+
    PResposta=^TResposta;
 
    TPResposta = procedure (VP_Codigo:integer;VP_Dados:ansistring);stdcall;
@@ -79,6 +81,7 @@ type
 
   TTSolicitacao = function (VP_Dados : AnsiString; VP_Procedimento:TPResposta):Integer;  stdcall;
   TTSolicitacaoBlocante = function (VP_Dados : AnsiString; var VO_Retorno:AnsiString):Integer;  stdcall;
+  TTOpenTefStatus =  function (var VO_StatusRetorno : integer): Integer; stdcall;
 
 procedure P_Retorno(VP_Codigo:integer;VP_Dados:ansistring); stdcall;
 
@@ -90,6 +93,7 @@ var
   TefLib:THandle;
   TefInicializar:TTefInicializar;
   TLogin:TTLogin;
+  VStatusOpenTef:TTOpenTefStatus;
 
 const
   c_Versao_TefLib = '1.1.1';
@@ -165,6 +169,7 @@ begin
  Pointer(TefInicializar) := GetProcAddress (TefLib, 'inicializar');
  Pointer(TLogin) := GetProcAddress (TefLib, 'login');
  Pointer(v_SolicitacaoBlocante):=GetProcAddress (TefLib, 'solicitacaoblocante');
+ Pointer(VStatusOpenTef):=GetProcAddress(TefLib,'opentefstatus');
 
  VL_Codigo:=TefInicializar();
 
@@ -180,12 +185,26 @@ procedure TFprincipal.BVendaClick(Sender: TObject);
 var
 VL_Tag : String;
 VL_Erro : integer;
+VL_Status : Integer;
 VL_Mensagem:TMensagem;
-VL_S:String;
 begin
- VL_S:='';
+ VL_Tag:='';
  VL_Mensagem:=TMensagem.Create;
+
  try
+ VL_Erro:=VStatusOpenTef(VL_Status);
+
+ if VL_Erro <> 0 then
+ begin
+  ShowMessage('erro '+inttostr(VL_Erro));
+  Exit;
+ end;
+
+ if VL_Status<>ord(csLogado) then
+ begin
+   MStatus.Lines.Add('faça o login');
+   exit;
+ end;
 
 
  MStatus.Clear;
@@ -215,7 +234,7 @@ begin
   Exit;
  end;
 
- VL_Erro:=VL_Mensagem.TagToStr(VL_S);
+ VL_Erro:=v_SolicitacaoBlocante(VL_Tag,VL_Tag);
 
  if VL_Erro <> 0 then
  begin
@@ -224,16 +243,9 @@ begin
   Exit;
  end;
 
- VL_Erro:=v_SolicitacaoBlocante(VL_S,VL_S);
+ VL_Mensagem.CarregaTags(VL_Tag);
 
- if VL_Erro <> 0 then
- begin
-  ShowMessage('erro '+inttostr(VL_Erro));
-  MStatus.Lines.add('erro na montagem do pacote');
-  Exit;
- end;
-
- VL_Mensagem.CarregaTags(VL_S);
+ MStatus.Lines.add('Recebendo'+VL_Tag);
 
 
  finally
@@ -241,6 +253,7 @@ begin
  end;
 
 end;
+
 
 
 end.

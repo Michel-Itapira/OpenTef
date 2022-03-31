@@ -9,6 +9,15 @@ uses
 
 type
 
+  TTags = (
+
+  a0000, // PACOTE INICIO DO PACOTE
+  a0001 // LOGIN  COMANDO  Comando sem Dados
+
+
+
+  );
+
   TTag = record
     Tag:String;
     Qt:String;
@@ -157,7 +166,7 @@ begin
 
  VL_TamanhoPacote:=VL_TamanhoPacote+VL_Digitos;
 
- VL_Dados:='0000'+HexStr((VL_Digitos),1)+inttostr(VL_TamanhoPacote)VL_Dados;
+ VL_Dados:='0000'+HexStr((VL_Digitos),1)+inttostr(VL_TamanhoPacote)+VL_Dados;
  VO_Dados := VL_Dados;
  result := 0;
 end;

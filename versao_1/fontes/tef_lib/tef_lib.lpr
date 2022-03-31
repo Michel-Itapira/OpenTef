@@ -10,7 +10,8 @@ exports
       finalizar,
       login,
       solicitacao,
-      solicitacaoblocante;
+      solicitacaoblocante,
+      opentefstatus;
 
 begin
 end.

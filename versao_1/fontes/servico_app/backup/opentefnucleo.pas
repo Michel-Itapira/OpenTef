@@ -5,21 +5,58 @@ unit opentefnucleo;
 interface
 
 uses
-  Classes, SysUtils,IniFiles,comunicador;
+  Classes, SysUtils,IniFiles,comunicador, ZConnection, ZDataset;
 
 type
+
+  { TDNucleo }
+
+  TMenuCompativel = function (VP_Menu:String;var VO_Compativel:Boolean):Integer; stdcall;
+  TGetFuncoes     = function (var VO_TagFuncoes:String):Integer; stdcall;
+
+  TRegModulo = record
+    Tag:String;
+    Handle:THandle;
+    Biblioteca:String;
+    ModuloConfig_ID:Integer;
+    MenuCompativel:TMenuCompativel;
+    GetFuncoes:TGetFuncoes;
+  end;
+
+  TModulos = class
+  private
+  fModuloLib: array of THandle;
+  fFuncoes:String;
+
+  public
+  function AddModulo(VP_NomeBiblioteca:String):Integer;
+
+
+  end;
+
   TDNucleo = class(TDataModule)
+    ZConexao: TZConnection;
+    ZConsulta: TZQuery;
+    procedure DataModuleDestroy(Sender: TObject);
   private
 
   public
   procedure iniciar;
   end;
 
+
+
 var
   DNucleo: TDNucleo;
   Conf:TIniFile;
+  VMenuCompativel:TMenuCompativel;
 
 implementation
+
+procedure TDNucleo.DataModuleDestroy(Sender: TObject);
+begin
+  //for DComunicador.IdTCPServerCaixa.Contexts.;
+end;
 
 procedure TDNucleo.iniciar;
 begin
@@ -42,13 +79,32 @@ begin
      if Conf.ReadInteger('Servidor','CaixaPorta',0)<>0 then
      begin
           DComunicador.IdTCPServerCaixa.DefaultPort:=Conf.ReadInteger('Servidor','CaixaPorta',0);
-       //   DComunicador.IdTCPServerCaixa.Active:= Conf.ReadBool('Servidor','CaixaAtiva',False);
+          DComunicador.IdTCPServerCaixa.Active:= Conf.ReadBool('Servidor','CaixaAtiva',False);
      end;
      if Conf.ReadInteger('Servidor','LibPorta',0)<>0 then
      begin
           DComunicador.IdTCPServerLib.DefaultPort:=Conf.ReadInteger('Servidor','LibPorta',0);
           DComunicador.IdTCPServerLib.Active:=Conf.ReadBool('Servidor','LibAtiva',False);
      end;
+
+     ZConexao.LibraryLocation:=pChar(ExtractFilePath(ParamStr(0))+'firebird\fbclient.dll');
+     ZConexao.Database:=pChar(ExtractFilePath(ParamStr(0))+'opentef.fdb');
+     ZConexao.Connect;
+
+
+     {
+     var
+        VL_Codigo:Integer;
+     begin
+
+      TefLib:= LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'modulo\tef_lib.dll'));
+
+      Pointer(TefInicializar) := GetProcAddress (TefLib, 'inicializar');
+      Pointer(TLogin) := GetProcAddress (TefLib, 'login');
+      Pointer(v_SolicitacaoBlocante):=GetProcAddress (TefLib, 'solicitacaoblocante');
+      Pointer(VStatusOpenTef):=GetProcAddress(TefLib,'opentefstatus');
+
+    }
 
 
 end;

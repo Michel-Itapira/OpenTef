@@ -97,8 +97,10 @@ type
     function TransmiteSolicitacaoCliente(var VO_Dados:TMensagem;var VO_Retorno:TMensagem; VP_Procedimento:TRecebe):Integer;
     procedure iniciaescuta(VP_Procedimento:TRecebe);
     function conectaescuta:Integer;
+    function EnviarCliente(VL_Mensage:TMensagem;VP_AContext:TIdContext):Integer;
     function comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando0021(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando000A(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 
   end;
 
@@ -470,6 +472,7 @@ begin
  case VL_Comando of
    '0001': comando0001(VL_Mensagem,AContext);
    '0021': comando0021(VL_Mensagem,AContext);
+   '000A': comando000A(VL_Mensagem,AContext);
  else ;
    AContext.Connection.Disconnect;
  end;
@@ -522,12 +525,17 @@ begin
   VL_DadosCriptografado:=Copy(VL_Dados,1,5)+DComunicador.V_ConexaoSolicita.Aes.EncryptString(Copy(VL_Dados,6,MaxInt));
   IdTCPSolicita.Socket.WriteLn(VL_DadosCriptografado);
   VL_Dados:=IdTCPSolicita.Socket.ReadLn;
-  VL_DadosCriptografado:=Copy(VL_Dados,1,5)+DComunicador.V_ConexaoSolicita.Aes.DecryptString(Copy(VL_Dados,6,MaxInt));
+  VL_Dados:=Copy(VL_Dados,1,5)+DComunicador.V_ConexaoSolicita.Aes.DecryptString(Copy(VL_Dados,6,MaxInt));
   VO_Retorno.CarregaTags(VL_Dados);
   if Assigned(VP_Procedimento) then
   VP_Procedimento(VL_Dados);
   except
+    Begin
     Result:=24;
+    V_ConexaoSolicita.Status:=csDesconectado;
+    if DComunicador.IdTCPSolicita.Connected then
+    DComunicador.IdTCPSolicita.Disconnect;
+    end;
   end;
 end;
 
@@ -546,6 +554,19 @@ begin
  //  Result:=25;
  // end;
  //
+
+end;
+
+function TDComunicador.EnviarCliente(VL_Mensage: TMensagem; VP_AContext: TIdContext): Integer;
+var
+ VL_Dados:String;
+begin
+VL_Dados:='';
+VL_Mensage.TagToStr(VL_Dados);
+
+VL_Dados:= Copy(VL_Dados,1,5)+TTConexao(VP_AContext.Data).Aes.EncryptString(Copy(VL_Dados,6,MaxInt));
+
+VP_AContext.Connection.Socket.WriteLn(VL_Dados);
 
 end;
 
@@ -631,41 +652,67 @@ end;
 
 function TDComunicador.comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 var
- VL_Dados:String;
+
  VL_ChaveTerminal:String;
- VL_Mensage:TMensagem;
+ VL_Mensagem:TMensagem;
 
 begin
-VL_Mensage:=TMensagem.Create;
-VL_Dados:='';
+Result:=0;
+VL_Mensagem:=TMensagem.Create;
 VL_ChaveTerminal:='';
 try
 
 
   VP_Mensagem.GetTag('0002',VL_ChaveTerminal);
 
-  if VL_ChaveTerminal='MICHEL' then
+  if VL_ChaveTerminal='123456' then
+  begin
+   TTConexao(VP_AContext.Data).Status:=csLogado;
+   VL_Mensagem.AddComando('0028','OK')
 
-  VL_Mensage.AddComando('0028','OK');
-  VL_Mensage.TagToStr(VL_Dados);
+  end
+  else
+  VL_Mensagem.AddComando('0029','OK');
 
-  VL_Dados:= Copy(VL_Dados,1,5)+TTConexao(VP_AContext.Data).Aes.EncryptString(Copy(VL_Dados,6,MaxInt));
-
-  VP_AContext.Connection.Socket.WriteLn(VL_Dados);
-
-
-
-
-
+  EnviarCliente(VL_Mensagem,VP_AContext);
 
 
 finally
-  VL_Mensage.Free;
+  VL_Mensagem.Free;
 end;
 
 
 end;
 
+function TDComunicador.comando000A(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+var
+ VL_Dados:String;
+
+begin
+Result:=0;
+VL_Dados:='';
+
+
+ if TTConexao(VP_AContext.Data).Status<>csLogado then
+ begin
+    VP_Mensagem.Limpar;
+   VP_Mensagem.AddComando('0015','');
+
+  EnviarCliente(VP_Mensagem,VP_AContext);
+
+  exit;
+ end;
+  VP_Mensagem.TagToStr(VL_Dados);
+
+  VP_Mensagem.Limpar;
+  VP_Mensagem.AddComando('0005','');
+
+  EnviarCliente(VP_Mensagem,VP_AContext);
+
+
+
+
+end;
 
 
 end.

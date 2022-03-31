@@ -93,14 +93,18 @@ type
     V_ConexaoEscuta,V_ConexaoSolicita:TTConexao;
     V_ChavesDasConexoes:TTChaveConexao;
 
+    function DesconectarSolicitacao:Integer;
     function ConectarSolicitacao:Integer;
     function TransmiteSolicitacaoCliente(var VO_Dados:TMensagem;var VO_Retorno:TMensagem; VP_Procedimento:TRecebe):Integer;
     procedure iniciaescuta(VP_Procedimento:TRecebe);
     function conectaescuta:Integer;
+    function MenuCompativel(VP_Menu:String;VPModulo:String;var VO_Compativel:Boolean):Integer;
     function EnviarCliente(VL_Mensage:TMensagem;VP_AContext:TIdContext):Integer;
     function comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando0021(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando000A(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0018(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+
 
   end;
 
@@ -505,6 +509,12 @@ begin
    V_ConexaoSolicita.Status:=csDesconectado;
 end;
 
+function TDComunicador.DesconectarSolicitacao: Integer;
+begin
+ if DComunicador.IdTCPSolicita.Connected then
+    DComunicador.IdTCPSolicita.Disconnect;
+end;
+
 function TDComunicador.TransmiteSolicitacaoCliente(var VO_Dados:TMensagem;var VO_Retorno:TMensagem; VP_Procedimento:TRecebe):Integer;
 var
  VL_DadosCriptografado:String;
@@ -530,7 +540,12 @@ begin
   if Assigned(VP_Procedimento) then
   VP_Procedimento(VL_Dados);
   except
+    Begin
     Result:=24;
+    V_ConexaoSolicita.Status:=csDesconectado;
+    if DComunicador.IdTCPSolicita.Connected then
+    DComunicador.IdTCPSolicita.Disconnect(False);
+    end;
   end;
 end;
 
@@ -550,6 +565,12 @@ begin
  // end;
  //
 
+end;
+
+function TDComunicador.MenuCompativel(VP_Menu: String; VPModulo: String;
+  var VO_Compativel: Boolean): Integer;
+begin
+   // listar todos modulos
 end;
 
 function TDComunicador.EnviarCliente(VL_Mensage: TMensagem; VP_AContext: TIdContext): Integer;
@@ -647,14 +668,13 @@ end;
 
 function TDComunicador.comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 var
- VL_Dados:String;
+
  VL_ChaveTerminal:String;
  VL_Mensagem:TMensagem;
 
 begin
 Result:=0;
 VL_Mensagem:=TMensagem.Create;
-VL_Dados:='';
 VL_ChaveTerminal:='';
 try
 
@@ -662,7 +682,11 @@ try
   VP_Mensagem.GetTag('0002',VL_ChaveTerminal);
 
   if VL_ChaveTerminal='123456' then
-  VL_Mensagem.AddComando('0028','OK')
+  begin
+   TTConexao(VP_AContext.Data).Status:=csLogado;
+   VL_Mensagem.AddComando('0028','OK')
+
+  end
   else
   VL_Mensagem.AddComando('0029','OK');
 
@@ -679,18 +703,78 @@ end;
 function TDComunicador.comando000A(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 var
  VL_Dados:String;
-
+ VL_Transacao : string;
 begin
 Result:=0;
 VL_Dados:='';
+VL_Transacao:='';
+ //testa conexão
+ if TTConexao(VP_AContext.Data).Status<>csLogado then
+ begin
+   VP_Mensagem.Limpar;
+   VP_Mensagem.AddComando('0026','35');
+   EnviarCliente(VP_Mensagem,VP_AContext);
+   exit;
+ end;
 
-  VP_Mensagem.TagToStr(VL_Dados);
 
-  VP_Mensagem.Limpar;
-  VP_Mensagem.AddComando('0005','');
+ // criar transacao
+ // consultar com os modulos os menus solicitado e compativel com caixa
+
+
+  //CRIAR FUNCÇÃO QUE RETORNA MENU COMPATIVEL
+
+
+
+
 
   EnviarCliente(VP_Mensagem,VP_AContext);
 
+
+end;
+
+function TDComunicador.comando0018(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_DadosMenu : string;
+begin
+  Result := 0;
+  VL_DadosMenu:='';
+  VL_Mensagem := TMensagem.Create;
+  try
+    if TTConexao(VP_AContext.Data).Status<>csLogado then
+    begin
+     VP_Mensagem.Limpar;
+     VP_Mensagem.AddComando('0026','35');
+     EnviarCliente(VP_Mensagem,VP_AContext);
+     exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0018','');
+
+    //VP_Mensagem.GetTag(VL_DadosMenu);
+              {
+    case VL_DadosMenu of
+      '0019' :
+
+
+    end;
+    if Length(VL_TextoMenu)>0 then
+    begin
+     VL_Mensagem.AddTag('0019',VL_DadosMenu);
+    end;
+
+    VP_Mensagem.GetTag('0019',VL_DadosMenu);
+    if Length(VL_TextoMenu)>0 then
+    begin
+     VL_Mensagem.AddTag('0019',VL_DadosMenu);
+    end;
+
+    EnviarCliente(VL_Mensagem,VP_AContext);
+                     }
+  finally
+    VL_Mensagem.Free;
+  end;
 
 
 end;

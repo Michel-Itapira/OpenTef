@@ -35,6 +35,7 @@ function login(VP_Host : AnsiString; VP_Porta : integer; VP_ChaveTerminal : Ansi
          VP_Versao_Comunicacao : integer) : integer;  stdcall;
 function solicitacao(VP_Dados : AnsiString; VP_Procedimento:TRetorno) : Integer;  stdcall;
 function solicitacaoblocante(VP_Dados : AnsiString; var VO_Retorno:AnsiString):Integer;  stdcall;
+function opentefstatus(var VO_StatusRetorno : integer): Integer; stdcall;
 
 var
   DTef: TDTef;
@@ -121,6 +122,14 @@ try
      result :=15;
      exit;
   end;
+  if (((DComunicador.V_ConexaoSolicita.ServidorHost<> VP_Host) or
+     (DComunicador.V_ConexaoSolicita.ServidorPorta<> VP_Porta) or
+     (F_ChaveTerminal <> VP_ChaveTerminal) or
+     (F_Versao_Comunicacao <> VP_Versao_Comunicacao)) and
+     (DComunicador.V_ConexaoSolicita.Status<>csDesconectado)) then
+     DComunicador.DesconectarSolicitacao;
+
+
 
   DComunicador.V_ConexaoSolicita.ServidorHost:= VP_Host;
   DComunicador.V_ConexaoSolicita.ServidorPorta:= VP_Porta;
@@ -197,7 +206,6 @@ function solicitacaoblocante(VP_Dados : AnsiString; var VO_Retorno:AnsiString):I
 var
 VL_Mensagem:TMensagem;
 begin
-VL_S:='';
 VL_Mensagem:=TMensagem.Create;
 try
   VL_Mensagem.CarregaTags(VP_Dados);
@@ -211,6 +219,12 @@ end;
 
 
 
+end;
+
+function opentefstatus(var VO_StatusRetorno : integer): Integer; stdcall;
+begin
+result := 0;
+VO_StatusRetorno:= ord(DComunicador.V_ConexaoSolicita.Status);
 end;
 
 
