@@ -135,7 +135,6 @@ try
   DComunicador.V_ConexaoSolicita.ServidorPorta:= VP_Porta;
   F_ChaveTerminal := VP_ChaveTerminal;
   F_Versao_Comunicacao := VP_Versao_Comunicacao;
-
   result:=DComunicador.ConectarSolicitacao;
 
   if Result<>0 then

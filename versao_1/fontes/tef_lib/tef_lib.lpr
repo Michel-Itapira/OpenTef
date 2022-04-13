@@ -5,6 +5,8 @@ library tef_lib;
 uses
   Classes, tef, funcoes, comunicador
   { you can add units after this };
+
+
 exports
       inicializar,
       finalizar,

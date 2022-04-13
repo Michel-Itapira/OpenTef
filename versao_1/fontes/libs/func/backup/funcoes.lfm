@@ -1,7 +1,13 @@
 object DFuncoes: TDFuncoes
   OldCreateOrder = False
   Height = 312
-  HorizontalOffset = 1283
-  VerticalOffset = 277
+  HorizontalOffset = 931
+  VerticalOffset = 442
   Width = 375
+  object RxMemoryData1: TRxMemoryData
+    FieldDefs = <>
+    PacketRecords = 0
+    Left = 156
+    Top = 105
+  end
 end

@@ -16,16 +16,17 @@
         <Filename Value="pinpad.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DPinPad"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="18"/>
-        <CursorPos X="10" Y="24"/>
+        <TopLine Value="22"/>
+        <CursorPos X="19" Y="39"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="2">
+    <JumpHistory HistoryIndex="6">
       <Position>
         <Filename Value="pinpad.pas"/>
         <Caret Line="22" TopLine="5"/>
@@ -38,10 +39,37 @@
         <Filename Value="pinpad.pas"/>
         <Caret Line="93" Column="20" TopLine="63"/>
       </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="24" Column="10" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="39" Column="9" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="36" Column="5" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="39" Column="14" TopLine="22"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="pinpad.pas"/>
+        <Line Value="39"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>

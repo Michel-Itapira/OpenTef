@@ -26,13 +26,16 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+      <Item>
+        <PackageName Value="LR_ZeosDB"/>
+      </Item>
+      <Item>
         <PackageName Value="pl_LockBox"/>
       </Item>
       <Item>
         <PackageName Value="dcpcrypt"/>
-      </Item>
-      <Item>
-        <PackageName Value="ACBrTCP"/>
       </Item>
       <Item>
         <PackageName Value="indylaz"/>
@@ -70,7 +73,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\binarios\lib\tef_lib"/>
+      <Filename Value="..\..\binarios\tef_lib\win64\tef_lib"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -79,15 +82,22 @@
     </SearchPaths>
     <CodeGeneration>
       <RelocatableUnit Value="True"/>
-      <Optimizations>
-        <OptimizationLevel Value="2"/>
-      </Optimizations>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
       <Options>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dCLIENTE"/>
+      <OtherDefines Count="1">
+        <Define0 Value="CLIENTE"/>
+      </OtherDefines>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>

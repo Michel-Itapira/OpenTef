@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, DBGrids,
-  funcoes, StrUtils, BufDataset, DB, DateTimePicker;
+  ExtCtrls, funcoes, StrUtils, BufDataset, DB, DateTimePicker;
 
 type
-  { TFprincipal }
+  { TF_Principal }
 
    TResposta = record
     Codigo:Integer;
@@ -23,9 +23,10 @@ type
    TPResposta = procedure (VP_Codigo:integer;VP_Dados:ansistring);stdcall;
 
 
-  TFprincipal = class(TForm)
+  TF_Principal = class(TForm)
     BInicializar: TButton;
     BLogin: TButton;
+    BTestePinPad: TButton;
     BVenda: TButton;
     EDataHora: TDateTimePicker;
     ECartao: TEdit;
@@ -65,8 +66,10 @@ type
     Label9: TLabel;
     EXml: TMemo;
     MStatus: TMemo;
+    Panel1: TPanel;
     procedure BInicializarClick(Sender: TObject);
     procedure BLoginClick(Sender: TObject);
+    procedure BTestePinPadClick(Sender: TObject);
     procedure BVendaClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -86,7 +89,7 @@ type
 procedure P_Retorno(VP_Codigo:integer;VP_Dados:ansistring); stdcall;
 
 var
-  Fprincipal: TFprincipal;
+  F_Principal: TF_Principal;
   v_SolicitacaoBlocante:TTSolicitacaoBlocante;
   v_Resposta:PResposta;
   V_Procedure:TPResposta;
@@ -99,16 +102,17 @@ const
   c_Versao_TefLib = '1.1.1';
   c_Versao_Mensagem = 1;
 
-
-
 implementation
 
 {$R *.lfm}
 
-{ TFprincipal }
+{ TF_Principal }
+
+uses
+  utestepinpad;
 
 
-procedure TFprincipal.FormShow(Sender: TObject);
+procedure TF_Principal.FormShow(Sender: TObject);
 var
    i : integer;
 begin
@@ -133,23 +137,23 @@ var
 
 begin
   VL_S:=vp_Dados;
-   Fprincipal.Caption:=VL_S;
+   F_Principal.Caption:=VL_S;
 
   //V_Resposta^.Dados:=s^;
   //V_Resposta^.Codigo:=  LongInt(@V_Resposta);
-  //Fprincipal.MStatus.Lines.Add('retornoI:'+PResposta(teste)^.Dados +IntToStr(V_Resposta^.Codigo)+V_Resposta^.Dados);
+  //F_Principal.MStatus.Lines.Add('retornoI:'+PResposta(teste)^.Dados +IntToStr(V_Resposta^.Codigo)+V_Resposta^.Dados);
 
 
 end;
 
-procedure TFprincipal.BLoginClick(Sender: TObject);
+procedure TF_Principal.BLoginClick(Sender: TObject);
 var
    VL_Codigo:Integer;
  begin
  MStatus.Clear;
  MStatus.Lines.add('Iniciando login...');
 
- VL_Codigo:=TLogin(EHost.Text,StrToInt(EPorta.text),EChave.Lines.Text,c_Versao_Mensagem);
+// VL_Codigo:=TLogin(EHost.Text,StrToInt(EPorta.text),EChave.Lines.Text,c_Versao_Mensagem);
 
  if VL_Codigo<>0 then
  begin
@@ -159,12 +163,17 @@ var
  MStatus.Lines.add('Logado');
  end;
 
-procedure TFprincipal.BInicializarClick(Sender: TObject);
+procedure TF_Principal.BTestePinPadClick(Sender: TObject);
+begin
+   F_TestePinPad.Show;
+end;
+
+procedure TF_Principal.BInicializarClick(Sender: TObject);
 var
    VL_Codigo:Integer;
 begin
 
- TefLib:= LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'..\lib\tef_lib.dll'));
+ TefLib:= LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'..\tef_lib\win64\tef_lib.dll'));
 
  Pointer(TefInicializar) := GetProcAddress (TefLib, 'inicializar');
  Pointer(TLogin) := GetProcAddress (TefLib, 'login');
@@ -181,7 +190,7 @@ begin
 
 end;
 
-procedure TFprincipal.BVendaClick(Sender: TObject);
+procedure TF_Principal.BVendaClick(Sender: TObject);
 var
 VL_Tag : String;
 VL_Erro : integer;
@@ -224,6 +233,14 @@ begin
  VL_Mensagem.AddTag('0015',EValorRefeicao.text);
  VL_Mensagem.AddTag('0016',EValorValeCultura.Text);
  VL_Mensagem.AddTag('0017',EXml.lines.Text);
+
+ // menus que o caixa aceita
+ VL_Mensagem.AddTag('0019','');
+ VL_Mensagem.AddTag('001A','');
+ VL_Mensagem.AddTag('001B','');
+
+
+
 
  VL_Erro:=VL_Mensagem.TagToStr(VL_Tag);
  MStatus.Lines.Add(VL_Tag);

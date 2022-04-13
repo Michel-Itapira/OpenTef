@@ -1,0 +1,7 @@
+object DPinPad: TDPinPad
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 902
+  VerticalOffset = 246
+  Width = 281
+end

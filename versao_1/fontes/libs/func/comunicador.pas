@@ -6,8 +6,8 @@ unit comunicador;
 interface
 
 uses
-  Classes, SysUtils, LbRSA,StrUtils, LbClass, IdTCPClient, IdTCPServer, IdComponent,
-  IdCustomTCPServer,funcoes, IdContext,LbAsym;
+  Classes, SysUtils, LbRSA,StrUtils, LbClass, IdTCPClient, IdTCPServer,ZDataset, IdComponent,
+  IdCustomTCPServer,funcoes, IdContext,LbAsym,DB,rxmemds;
 
 type
 
@@ -100,17 +100,44 @@ type
     function conectaescuta:Integer;
     function MenuCompativel(VP_Menu:String;VPModulo:String;var VO_Compativel:Boolean):Integer;
     function EnviarCliente(VL_Mensage:TMensagem;VP_AContext:TIdContext):Integer;
+
+    {$IFNDEF CLIENTE}
     function comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando0021(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando000A(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
     function comando0018(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0039(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando003C(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando003F(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0043(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0044(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0045(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando004B(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0053(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0054(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0055(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0056(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0057(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0058(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    function comando0059(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
+    {$ENDIF CLIENTE}
 
 
   end;
 
 var
   DComunicador: TDComunicador;
+  F : TDFuncoes;
 implementation
+
+
+  {$IFNDEF CLIENTE}
+  USES
+  opentefnucleo;
+  {$ELSE}
+
+  {$ENDIF CLIENTE}
+
 
 {$R *.lfm}
 
@@ -120,6 +147,7 @@ function TDComunicador.ConectarSolicitacao:Integer;
 var
   VL_Mensagem:TMensagem;
   VL_S:String;
+  VL_Comando : String;
   VL_Dados:String;
   VL_ChaveComunicacao:String;
   VL_OK:String;
@@ -136,6 +164,7 @@ VL_ChaveComunicacao:='';
 VL_ChaveComunicacaoIDX:='';
 VL_OK:='';
 VL_Dados:='';
+VL_Comando:='';
 try
  if (V_ConexaoSolicita.Status=csChaveado) or (V_ConexaoSolicita.Status=csLogado) then
  begin
@@ -181,23 +210,23 @@ try
  if Result<>0 then
   Exit;
 
- VL_Mensagem.GetComando(VL_Dados);
+ VL_Mensagem.GetComando(VL_Comando,VL_Dados);
 
- if VL_Dados='0024' then
+ if VL_Comando='0024' then
  begin
    V_ConexaoSolicita.Status:=csChaveado;
    Result:=0;
    Exit;
  end;
 
- if VL_Dados='0026' then
+ if VL_Comando='0026' then
   begin
-    VL_Mensagem.GetTag('0026',VL_Dados);
-    Result:=StrToInt(VL_Dados);
+    VL_Mensagem.GetTag('0026',VL_Comando);
+    Result:=StrToInt(VL_Comando);
     Exit;
   end;
 
- if VL_Dados='0025' then
+ if VL_Comando='0025' then
   begin
   VL_Mensagem.GetTag('0008',VL_ModuloPublico);
   VL_Mensagem.GetTag('0027',VL_ExpoentePublico);
@@ -451,9 +480,11 @@ var
  VL_DadosRecebidos:String;
  VL_Comando:String;
  VL_Mensagem:TMensagem;
+ VL_Dados : string;
 
 begin
  VL_Comando:='';
+ VL_Dados:='';
  VL_Mensagem:=TMensagem.Create;
 
  VL_DadosRecebidos:=AContext.Connection.Socket.ReadLn;
@@ -467,19 +498,36 @@ begin
   Exit;
  end;
 
- if VL_Mensagem.GetComando(VL_Comando)<>0 then
+ if VL_Mensagem.GetComando(VL_Comando,VL_Dados)<>0 then
  begin
   AContext.Connection.Disconnect;
   Exit;
  end;
-
+ {$IFNDEF CLIENTE}
  case VL_Comando of
    '0001': comando0001(VL_Mensagem,AContext);
    '0021': comando0021(VL_Mensagem,AContext);
    '000A': comando000A(VL_Mensagem,AContext);
- else ;
+   '0039': comando0039(VL_Mensagem,AContext);
+   '003C': comando003C(VL_Mensagem,AContext);
+   '003F': comando003F(VL_Mensagem,AContext);
+   '0043': comando0043(VL_Mensagem,AContext);
+   '0044': comando0044(VL_Mensagem,AContext);
+   '0045': comando0045(VL_Mensagem,AContext);
+   '004B': comando004B(VL_Mensagem,AContext);
+   '0053': comando0053(VL_Mensagem,AContext);
+   '0054': comando0054(VL_Mensagem,AContext);
+   '0055': comando0055(VL_Mensagem,AContext);
+   '0056': comando0056(VL_Mensagem,AContext);
+   '0057': comando0057(VL_Mensagem,AContext);
+   '0058': comando0058(VL_Mensagem,AContext);
+   '0059': comando0059(VL_Mensagem,AContext);
+ else
    AContext.Connection.Disconnect;
  end;
+{$ENDIF CLIENTE}
+
+
  VL_Mensagem.Free;
 end;
 
@@ -577,6 +625,7 @@ function TDComunicador.EnviarCliente(VL_Mensage: TMensagem; VP_AContext: TIdCont
 var
  VL_Dados:String;
 begin
+Result:=0;
 VL_Dados:='';
 VL_Mensage.TagToStr(VL_Dados);
 
@@ -586,6 +635,7 @@ VP_AContext.Connection.Socket.WriteLn(VL_Dados);
 
 end;
 
+{$IFNDEF CLIENTE}
 function TDComunicador.comando0021(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 var
  VL_Dados:String;
@@ -669,32 +719,51 @@ end;
 function TDComunicador.comando0001(VP_Mensagem: TMensagem;VP_AContext:TIdContext): Integer;
 var
 
- VL_ChaveTerminal:String;
+ VL_ChaveTerminal,VL_IP:String;
  VL_Mensagem:TMensagem;
+ VL_Consulta : TZQuery;
+ VL_TerminalSenha : string;
+ VL_TerminalTipo : string;
 
 begin
 Result:=0;
 VL_Mensagem:=TMensagem.Create;
 VL_ChaveTerminal:='';
+VL_TerminalSenha:='';
+VL_TerminalTipo:='';
+VL_Consulta := TZQuery.Create(DComunicador);
+VL_Consulta.Connection := DNucleo.ZConexao;
 try
-
-
+  //inicio do processo
   VP_Mensagem.GetTag('0002',VL_ChaveTerminal);
+  VP_Mensagem.GetTag('0035',VL_TerminalSenha);
+  VP_Mensagem.GetTag('0037',VL_TerminalTipo);
 
-  if VL_ChaveTerminal='123456' then
+  VL_IP:= TTConexao(VP_AContext.Data).ClienteIp;
+
+  VL_Consulta.Close;
+  VL_Consulta.SQL.Text:='SELECT * FROM P_VAL_TERMINAL('''+VL_IP+''','''+VL_ChaveTerminal+''','''+
+                                VL_TerminalSenha+''','''+VL_TerminalTipo+''')';
+  VL_Consulta.Open;
+
+  if VL_Consulta.FieldByName('S_STATUS').AsInteger<>0 then
   begin
-   TTConexao(VP_AContext.Data).Status:=csLogado;
-   VL_Mensagem.AddComando('0028','OK')
-
+   VL_Mensagem.AddComando('0029','OK');
+   VL_Mensagem.AddTag('0036',IntToStr(VL_Consulta.FieldByName('S_STATUS').AsInteger));
+   result:=VL_Consulta.FieldByName('S_STATUS').AsInteger;
   end
   else
-  VL_Mensagem.AddComando('0029','OK');
+  begin
+   TTConexao(VP_AContext.Data).Status:=csLogado;
+   VL_Mensagem.AddComando('0028','OK');
+   VL_Mensagem.AddTag('0038',VL_Consulta.FieldByName('S_TIPO').AsString);
+  end;
 
   EnviarCliente(VL_Mensagem,VP_AContext);
 
-
 finally
   VL_Mensagem.Free;
+  VL_Consulta.Free;
 end;
 
 
@@ -778,7 +847,1260 @@ begin
 
 
 end;
+function TDComunicador.comando0039(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TLoja : TZQuery;
+ VL_Tag : AnsiString;
+ VL_Permissao : String;
+begin
+  Result := 0;
+  VL_Mensagem := TMensagem.Create;
+  VL_Tabela:= TRxMemoryData.Create(nil);
+  VL_TLoja := TZQuery.Create(DComunicador);
+  VL_TLoja.Connection := DNucleo.ZConexao;
+  VL_Tag:='';
+  VL_Permissao:='U';
+  try
+    if TTConexao(VP_AContext.Data).Status<>csLogado then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','35');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     exit;
+    end;
+    //verifica permissao
+    VP_Mensagem.GetTag('0037',VL_Tag);
+    if Length(VL_Tag)=0 then
+    begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','28');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+    end;
+    VL_Permissao:=VL_Tag;
+    If VL_Permissao='U' then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','45');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VP_Mensagem.GetTag('003A',VL_Tag);
+    if Length(VL_Tag)=0 then
+    begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','28');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+    end;
+    F.StrToRxMemData(VL_Tag,VL_Tabela);
+    VL_Tabela.Open;
+    VL_Tabela.First;
+    while not VL_Tabela.eof do
+    begin
+      if VL_Tabela.FieldByName('ID').AsInteger=0 then
+      begin
+       VL_TLoja.Close;
+       VL_TLoja.SQL.Text:='SELECT * FROM LOJA WHERE CNPJ='''+VL_Tabela.FieldByName('CNPJ').AsString+'''';
+       VL_TLoja.Open;
+       if VL_TLoja.RecordCount>0 then
+       begin
+        VL_Mensagem.Limpar;
+        VL_Mensagem.AddComando('0026','43');
+        EnviarCliente(VL_Mensagem,VP_AContext);
+        Exit;
+       end;
+       VL_TLoja.Close;
+       VL_TLoja.SQL.Text:='INSERT INTO LOJA(CNPJ,RAZAO,FANTASIA)VALUES('''+
+                                  VL_Tabela.FieldByName('CNPJ').AsString+''','''+
+                                  VL_Tabela.FieldByName('RAZAO').AsString+''','''+
+                                  VL_Tabela.FieldByName('FANTASIA').AsString+''')';
+       VL_TLoja.ExecSQL;
+       VL_TLoja.Close;
+       VL_TLoja.SQL.Text:='SELECT * FROM LOJA WHERE CNPJ='''+VL_Tabela.FieldByName('CNPJ').AsString+'''';
+       VL_TLoja.Open;
+       if VL_TLoja.RecordCount=0 then
+       begin
+        VL_Mensagem.Limpar;
+        VL_Mensagem.AddComando('0026','44');
+        EnviarCliente(VL_Mensagem,VP_AContext);
+        Exit;
+       end;
+       VL_Mensagem.Limpar;
+       VL_Mensagem.AddComando('003B','');
+       VL_Mensagem.AddTag('0036',VL_TLoja.FieldByName('ID').AsString);
+       EnviarCliente(VL_Mensagem,VP_AContext);
+       Exit;
+      end;
+      VL_Tabela.Next;
+    end;
+  finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TLoja.Free;
+  end;
+end;
+function TDComunicador.comando003C(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_TLoja : TZQuery;
+ VL_Tag : AnsiString;
+ VL_Dados : AnsiString;
+ VL_TipoPesquisa : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_TLoja := TZQuery.Create(DComunicador);
+ VL_TLoja.Connection := DNucleo.ZConexao;
+ VL_Tag:='';
+ VL_Dados:='0';
+ VL_TipoPesquisa:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('0040',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VL_TipoPesquisa:=VL_Tag;
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VL_Dados:= VL_Tag;
 
+   //pesquisa por ID
+   if VL_TipoPesquisa='ID' then
+   begin
+    VL_TLoja.Close;
+    VL_TLoja.SQL.Text:='SELECT * FROM LOJA WHERE ((ID='+VL_Dados+') or ('+VL_Dados+' is not null) and (('+VL_Dados+' is null) or ('+VL_Dados+'=0)))';
+    VL_TLoja.Open;
+
+    VL_Tag:=F.ZQueryToStrRxMemData(VL_TLoja);
+
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('003E','');
+    VL_Mensagem.AddTag('0038',VL_Tag);
+    EnviarCliente(VL_Mensagem,VP_AContext);
+   end;
+
+ finally
+    VL_Mensagem.Free;
+    VL_TLoja.Free;
+ end;
+end;
+function TDComunicador.comando003F(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_Loja : TZQuery;
+ VL_Tabela : TRxMemoryData;
+ VL_Tag : AnsiString;
+ VL_ID  : Int64;
+ VL_Permissao : String;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Loja := TZQuery.Create(DComunicador);
+ VL_Loja.Connection := DNucleo.ZConexao;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_Tag:='';
+ VL_ID:=0;
+ VL_Permissao:='U';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','35');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   F.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.Open;
+
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_ID:=StrToInt(VL_Tag);
+   if VL_ID=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','47');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao='U' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VL_Loja.close;
+   VL_Loja.SQL.Text:='SELECT * FROM LOJA WHERE ID='+INTTOSTR(VL_ID);
+   VL_Loja.Open;
+
+   if VL_Loja.RecordCount=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','48');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   if VL_Tabela.Locate('ID',VL_ID,[]) then
+   BEGIN
+    if ((VL_Tabela.FieldByName('ID').AsInteger<>VL_Loja.FieldByName('ID').AsInteger)OR
+       (VL_Tabela.FieldByName('CNPJ').AsString<>VL_Loja.FieldByName('CNPJ').AsString))then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','49');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Loja.Close;
+    VL_Loja.SQL.Text:='UPDATE LOJA SET '+
+                              'RAZAO='''+VL_Tabela.FieldByName('RAZAO').AsString+''','+
+                              'FANTASIA='''+VL_Tabela.FieldByName('FANTASIA').AsString+''' WHERE '+
+                              'ID='+IntToStr(VL_ID);
+    VL_Loja.ExecSQL;
+    VL_Loja.Close;
+    VL_Loja.SQL.Text:='SELECT * FROM LOJA WHERE ID='+INTTOSTR(VL_ID);
+    VL_Loja.Open;
+    if VL_Loja.RecordCount=0 then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','46');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0042','');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end
+   else
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','46');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Loja.Free;
+    VL_Tabela.Free;
+ end;
+end;
+function TDComunicador.comando0043(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_TPdv : TZQuery;
+ VL_Tag : AnsiString;
+ VL_Dados : AnsiString;
+ VL_TipoPesquisa : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_TPdv := TZQuery.Create(DComunicador);
+ VL_TPdv.Connection := DNucleo.ZConexao;
+ VL_Tag:='';
+ VL_Dados:='0';
+ VL_TipoPesquisa:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('0040',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VL_TipoPesquisa:=VL_Tag;
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+
+   VL_Dados:= VL_Tag;
+
+   //pesquisa por ID
+   if VL_TipoPesquisa='ID' then
+   begin
+    VL_TPdv.Close;
+    VL_TPdv.SQL.Text:='SELECT * FROM PDV WHERE ((ID='+VL_Dados+') or ('+VL_Dados+' is not null) and (('+VL_Dados+' is null) or ('+VL_Dados+'=0)))';
+    VL_TPdv.Open;
+
+    VL_Tag:=F.ZQueryToStrRxMemData(VL_TPdv);
+
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('003E','');
+    VL_Mensagem.AddTag('0038',VL_Tag);
+    EnviarCliente(VL_Mensagem,VP_AContext);
+   end;
+
+ finally
+    VL_Mensagem.Free;
+    VL_TPdv.Free;
+ end;
+
+end;
+function TDComunicador.comando0044(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem :TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TPdv : TZQuery;
+ VL_Permissao : string;
+ VL_Tag : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_TPdv := TZQuery.Create(DComunicador);
+ VL_TPdv.Connection := DNucleo.ZConexao;
+ VL_Permissao:='U';
+ VL_Tag:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica permissao
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao='U' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   f.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.open;
+   VL_Tabela.First;
+   while not VL_Tabela.EOF do
+   begin
+    if VL_Tabela.FieldByName('ID').AsInteger=0 then
+    begin
+     //verifica se o pdv ja foi cadastrado
+     VL_TPdv.Close;
+     VL_TPdv.SQL.Text:='SELECT FIRST 1 ID FROM PDV WHERE CHAVE='''+VL_Tabela.FieldByName('CHAVE').AsString+'''';
+     VL_TPdv.Open;
+     if VL_TPdv.RecordCount>0then
+     begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','43');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+     end;
+     VL_TPdv.Close;
+     VL_TPdv.SQL.Text:='INSERT INTO PDV(LOJA_ID,DESCRICAO,IP,CHAVE)VALUES('''+
+                                VL_Tabela.FieldByName('LOJA_ID').AsString+''','''+
+                                VL_Tabela.FieldByName('DESCRICAO').AsString+''','''+
+                                VL_Tabela.FieldByName('IP').AsString+''','''+
+                                VL_Tabela.FieldByName('CHAVE').AsString+''')';
+     VL_TPdv.ExecSQL;
+     VL_TPdv.Close;
+     VL_TPdv.SQL.Text:='SELECT * FROM PDV WHERE CHAVE='''+VL_Tabela.FieldByName('CHAVE').AsString+'''';
+     VL_TPdv.Open;
+     if VL_TPdv.RecordCount=0 then
+     begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','44');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+     end
+     else
+     begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('003B','');
+     VL_Mensagem.AddTag('0036',VL_TPdv.FieldByName('ID').AsString);
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     exit;
+     end;
+    end;
+    VL_Tabela.Next;
+   end;
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TPdv.Free;
+ end;
+
+end;
+function TDComunicador.comando0045(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_TPdv : TZQuery;
+ VL_Tag : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_TPdv := TZQuery.Create(DComunicador);
+ VL_TPdv.Connection := DNucleo.ZConexao;
+ VL_Tag:='';
+ try
+    if TTConexao(VP_AContext.Data).Status <> csLogado then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','35');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VP_Mensagem.GetTag('0041',VL_Tag);
+    if Length(VL_Tag)=0 then
+    begin
+     result:=47;
+     Exit;
+    end;
+    VL_TPdv.Close;
+    VL_TPdv.SQL.Text:='SELECT FIRST 1 ID FROM PDV WHERE CHAVE='''+VL_Tag+'''';
+    VL_TPdv.Open;
+    if VL_TPdv.RecordCount>0then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','43');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0046','ok');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+ finally
+    VL_Mensagem.Free;
+ end;
+
+end;
+function TDComunicador.comando004B(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem :TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TPdv : TZQuery;
+ VL_Permissao : string;
+ VL_Tag : AnsiString;
+ VL_ID : Int64;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_TPdv := TZQuery.Create(DComunicador);
+ VL_TPdv.Connection := DNucleo.ZConexao;
+ VL_Permissao:='U';
+ VL_Tag:='';
+ VL_ID:=0;
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica parametros
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_ID:=StrToInt(VL_Tag);
+   if VL_ID=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','47');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica permissao
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao='U' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   F.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.Open;
+   //verifica se existe o id pra amodificação
+   VL_TPdv.close;
+   VL_TPdv.SQL.Text:='SELECT * FROM PDV WHERE ID='+INTTOSTR(VL_ID);
+   VL_TPdv.Open;
+
+   if VL_TPdv.RecordCount=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','48');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   if VL_Tabela.Locate('ID',VL_ID,[]) then
+   BEGIN
+    if ((VL_Tabela.FieldByName('ID').AsInteger<>VL_TPdv.FieldByName('ID').AsInteger)OR
+       ((VL_Tabela.FieldByName('CHAVE').AsString<>VL_TPdv.FieldByName('CHAVE').AsString) AND
+       (VL_TPdv.FieldByName('CHAVE').AsString<>'')))then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','49');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+
+    VL_TPdv.Close;
+    VL_TPdv.SQL.Text:='UPDATE PDV SET '+
+                              'LOJA_ID='''+VL_Tabela.FieldByName('LOJA_ID').AsString+''','+
+                              'DESCRICAO='''+VL_Tabela.FieldByName('DESCRICAO').AsString+''','+
+                              'IP='''+VL_Tabela.FieldByName('IP').AsString+''','+
+                              'CHAVE='''+VL_Tabela.FieldByName('CHAVE').AsString+''' WHERE '+
+                              'ID='+IntToStr(VL_ID);
+    VL_TPdv.ExecSQL;
+    VL_TPdv.Close;
+    VL_TPdv.SQL.Text:='SELECT * FROM PDV WHERE ID='+INTTOSTR(VL_ID);
+    VL_TPdv.Open;
+    if VL_TPdv.RecordCount=0 then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','46');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0042','');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end
+   else
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','46');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TPdv.Free;
+ end;
+
+end;
+function TDComunicador.comando0053(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem :TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TPinPad : TZQuery;
+ VL_Permissao : string;
+ VL_Tag : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_TPinPad := TZQuery.Create(DComunicador);
+ VL_TPinPad.Connection := DNucleo.ZConexao;
+ VL_Permissao:='U';
+ VL_Tag:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica permissao
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao='U' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   f.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.open;
+   VL_Tabela.First;
+   while not VL_Tabela.EOF do
+   begin
+    if VL_Tabela.FieldByName('ID').AsInteger=0 then
+    begin
+     VL_TPinPad.Close;
+     VL_TPinPad.SQL.Text:='INSERT INTO PINPAD(FABRICANTE_MODELO)VALUES('''+
+                                VL_Tabela.FieldByName('FABRICANTE_MODELO').AsString+''')';
+     VL_TPinPad.ExecSQL;
+     VL_TPinPad.Close;
+     VL_TPinPad.SQL.Text:='SELECT * FROM PINPAD WHERE FABRICANTE_MODELO='''+VL_Tabela.FieldByName('FABRICANTE_MODELO').AsString+'''';
+     VL_TPinPad.Open;
+     if VL_TPinPad.RecordCount=0 then
+     begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','44');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+     end
+     else
+     begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('003B','');
+     VL_Mensagem.AddTag('0036',VL_TPinPad.FieldByName('ID').AsString);
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     exit;
+     end;
+    end;
+    VL_Tabela.Next;
+   end;
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TPinPad.Free;
+ end;
+
+end;
+function TDComunicador.comando0054(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_TPinPad : TZQuery;
+ VL_Tag : AnsiString;
+ VL_Dados : AnsiString;
+ VL_TipoPesquisa : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_TPinPad := TZQuery.Create(DComunicador);
+ VL_TPinPad.Connection := DNucleo.ZConexao;
+ VL_Tag:='';
+ VL_Dados:='0';
+ VL_TipoPesquisa:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('0040',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VL_TipoPesquisa:=VL_Tag;
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+
+   VL_Dados:= VL_Tag;
+
+   //pesquisa por ID
+   if VL_TipoPesquisa='ID' then
+   begin
+    VL_TPinPad.Close;
+    VL_TPinPad.SQL.Text:='SELECT * FROM PINPAD WHERE ((ID='+VL_Dados+') or ('+VL_Dados+' is not null) and (('+VL_Dados+' is null) or ('+VL_Dados+'=0)))';
+    VL_TPinPad.Open;
+
+    VL_Tag:=F.ZQueryToStrRxMemData(VL_TPinPad);
+
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('003E','');
+    VL_Mensagem.AddTag('0038',VL_Tag);
+    EnviarCliente(VL_Mensagem,VP_AContext);
+   end;
+
+ finally
+    VL_Mensagem.Free;
+    VL_TPinPad.Free;
+ end;
+end;
+function TDComunicador.comando0055(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem :TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TPinPad : TZQuery;
+ VL_Permissao : string;
+ VL_Tag : AnsiString;
+ VL_ID : Int64;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_TPinPad := TZQuery.Create(DComunicador);
+ VL_TPinPad.Connection := DNucleo.ZConexao;
+ VL_Permissao:='U';
+ VL_Tag:='';
+ VL_ID:=0;
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica parametros
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_ID:=StrToInt(VL_Tag);
+   if VL_ID=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','47');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica permissao
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao='U' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   F.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.Open;
+   //verifica se existe o id pra amodificação
+   VL_TPinPad.close;
+   VL_TPinPad.SQL.Text:='SELECT * FROM PINPAD WHERE ID='+INTTOSTR(VL_ID);
+   VL_TPinPad.Open;
+
+   if VL_TPinPad.RecordCount=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','48');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   if VL_Tabela.Locate('ID',VL_ID,[]) then
+   BEGIN
+    if (VL_Tabela.FieldByName('ID').AsInteger<>VL_TPinPad.FieldByName('ID').AsInteger)then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','49');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+
+    VL_TPinPad.Close;
+    VL_TPinPad.SQL.Text:='UPDATE PINPAD SET '+
+                              'FABRICANTE_MODELO='''+VL_Tabela.FieldByName('FABRICANTE_MODELO').AsString+''''+
+                              ' WHERE '+
+                              'ID='+IntToStr(VL_ID);
+    VL_TPinPad.ExecSQL;
+    VL_TPinPad.Close;
+    VL_TPinPad.SQL.Text:='SELECT * FROM PINPAD WHERE ID='+INTTOSTR(VL_ID);
+    VL_TPinPad.Open;
+    if VL_TPinPad.RecordCount=0 then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','46');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0042','');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end
+   else
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','46');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TPinPad.Free;
+ end;
+
+end;
+function TDComunicador.comando0056(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_TConfigurador : TZQuery;
+ VL_Tag : AnsiString;
+ VL_Dados : AnsiString;
+ VL_TipoPesquisa : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_TConfigurador := TZQuery.Create(DComunicador);
+ VL_TConfigurador.Connection := DNucleo.ZConexao;
+ VL_Tag:='';
+ VL_Dados:='0';
+ VL_TipoPesquisa:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('0040',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VL_TipoPesquisa:=VL_Tag;
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','28');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+
+   VL_Dados:= VL_Tag;
+
+   //pesquisa por ID
+   if VL_TipoPesquisa='ID' then
+   begin
+    VL_TConfigurador.Close;
+    VL_TConfigurador.SQL.Text:='SELECT * FROM CONFIGURADOR WHERE ((ID='+VL_Dados+') or ('+VL_Dados+' is not null) and (('+VL_Dados+' is null) or ('+VL_Dados+'=0)))';
+    VL_TConfigurador.Open;
+
+    VL_Tag:=F.ZQueryToStrRxMemData(VL_TConfigurador);
+
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('003E','');
+    VL_Mensagem.AddTag('0038',VL_Tag);
+    EnviarCliente(VL_Mensagem,VP_AContext);
+   end;
+
+ finally
+    VL_Mensagem.Free;
+    VL_TConfigurador.Free;
+ end;
+
+end;
+function TDComunicador.comando0057(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem :TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TConfigurador : TZQuery;
+ VL_Permissao : string;
+ VL_Tag : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_TConfigurador := TZQuery.Create(DComunicador);
+ VL_TConfigurador.Connection := DNucleo.ZConexao;
+ VL_Permissao:='U';
+ VL_Tag:='';
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica permissao
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao<>'C' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   f.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.open;
+   VL_Tabela.First;
+   while not VL_Tabela.EOF do
+   begin
+    if VL_Tabela.FieldByName('ID').AsInteger=0 then
+    begin
+     //verifica se o configurador ja foi cadastrado
+     VL_TConfigurador.Close;
+     VL_TConfigurador.SQL.Text:='SELECT FIRST 1 ID FROM CONFIGURADOR WHERE CHAVE='''+VL_Tabela.FieldByName('CHAVE').AsString+'''';
+     VL_TConfigurador.Open;
+     if VL_TConfigurador.RecordCount>0then
+     begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','43');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+     end;
+     VL_TConfigurador.Close;
+     VL_TConfigurador.SQL.Text:='INSERT INTO CONFIGURADOR(DESCRICAO,IP,CHAVE,SENHA_CONFIGURADOR,'+
+                                'SENHA_ADMINISTRADOR,SENHA_USUARIO)VALUES('''+
+                                VL_Tabela.FieldByName('DESCRICAO').AsString+''','''+
+                                VL_Tabela.FieldByName('IP').AsString+''','''+
+                                VL_Tabela.FieldByName('CHAVE').AsString+''','''+
+                                VL_Tabela.FieldByName('SENHA_CONFIGURADOR').AsString+''','''+
+                                VL_Tabela.FieldByName('SENHA_ADMINISTRADOR').AsString+''','''+
+                                VL_Tabela.FieldByName('SENHA_USUARIO').AsString+''')';
+
+     VL_TConfigurador.ExecSQL;
+     VL_TConfigurador.Close;
+     VL_TConfigurador.SQL.Text:='SELECT * FROM CONFIGURADOR WHERE CHAVE='''+VL_Tabela.FieldByName('CHAVE').AsString+'''';
+     VL_TConfigurador.Open;
+     if VL_TConfigurador.RecordCount=0 then
+     begin
+      VL_Mensagem.Limpar;
+      VL_Mensagem.AddComando('0026','44');
+      EnviarCliente(VL_Mensagem,VP_AContext);
+      Exit;
+     end
+     else
+     begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('003B','');
+     VL_Mensagem.AddTag('0036',VL_TConfigurador.FieldByName('ID').AsString);
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     exit;
+     end;
+    end;
+    VL_Tabela.Next;
+   end;
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TConfigurador.Free;
+ end;
+
+
+end;
+function TDComunicador.comando0058(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem :TMensagem;
+ VL_Tabela : TRxMemoryData;
+ VL_TConfigurador : TZQuery;
+ VL_Permissao : string;
+ VL_Tag : AnsiString;
+ VL_ID : Int64;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_Tabela := TRxMemoryData.Create(nil);
+ VL_TConfigurador := TZQuery.Create(DComunicador);
+ VL_TConfigurador.Connection := DNucleo.ZConexao;
+ VL_Permissao:='U';
+ VL_Tag:='';
+ VL_ID:=0;
+ try
+   if TTConexao(VP_AContext.Data).Status<>csLogado then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','35');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica parametros
+   VP_Mensagem.GetTag('003D',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_ID:=StrToInt(VL_Tag);
+   if VL_ID=0 then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','47');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   //verifica permissao
+   VP_Mensagem.GetTag('0037',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   VL_Permissao:=VL_Tag;
+   If VL_Permissao<>'C' then
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','45');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+   VP_Mensagem.GetTag('003A',VL_Tag);
+   if Length(VL_Tag)=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','28');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   F.StrToRxMemData(VL_Tag,VL_Tabela);
+   VL_Tabela.Open;
+   //verifica se existe o id pra modificação
+   VL_TConfigurador.close;
+   VL_TConfigurador.SQL.Text:='SELECT * FROM CONFIGURADOR WHERE ID='+INTTOSTR(VL_ID);
+   VL_TConfigurador.Open;
+
+   if VL_TConfigurador.RecordCount=0 then
+   begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','48');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+   end;
+   if VL_Tabela.Locate('ID',VL_ID,[]) then
+   BEGIN
+    if ((VL_Tabela.FieldByName('ID').AsInteger<>VL_TConfigurador.FieldByName('ID').AsInteger)OR
+       ((VL_Tabela.FieldByName('CHAVE').AsString<>VL_TConfigurador.FieldByName('CHAVE').AsString) AND
+       (VL_TConfigurador.FieldByName('CHAVE').AsString<>'')))then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','49');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+
+    VL_TConfigurador.Close;
+    VL_TConfigurador.SQL.Text:='UPDATE CONFIGURADOR SET '+
+                              'DESCRICAO='''+VL_Tabela.FieldByName('DESCRICAO').AsString+''','+
+                              'IP='''+VL_Tabela.FieldByName('IP').AsString+''','+
+                              'CHAVE='''+VL_Tabela.FieldByName('CHAVE').AsString+''','+
+                              'SENHA_CONFIGURADOR='''+VL_Tabela.FieldByName('SENHA_CONFIGURADOR').AsString+''','+
+                              'SENHA_ADMINISTRADOR='''+VL_Tabela.FieldByName('SENHA_ADMINISTRADOR').AsString+''','+
+                              'SENHA_USUARIO='''+VL_Tabela.FieldByName('SENHA_USUARIO').AsString+''' WHERE '+
+                              'ID='+IntToStr(VL_ID);
+    VL_TConfigurador.ExecSQL;
+    VL_TConfigurador.Close;
+    VL_TConfigurador.SQL.Text:='SELECT * FROM CONFIGURADOR WHERE ID='+INTTOSTR(VL_ID);
+    VL_TConfigurador.Open;
+    if VL_TConfigurador.RecordCount=0 then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','46');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0042','');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end
+   else
+   begin
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0026','46');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+    Exit;
+   end;
+
+ finally
+    DNucleo.ZConexao.Commit;
+    VL_Mensagem.Free;
+    VL_Tabela.Free;
+    VL_TConfigurador.Free;
+ end;
+
+
+end;
+function TDComunicador.comando0059(VP_Mensagem: TMensagem;VP_AContext: TIdContext): Integer;
+var
+ VL_Mensagem : TMensagem;
+ VL_TConfigurador : TZQuery;
+ VL_Tag : AnsiString;
+begin
+ Result:=0;
+ VL_Mensagem := TMensagem.Create;
+ VL_TConfigurador := TZQuery.Create(DComunicador);
+ VL_TConfigurador.Connection := DNucleo.ZConexao;
+ VL_Tag:='';
+ try
+    if TTConexao(VP_AContext.Data).Status <> csLogado then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','35');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VP_Mensagem.GetTag('0041',VL_Tag);
+    if Length(VL_Tag)=0 then
+    begin
+     result:=47;
+     Exit;
+    end;
+    VL_TConfigurador.Close;
+    VL_TConfigurador.SQL.Text:='SELECT FIRST 1 ID FROM CONFIGURADOR WHERE CHAVE='''+VL_Tag+'''';
+    VL_TConfigurador.Open;
+    if VL_TConfigurador.RecordCount>0then
+    begin
+     VL_Mensagem.Limpar;
+     VL_Mensagem.AddComando('0026','43');
+     EnviarCliente(VL_Mensagem,VP_AContext);
+     Exit;
+    end;
+    VL_Mensagem.Limpar;
+    VL_Mensagem.AddComando('0046','ok');
+    EnviarCliente(VL_Mensagem,VP_AContext);
+ finally
+    VL_Mensagem.Free;
+ end;
+
+
+end;
+
+{$ENDIF CLIENTE}
 
 end.
 

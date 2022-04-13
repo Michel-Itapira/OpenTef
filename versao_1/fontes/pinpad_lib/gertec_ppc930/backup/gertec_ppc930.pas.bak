@@ -1,0 +1,180 @@
+unit gertec_ppc930;
+
+{$mode ObjFPC}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils,pinpad,funcoes;
+
+  type
+
+  { TGertec_ppc930 }
+  TGpinpad_exception_handler          = procedure(errCode: Int16; msg: PAnsiChar); stdcall;
+  TPcl_exception_set_uncaught_handler = procedure(handler: TGpinpad_exception_handler); stdcall;
+  Tabecs_comm_open                    = function(portName: AnsiString): Pointer; stdcall;
+  Tabecs_comm_close                   = procedure(pinpad: PPointer); stdcall;
+
+  Tabecs_cmd_opn                      = function(pinpad: Pointer; secure: integer): integer; stdcall;
+  Tabecs_cmd_dsp                      = function(pinpad: Pointer; msg: AnsiString): integer; stdcall;
+  Tabecs_cmd_clo                      = function(pinpad: Pointer; msg: AnsiString): integer; stdcall;
+
+
+  TGertec_ppc930 = Class(TPinPad)
+  private
+   fPinPadLib      : THandle;
+   fPinPad         : Pointer;
+   fModelo : TPinPadModelo;
+   fPorta : AnsiString;
+   fCaminhoLib:AnsiString;
+   public
+    function CarregaLib():Integer; override;
+    procedure SetConfig(VP_PinPad:TPinPadModelo;VP_CaminhoLib:AnsiString;VP_Porta:AnsiString); override;
+    function PinPadConectar():Integer; override;
+    function PinPadDesconectar():Integer; override;
+    function EnviaComando(VP_Mensagem :TMensagem;var VO_Mensagem:TMensagem):Integer;override;
+    function PinPadMensagem(VP_Mensagem:String):Integer;override;
+    function PinPadLerTarja(VP_Tarja1,VP_Tarja2,VP_Tarja3:String):Integer;override;
+
+  end;
+
+procedure gpinpad_exception_handler(errCode: Int16; msg: PAnsiChar); stdcall;
+
+
+implementation
+
+var
+ abecs_comm_open                   : Tabecs_comm_open;
+ abecs_comm_close                  : Tabecs_comm_close;
+
+ abecs_cmd_opn                     : Tabecs_cmd_opn;
+ abecs_cmd_dsp                     : Tabecs_cmd_dsp;
+ abecs_cmd_clo                     : Tabecs_cmd_clo;
+
+
+ pcl_exception_set_uncaught_handler: TPcl_exception_set_uncaught_handler;
+ cbAux                             : Tgpinpad_exception_handler;
+ VF_PinpadExecption:Boolean;
+
+
+procedure gpinpad_exception_handler(errCode: Int16; msg: PAnsiChar); stdcall;
+begin
+  VF_PinpadExecption:=true;
+  F_PinPad.PinPadErro(errCode,msg);
+end;
+
+
+{ TGertec_ppc930 }
+
+function TGertec_ppc930.CarregaLib(): Integer;
+begin
+  VF_PinpadExecption:=false;
+  fPinPadLib := LoadLibrary(fCaminhoLib+'gpinpad3.dll');
+  if fPinPadLib <= 0 then
+  begin
+    Result:=50;
+    Exit;
+  end;
+
+  Pointer(pcl_exception_set_uncaught_handler) := GetProcAddress(fPinPadLib, 'pcl_exception_set_uncaught_handler');
+
+  cbAux := Tgpinpad_exception_handler(@gpinpad_exception_handler);
+  pcl_exception_set_uncaught_handler(cbAux);
+
+  Pointer(abecs_comm_open)                    := GetProcAddress(fPinPadLib, 'abecs_comm_open');
+  Pointer(abecs_comm_close)                   := GetProcAddress(fPinPadLib, 'abecs_comm_close');
+  Pointer(abecs_cmd_opn)                      := GetProcAddress(fPinPadLib, 'abecs_cmd_opn');
+  Pointer(abecs_cmd_dsp)                      := GetProcAddress(fPinPadLib, 'abecs_cmd_dsp');
+  Pointer(abecs_cmd_clo)                      := GetProcAddress(fPinPadLib, 'abecs_cmd_clo');
+
+
+  //  //  // Gertec - Manipulação de mapas e leitura de resposta de CEX
+//  //  abecs_rsp_param_map_new   := GetProcAddress(LibHandle, 'abecs_rsp_param_map_new');
+//  //  abecs_rsp_param_map_begin := GetProcAddress(LibHandle, 'abecs_rsp_param_map_begin');
+//  //  abecs_rsp_param_map_get   := GetProcAddress(LibHandle, 'abecs_rsp_param_map_get');
+//  //  abecs_rsp_param_map_next  := GetProcAddress(LibHandle, 'abecs_rsp_param_map_next');
+//  //
+//  //  abecs_cmd_gcx_builder_new     := GetProcAddress(LibHandle, 'abecs_cmd_gcx_builder_new');
+//  //  abecs_cmd_gcx_builder_delete  := GetProcAddress(LibHandle, 'abecs_cmd_gcx_builder_delete');
+//  //  abecs_cmd_gcx_builder_gcxopt  := GetProcAddress(LibHandle, 'abecs_cmd_gcx_builder_gcxopt');
+//  //  abecs_cmd_gcx_builder_aidlist := GetProcAddress(LibHandle, 'abecs_cmd_gcx_builder_aidlist');
+//  //  abecs_cmd_gcx_builder_amount  := GetProcAddress(LibHandle, 'abecs_cmd_gcx_builder_amount');
+//  //  abecs_cmd_gcx_builder_taglist := GetProcAddress(LibHandle, 'abecs_cmd_gcx_builder_taglist');
+//  //  pcl_map_delete                := GetProcAddress(LibHandle, 'pcl_map_delete');
+//  //  abecs_cmd_cex_response        := GetProcAddress(LibHandle, 'abecs_cmd_cex_response');
+//  //  abecs_cmd_gcx_response        := GetProcAddress(LibHandle, 'abecs_cmd_gcx_response');
+//  //  abecs_cmd_gox_response        := GetProcAddress(LibHandle, 'abecs_cmd_gox_response');
+//  //  abecs_cmd_fcx_response        := GetProcAddress(LibHandle, 'abecs_cmd_fcx_response');
+//  //  abecs_cmd_gpn_response        := GetProcAddress(LibHandle, 'abecs_cmd_gpn_response');
+//  //  // michel
+//  //  abecs_cmd_cex                      := GetProcAddress(LibHandle, 'abecs_cmd_cex');
+//  //  abecs_cmd_gcx                      := GetProcAddress(LibHandle, 'abecs_cmd_gcx');
+//  //  abecs_cmd_gox                      := GetProcAddress(LibHandle, 'abecs_cmd_gox');
+//  //  abecs_cmd_fcx                      := GetProcAddress(LibHandle, 'abecs_cmd_fcx');
+//  //  abecs_cmd_gpn                      := GetProcAddress(LibHandle, 'abecs_cmd_gpn');
+//  //  abecs_cmd_cex_response_get_trk2inc := GetProcAddress(LibHandle, 'abecs_cmd_cex_response_get_trk2inc');
+//  //  abecs_cmd_cex_response_get_event   := GetProcAddress(LibHandle, 'abecs_cmd_cex_response_get_event');
+//  //  abecs_cmd_tli                      := GetProcAddress(LibHandle, 'abecs_cmd_tli');
+//  //  abecs_cmd_tlr                      := GetProcAddress(LibHandle, 'abecs_cmd_tlr');
+//  //  abecs_cmd_tle                      := GetProcAddress(LibHandle, 'abecs_cmd_tle');
+//  //
+//  //  abecs_cmd_gox_builder_new    := GetProcAddress(LibHandle, 'abecs_cmd_gox_builder_new');
+//  //  abecs_cmd_gox_builder_delete := GetProcAddress(LibHandle, 'abecs_cmd_gox_builder_delete');
+//  //
+//  //  abecs_cmd_fcx_builder_new    := GetProcAddress(LibHandle, 'abecs_cmd_fcx_builder_new');
+//  //  abecs_cmd_fcx_builder_delete := GetProcAddress(LibHandle, 'abecs_cmd_fcx_builder_delete');
+//  //  abecs_cmd_fcx_builder_arc    := GetProcAddress(LibHandle, 'abecs_cmd_fcx_builder_arc');
+//  //
+//
+
+  Result:=0;
+end;
+
+procedure TGertec_ppc930.SetConfig(VP_PinPad:TPinPadModelo;VP_CaminhoLib:AnsiString;VP_Porta:AnsiString);
+begin
+  fPorta:=VP_Porta;
+  fCaminhoLib:=VP_CaminhoLib;
+  fModelo:=VP_PinPad;
+end;
+
+function TGertec_ppc930.PinPadConectar(): Integer;
+var
+ VL_PinPad:Pointer;
+begin
+  VF_PinpadExecption:=false;
+  VL_PinPad:=abecs_comm_open(fPorta);
+  if VF_PinpadExecption then
+  abecs_comm_close(@fPinPad)
+  else
+  fPinPad:=VL_PinPad;
+  result:=0;
+end;
+
+function TGertec_ppc930.PinPadDesconectar: Integer;
+begin
+ abecs_comm_close(@fPinPad);
+ result:=0;
+end;
+
+function TGertec_ppc930.EnviaComando(VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem): Integer;
+var
+ VL_Mensagem:TMensagem;
+begin
+ VL_Mensagem:=TMensagem.Create;
+ result:=0;
+end;
+
+function TGertec_ppc930.PinPadMensagem(VP_Mensagem: String): Integer;
+begin
+  abecs_cmd_dsp(fPinPad,VP_Mensagem);
+  result:=0;
+end;
+
+function TGertec_ppc930.PinPadLerTarja(VP_Tarja1, VP_Tarja2, VP_Tarja3:String): Integer;
+begin
+  result:=0;
+end;
+
+
+end.
+

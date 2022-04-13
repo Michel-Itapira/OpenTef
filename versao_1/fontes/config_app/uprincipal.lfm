@@ -1,173 +1,979 @@
 object fprincipal: Tfprincipal
-  Left = 525
-  Height = 416
-  Top = 184
-  Width = 663
-  Caption = 'Configurador OpenTef'
-  ClientHeight = 416
-  ClientWidth = 663
-  LCLVersion = '2.2.0.2'
-  object Panel1: TPanel
+  Left = 544
+  Height = 563
+  Top = 162
+  Width = 701
+  Caption = 'Administrador OpenTef'
+  ClientHeight = 563
+  ClientWidth = 701
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '2.2.0.4'
+  object PTopo: TPanel
     Left = 0
     Height = 80
     Top = 0
-    Width = 663
+    Width = 701
     Align = alTop
     ClientHeight = 80
-    ClientWidth = 663
+    ClientWidth = 701
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 0
-    object ToggleBox1: TToggleBox
-      Left = 396
-      Height = 25
-      Top = 24
-      Width = 75
-      Caption = 'ToggleBox1'
+    object BConectar: TToggleBox
+      Left = 384
+      Height = 47
+      Top = 9
+      Width = 90
+      Caption = 'Conectar'
+      OnChange = BConectarChange
+      OnClick = BConectarClick
+      TabOrder = 2
+    end
+    object LSenha: TLabel
+      Left = 192
+      Height = 15
+      Top = 9
+      Width = 37
+      Caption = 'Senha:'
+    end
+    object ESenha: TEdit
+      Left = 192
+      Height = 23
+      Top = 25
+      Width = 158
+      EchoMode = emPassword
+      PasswordChar = '*'
+      TabOrder = 1
+      Text = 'ESenha'
+    end
+    object PStatus: TPanel
+      Left = 520
+      Height = 58
+      Top = 9
+      Width = 170
+      BevelInner = bvLowered
+      ClientHeight = 58
+      ClientWidth = 170
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 3
+      object LStatus: TLabel
+        Left = 2
+        Height = 15
+        Top = 5
+        Width = 166
+        Align = alTop
+        Alignment = taCenter
+        BorderSpacing.Top = 3
+        Caption = 'Status de Conexão'
+      end
+      object EStatus: TLabel
+        Left = 2
+        Height = 26
+        Top = 30
+        Width = 166
+        Align = alClient
+        Alignment = taCenter
+        BorderSpacing.Top = 10
+        Caption = 'Desconectado'
+        Font.Color = clRed
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+    end
+    object LTipo: TLabel
+      Left = 16
+      Height = 15
+      Top = 9
+      Width = 120
+      Caption = 'Tipo do Configurador:'
+    end
+    object CTipo: TComboBox
+      Left = 16
+      Height = 23
+      Top = 25
+      Width = 168
+      ItemHeight = 15
+      Items.Strings = (
+        'CONFIGURADOR'
+        'ADMINISTRADOR'
+        'USUARIO'
+      )
+      ReadOnly = True
       TabOrder = 0
     end
   end
-  object Panel2: TPanel
+  object PPrincipal: TPanel
     Left = 0
-    Height = 336
+    Height = 483
     Top = 80
-    Width = 663
+    Width = 701
     Align = alClient
-    ClientHeight = 336
-    ClientWidth = 663
+    ClientHeight = 483
+    ClientWidth = 701
     TabOrder = 1
-    object PageControl1: TPageControl
+    object PagePrincipal: TPageControl
       Left = 1
-      Height = 334
+      Height = 481
       Top = 1
-      Width = 661
-      ActivePage = TabSheet1
+      Width = 699
+      ActivePage = TabCadastro
       Align = alClient
       TabIndex = 0
       TabOrder = 0
+      object TabCadastro: TTabSheet
+        Caption = 'Cadastros'
+        ClientHeight = 453
+        ClientWidth = 691
+        object PageCadastro: TPageControl
+          Left = 0
+          Height = 443
+          Top = 10
+          Width = 691
+          ActivePage = TabLoja
+          Align = alClient
+          BorderSpacing.Top = 10
+          TabIndex = 0
+          TabOrder = 0
+          object TabLoja: TTabSheet
+            Caption = 'Lojas'
+            ClientHeight = 415
+            ClientWidth = 683
+            object TabLojaLFiltro: TLabel
+              Left = 8
+              Height = 15
+              Top = 11
+              Width = 88
+              Caption = 'Filtrar por Razão:'
+            end
+            object TabLojaEFiltro: TEdit
+              Left = 8
+              Height = 23
+              Top = 30
+              Width = 312
+              CharCase = ecUppercase
+              OnChange = TabLojaEFiltroChange
+              TabOrder = 0
+              Text = 'TABLOJAEFILTRO'
+            end
+            object TabLojaGrid: TDBGrid
+              Left = 8
+              Height = 230
+              Top = 64
+              Width = 312
+              AutoFillColumns = True
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'Cnpj'
+                  Width = 139
+                  FieldName = 'CNPJ'
+                end              
+                item
+                  Title.Caption = 'Razao'
+                  Width = 140
+                  FieldName = 'RAZAO'
+                end>
+              DataSource = DSLoja
+              ReadOnly = True
+              TabOrder = 2
+              OnCellClick = TabLojaGridCellClick
+            end
+            object TabLojaPPrincipal: TPanel
+              Left = 330
+              Height = 264
+              Top = 30
+              Width = 312
+              BevelInner = bvLowered
+              ClientHeight = 264
+              ClientWidth = 312
+              TabOrder = 1
+              object TabLojaLID: TLabel
+                Left = 16
+                Height = 15
+                Top = 24
+                Width = 14
+                Caption = 'ID:'
+              end
+              object TabLojaEID: TEdit
+                Left = 16
+                Height = 23
+                Top = 40
+                Width = 80
+                ReadOnly = True
+                TabOrder = 0
+                Text = 'TabLojaEID'
+              end
+              object TabLojaERazao: TEdit
+                Left = 16
+                Height = 23
+                Top = 80
+                Width = 288
+                TabOrder = 2
+                Text = 'TabLojaERazao'
+              end
+              object TabLojaLRazao: TLabel
+                Left = 16
+                Height = 15
+                Top = 64
+                Width = 34
+                Caption = 'Razão:'
+              end
+              object TabLojaEFantasia: TEdit
+                Left = 16
+                Height = 23
+                Top = 128
+                Width = 288
+                TabOrder = 3
+                Text = 'TabLojaEFantasia'
+              end
+              object TabLojaLFantasia: TLabel
+                Left = 16
+                Height = 15
+                Top = 112
+                Width = 46
+                Caption = 'Fantasia:'
+              end
+              object TabLojaLCnpj: TLabel
+                Left = 128
+                Height = 15
+                Top = 24
+                Width = 40
+                Caption = 'C.N.P.J:'
+              end
+              object TabLojaBAdicionar: TToggleBox
+                Left = 16
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Adicionar'
+                OnClick = TabLojaBAdicionarClick
+                TabOrder = 4
+              end
+              object TabLojaBExcluir: TToggleBox
+                Left = 214
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Excluir'
+                TabOrder = 6
+              end
+              object TabLojaBModificar: TToggleBox
+                Left = 116
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Modificar'
+                OnClick = TabLojaBModificarClick
+                TabOrder = 5
+              end
+              object TabLojaECnpj: TMaskEdit
+                Left = 128
+                Height = 23
+                Top = 40
+                Width = 176
+                MaxLength = 18
+                TabOrder = 1
+                EditMask = '99.999.999/9999-99;0;_'
+                SpaceChar = '_'
+              end
+            end
+          end
+          object TabPDV: TTabSheet
+            Caption = 'PDVs'
+            ClientHeight = 415
+            ClientWidth = 683
+            object TabPdvLFiltro: TLabel
+              Left = 8
+              Height = 15
+              Top = 11
+              Width = 108
+              Caption = 'Filtrar por Descrição:'
+            end
+            object TabPdvEFiltro: TEdit
+              Left = 8
+              Height = 23
+              Top = 30
+              Width = 312
+              OnChange = TabPdvEFiltroChange
+              TabOrder = 0
+              Text = 'TabPdvEFiltro'
+            end
+            object TabPdvPPrincipal: TPanel
+              Left = 330
+              Height = 264
+              Top = 30
+              Width = 312
+              BevelInner = bvLowered
+              ClientHeight = 264
+              ClientWidth = 312
+              TabOrder = 1
+              object TabPdvLID: TLabel
+                Left = 16
+                Height = 15
+                Top = 53
+                Width = 14
+                Caption = 'ID:'
+              end
+              object TabPdvEID: TEdit
+                Left = 16
+                Height = 23
+                Top = 69
+                Width = 80
+                TabOrder = 0
+                Text = 'Edit1'
+              end
+              object TabPdvEDescricao: TEdit
+                Left = 16
+                Height = 23
+                Top = 112
+                Width = 288
+                TabOrder = 2
+                Text = 'Edit2'
+              end
+              object TabPdvLDescricao: TLabel
+                Left = 16
+                Height = 15
+                Top = 96
+                Width = 54
+                Caption = 'Descrição:'
+              end
+              object TabPdvLChave: TLabel
+                Left = 16
+                Height = 15
+                Top = 140
+                Width = 36
+                Caption = 'Chave:'
+              end
+              object TabPdvLIP: TLabel
+                Left = 128
+                Height = 15
+                Top = 53
+                Width = 13
+                Caption = 'I.P'
+              end
+              object TabPdvEIP: TEdit
+                Left = 128
+                Height = 23
+                Top = 69
+                Width = 176
+                TabOrder = 1
+                Text = 'Edit4'
+              end
+              object TabPdvBAdicionar: TToggleBox
+                Left = 16
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Adicionar'
+                OnClick = TabPdvBAdicionarClick
+                TabOrder = 3
+              end
+              object TabPdvBExcluir: TToggleBox
+                Left = 214
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Excluir'
+                TabOrder = 5
+              end
+              object TabPdvBModificar: TToggleBox
+                Left = 116
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Modificar'
+                OnClick = TabPdvBModificarClick
+                TabOrder = 4
+              end
+              object TabPdvLLoja: TLabel
+                Left = 16
+                Height = 15
+                Top = 20
+                Width = 25
+                Caption = 'Loja:'
+              end
+              object TabPdvBGeraChave: TSpeedButton
+                Left = 264
+                Height = 42
+                Top = 155
+                Width = 40
+                Glyph.Data = {
+                  36040000424D3604000000000000360000002800000010000000100000000100
+                  200000000000000400006400000064000000000000000000000000000000A466
+                  365FAA552B06000000000000000080800002A4653449A86D3D96AC7143CBAC71
+                  43CBA96B3E91A665352B0000000000000000000000000000000000000000A467
+                  35FDA96D3DB8AA552B06A567344AA96E3EDFB47D51F1D6AC8DFEE6C3A9FFE7C3
+                  AAFFD1A584FBAA6E3FF3A6683A7300000000000000000000000000000000A566
+                  35FEBE875DF5A86A3ADFAD7344F3E7BDA1FFFFDFCBFFFFE1CEFFFFE3D2FFF1D1
+                  BCFFF2D3BEFFF4D5C1FFB07749F3A467375C000000000000000000000000A566
+                  35FEFDCBABFFDBA680FFFACCAEFFFFD4B8FFFFD6BBFFDFB08EFEAD7142F3A96E
+                  3EE8A96D3DE5AD7142F3CFA07CFFA86C3BF1A2682E160000000000000000A566
+                  35FEFFC49DFFFFC6A1FFFFC8A4FFFEC9A5FFC68C61F6A96C3BD9A56834360000
+                  000000000000A4653535A86C3CDCA76939FEA56738770000000000000000A566
+                  35FEFFBB8DFFFFBD90FFFFBF94FFDC9E72FFA76836F0A5692D11000000000000
+                  00000000000000000000A46D370EA96C3DC6A86B3ADC0000000000000000A566
+                  35FEFFB380FFFFB380FFFFB583FFFDB585FFBE7F4EF5AA6C3AB9AA552B060000
+                  0000000000000000000000000000926D2407A466365F0000000000000000A668
+                  36F0A46735FDA46735FDA46735FDA46735FDA46735FDA46735FDA36735610000
+                  0000000000000000000000000000000000000000000000000000000000000000
+                  00000000000000000000000000000000000000000000A3673561A46735FDA566
+                  35FEA56635FEA56635FEA56635FEA56635FEA66937F10000000000000000A466
+                  365F926D240700000000000000000000000000000000AA552B06A96B39B8BE7E
+                  4DF4FDB585FFFFB583FFFFB380FFFFB380FFA56635FE0000000000000000A86B
+                  3ADCA86B3CC59D623B0D00000000000000000000000000000000A5692D11A768
+                  36F0DC9E72FFFFBF94FFFFBD90FFFFBB8DFFA56635FE0000000000000000A667
+                  3779A76938FEA96C3CD9A56535300000000000000000A4653535A96C3BD9C68C
+                  61F6FEC9A5FFFFC8A4FFFFC6A1FFFFC49DFFA56635FE00000000000000009F6A
+                  3518A86C3CF1CE9E7BFEAB7040F4AB6E3FE3AA6D3DE7AC7142F3DFB08EFEFFD6
+                  BBFFFFD4B8FFFACCAEFFDBA680FFFDCBABFFA56635FE00000000000000000000
+                  0000A469365FB0794CF3F4D6C3FFF0D0BBFFF0D1BCFFFFE3D2FFFFE1CEFFFFDF
+                  CBFFE7BDA1FFAD7344F4A86A3ADFBE875DF5A56635FE00000000000000000000
+                  000000000000A76B3C77AB6F40F3D2A887FBE8C5ACFFEBC9B1FFD7AE90FEB47E
+                  53F1AA6E3FE0A567344AAA552B06A96D3DB8A46735FD00000000000000000000
+                  00000000000000000000A367362FA86C3D93AC7143CBAB7041CFA96D3D9AA366
+                  334B808000020000000000000000AA552B06A466365F00000000
+                }
+                OnClick = TabPdvBGeraChaveClick
+              end
+              object TabPdvEChave: TMemo
+                Left = 16
+                Height = 40
+                Top = 156
+                Width = 240
+                Font.Height = -13
+                Lines.Strings = (
+                  'TabPdvEChave'
+                )
+                ParentFont = False
+                TabOrder = 6
+              end
+            end
+            object TabPdvGrid: TDBGrid
+              Left = 8
+              Height = 230
+              Top = 64
+              Width = 312
+              AutoFillColumns = True
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'Loja_ID'
+                  Width = 93
+                  FieldName = 'LOJA_ID'
+                end              
+                item
+                  Title.Caption = 'Descrição'
+                  Width = 93
+                  FieldName = 'DESCRICAO'
+                end              
+                item
+                  Title.Caption = 'IP'
+                  Width = 93
+                  FieldName = 'IP'
+                end>
+              DataSource = DSPdv
+              ReadOnly = True
+              TabOrder = 2
+              OnCellClick = TabPdvGridCellClick
+            end
+            object TabPdvCLoja: TRxDBLookupCombo
+              Left = 384
+              Height = 27
+              Top = 48
+              Width = 228
+              AutoSize = True
+              BorderStyle = bsSingle
+              ButtonOnlyWhenFocused = False
+              ButtonWidth = 15
+              Color = clWindow
+              PopUpFormOptions.Columns = <>
+              Flat = False
+              Glyph.Data = {
+                C2000000424DC200000000000000360000002800000007000000050000000100
+                2000000000008C00000064000000640000000000000000000000000000000000
+                0000000000000000000000000000000000000000000000000000000000000000
+                0000000000FF0000000000000000000000000000000000000000000000FF0000
+                00FF000000FF000000000000000000000000000000FF000000FF000000FF0000
+                00FF000000FF0000000000000000000000000000000000000000000000000000
+                000000000000
+              }
+              NumGlyphs = 1
+              ParentColor = False
+              ReadOnly = False
+              TabOrder = 3
+              TabStop = True
+              LookupDisplay = 'RAZAO'
+              LookupField = 'RAZAO'
+              LookupSource = DSLojaPdv
+            end
+          end
+          object TabPinPad: TTabSheet
+            Caption = 'PinPad'
+            ClientHeight = 415
+            ClientWidth = 683
+            object TabPinPadLFiltro: TLabel
+              Left = 8
+              Height = 15
+              Top = 11
+              Width = 98
+              Caption = 'Filtrar por Modelo:'
+            end
+            object TabPinPadEFiltro: TEdit
+              Left = 8
+              Height = 23
+              Top = 30
+              Width = 312
+              OnChange = TabPinPadEFiltroChange
+              TabOrder = 0
+              Text = 'TabPinPadEFiltro'
+            end
+            object TabPinPadGrid: TDBGrid
+              Left = 8
+              Height = 230
+              Top = 64
+              Width = 312
+              AutoFillColumns = True
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'ID'
+                  Width = 139
+                  FieldName = 'ID'
+                end              
+                item
+                  Title.Caption = 'Modelo'
+                  Width = 140
+                  FieldName = 'FABRICANTE_MODELO'
+                end>
+              DataSource = DSPinPad
+              ReadOnly = True
+              TabOrder = 2
+            end
+            object TabPinPadPPrincipal: TPanel
+              Left = 330
+              Height = 264
+              Top = 30
+              Width = 312
+              BevelInner = bvLowered
+              ClientHeight = 264
+              ClientWidth = 312
+              TabOrder = 1
+              object TabPinPadLID: TLabel
+                Left = 16
+                Height = 15
+                Top = 24
+                Width = 14
+                Caption = 'ID:'
+              end
+              object TabPinPadEID: TEdit
+                Left = 16
+                Height = 23
+                Top = 40
+                Width = 80
+                TabOrder = 0
+                Text = 'TabLojaEID'
+              end
+              object TabPinPadLFabricante: TLabel
+                Left = 16
+                Height = 15
+                Top = 67
+                Width = 104
+                Caption = 'Fabricante/Modelo:'
+              end
+              object TabPinPadBAdicionar: TToggleBox
+                Left = 16
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Adicionar'
+                OnClick = TabPinPadBAdicionarClick
+                TabOrder = 2
+              end
+              object TabPinPadBExcluir: TToggleBox
+                Left = 214
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Excluir'
+                TabOrder = 4
+              end
+              object TabPinPadBModificar: TToggleBox
+                Left = 116
+                Height = 33
+                Top = 204
+                Width = 90
+                Caption = 'Modificar'
+                OnClick = TabPinPadBModificarClick
+                TabOrder = 3
+              end
+              object TabPinPadMFabricante: TMemo
+                Left = 16
+                Height = 106
+                Top = 88
+                Width = 288
+                Lines.Strings = (
+                  'TabPinPadMFabricante'
+                )
+                TabOrder = 1
+              end
+            end
+          end
+          object TabConf: TTabSheet
+            Caption = 'Configurador'
+            ClientHeight = 415
+            ClientWidth = 683
+            object TabConfLFiltro: TLabel
+              Left = 8
+              Height = 15
+              Top = 11
+              Width = 108
+              Caption = 'Filtrar por Descrição:'
+            end
+            object TabConfEFiltro: TEdit
+              Left = 8
+              Height = 23
+              Top = 30
+              Width = 312
+              OnChange = TabConfEFiltroChange
+              TabOrder = 0
+              Text = 'TabConfEFiltro'
+            end
+            object TabConfGrid: TDBGrid
+              Left = 8
+              Height = 230
+              Top = 64
+              Width = 312
+              AutoFillColumns = True
+              Color = clWindow
+              Columns = <              
+                item
+                  Title.Caption = 'ID'
+                  Width = 93
+                  FieldName = 'ID'
+                end              
+                item
+                  Title.Caption = 'Descrição'
+                  Width = 93
+                  FieldName = 'DESCRICAO'
+                end              
+                item
+                  Title.Caption = 'IP'
+                  Width = 93
+                  FieldName = 'IP'
+                end>
+              DataSource = DSConfigurador
+              ReadOnly = True
+              TabOrder = 2
+              OnCellClick = TabConfGridCellClick
+            end
+            object TabConfPPrincipal: TPanel
+              Left = 330
+              Height = 264
+              Top = 30
+              Width = 312
+              BevelInner = bvLowered
+              ClientHeight = 264
+              ClientWidth = 312
+              TabOrder = 1
+              object TabConfLID: TLabel
+                Left = 16
+                Height = 15
+                Top = 8
+                Width = 14
+                Caption = 'ID:'
+              end
+              object TabConfEID: TEdit
+                Left = 16
+                Height = 23
+                Top = 24
+                Width = 90
+                TabOrder = 0
+                Text = 'Edit1'
+              end
+              object TabConfEDescricao: TEdit
+                Left = 16
+                Height = 23
+                Top = 65
+                Width = 288
+                TabOrder = 2
+                Text = 'Edit2'
+              end
+              object TabConfLDescricao: TLabel
+                Left = 16
+                Height = 15
+                Top = 49
+                Width = 54
+                Caption = 'Descrição:'
+              end
+              object TabConfLIP: TLabel
+                Left = 128
+                Height = 15
+                Top = 8
+                Width = 16
+                Caption = 'I.P:'
+              end
+              object TabConfEIP: TEdit
+                Left = 128
+                Height = 23
+                Top = 24
+                Width = 176
+                TabOrder = 1
+                Text = 'Edit4'
+              end
+              object TabConfBAdicionar: TToggleBox
+                Left = 16
+                Height = 33
+                Top = 225
+                Width = 90
+                Caption = 'Adicionar'
+                OnClick = TabConfBAdicionarClick
+                TabOrder = 4
+              end
+              object TabConfBExcluir: TToggleBox
+                Left = 214
+                Height = 33
+                Top = 225
+                Width = 90
+                Caption = 'Excluir'
+                TabOrder = 6
+              end
+              object TabConfBModificar: TToggleBox
+                Left = 116
+                Height = 33
+                Top = 225
+                Width = 90
+                Caption = 'Modificar'
+                OnClick = TabConfBModificarClick
+                TabOrder = 5
+              end
+              object TabConfLChave: TLabel
+                Left = 16
+                Height = 15
+                Top = 88
+                Width = 36
+                Caption = 'Chave:'
+              end
+              object TabConfEChave: TMemo
+                Left = 16
+                Height = 40
+                Top = 104
+                Width = 240
+                Font.Height = -13
+                Lines.Strings = (
+                  ''
+                )
+                ParentFont = False
+                TabOrder = 3
+              end
+              object TabConfBGeraChave: TSpeedButton
+                Left = 264
+                Height = 42
+                Top = 102
+                Width = 40
+                Glyph.Data = {
+                  36040000424D3604000000000000360000002800000010000000100000000100
+                  200000000000000400006400000064000000000000000000000000000000A466
+                  365FAA552B06000000000000000080800002A4653449A86D3D96AC7143CBAC71
+                  43CBA96B3E91A665352B0000000000000000000000000000000000000000A467
+                  35FDA96D3DB8AA552B06A567344AA96E3EDFB47D51F1D6AC8DFEE6C3A9FFE7C3
+                  AAFFD1A584FBAA6E3FF3A6683A7300000000000000000000000000000000A566
+                  35FEBE875DF5A86A3ADFAD7344F3E7BDA1FFFFDFCBFFFFE1CEFFFFE3D2FFF1D1
+                  BCFFF2D3BEFFF4D5C1FFB07749F3A467375C000000000000000000000000A566
+                  35FEFDCBABFFDBA680FFFACCAEFFFFD4B8FFFFD6BBFFDFB08EFEAD7142F3A96E
+                  3EE8A96D3DE5AD7142F3CFA07CFFA86C3BF1A2682E160000000000000000A566
+                  35FEFFC49DFFFFC6A1FFFFC8A4FFFEC9A5FFC68C61F6A96C3BD9A56834360000
+                  000000000000A4653535A86C3CDCA76939FEA56738770000000000000000A566
+                  35FEFFBB8DFFFFBD90FFFFBF94FFDC9E72FFA76836F0A5692D11000000000000
+                  00000000000000000000A46D370EA96C3DC6A86B3ADC0000000000000000A566
+                  35FEFFB380FFFFB380FFFFB583FFFDB585FFBE7F4EF5AA6C3AB9AA552B060000
+                  0000000000000000000000000000926D2407A466365F0000000000000000A668
+                  36F0A46735FDA46735FDA46735FDA46735FDA46735FDA46735FDA36735610000
+                  0000000000000000000000000000000000000000000000000000000000000000
+                  00000000000000000000000000000000000000000000A3673561A46735FDA566
+                  35FEA56635FEA56635FEA56635FEA56635FEA66937F10000000000000000A466
+                  365F926D240700000000000000000000000000000000AA552B06A96B39B8BE7E
+                  4DF4FDB585FFFFB583FFFFB380FFFFB380FFA56635FE0000000000000000A86B
+                  3ADCA86B3CC59D623B0D00000000000000000000000000000000A5692D11A768
+                  36F0DC9E72FFFFBF94FFFFBD90FFFFBB8DFFA56635FE0000000000000000A667
+                  3779A76938FEA96C3CD9A56535300000000000000000A4653535A96C3BD9C68C
+                  61F6FEC9A5FFFFC8A4FFFFC6A1FFFFC49DFFA56635FE00000000000000009F6A
+                  3518A86C3CF1CE9E7BFEAB7040F4AB6E3FE3AA6D3DE7AC7142F3DFB08EFEFFD6
+                  BBFFFFD4B8FFFACCAEFFDBA680FFFDCBABFFA56635FE00000000000000000000
+                  0000A469365FB0794CF3F4D6C3FFF0D0BBFFF0D1BCFFFFE3D2FFFFE1CEFFFFDF
+                  CBFFE7BDA1FFAD7344F4A86A3ADFBE875DF5A56635FE00000000000000000000
+                  000000000000A76B3C77AB6F40F3D2A887FBE8C5ACFFEBC9B1FFD7AE90FEB47E
+                  53F1AA6E3FE0A567344AAA552B06A96D3DB8A46735FD00000000000000000000
+                  00000000000000000000A367362FA86C3D93AC7143CBAB7041CFA96D3D9AA366
+                  334B808000020000000000000000AA552B06A466365F00000000
+                }
+                OnClick = TabConfBGeraChaveClick
+              end
+              object PTipoConfigurador: TPageControl
+                Left = 16
+                Height = 67
+                Top = 152
+                Width = 288
+                ActivePage = TabTipoConf
+                TabIndex = 0
+                TabOrder = 7
+                object TabTipoConf: TTabSheet
+                  Caption = 'Configurador'
+                  ClientHeight = 39
+                  ClientWidth = 280
+                  object TabTipoConfLSenha: TLabel
+                    Left = 5
+                    Height = 15
+                    Top = 11
+                    Width = 35
+                    Caption = 'Senha:'
+                  end
+                  object TabTipoConfESenha: TEdit
+                    Left = 48
+                    Height = 23
+                    Top = 8
+                    Width = 202
+                    TabOrder = 0
+                    Text = 'Edit3'
+                  end
+                end
+                object TabTipoAdm: TTabSheet
+                  Caption = 'Administrador'
+                  ClientHeight = 39
+                  ClientWidth = 280
+                  object TabTipoAdmLSenha: TLabel
+                    Left = 5
+                    Height = 15
+                    Top = 11
+                    Width = 35
+                    Caption = 'Senha:'
+                  end
+                  object TabTipoAdmESenha: TEdit
+                    Left = 48
+                    Height = 23
+                    Top = 8
+                    Width = 202
+                    TabOrder = 0
+                    Text = 'Edit3'
+                  end
+                end
+                object TabTipoUsu: TTabSheet
+                  Caption = 'Usuário'
+                  ClientHeight = 39
+                  ClientWidth = 280
+                  object TabTipoUsuLSenha: TLabel
+                    Left = 5
+                    Height = 15
+                    Top = 11
+                    Width = 35
+                    Caption = 'Senha:'
+                  end
+                  object TabTipoUsuESenha: TEdit
+                    Left = 48
+                    Height = 23
+                    Top = 8
+                    Width = 202
+                    TabOrder = 0
+                    Text = 'Edit3'
+                  end
+                end
+              end
+            end
+          end
+          object TabSheet4: TTabSheet
+            Caption = 'Versões'
+          end
+        end
+      end
       object TabSheet1: TTabSheet
-        Caption = 'Loja'
-        ClientHeight = 306
-        ClientWidth = 653
+        Caption = 'Configuração PDV'
+      end
+      object TabSheet2: TTabSheet
+        Caption = 'Arquivos INI'
+        ClientHeight = 453
+        ClientWidth = 691
         object Label1: TLabel
           Left = 16
           Height = 15
-          Top = 24
-          Width = 27
-          Caption = 'Filtro'
+          Top = 32
+          Width = 134
+          Caption = 'Selecione o Configurador'
         end
-        object ComboBox1: TComboBox
-          Left = 48
-          Height = 23
-          Top = 16
-          Width = 180
-          ItemHeight = 15
-          TabOrder = 0
-          Text = 'ComboBox1'
-        end
-        object DBGrid1: TDBGrid
-          Left = 16
-          Height = 232
-          Top = 48
-          Width = 304
-          Color = clWindow
-          Columns = <>
-          TabOrder = 1
-        end
-        object ToggleBox2: TToggleBox
-          Left = 240
-          Height = 25
-          Top = 14
-          Width = 75
-          Caption = 'ToggleBox2'
-          TabOrder = 2
-        end
-        object Panel3: TPanel
-          Left = 328
-          Height = 264
-          Top = 16
-          Width = 312
-          BevelInner = bvLowered
-          ClientHeight = 264
-          ClientWidth = 312
-          TabOrder = 3
-          object Label2: TLabel
-            Left = 16
-            Height = 15
-            Top = 24
-            Width = 14
-            Caption = 'ID:'
-          end
-          object Edit1: TEdit
-            Left = 16
-            Height = 23
-            Top = 40
-            Width = 80
-            TabOrder = 0
-            Text = 'Edit1'
-          end
-          object Edit2: TEdit
-            Left = 16
-            Height = 23
-            Top = 80
-            Width = 288
-            TabOrder = 1
-            Text = 'Edit2'
-          end
-          object Label3: TLabel
-            Left = 16
-            Height = 15
-            Top = 64
-            Width = 34
-            Caption = 'Razão:'
-          end
-          object Edit3: TEdit
-            Left = 16
-            Height = 23
-            Top = 128
-            Width = 288
-            TabOrder = 2
-            Text = 'Edit3'
-          end
-          object Label4: TLabel
-            Left = 16
-            Height = 15
-            Top = 112
-            Width = 46
-            Caption = 'Fantasia:'
-          end
-          object Label5: TLabel
-            Left = 128
-            Height = 15
-            Top = 24
-            Width = 40
-            Caption = 'C.N.P.J:'
-          end
-          object Edit4: TEdit
-            Left = 128
-            Height = 23
-            Top = 40
-            Width = 176
-            TabOrder = 3
-            Text = 'Edit4'
-          end
-          object ToggleBox3: TToggleBox
-            Left = 16
-            Height = 33
-            Top = 168
-            Width = 104
-            Caption = 'Adicionar'
-            TabOrder = 4
-          end
-        end
-      end
-      object TabSheet4: TTabSheet
-        Caption = 'Configurador'
-      end
-      object TabSheet2: TTabSheet
-        Caption = 'PDV'
       end
       object TabSheet3: TTabSheet
-        Caption = 'PinPad'
+        Caption = 'Módulos'
+      end
+      object TabSheet5: TTabSheet
+        Caption = 'Relatórios'
       end
     end
+  end
+  object DSLoja: TDataSource
+    DataSet = MDLoja
+    Left = 16
+    Top = 503
+  end
+  object DSPdv: TDataSource
+    DataSet = MDPdv
+    Left = 72
+    Top = 503
+  end
+  object DSLojaPdv: TDataSource
+    DataSet = MDLojaPDV
+    Left = 128
+    Top = 503
+  end
+  object DSConfigurador: TDataSource
+    DataSet = MDConfigurador
+    Left = 216
+    Top = 503
+  end
+  object DSPinPad: TDataSource
+    DataSet = MDPinPad
+    Left = 304
+    Top = 503
+  end
+  object MDLoja: TRxMemoryData
+    Filtered = True
+    FieldDefs = <>
+    AfterScroll = MDLojaAfterScroll
+    OnFilterRecord = MDLojaFilterRecord
+    PacketRecords = 0
+    Left = 16
+    Top = 456
+  end
+  object MDPdv: TRxMemoryData
+    Filtered = True
+    FieldDefs = <>
+    AfterScroll = MDPdvAfterScroll
+    OnFilterRecord = MDPdvFilterRecord
+    PacketRecords = 0
+    Left = 72
+    Top = 456
+  end
+  object MDPinPad: TRxMemoryData
+    Filtered = True
+    FieldDefs = <>
+    AfterScroll = MDPinPadAfterScroll
+    OnFilterRecord = MDPinPadFilterRecord
+    PacketRecords = 0
+    Left = 296
+    Top = 456
+  end
+  object MDLojaPDV: TRxMemoryData
+    FieldDefs = <>
+    PacketRecords = 0
+    Left = 128
+    Top = 456
+  end
+  object MDConfigurador: TRxMemoryData
+    Filtered = True
+    FieldDefs = <>
+    AfterScroll = MDConfiguradorAfterScroll
+    OnFilterRecord = MDConfiguradorFilterRecord
+    PacketRecords = 0
+    Left = 216
+    Top = 456
   end
 end

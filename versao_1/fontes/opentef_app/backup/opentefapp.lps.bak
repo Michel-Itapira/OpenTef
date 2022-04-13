@@ -3,14 +3,14 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="opentefapp.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="19"/>
-        <UsageCount Value="95"/>
+        <CursorPos Y="20"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="app.pas"/>
@@ -18,9 +18,8 @@
         <ComponentName Value="FApp"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="6"/>
-        <CursorPos X="66" Y="19"/>
-        <UsageCount Value="95"/>
+        <CursorPos X="44" Y="19"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -30,24 +29,10 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="745"/>
-        <CursorPos X="23" Y="774"/>
-        <UsageCount Value="95"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DNucleo"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="26"/>
-        <CursorPos X="5" Y="61"/>
-        <UsageCount Value="95"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="1994"/>
+        <CursorPos X="39" Y="2014"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -57,67 +42,84 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="3"/>
-        <CursorPos Y="11"/>
-        <UsageCount Value="95"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="4"/>
+        <CursorPos X="89" Y="25"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DNucleo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="52" Y="82"/>
+        <UsageCount Value="132"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\servico_app\opentefnucleo.pas"/>
+        <ComponentName Value="DNucleo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="66" Y="22"/>
+        <UsageCount Value="89"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdStack.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="948"/>
         <CursorPos Y="976"/>
-        <UsageCount Value="18"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\objpash.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="189"/>
         <CursorPos X="23" Y="206"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdCustomTCPServer.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="537"/>
         <CursorPos Y="557"/>
-        <UsageCount Value="22"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdContext.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="180"/>
         <CursorPos Y="189"/>
-        <UsageCount Value="18"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdTask.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="108"/>
         <CursorPos Y="137"/>
-        <UsageCount Value="18"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdThread.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="426"/>
         <CursorPos Y="442"/>
-        <UsageCount Value="18"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbbigint.pas"/>
         <UnitName Value="LbBigInt"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="524"/>
-        <CursorPos Y="531"/>
-        <UsageCount Value="18"/>
+        <TopLine Value="1644"/>
+        <CursorPos Y="1667"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lcltranslator.pas"/>
@@ -125,7 +127,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="26"/>
         <CursorPos X="50" Y="42"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lclmessageglue.pas"/>
@@ -133,45 +135,42 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="103"/>
         <CursorPos Y="123"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdGlobal.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="4801"/>
         <CursorPos Y="4812"/>
-        <UsageCount Value="20"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2754"/>
         <CursorPos Y="2773"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdServerIOHandlerSocket.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="92"/>
         <CursorPos Y="111"/>
-        <UsageCount Value="6"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="2110"/>
-        <CursorPos X="3" Y="2127"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="2136"/>
+        <CursorPos X="17" Y="2153"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdTCPServer.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="19"/>
         <CursorPos Y="48"/>
-        <UsageCount Value="7"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32wsforms.pp"/>
@@ -179,136 +178,308 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="372"/>
         <CursorPos Y="398"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2942"/>
         <CursorPos X="124" Y="2953"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\packages\lazarus\zcore.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="64" Y="17"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\component\ZSqlStrings.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="198"/>
+        <CursorPos Y="220"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\component\ZAbstractRODataset.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="537"/>
+        <CursorPos X="15" Y="556"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\component\ZAbstractDataset.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="670"/>
+        <CursorPos Y="689"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lresources.pp"/>
+        <UnitName Value="LResources"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="781"/>
+        <CursorPos Y="799"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdReply.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="206"/>
+        <CursorPos Y="224"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdTCPConnection.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="901"/>
+        <CursorPos Y="920"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdTCPClient.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="247"/>
+        <CursorPos Y="271"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdBaseComponent.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="169"/>
+        <CursorPos Y="187"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\dbc\ZDbcIntfs.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4874"/>
+        <CursorPos Y="4888"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\dbc\ZDbcConnection.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="898"/>
+        <CursorPos X="12" Y="902"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\com_lib\com.pas"/>
+        <ComponentName Value="DCom"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="98"/>
+        <CursorPos X="45" Y="117"/>
         <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdIOHandler.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1683"/>
+        <CursorPos Y="1697"/>
+        <UsageCount Value="15"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdIOHandlerStack.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="235"/>
+        <CursorPos Y="252"/>
+        <UsageCount Value="14"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdCustomTCPServer.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="547"/>
+        <CursorPos Y="562"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdContext.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="172"/>
+        <CursorPos Y="189"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdTask.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="100"/>
+        <CursorPos Y="137"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdThread.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="413"/>
+        <CursorPos X="53" Y="451"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\dbc\ZDbcFirebirdInterbase.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1987"/>
+        <CursorPos Y="2005"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\dbc\ZDbcFirebirdStatement.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="286"/>
+        <CursorPos Y="305"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\System\IdGlobal.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3038"/>
+        <CursorPos Y="3059"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\rxdb\rxmemds.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2033"/>
+        <CursorPos X="37" Y="2057"/>
+        <UsageCount Value="9"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="100" Column="74" TopLine="86"/>
+        <Caret Line="1871" TopLine="1851"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="690" TopLine="662"/>
+        <Caret Line="1872" TopLine="1851"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="673" Column="14" TopLine="661"/>
+        <Caret Line="1873" TopLine="1851"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="685" TopLine="662"/>
+        <Caret Line="1880" TopLine="1851"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="687" TopLine="662"/>
+        <Caret Line="1881" TopLine="1851"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="689" TopLine="662"/>
+        <Caret Line="1888" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="693" Column="31" TopLine="668"/>
+        <Caret Line="1881" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="688" TopLine="676"/>
+        <Caret Line="1888" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="690" TopLine="676"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="294" TopLine="276"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="295" TopLine="276"/>
+        <Caret Line="1883" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="691" TopLine="676"/>
+        <Caret Line="1888" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="693" TopLine="676"/>
+        <Caret Line="1883" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="681" Column="61" TopLine="646"/>
-      </Position>
-      <Position>
-        <Filename Value="app.pas"/>
-        <Caret Line="22" Column="81" TopLine="6"/>
+        <Caret Line="1888" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="472" Column="63" TopLine="445"/>
-      </Position>
-      <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="30" Column="45" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="26" Column="34" TopLine="20"/>
-      </Position>
-      <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="41" Column="25" TopLine="33"/>
-      </Position>
-      <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="64" Column="85" TopLine="37"/>
+        <Caret Line="1884" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="101" Column="85" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="18" Column="14" TopLine="7"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="15" Column="4" TopLine="7"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="19" Column="5" TopLine="3"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="11" TopLine="3"/>
-      </Position>
-      <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="18" Column="15" TopLine="7"/>
+        <Caret Line="1888" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="755" TopLine="734"/>
+        <Caret Line="1884" TopLine="1852"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="774" Column="23" TopLine="745"/>
+        <Caret Line="1888" TopLine="1852"/>
       </Position>
       <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="107" Column="6" TopLine="79"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1885" TopLine="1852"/>
       </Position>
       <Position>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <Caret Line="33" Column="16" TopLine="9"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1888" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1885" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1888" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1886" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1888" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1886" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1888" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1887" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1888" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1887" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1888" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1881" TopLine="1852"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1880" Column="100" TopLine="1854"/>
       </Position>
     </JumpHistory>
     <RunParams>

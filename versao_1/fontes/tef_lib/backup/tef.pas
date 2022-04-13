@@ -35,16 +35,16 @@ function login(VP_Host : AnsiString; VP_Porta : integer; VP_ChaveTerminal : Ansi
          VP_Versao_Comunicacao : integer) : integer;  stdcall;
 function solicitacao(VP_Dados : AnsiString; VP_Procedimento:TRetorno) : Integer;  stdcall;
 function solicitacaoblocante(VP_Dados : AnsiString; var VO_Retorno:AnsiString):Integer;  stdcall;
-function opentefstatus(var VO_StatusRetorno : integer): Integer; stdcall;
+function opentefstatus(var VO_StatusRetorno : Integer): Integer; stdcall;
 
 var
   DTef: TDTef;
   V_Inicializado:Boolean = False;
   F_ChaveTerminal : AnsiString;
-  F_Versao_Comunicacao : integer;
+  F_Versao_Comunicacao : Integer;
 
   Const
-  C_lib_versao: array  [0..2] of integer = (1,0,0) ;
+  C_lib_versao: array  [0..2] of Integer = (1,0,0) ;
 
 implementation
 
@@ -69,7 +69,7 @@ begin
   fprocedimento(1,'tok'+fdados);
 end;
 
-function inicializar() : integer; stdcall;
+function inicializar() : Integer; stdcall;
 begin
 
  if not Assigned(DComunicador) then
@@ -135,7 +135,7 @@ try
   DComunicador.V_ConexaoSolicita.ServidorPorta:= VP_Porta;
   F_ChaveTerminal := VP_ChaveTerminal;
   F_Versao_Comunicacao := VP_Versao_Comunicacao;
-
+  exit;
   result:=DComunicador.ConectarSolicitacao;
 
   if Result<>0 then
@@ -214,10 +214,6 @@ try
 finally
   VL_Mensagem.Free;
 end;
-
-
-
-
 
 end;
 

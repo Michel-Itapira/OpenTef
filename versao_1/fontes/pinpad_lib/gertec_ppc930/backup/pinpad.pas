@@ -20,8 +20,8 @@ type
   end;
 
 var
-  DPinPad: TDPinPad;
-  FPinPadLib      : THandle;
+  F_PinPad: TDPinPad;
+  F_PinPadLib      : THandle;
 
 function CarregaLibPinPad(): boolean;
 
@@ -33,10 +33,10 @@ implementation
 function CarregaLibPinPad(): boolean;
 begin
 
-  FPinPadLib := LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'gpinpad3.dll');
+  F_PinPadLib := LoadLibrary(pChar(ExtractFilePath(ParamStr(0))+'gpinpad3.dll'));
 
-//
-//  if LibHandle <= HINSTANCE_ERROR then
+
+  if F_PinPadLib <= 0 then
 //    exit(false);
 //
 //  // Carregando as funções

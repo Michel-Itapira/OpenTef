@@ -33,6 +33,7 @@
         <Filename Value="pinpad.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DPinPad"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
       </Unit>
     </Units>

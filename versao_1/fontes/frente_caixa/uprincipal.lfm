@@ -1,13 +1,13 @@
-object Fprincipal: TFprincipal
+object F_Principal: TF_Principal
   Left = 445
   Height = 599
   Top = 177
-  Width = 798
-  Caption = 'Fprincipal'
+  Width = 981
+  Caption = 'F_Principal'
   ClientHeight = 599
-  ClientWidth = 798
+  ClientWidth = 981
   OnShow = FormShow
-  LCLVersion = '2.2.0.2'
+  LCLVersion = '2.2.0.4'
   object GroupBox1: TGroupBox
     Left = 40
     Height = 248
@@ -608,5 +608,21 @@ object Fprincipal: TFprincipal
       OnClick = BInicializarClick
       TabOrder = 0
     end
+  end
+  object BTestePinPad: TButton
+    Left = 808
+    Height = 25
+    Top = 16
+    Width = 139
+    Caption = 'Teste direto de PinPad'
+    OnClick = BTestePinPadClick
+    TabOrder = 6
+  end
+  object Panel1: TPanel
+    Left = 768
+    Height = 564
+    Top = 12
+    Width = 16
+    TabOrder = 7
   end
 end
