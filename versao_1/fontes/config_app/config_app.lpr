@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, memdslaz, uprincipal, rxnew, zcomponent,funcoes;
+  Forms, memdslaz, uPrincipal, rxnew, zcomponent, indylaz, uPesquisaTags, uPesquisaadquirentes, def, uPesquisamoduloconf, funcoes;
 
 {$R *.res}
 
@@ -18,7 +18,7 @@ begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
-  Application.CreateForm(Tfprincipal, F_Principal);
+  Application.CreateForm(Tfprincipal, f_principal);
   Application.Run;
 end.
 

@@ -3,14 +3,15 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug"/>
+    <BuildModes Active="Default"/>
     <Units>
       <Unit>
         <Filename Value="frente_caixa.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos Y="22"/>
+        <EditorIndex Value="5"/>
+        <CursorPos X="140" Y="12"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uprincipal.pas"/>
@@ -18,23 +19,11 @@
         <ComponentName Value="F_Principal"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="171"/>
-        <CursorPos X="25" Y="173"/>
+        <TopLine Value="297"/>
+        <CursorPos X="23" Y="311"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DFuncoes"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="339"/>
-        <CursorPos X="10" Y="344"/>
-        <UsageCount Value="201"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="utestepinpad.pas"/>
@@ -42,103 +31,109 @@
         <ComponentName Value="FTestePinPad"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="122"/>
-        <CursorPos X="34" Y="150"/>
-        <UsageCount Value="85"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="61"/>
+        <CursorPos X="132" Y="99"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="umenuvenda.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="F_MenuVenda"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="2"/>
+        <CursorPos X="5" Y="20"/>
+        <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\..\teste\unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="96" Y="35"/>
+        <UsageCount Value="232"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="12"/>
+        <CursorPos X="5" Y="10"/>
+        <UsageCount Value="207"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="1085"/>
+        <CursorPos X="87" Y="1111"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lclmessageglue.pas"/>
         <UnitName Value="LCLMessageGlue"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="98"/>
-        <CursorPos Y="116"/>
-        <UsageCount Value="37"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
         <ComponentName Value="DTef"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="58"/>
-        <CursorPos X="37" Y="83"/>
-        <UsageCount Value="78"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\testes\testedetag\utag.lfm"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="5"/>
-        <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\testes\testedetag\utag.pas"/>
-        <ComponentName Value="Form1"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="28"/>
-        <CursorPos X="2" Y="80"/>
-        <UsageCount Value="1"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="302"/>
+        <CursorPos Y="146"/>
+        <UsageCount Value="105"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32memostrings.inc"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="42"/>
-        <CursorPos Y="62"/>
-        <UsageCount Value="26"/>
+        <CursorPos Y="60"/>
+        <UsageCount Value="127"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.pas"/>
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="128"/>
-        <CursorPos X="50" Y="133"/>
-        <UsageCount Value="38"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\testes\testedakey\unit1.pas"/>
-        <ComponentName Value="Form1"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="22"/>
-        <CursorPos X="5" Y="40"/>
-        <UsageCount Value="3"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32callback.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="2707"/>
-        <CursorPos Y="2734"/>
-        <UsageCount Value="14"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32wsstdctrls.pp"/>
-        <UnitName Value="Win32WSStdCtrls"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1896"/>
-        <CursorPos Y="1913"/>
-        <UsageCount Value="9"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="1072"/>
+        <CursorPos X="108" Y="1103"/>
+        <UsageCount Value="113"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\control.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="3573"/>
-        <CursorPos Y="3591"/>
-        <UsageCount Value="24"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="3568"/>
+        <CursorPos Y="3595"/>
+        <UsageCount Value="125"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\buttoncontrol.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="5"/>
-        <CursorPos Y="22"/>
+        <TopLine Value="4"/>
+        <CursorPos Y="21"/>
         <UsageCount Value="7"/>
       </Unit>
       <Unit>
@@ -149,178 +144,169 @@
         <UsageCount Value="7"/>
       </Unit>
       <Unit>
-        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\wincontrol.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="5414"/>
-        <CursorPos Y="5430"/>
-        <UsageCount Value="7"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32object.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="383"/>
-        <CursorPos X="68" Y="387"/>
-        <UsageCount Value="1"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\servico_app\opentefnucleo.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="24"/>
-        <CursorPos X="2" Y="35"/>
-        <UsageCount Value="1"/>
-      </Unit>
-      <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customedit.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="518"/>
-        <CursorPos Y="535"/>
-        <UsageCount Value="34"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="90"/>
+        <CursorPos Y="109"/>
+        <UsageCount Value="74"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\pinpad_lib\pinpad.pas"/>
         <ComponentName Value="DPinPad"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="129"/>
-        <CursorPos Y="152"/>
-        <UsageCount Value="33"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="163"/>
+        <CursorPos X="51" Y="241"/>
+        <UsageCount Value="100"/>
         <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\tef_lib\tef_lib.lpr"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="245"/>
-        <CursorPos Y="280"/>
-        <UsageCount Value="28"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="323"/>
+        <CursorPos X="113" Y="348"/>
+        <UsageCount Value="139"/>
         <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdTCPClient.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="339"/>
+        <CursorPos Y="356"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2143"/>
+        <CursorPos Y="2161"/>
+        <UsageCount Value="95"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\pinpad_lib\pinpad.pas"/>
-        <Caret Line="154" Column="14" TopLine="121"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\pinpad.pas"/>
-        <Caret Line="209" Column="4" TopLine="191"/>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="60" Column="11" TopLine="37"/>
       </Position>
       <Position>
         <Filename Value="utestepinpad.pas"/>
-        <Caret Line="138" TopLine="107"/>
+        <Caret Line="32" Column="104"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="167" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="168" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="169" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1122" TopLine="1084"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="170" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="171" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="172" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="173" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="174" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="175" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="176" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="177" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="178" TopLine="154"/>
       </Position>
       <Position>
         <Filename Value="..\pinpad_lib\pinpad.pas"/>
-        <Caret Line="152" TopLine="129"/>
+        <Caret Line="134" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="308" TopLine="288"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="135" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="324" TopLine="288"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="136" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="321" TopLine="288"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="137" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="326" TopLine="288"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="138" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="323" Column="15" TopLine="288"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="139" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="321" TopLine="288"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="140" TopLine="111"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="230" TopLine="212"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="141" TopLine="117"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="231" TopLine="212"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="142" TopLine="117"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="232" TopLine="212"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="162" TopLine="134"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="234" TopLine="212"/>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="157" Column="21" TopLine="135"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="235" TopLine="212"/>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="194" Column="22" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="238" TopLine="212"/>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="178" Column="101" TopLine="154"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="273" TopLine="245"/>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="167" Column="27" TopLine="148"/>
       </Position>
       <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="275" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="276" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="273" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="275" Column="20" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="277" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="273" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="279" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="273" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="275" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="276" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="277" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="273" TopLine="245"/>
-      </Position>
-      <Position>
-        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="279" TopLine="245"/>
+        <Filename Value="utestepinpad.pas"/>
+        <Caret Line="99" Column="132" TopLine="61"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -334,29 +320,36 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\libs\func\comunicador.pas"/>
-        <Line Value="513"/>
+        <Source Value="utestepinpad.pas"/>
+        <Line Value="79"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\tef_lib\tef.pas"/>
-        <Line Value="101"/>
+        <Source Value="uprincipal.pas"/>
+        <Line Value="234"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Line Value="230"/>
+        <Source Value="uprincipal.pas"/>
+        <Line Value="223"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
-        <Line Value="273"/>
+        <Source Value="utestepinpad.pas"/>
+        <Line Value="167"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\pinpad_lib\pinpad.pas"/>
+        <Line Value="283"/>
       </Item>
     </BreakPoints>
     <Watches>

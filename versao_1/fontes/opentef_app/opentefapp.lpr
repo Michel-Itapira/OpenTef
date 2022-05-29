@@ -11,8 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, app, opentefnucleo, rxnew, zcomponent,
-  indylaz, comunicador, funcoes
-  { you can add units after this };
+  indylaz, comunicador, funcoes, cadastro, def;
 
 {$R *.res}
 

@@ -1,0 +1,23 @@
+object F_MenuVenda: TF_MenuVenda
+  Left = 717
+  Height = 343
+  Top = 322
+  Width = 485
+  Caption = 'Menu de vendas'
+  ClientHeight = 343
+  ClientWidth = 485
+  OnClose = FormClose
+  LCLVersion = '2.2.0.4'
+  object Painel: TPanel
+    Left = 50
+    Height = 243
+    Top = 50
+    Width = 385
+    Align = alClient
+    BorderSpacing.Around = 50
+    BevelOuter = bvSpace
+    BorderWidth = 30
+    BorderStyle = bsSingle
+    TabOrder = 0
+  end
+end

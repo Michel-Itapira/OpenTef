@@ -1,9 +1,10 @@
 object DNucleo: TDNucleo
+  OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 591
-  VerticalOffset = 242
+  HorizontalOffset = 1967
+  VerticalOffset = 266
   Width = 416
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
@@ -13,6 +14,7 @@ object DNucleo: TDNucleo
       'RawStringEncoding=DB_CP'
     )
     AutoCommit = False
+    TransactIsolationLevel = tiReadCommitted
     Port = 0
     User = 'SYSDBA'
     Protocol = 'firebird'

@@ -78,14 +78,16 @@ type
         fPorta: ansistring;
         fCaminhoLib: ansistring;
     public
+        constructor Create;
         function CarregaLib(): integer; override;
+        function DescarregaLib(): integer; override;
         procedure SetConfig(VP_PinPad: TPinPadModelo; VP_CaminhoLib: ansistring; VP_Porta: ansistring); override;
-        function PinPadConectar(): integer; override;
-        function PinPadDesconectar(): integer; override;
+        function PinPadConecta(VO_Mensagem:TMensagem): integer; override;
+        function PinPadDesconectar(VL_Mensagem: string): integer; override;
         function PinPadMensagem(VP_Mensagem: string): integer; override;
-        function PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer): integer; override;
+        function PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer;var VO_Mensagem:TMensagem): integer; override;
         function PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
-            VP_Mensagem: string; VP_TempoEspera: integer): integer; override;
+            VP_Mensagem: string;var VO_Mensagem:TMensagem): integer; override;
 
 
     end;
@@ -125,16 +127,25 @@ var
     pcl_exception_set_uncaught_handler: TPcl_exception_set_uncaught_handler;
     cbAux: Tgpinpad_exception_handler;
     VF_PinpadExecption: boolean;
+    VF_PinpadExecptionCodigo: Integer;
+    VF_PinpadExecptionMensgem: String;
 
 
 procedure gpinpad_exception_handler(errCode: int16; msg: pansichar); stdcall;
 begin
     VF_PinpadExecption := True;
-    F_PinPad.PinPadErro(errCode, msg);
+    VF_PinpadExecptionCodigo := errCode;
+    VF_PinpadExecptionMensgem := msg;
 end;
 
 
 { TGertec_ppc930 }
+
+constructor TGertec_ppc930.Create;
+begin
+  fPinPad:=nil;
+  inherited Create
+end;
 
 function TGertec_ppc930.CarregaLib(): integer;
 begin
@@ -215,6 +226,17 @@ begin
     Result := 0;
 end;
 
+function TGertec_ppc930.DescarregaLib: integer;
+begin
+   Result:=0;
+   if fPinPad=nil then
+   Exit;
+   abecs_cmd_clo(fPinPad,'Open Tef');
+   abecs_comm_close(@fPinPad);
+   UnloadLibrary(fPinPadLib);
+   fPinPad:=nil;
+end;
+
 procedure TGertec_ppc930.SetConfig(VP_PinPad: TPinPadModelo; VP_CaminhoLib: ansistring; VP_Porta: ansistring);
 begin
     fPorta := VP_Porta;
@@ -222,7 +244,7 @@ begin
     fModelo := VP_PinPad;
 end;
 
-function TGertec_ppc930.PinPadConectar(): integer;
+function TGertec_ppc930.PinPadConecta(VO_Mensagem:TMensagem): integer;
 var
     VL_PinPad: Pointer;
 begin
@@ -230,7 +252,12 @@ begin
     VF_PinpadExecption := False;
     VL_PinPad := abecs_comm_open(fPorta);
     if VF_PinpadExecption then
+    begin
+        VO_Mensagem.AddComando('0049','R');
+        VO_Mensagem.AddTag('004D',VF_PinpadExecptionCodigo);
+        VO_Mensagem.AddTag('004A',VF_PinpadExecptionMensgem);
         Exit;
+    end;
     Result := abecs_cmd_opn(VL_PinPad,0);
     if VF_PinpadExecption then
         Exit
@@ -239,8 +266,9 @@ begin
     Result := 0;
 end;
 
-function TGertec_ppc930.PinPadDesconectar: integer;
+function TGertec_ppc930.PinPadDesconectar(VL_Mensagem: string): integer;
 begin
+    abecs_cmd_clo(fPinPad,AnsiString(VL_Mensagem));
     abecs_comm_close(@fPinPad);
     Result := 0;
 end;
@@ -251,7 +279,7 @@ begin
     Result := 0;
 end;
 
-function TGertec_ppc930.PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer): integer;
+function TGertec_ppc930.PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer;var VO_Mensagem:TMensagem): integer;
 var
     VL_PanMask: TAbecsSpePanMask;
     VL_Timeout: PInteger;
@@ -276,6 +304,16 @@ begin
         sleep(10);
         VP_TempoEspera := VP_TempoEspera - 10;
     end;
+
+    if VF_PinpadExecption then
+    begin
+        VO_Mensagem.AddComando('0049','R');
+        VO_Mensagem.AddTag('004D',VF_PinpadExecptionCodigo);
+        VO_Mensagem.AddTag('004A',VF_PinpadExecptionMensgem);
+        Exit;
+    end;
+
+
     VO_Tarja1 := abecs_cmd_cex_response_get_trk1inc(VL_Map);
     VO_Tarja2 := abecs_cmd_cex_response_get_trk2inc(VL_Map);
     VO_Tarja3 := abecs_cmd_cex_response_get_trk3inc(VL_Map);
@@ -286,7 +324,7 @@ begin
 end;
 
 function TGertec_ppc930.PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
-    VP_Mensagem: string; VP_TempoEspera: integer): integer;
+    VP_Mensagem: string;var VO_Mensagem:TMensagem): integer;
 var
     VL_cmdData: TAbecsCmdGpn_S;
     VL_Retorno: integer;
@@ -322,6 +360,16 @@ begin
         VL_Retorno := abecs_cmd_gpn_response(fPinPad, @VL_rspDataOut, nil);
         sleep(10);
     end;
+
+    if VF_PinpadExecption then
+    begin
+        VO_Mensagem.AddComando('0049','R');
+        VO_Mensagem.AddTag('004D',VF_PinpadExecptionCodigo);
+        VO_Mensagem.AddTag('004A',VF_PinpadExecptionMensgem);
+        Exit;
+    end;
+
+
     Result := VL_Retorno;
     if VL_Retorno = 0 then
         VO_Senha := VL_rspDataOut.pinBlk;

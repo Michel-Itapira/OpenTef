@@ -50,36 +50,6 @@
               <TrashVariables Value="True"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Release">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="..\..\binarios\opentef_app\win64\opentefapp"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\libs\func;..\opentef_ser"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-            </Debugging>
             <LinkSmart Value="True"/>
             <Options>
               <Win32>
@@ -87,6 +57,14 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dWIN
+-dDEBUG"/>
+            <OtherDefines Count="1">
+              <Define0 Value="OPEN_TEF"/>
+            </OtherDefines>
+          </Other>
         </CompilerOptions>
       </Item>
     </BuildModes>
@@ -159,6 +137,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\def.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -187,6 +173,11 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dOPEN_TEF
+-dWIN
+-dDEBUG"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>
@@ -194,16 +185,16 @@
         <Name Value="EAbort"/>
       </Item>
       <Item>
-        <Name Value="ECodetoolError"/>
-      </Item>
-      <Item>
-        <Name Value="EFOpenError"/>
-      </Item>
-      <Item>
         <Name Value="EIdConnClosedGracefully"/>
       </Item>
       <Item>
         <Name Value="EIdSocketError"/>
+      </Item>
+      <Item>
+        <Name Value="EIdClosedSocket"/>
+      </Item>
+      <Item>
+        <Name Value="EIdNotConnected"/>
       </Item>
     </Exceptions>
   </Debugging>

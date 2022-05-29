@@ -3,18 +3,39 @@ library tef_lib;
 {$mode objfpc}{$H+}
 
 uses
-  Classes, tef, funcoes, comunicador
-  { you can add units after this };
+    Interfaces,
+    Classes,
+    tef,
+    zcomponent,
+    rxnew,
+    funcoes,
+    comunicador,
+    def { you can add units after this };
 
-{$DEFINE CLIENTE}
 exports
-      inicializar,
-      finalizar,
-      login,
-      solicitacao,
-      solicitacaoblocante,
-      opentefstatus;
+    inicializar,
+    finalizar,
+    login,
+    solicitacao,
+    solicitacaoblocante,
+    opentefstatus,
+
+    mensagemcreate,
+    mensagemcarregatags,
+    mensagemcomando,
+    mensagemfree,
+    mensagemaddtag,
+    mensagemaddcomando,
+    mensagemcomandodados,
+    mensagemtagasstring,
+    mensagemtagcount,
+    mensagemgettag,
+    mensagemgettagidx,
+    mensagemtagtostr,
+
+    transacaoinicio,
+    transacaostatus,
+    transacaocancela;
 
 begin
 end.
-

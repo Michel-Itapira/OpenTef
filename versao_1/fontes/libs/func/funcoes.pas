@@ -5,67 +5,482 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, DCPdes, ZDataset,rxmemds;
+    Classes, SysUtils, StrUtils, ZDataset, DB, rxmemds, IdContext, syncobjs, def;
+
 type
 
-    TPinPadModelo = (pNDF, pGERTEC_PPC930);
-
     TTag = record
-        Tag: string;
-        Qt: string;
+        Tag: ansistring;
+        Qt: ansistring;
         Tamanho: longint;
-        Dados: string;
+        Dados: ansistring;
     end;
 
-    { TMensagem }
 
+    { TMensagem }
     TMensagem = class
     private
         fTags: array of TTag;
     public
-        function CarregaTags(VP_Dados: string): integer;
-        function TagToStr(var VO_Dados: string): integer;
-        function AddComando(VP_Tag, VP_Dados: string): integer;
-        function GetComando(var VO_Tag: string; var VO_Dados: string): integer;
-        function GetComandoInt(var VO_Tag: integer; var VO_Dados: string): integer;
-        function GetTag(VP_Tag: string; var VO_Dados: string): integer;
-        function GetTag(VP_Tag: string; var VO_Dados: integer): integer;
-        function GetTagAsAstring(VP_Tag: string): string;
-        function GetTagAsInteger(VP_Tag: string): integer;
-        function AddTag(VP_Tag, VP_Dados: string): integer;
-        function AddTag(VP_Tag: string; VP_Dados: integer): integer;
+        function CarregaTags(VP_Dados: ansistring): integer;
+        function TagToStr(var VO_Dados: ansistring): integer;
+        function AddComando(VP_Tag, VP_Dados: ansistring): integer;
+        function GetComando(var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
+        function GetComandoInt(var VO_Tag: integer; var VO_Dados: ansistring): integer;
+        function GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer;
+        function GetTag(VP_Posicao: integer; var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
+        function GetTag(VP_Posicao: integer; var VO_Tag: TTag): integer;
+        function GetTag(VP_Tag: ansistring; var VO_Dados: Int64): Integer;
+        function GetTagAsAstring(VP_Tag: ansistring): ansistring;
+        function Comando(): ansistring;
+        function ComandoDados(): ansistring;
+        function TagsAsString: ansistring;
+        function TagCount(): integer;
+        function GetTagAsInteger(VP_Tag: ansistring): integer;
+        function AddTag(VP_Tag, VP_Dados: ansistring): integer;
+        function AddTag(VP_Tag: ansistring; VP_Dados: integer): integer;
         procedure Limpar;
+        constructor Create;
     end;
+
+
+    TPinPadModelo = (pNDF, pGERTEC_PPC930);
+    TRespostaPinPad = procedure(VP_Processo_ID:Integer; VP_Mensagem: TMensagem);
+    TPinPadErro = procedure(errCode: int16; msg: pansichar);
+
+
+    TConexaoTipo = (cnCaixa, cnServico, cnNaoDefinido);
+    TAguardaEvento = (agTempo, agEvento, agAborta);
+    TRetornoModulo = procedure(VP_Transmissao_ID: PChar;VP_Tarefa_ID, VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+    TRetorno = procedure(VP_Transmissao_ID: PChar;VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+    TServidorRecebimento = procedure(VP_Codigo:Integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VO_AContext: TIdContext);
+    TServidorRecebimentoLib = function(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer): integer; stdcall;
+    TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado, csNaoInicializado);
+    TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro,tsAbortada);
+
+
+    TPermissao = (pmS, pmC, pmA, pmU);  // pmS=permissao de sistema
+    // pmC=permissao de controlador permissao maxima
+    // pmA permissao de administrador pode gerenciar as transacao e fazer cadastros
+    // pmU permissao de usuario consulta e visualizacao das transacoes
+
+
+    { TTEmporizadorEvento }
+
+    TTEmporizadorTThread = class(TThread)
+    private
+        fTempo: cardinal;
+        fTemporizador: Pointer;
+    protected
+        procedure Execute; override;
+    public
+        f_parar: boolean;
+        constructor Create(VP_Suspenso: boolean; VP_Temporizador: Pointer);
+    end;
+
+
+    { TTEmporizador }
+    TTemporizador = class
+    private
+        fTEmporizadorTThread: TTEmporizadorTThread;
+        fEvento: TAguardaEvento;
+
+    public
+        V_Dados: string;
+        V_Executado: boolean;
+        V_Aguardando: boolean;
+        V_Aborta: boolean;
+        V_ID: string;
+        constructor Create;
+        procedure parar;
+        procedure abortar;
+        function aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean; VP_Temporizador: Pointer): TAguardaEvento;
+        destructor Destroy; override;
+
+    end;
+
+    { TTransacao }
+
+    TTransacao = class
+        fMensagem: TMensagem;
+        fTemporizador: TTemporizador;
+    private
+        function GetErro: integer;
+        function GetErroDescricao: String;
+        procedure SetErro(VP_Erro: integer);
+        function GetStatus: TTransacaoStatus;
+        procedure SetErroDescricao(VP_Descricao: String);
+        procedure SetStatus(VP_Status: TTransacaoStatus);
+        function GetID: ansistring;
+
+    public
+        constructor Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+        destructor Destroy; override;
+        function AsString: ansistring;
+        function TempoAguarda: integer;
+        property erro: integer read GetErro write SetErro;
+        property erroDescricao: String read GetErroDescricao write SetErroDescricao;
+        property ID: ansistring read GetID;
+        property STATUS: TTransacaoStatus read GetSTATUS write SetStatus;
+    end;
+
 
     { TDFuncoes }
 
     TDFuncoes = class(TDataModule)
     private
-
     public
-        procedure StrToRxMemData(VP_Dados: string; var VO_MemDataSet: TRxMemoryData);
-        function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): string;
-        function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): string;
-        procedure CriarChaveTerminal(var VO_Chave: string);
     end;
 
+procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
+function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
+function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
+procedure CriarChaveTerminal(var VO_Chave: ansistring);
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
+function StrToPermissao(VP_Permissao: ansistring): TPermissao;
+function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
+function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
+function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
+function ConexaoTipoToStr(VP_ConexaoTipo: TConexaoTipo): string;
+function IntToConexaoTipo(VP_ConexaoTipo: integer): TConexaoTipo;
+function IntToTransacaoStatus(VP_TranscaoStatus: integer): TTransacaoStatus;
+function TransacaoStatusToInt(VP_TransacaoStatus: TTransacaoStatus): integer;
+function PinPadModeloToInt(VP_PinPadModelo: TPinPadModelo): integer;
+function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
+function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
+function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
+
+
+
+procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
+
+
+
+function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
+function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; stdcall;
+function mensagemcomando(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomandodados(VP_Mensagem: Pointer): PChar; stdcall;
+procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
+function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
+function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
+function mensagemtagasstring(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
+function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
+function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
+function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
+
 var
-    Des: TDFuncoes;
+    VF_Sequencia: longint;
+    VF_CriticoLog: TRTLCriticalSection;
 
 
 implementation
 
+function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
+begin
+    Result := 0;
+    Pointer(VP_Mensagem) := pointer(TMensagem.Create);
+
+end;
+
+function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; stdcall;
+begin
+    Result := TMensagem(VP_Mensagem).CarregaTags(VP_Dados);
+end;
+
+function mensagemcomando(VP_Mensagem: Pointer): PChar; stdcall;
+begin
+    Result := PChar(TMensagem(VP_Mensagem).Comando());
+end;
+
+function mensagemcomandodados(VP_Mensagem: Pointer): PChar; stdcall;
+begin
+    Result := PChar(TMensagem(VP_Mensagem).ComandoDados());
+end;
+
+procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
+begin
+    if Assigned(VP_Mensagem) then
+        TMensagem(VP_Mensagem).Free;
+end;
+
+function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
+begin
+    Result := TMensagem(VP_Mensagem).AddTag(VP_Tag, VP_Dados);
+end;
+
+function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
+begin
+    Result := TMensagem(VP_Mensagem).AddComando(VP_Tag, VP_Dados);
+end;
+
+function mensagemtagasstring(VP_Mensagem: Pointer): PChar; stdcall;
+begin
+    Result := PChar(TMensagem(VP_Mensagem).TagsAsString());
+end;
+
+function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
+begin
+    Result := TMensagem(VP_Mensagem).TagCount;
+end;
+
+function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_Dados: ansistring;
+begin
+    VL_Dados := '';
+    Result := TMensagem(VP_Mensagem).GetTag(VP_Tag, VL_Dados);
+
+    VO_Dados := StrAlloc(Length(VL_Dados) + 1);
+    StrPCopy(VO_Dados, VL_Dados);
+
+end;
+
+function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_Dados, VL_Tag: ansistring;
+begin
+    VL_Tag := '';
+    VL_Dados := '';
+    Result := TMensagem(VP_Mensagem).GetTag(VL_Idx, VL_Tag, VL_Dados);
+
+    VO_Dados := StrAlloc(Length(VL_Dados) + 1);
+    StrPCopy(VO_Dados, VL_Dados);
+
+    VO_Tag := StrAlloc(Length(VL_Tag) + 1);
+    StrPCopy(VO_Tag, VL_Tag);
+end;
+
+function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_Dados: ansistring;
+
+begin
+    VL_Dados := '';
+    Result := TMensagem(VP_Mensagem).TagToStr(VL_Dados);
+    VO_Dados := StrAlloc(Length(VL_Dados) + 1);
+    StrPCopy(VO_Dados, VL_Dados);
+end;
+
+procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
+begin
+  TMensagem(VP_Mensagem).Limpar;
+end;
+
+
 {$R *.lfm}
+
+{ TTemporizador }
+
+constructor TTemporizador.Create;
+begin
+    VF_Sequencia := VF_Sequencia + 1;
+    V_ID := IntToStr(VF_Sequencia);
+    inherited Create;
+    V_ID := V_ID + FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now);
+    Randomize;
+    V_Executado := False;
+    V_Aborta := False;
+    V_Dados := '';
+    V_Aguardando := False;
+    V_ID := V_ID + IntToStr(Random(999));
+end;
+
+procedure TTemporizador.parar;
+begin
+    V_Executado := True;
+    V_Aguardando := False;
+    V_Aborta := False;
+    if Assigned(fTEmporizadorTThread) then
+        if not fTEmporizadorTThread.f_parar then
+        begin
+            fTEmporizadorTThread.f_parar := True;
+            fTEmporizadorTThread.Terminate;
+        end;
+end;
+
+procedure TTemporizador.abortar;
+begin
+    V_Executado := False;
+    V_Aguardando := False;
+    V_Aborta := True;
+    if Assigned(fTEmporizadorTThread) then
+        if not fTEmporizadorTThread.f_parar then
+        begin
+            fTEmporizadorTThread.f_parar := True;
+            fTEmporizadorTThread.Terminate;
+        end;
+
+end;
+
+function TTemporizador.aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean; VP_Temporizador: Pointer): TAguardaEvento;
+begin
+    V_Aguardando := True;
+    Result := agTempo;
+    try
+        if VP_Reaguardar then
+            V_Executado := False;
+
+        if V_Executado then
+        begin
+            Result := agEvento;
+            Exit;
+        end;
+        fTEmporizadorTThread := TTEmporizadorTThread.Create(True, VP_Temporizador);
+        fTEmporizadorTThread.fTempo := VP_Tempo;
+        fTEmporizadorTThread.Start;
+        fTEmporizadorTThread.WaitFor;
+        if Assigned(fTEmporizadorTThread) then
+            FreeAndNil(fTEmporizadorTThread);
+
+        if V_Executado then
+            Result := agEvento
+        else
+            Result := agTempo;
+        if V_Aborta then
+            Result := agAborta;
+
+    finally
+        V_Aguardando := False;
+    end;
+
+end;
+
+destructor TTemporizador.Destroy;
+begin
+    if Assigned(fTEmporizadorTThread) then
+        if not fTEmporizadorTThread.f_parar then
+        begin
+            fTEmporizadorTThread.f_parar := True;
+            fTEmporizadorTThread.Terminate;
+            fTEmporizadorTThread.WaitFor;
+        end;
+    inherited Destroy;
+end;
+
+{ TTEmporizadorEvento }
+
+procedure TTEmporizadorTThread.Execute;
+var
+    VL_Data: TDateTime;
+begin
+    VL_Data := now;
+    while not Terminated do
+    begin
+        sleep(1);
+        if ((fTempo <> INFINITE) and
+            ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > fTempo)) then
+        begin
+            if Assigned(fTemporizador) then
+                TTemporizador(fTemporizador).fEvento := agTempo;
+            exit;
+        end;
+    end;
+end;
+
+
+
+constructor TTEmporizadorTThread.Create(VP_Suspenso: boolean; VP_Temporizador: Pointer);
+begin
+    inherited Create(VP_Suspenso);
+    TTemporizador(VP_Temporizador).fEvento := agEvento;
+    fTemporizador := VP_Temporizador;
+    FreeOnTerminate := False;
+    f_parar := False;
+
+end;
+
+{ TTransacao }
+
+function TTransacao.GetErro: integer;
+begin
+    Result := fMensagem.GetTagAsInteger('004D');
+end;
+
+function TTransacao.GetErroDescricao: String;
+begin
+    Result := fMensagem.GetTagAsAstring('004A');
+end;
+
+procedure TTransacao.SetErro(VP_Erro: integer);
+begin
+    fMensagem.AddTag('004D', VP_Erro);
+end;
+
+function TTransacao.GetStatus: TTransacaoStatus;
+begin
+    Result := IntToTransacaoStatus(fMensagem.GetTagAsInteger('00A4'));
+end;
+
+procedure TTransacao.SetErroDescricao(VP_Descricao: String);
+begin
+    fMensagem.AddTag('004A', VP_Descricao);
+end;
+
+procedure TTransacao.SetStatus(VP_Status: TTransacaoStatus);
+begin
+    fMensagem.AddTag('00A4', TransacaoStatusToInt(VP_Status));
+end;
+
+function TTransacao.GetID: ansistring;
+begin
+    Result := fMensagem.GetTagAsAstring('0034');
+end;
+
+
+constructor TTransacao.Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+begin
+    inherited Create;
+
+    fMensagem := TMensagem.Create;
+
+    if VP_TransacaoString <> '' then
+    begin
+        fMensagem.CarregaTags(VP_TransacaoString);
+        fMensagem.AddComando('007A', fMensagem.ComandoDados());
+        Exit;
+    end;
+
+    VF_Sequencia := VF_Sequencia + 1;
+    fMensagem.AddComando('007A', '');
+    fMensagem.AddTag('00A3', VP_Terminal_ID);
+    fMensagem.AddTag('0051', 20000);
+    fMensagem.AddTag('00A2', VP_Terminal_Tipo);
+    fMensagem.AddTag('007C', FloatToStr(Now));
+    fMensagem.AddTag('00A4', TransacaoStatusToInt(tsAguardandoComando));
+    fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' +
+        FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now));
+
+end;
+
+destructor TTransacao.Destroy;
+begin
+    fMensagem.Free;
+    fTemporizador.Free;
+    inherited Destroy;
+end;
+
+function TTransacao.AsString: ansistring;
+begin
+    Result := fMensagem.TagsAsString;
+end;
+
+function TTransacao.TempoAguarda: integer;
+begin
+    Result := fMensagem.GetTagAsInteger('0051');
+end;
 
 { TDFuncoes }
 
 
 
-function TDFuncoes.RxMemDataToStr(VO_MemDataSet: TRxMemoryData): string;
+function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 var
     VL_MemString: TStringStream;
     VL_Mem: TMemoryStream;
-    VL_String: string;
+    VL_String: ansistring;
     VL_bytes: array of byte;
     VL_i: integer;
 begin
@@ -84,7 +499,7 @@ begin
     for VL_i := 0 to Length(VL_String) - 1 do
     begin
         SetLength(VL_bytes, Length(VL_bytes) + 1);
-        VL_bytes[VL_i] := Ord(VL_String[VL_i]);
+        VL_bytes[VL_i] := Ord(VL_String[VL_i + 1]);
     end;
     // converte em hex
     VL_String := '';
@@ -96,11 +511,11 @@ begin
     VL_Mem.Free;
 end;
 
-procedure TDFuncoes.StrToRxMemData(VP_Dados: string; var VO_MemDataSet: TRxMemoryData);
+procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
 var
     VL_bytes: array of byte;
     VL_i: integer;
-    VL_String: string;
+    VL_String: ansistring;
     VL_MemString: TStringStream;
     VL_Mem: TMemoryStream;
 begin
@@ -122,11 +537,11 @@ begin
     for VL_i := 0 to Length(VL_bytes) - 1 do
     begin
         SetLength(VL_String, Length(VL_String) + 1);
-        VL_String[VL_i] := char(VL_bytes[VL_i]);
+        VL_String[VL_i + 1] := char(VL_bytes[VL_i]);
     end;
 
     VL_MemString := TStringStream.Create(VL_String);
-    VL_Mem:= TMemoryStream.Create;
+    VL_Mem := TMemoryStream.Create;
 
     VL_MemString.SaveToStream(VL_Mem);
 
@@ -137,14 +552,15 @@ begin
 end;
 
 
-function TDFuncoes.ZQueryToStrRxMemData(VO_ZQuery: TZQuery): string;
+function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
 var
     VL_MemDataset: TRxMemoryData;
 begin
+    Result :='';
     VL_MemDataset := TRxMemoryData.Create(nil);
     try
-       VO_ZQuery.First;
-        VL_MemDataset.LoadFromDataSet(VO_ZQuery,MaxInt,lmCopy);
+        VO_ZQuery.First;
+        VL_MemDataset.LoadFromDataSet(VO_ZQuery, MaxInt, lmCopy);
         Result := RxMemDataToStr(VL_MemDataset);
     finally
         VL_MemDataset.Free;
@@ -152,9 +568,9 @@ begin
 end;
 
 
-procedure TDFuncoes.CriarChaveTerminal(var VO_Chave: string);
+procedure CriarChaveTerminal(var VO_Chave: ansistring);
 var
-    VL_Chave: string;
+    VL_Chave: ansistring;
     I: integer;
 begin
     VL_Chave := '';
@@ -167,33 +583,240 @@ begin
     VO_Chave := Copy(VL_Chave, 1, 50);
 end;
 
-
-function TMensagem.GetComando(var VO_Tag: string; var VO_Dados: string): integer;
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+var
+    VL_Arquivo: TextFile;
 begin
+    if VP_Arquivo = '' then
+        exit;
+    EnterCriticalSection(VF_CriticoLog);
+    try
+        AssignFile(VL_Arquivo, PChar(VP_Arquivo));
+
+        if not FileExists(VP_Arquivo) then
+            Rewrite(VL_Arquivo)
+        else
+            Append(VL_Arquivo);
+
+        WriteLn(VL_Arquivo, '[ Data:' + DateToStr(now) + '] - [ Hora:' + TimeToStr(now) + '] - [ Linha:' + VP_Linha +
+            '] - [ Modulo_ID:' + IntToStr(VP_Modulo_ID) +
+            ']- [ TagComando:' + VP_Tag_Comando + '] - [ Programa:' + C_Programa + '] - [ Unit:' +
+            VP_Unit + '] - [ VersaoMensage:' + IntToStr(C_Mensagem) + '] - [ Versao:' + IntToStr(C_Versao[0]) + '.' +
+            IntToStr(C_Versao[1]) + '.' + IntToStr(C_Versao[1]) + '] -  [ CodigoErro:' +
+            IntToStr(VP_CodigoErro) + ']  - [ Ocorrencia:' + VP_Ocorrencia + '] - [ TMensagem:' + VP_Tag + ']');
+
+        CloseFile(VL_Arquivo);
+
+    finally
+        LeaveCriticalSection(VF_CriticoLog);
+    end;
+
+end;
+
+function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
+begin
+    case VP_Permissao of
+        pmA: Result := 'A';
+        pmC: Result := 'C';
+        pmU: Result := 'U';
+        pmS: Result := 'S';
+        else
+            Result := '';
+    end;
+end;
+
+function StrToPermissao(VP_Permissao: ansistring): TPermissao;
+begin
+    case VP_Permissao of
+        'A': Result := pmA;
+        'C': Result := pmC;
+        'U': Result := pmU;
+        'S': Result := pmS;
+        else
+            raise Exception.Create('Esse valor:"' + VP_Permissao + '" não é uma permissao');
+    end;
+
+end;
+
+function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
+begin
+    Result := Ord(VP_ConexaoStatus);
+end;
+
+function TransacaoStatusToInt(VP_TransacaoStatus: TTransacaoStatus): integer;
+begin
+    Result := Ord(VP_TransacaoStatus);
+end;
+
+function PinPadModeloToInt(VP_PinPadModelo: TPinPadModelo): integer;
+begin
+   Result := Ord(VP_PinPadModelo);
+end;
+
+function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
+begin
+    Result := '';
+    case VP_PinPadModelo of
+        pGERTEC_PPC930: Result := 'GERTEC_PPC930';
+        pNDF: Result := 'NDF';
+        else
+            raise Exception.Create('Esse valor:"' + IntToStr(PinPadModeloToInt(VP_PinPadModelo)) + '" não é um pinpad valido');
+    end;
+end;
+
+function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
+begin
+    case VP_PinPadModelo of
+        0: Result := pNDF;
+        1: Result := pGERTEC_PPC930;
+
+        else
+           Result:=pNDF;
+    end;
+
+end;
+
+function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
+begin
+    VP_PinPadModelo:=UpperCase(VP_PinPadModelo);
+    case VP_PinPadModelo of
+        'NDF': Result:=pNDF;
+        'GERTEC_PPC930':Result:= pGERTEC_PPC930;
+        else
+           Result:=pNDF;
+    end;
+
+
+end;
+
+function IntToTransacaoStatus(VP_TranscaoStatus: integer): TTransacaoStatus;
+begin
+    Result:=tsNaoLocalizada;
+
+    case VP_TranscaoStatus of
+        0: Result := tsEfetivada;
+        1: Result := tsNegada;
+        2: Result := tsCancelada;
+        3: Result := tsProcessando;
+        4: Result := tsAguardandoComando;
+        5: Result := tsNaoLocalizada;
+        6: Result := tsInicializada;
+        7: Result := tsComErro;
+
+        else
+            raise Exception.Create('Esse valor:"' + IntToStr(VP_TranscaoStatus) + '" não é um status valido');
+    end;
+
+end;
+
+
+function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
+begin
+    Result := csDesconectado;
+    case VP_ConexaoStatus of
+        0: Result := csDesconectado;
+        1: Result := csLink;
+        2: Result := csChaveado;
+        3: Result := csLogado;
+        4: Result := csNaoInicializado;
+        else
+            raise Exception.Create('Esse valor:"' + IntToStr(VP_ConexaoStatus) + '" não é um status valido');
+    end;
+
+end;
+
+function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
+begin
+    Result := Ord(VP_ConexaoTipo);
+end;
+
+function ConexaoTipoToStr(VP_ConexaoTipo: TConexaoTipo): string;
+begin
+    Result := '';
+    case VP_ConexaoTipo of
+        cnCaixa: Result := 'Caixa';
+        cnServico: Result := 'Servico';
+        else
+            raise Exception.Create('Esse valor:"' + IntToStr(ConexaoTipoToInt(VP_ConexaoTipo)) + '" não é um tipo valido');
+    end;
+
+end;
+
+function IntToConexaoTipo(VP_ConexaoTipo: integer): TConexaoTipo;
+begin
+    Result := cnNaoDefinido;
+    case VP_ConexaoTipo of
+        0: Result := cnCaixa;
+        1: Result := cnServico;
+        else
+            raise Exception.Create('Esse valor:"' + IntToStr(VP_ConexaoTipo) + '" não é um tipo valido');
+    end;
+
+end;
+
+
+procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean);
+var
+    I: int64;
+begin
+    if not Assigned(VO_TOrigemMemDataset) then
+        exit;
+    if not Assigned(VO_TDestinoMemDataset) then
+        exit;
+    if not VO_TOrigemMemDataset.Active then
+        exit;
+    if not VO_TDestinoMemDataset.Active then
+        exit;
+    if VL_Linha = False then
+        VO_TOrigemMemDataset.First;
+    while not VO_TOrigemMemDataset.EOF do
+    begin
+        for I := 0 to VO_TOrigemMemDataset.FieldCount - 1 do
+        begin
+            if VO_TDestinoMemDataset.FindField(VO_TOrigemMemDataset.Fields[I].FieldName) <> nil then
+            begin
+                if not (VO_TDestinoMemDataset.State in [dsInsert, dsEdit]) then
+                    VO_TDestinoMemDataset.Insert;
+                VO_TDestinoMemDataset.FindField(VO_TOrigemMemDataset.Fields[I].FieldName).AsString := VO_TOrigemMemDataset.Fields[I].AsString;
+            end;
+        end;
+        if VO_TDestinoMemDataset.State in [DsInsert, DsEdit] then
+            VO_TDestinoMemDataset.Post;
+        if VL_Linha then
+            Break;
+        VO_TOrigemMemDataset.Next;
+    end;
+
+end;
+
+
+function TMensagem.GetComando(var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
+begin
+    Result := 0;
     if Length(fTags) > 0 then
     begin
         VO_Tag := fTags[0].Tag;
         self.GetTag(VO_Tag, VO_Dados);
     end;
-    Result := 0;
 end;
 
-function TMensagem.GetComandoInt(var VO_Tag: integer; var VO_Dados: string): integer;
+function TMensagem.GetComandoInt(var VO_Tag: integer; var VO_Dados: ansistring): integer;
 begin
+    Result := 0;
     if Length(fTags) > 0 then
     begin
         VO_Tag := Hex2Dec(fTags[0].Tag);
         self.GetTag(fTags[0].Tag, VO_Dados);
     end;
-    Result := 0;
 end;
 
 
-function TMensagem.CarregaTags(VP_Dados: string): integer;
+function TMensagem.CarregaTags(VP_Dados: ansistring): integer;
 var
     VL_Qtd, VL_Resto, VL_Tamanho: longint;
 
 begin
+    Result := 0;
     try
         // zera tags
         SetLength(fTags, 0);
@@ -250,26 +873,26 @@ begin
                 Break;
 
         end;
-        Result := 0;
 
     except
         Result := 30;
     end;
 end;
 
-function TMensagem.TagToStr(var VO_Dados: string): integer;
+function TMensagem.TagToStr(var VO_Dados: ansistring): integer;
 var
     VL_Digitos, i: integer;
     VL_TamanhoPacote: longint;
-    VL_Dados: string;
+    VL_Dados: ansistring;
 
 begin
+
+    VL_Dados := '';
     if length(fTags) = 0 then
     begin
         Result := 23;
         Exit;
     end;
-    VL_Dados := '';
     for i := 0 to length(fTags) - 1 do
     begin
         VL_Dados := VL_Dados + fTags[i].Tag + fTags[i].Qt + IntToStr(fTags[i].Tamanho) + fTags[i].Dados;
@@ -284,13 +907,18 @@ begin
 
     VL_Dados := '0000' + HexStr((VL_Digitos), 1) + IntToStr(VL_TamanhoPacote) + VL_Dados;
     VO_Dados := VL_Dados;
+
+
     Result := 0;
 end;
 
-function TMensagem.GetTag(VP_Tag: string; var VO_Dados: string): integer;
+function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer;
 var
     i: integer;
 begin
+    //Tag não encontrada no pacote
+    Result := 29;
+
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
@@ -312,14 +940,34 @@ begin
             Exit;
         end;
     end;
-    //Tag não encontrada no pacote
-    Result := 29;
 end;
 
-function TMensagem.GetTag(VP_Tag: string; var VO_Dados: integer): integer;
+function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
+begin
+    Result := 0;
+    if Length(fTags) > VP_Posicao then
+    begin
+        VO_Tag := fTags[VP_Posicao].Tag;
+        VO_Dados := fTags[VP_Posicao].Dados;
+    end;
+end;
+
+function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: TTag): integer;
+begin
+    Result := 0;
+    if Length(fTags) > VP_Posicao then
+    begin
+        VO_Tag := fTags[VP_Posicao];
+    end;
+end;
+
+function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: int64): Integer;
 var
     i: integer;
 begin
+    //Tag não encontrada no pacote
+    Result := 29;
+
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
@@ -341,31 +989,62 @@ begin
             Exit;
         end;
     end;
-    //Tag não encontrada no pacote
-    Result := 29;
 end;
 
-function TMensagem.GetTagAsAstring(VP_Tag: string): string;
+function TMensagem.GetTagAsAstring(VP_Tag: ansistring): ansistring;
 var
-    VL_String: string;
+    VL_String: ansistring;
 begin
     Result := '';
+    VL_String := '';
     if GetTag(VP_Tag, VL_String) = 0 then
         Result := VL_String;
 end;
 
-function TMensagem.GetTagAsInteger(VP_Tag: string): integer;
+function TMensagem.Comando: ansistring;
+begin
+    Result:='';
+    if Length(fTags) > 0 then
+    begin
+        Result := fTags[0].Tag;
+    end;
+
+end;
+
+function TMensagem.ComandoDados: ansistring;
+begin
+    Result:='';
+    if Length(fTags) > 0 then
+    begin
+        Result := fTags[0].Dados;
+    end;
+
+end;
+
+function TMensagem.TagsAsString: ansistring;
+begin
+    Result := '';
+    TagToStr(Result);
+end;
+
+function TMensagem.TagCount: integer;
+begin
+    Result := Length(fTags) - 1;
+end;
+
+function TMensagem.GetTagAsInteger(VP_Tag: ansistring): integer;
 var
-    VL_String: string;
+    VL_String: ansistring;
 begin
     Result := 0;
+    VL_String := '';
     if GetTag(VP_Tag, VL_String) = 0 then
         if VL_String <> '' then
             Result := StrToInt(VL_String);
 end;
 
 
-function TMensagem.AddTag(VP_Tag, VP_Dados: string): integer;
+function TMensagem.AddTag(VP_Tag, VP_Dados: ansistring): integer;
 var
     i: integer;
 
@@ -378,6 +1057,7 @@ var
     end;
 
 begin
+    Result := 0;
 
     //Verifica se existe o pacote
     if length(fTags) = 0 then
@@ -391,7 +1071,6 @@ begin
         if fTags[i].Tag = VP_Tag then
         begin
             incluir(i);
-            Result := 0;
             Exit;
         end;
     end;
@@ -400,7 +1079,7 @@ begin
 
 end;
 
-function TMensagem.AddTag(VP_Tag: string; VP_Dados: integer): integer;
+function TMensagem.AddTag(VP_Tag: ansistring; VP_Dados: integer): integer;
 var
     i: integer;
 
@@ -413,7 +1092,7 @@ var
     end;
 
 begin
-
+     Result := 0;
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
@@ -426,7 +1105,6 @@ begin
         if fTags[i].Tag = VP_Tag then
         begin
             incluir(i);
-            Result := 0;
             Exit;
         end;
     end;
@@ -440,8 +1118,14 @@ begin
     SetLength(fTags, 0);
 end;
 
-function TMensagem.AddComando(VP_Tag, VP_Dados: string): integer;
+constructor TMensagem.Create;
 begin
+    inherited Create;
+end;
+
+function TMensagem.AddComando(VP_Tag, VP_Dados: ansistring): integer;
+begin
+    Result := 0;
 
     //Verifica se existe o pacote
     if length(fTags) = 0 then
@@ -452,97 +1136,14 @@ begin
     fTags[0].Tamanho := Length(VP_Dados);
     fTags[0].Dados := VP_Dados;
 
-    Result := 0;
+
 end;
 
 
-//function Des3(Acao,Pin,WK: string): string;
-//var
-//    Des: TDCP_3des;
-//    Key: array [1..16] of Byte;
-//    Dados: array [1..8] of Byte;
-//    Resultado: array [1..8] of Byte;
-//    p,i:integer;
+initialization
+    VF_Sequencia := 0;
+    InitCriticalSection(VF_CriticoLog);
 
-
-//begin
-//Result:='';
-
-// Des:=TDCP_3des.Create(nil);
-// try
-//  p:=1;
-
-//   for I := 1 to 16 do
-//    key[i]:=0;
-
-//  for I := 1 to Length(key) do
-//  begin
-//    Key[I]:=   strutils.Hex2Dec(Copy(WK,p,2));
-//    p:=p+2;
-//  end;
-
-// for I := 1 to 8 do
-//   Dados[i]:=0;
-
-// for I := 1 to 8 do
-//   Resultado[i]:=0;
-
-// Des.Init(key,length(key)*8,nil);
-
-// Result:='';
-
-// p:=1;
-
-//  for I := 1 to 8  do
-//  begin
-//    if Copy(Pin,p,2)<>'' then
-//    Dados[I]:= strutils.Hex2Dec(Copy(Pin,p,2));
-//    p:=p+2;
-//  end;
-
-
-// if Acao='D' then
-// Des.DecryptECB(dados,Resultado)
-// else
-// Des.EncryptECB(dados,Resultado);
-
-
-// for I := 1 to Length(Resultado) do
-//  begin
-//    Result:=Result+IntToHex(Resultado[i],2);
-//  end;
-
-
-// for I := 1 to 8 do
-//   Dados[i]:=0;
-
-// for I := 1 to 8 do
-//   Resultado[i]:=0;
-
-// p:=17;
-
-//  for I := 1 to 8  do
-//  begin
-//   if Copy(Pin,p,2)<>'' then
-//    Dados[I]:= strutils.Hex2Dec(Copy(Pin,p,2));
-//    p:=p+2;
-//  end;
-
-
-// if Acao='D' then
-// Des.DecryptECB(dados,Resultado)
-// else
-// Des.EncryptECB(dados,Resultado);
-
-
-// for I := 1 to 8 do
-//  begin
-//    Result:=Result+IntToHex(Resultado[i],2);
-//  end;
-
-// finally
-//  Des.Free;
-// end;
-//end;
-
+finalization
+    DoneCriticalSection(VF_CriticoLog);
 end.

@@ -3,30 +3,220 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="modulo_padrao.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="20"/>
+        <EditorIndex Value="6"/>
+        <CursorPos Y="17"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="modulo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DModulo"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="71"/>
+        <CursorPos X="41" Y="95"/>
+        <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DComunicador"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="85" Y="40"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="5"/>
+        <CursorPos X="5" Y="14"/>
+        <UsageCount Value="207"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="35"/>
+        <CursorPos X="52" Y="55"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\tef_lib\tef.pas"/>
+        <ComponentName Value="DTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="175"/>
+        <CursorPos X="3" Y="186"/>
+        <UsageCount Value="133"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\com_lib\com.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="24" Y="88"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\core\ZFunctionsStrings.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="639"/>
+        <CursorPos X="40" Y="656"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="28">
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="91" Column="88" TopLine="63"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="87" Column="73" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="96" Column="111" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="41" Column="117" TopLine="41"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="106" Column="64" TopLine="87"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="239" Column="119" TopLine="225"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="55" Column="200" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="239" Column="108" TopLine="225"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="41" Column="11" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="100" Column="102" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="62" Column="72" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="26" TopLine="31"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="122" Column="86" TopLine="103"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="100" Column="13" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="131" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="121" Column="69" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="99" Column="54" TopLine="99"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="54" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="46" Column="10" TopLine="27"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="248" Column="8" TopLine="247"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="46" Column="111" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="247" Column="4" TopLine="247"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="248" Column="14" TopLine="228"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="42" Column="17" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="109" Column="5" TopLine="101"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="51" Column="18" TopLine="20"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="42" Column="13" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="104" Column="2" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="15" TopLine="16"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\tef_lib\tef.pas"/>
+        <Line Value="174"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>

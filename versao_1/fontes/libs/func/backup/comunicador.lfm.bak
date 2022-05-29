@@ -3,8 +3,8 @@ object DComunicador: TDComunicador
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 317
-  HorizontalOffset = 1444
-  VerticalOffset = 351
+  HorizontalOffset = 2190
+  VerticalOffset = 337
   Width = 305
   object CriptoRsa: TLbRSA
     PrimeTestIterations = 20
@@ -18,38 +18,23 @@ object DComunicador: TDComunicador
     Left = 152
     Top = 16
   end
-  object IdTCPSolicita: TIdTCPClient
-    OnDisconnected = IdTCPSolicitaDisconnected
-    OnConnected = IdTCPSolicitaConnected
+  object IdTCPCliente: TIdTCPClient
+    OnDisconnected = IdTCPClienteDisconnected
+    OnConnected = IdTCPClienteConnected
     ConnectTimeout = 3000
     Port = 0
-    ReadTimeout = 60000
-    Left = 152
-    Top = 80
-  end
-  object IdTCPEscuta: TIdTCPClient
-    OnDisconnected = IdTCPEscutaDisconnected
-    OnConnected = IdTCPEscutaConnected
-    ConnectTimeout = 3000
-    Port = 0
-    ReadTimeout = -1
+    ReadTimeout = 1000
     Left = 152
     Top = 152
   end
-  object IdTCPServerCaixa: TIdTCPServer
+  object IdTCPServidor: TIdTCPServer
     Bindings = <>
     DefaultPort = 0
-    OnConnect = IdTCPServerCaixaConnect
-    OnExecute = IdTCPServerCaixaExecute
+    OnConnect = IdTCPServidorConnect
+    OnDisconnect = IdTCPServidorDisconnect
+    TerminateWaitTime = 0
+    OnExecute = IdTCPServidorExecute
     Left = 48
     Top = 152
-  end
-  object IdTCPServerLib: TIdTCPServer
-    Bindings = <>
-    DefaultPort = 0
-    OnConnect = IdTCPServerLibConnect
-    OnExecute = IdTCPServerLibExecute
-    Left = 48
-    Top = 80
   end
 end

@@ -3,7 +3,7 @@ library com_lib;
 {$mode objfpc}{$H+}
 
 uses
-  Classes, com, funcoes, comunicador
+  Interfaces, Classes, com, rxnew, funcoes, comunicador, def
   { you can add units after this };
 exports
       inicializar,

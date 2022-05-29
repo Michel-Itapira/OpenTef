@@ -3,9 +3,10 @@ library pinpad_lib;
 {$mode objfpc}{$H+}
 
 uses
-    Classes, pinpad, rxnew, funcoes;
+    Interfaces, Classes, pinpad, indylaz, rxnew, funcoes, def;
 exports
-    CarregaPinPad,
+    PinPadCarrega,
+    PinPadDescarrega,
     PinPadConectar,
     PinPadDesconectar,
     PinPadComando;

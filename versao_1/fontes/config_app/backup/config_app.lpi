@@ -26,6 +26,15 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="pl_LockBox"/>
+      </Item>
+      <Item>
+        <PackageName Value="rxdbgrid_print"/>
+      </Item>
+      <Item>
+        <PackageName Value="indylaz"/>
+      </Item>
+      <Item>
         <PackageName Value="rxnew"/>
       </Item>
       <Item>
@@ -64,6 +73,35 @@
         <ComponentName Value="fprincipal"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uPrincipal"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisatags.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FTags"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uPesquisaTags"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisaadquirentes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FAdquirente"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uPesquisaadquirentes"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisamoduloconf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FModuloConf"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uPesquisamoduloconf"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
@@ -95,6 +133,9 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dDEBUG"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>
@@ -106,6 +147,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EIdReadTimeout"/>
       </Item>
     </Exceptions>
   </Debugging>

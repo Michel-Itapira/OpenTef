@@ -5,16 +5,15 @@ unit utestepinpad;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, funcoes;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,Funcoes;
 type
 
     { TFTestePinPad }
-    TRespostaPinPad = procedure(VP_Mensagem: TMensagem);
-    TCarregaPinPad = function(VP_PinPad: TPinPadModelo; VP_CaminhoLib: ansistring; VP_Porta: ansistring;
-        var VO_RespostaPinPad: TRespostaPinPad): boolean; stdcall;
-    TPinPadConectar = function(): integer; stdcall;
+    TRespostaPinPad = procedure(VP_Processo_ID:Integer; VP_Mensagem: TMensagem);
+    TPinPadCarrega = function(VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
+    TPinPadConectar = function(var VO_Mensagem: PChar): integer; stdcall;
     TPinPadDesconectar = function(): integer; stdcall;
-    TPinPadComando = function(VP_Mensagem: ansistring; var VO_RespostaPinPad: TRespostaPinPad): integer; stdcall;
+    TPinPadComando = function(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
 
     TDescriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: ansistring): ansistring; stdcall;
     TEncriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: ansistring): ansistring; stdcall;
@@ -47,13 +46,14 @@ type
 
     end;
 
-procedure Resposta(VP_Mensagem: TMensagem);
+procedure Resposta(VP_Processo_ID:Integer;VP_Mensagem: TMensagem);
 
 var
     F_TestePinPad: TFTestePinPad;
     F_PinPad: THandle;
+    F_PPinPad:Pointer;
     F_Key: THandle;
-    F_CarregaPinPad: TCarregaPinPad;
+    F_PinPadCarrega: TPinPadCarrega;
     F_PinPadConectar: TPinPadConectar;
     F_PinPadDesconectar: TPinPadDesconectar;
     F_RespostaPinPad: TRespostaPinPad;
@@ -66,94 +66,13 @@ var
 
 implementation
 
+
 {$R *.lfm}
 
 { TFTestePinPad }
 
-procedure TFTestePinPad.BCarregaPinPadClick(Sender: TObject);
-var
-    VL_Caminho: ansistring;
-begin
 
-    VL_Caminho := PChar(ExtractFilePath(ParamStr(0)) + '..\pinpad_lib\win64\');
-    F_PinPad := LoadLibrary(VL_Caminho + 'pinpad_lib.dll');
-    if F_PinPad = 0 then
-        exit;
-    Pointer(F_CarregaPinPad) := GetProcAddress(F_PinPad, 'CarregaPinPad');
-    Pointer(F_PinPadConectar) := GetProcAddress(F_PinPad, 'PinPadConectar');
-    Pointer(F_PinPadDesconectar) := GetProcAddress(F_PinPad, 'PinPadDesconectar');
-    Pointer(F_PinPadComando) := GetProcAddress(F_PinPad, 'PinPadComando');
-    F_RespostaPinPad := @Resposta;
-    F_CarregaPinPad(pGERTEC_PPC930, VL_Caminho, EPorta.Text, F_RespostaPinPad);
-
-    VL_Caminho := PChar(ExtractFilePath(ParamStr(0)) + '..\key_lib\win64\');
-
-    F_Key := LoadLibrary(VL_Caminho + 'key_lib.dll');
-
-    Pointer(F_DescriptaSenha3Des) := GetProcAddress(F_Key, 'DescriptaSenha3Des');
-    Pointer(F_EncriptaSenha3Des) := GetProcAddress(F_Key, 'EncriptaSenha3Des');
-    Pointer(F_Wk) := GetProcAddress(F_Key, 'wkc');
-    Pointer(F_Imk) := GetProcAddress(F_Key, 'imk');
-
-
-end;
-
-procedure TFTestePinPad.BConectarClick(Sender: TObject);
-begin
-    F_PinPadConectar;
-end;
-
-procedure TFTestePinPad.BDesconectarClick(Sender: TObject);
-begin
-    F_PinPadDesconectar;
-end;
-
-procedure TFTestePinPad.BMostrarClick(Sender: TObject);
-var
-    VL_Mensagem: TMensagem;
-    VL_String: string;
-begin
-    VL_String := '';
-    VL_Mensagem := TMensagem.Create;
-    VL_Mensagem.AddComando('0047', EMostrar.Text);
-    VL_Mensagem.TagToStr(VL_String);
-    F_PinPadComando(VL_String, F_RespostaPinPad);
-end;
-
-procedure TFTestePinPad.BSenhaClick(Sender: TObject);
-var
-    VL_Mensagem: TMensagem;
-    VL_String: string;
-begin
-    VL_String := '';
-    VL_Mensagem := TMensagem.Create;
-    VL_Mensagem.AddComando('005A', '0');
-    VL_Mensagem.AddTag('005B', IntToStr(F_Imk()));
-    VL_Mensagem.AddTag('005C', ' DIGITE A SENHA');
-    VL_Mensagem.AddTag('005D', '4');
-    VL_Mensagem.AddTag('005E', '8');
-    VL_Mensagem.AddTag('005F', F_Wk());
-    VL_Mensagem.AddTag('0062', EPan.Text);
-    VL_Mensagem.TagToStr(VL_String);
-    F_PinPadComando(VL_String, F_RespostaPinPad);
-
-end;
-
-procedure TFTestePinPad.BTarjaClick(Sender: TObject);
-var
-    VL_Mensagem: TMensagem;
-    VL_String: string;
-begin
-    VL_String := '';
-    VL_Mensagem := TMensagem.Create;
-    VL_Mensagem.AddComando('0048', '0');
-    VL_Mensagem.AddTag('0051', '10');
-    VL_Mensagem.TagToStr(VL_String);
-    F_PinPadComando(VL_String, F_RespostaPinPad);
-
-end;
-
-procedure Resposta(VP_Mensagem: TMensagem);
+procedure Resposta(VP_Processo_ID:Integer;VP_Mensagem: TMensagem);
 var
     VL_Comando, VL_Dados: string;
 begin
@@ -181,5 +100,100 @@ begin
 
 
 end;
+
+
+procedure TFTestePinPad.BCarregaPinPadClick(Sender: TObject);
+var
+    VL_Caminho: ansistring;
+begin
+
+    VL_Caminho := PChar(ExtractFilePath(ParamStr(0)) + '..\pinpad_lib\win64\');
+    F_PinPad := LoadLibrary(VL_Caminho + 'pinpad_lib.dll');
+    if F_PinPad = 0 then
+        exit;
+    Pointer(F_PinPadCarrega) := GetProcAddress(F_PinPad, 'pinpadcarrega');
+    Pointer(F_PinPadConectar) := GetProcAddress(F_PinPad, 'pinpadconectar');
+    Pointer(F_PinPadDesconectar) := GetProcAddress(F_PinPad, 'pinpaddesconectar');
+    Pointer(F_PinPadComando) := GetProcAddress(F_PinPad, 'pinpadcomando');
+//    F_RespostaPinPad := @Resposta;
+    F_PinPadCarrega(pGERTEC_PPC930,Pchar(VL_Caminho),Pchar(EPorta.Text), @Resposta);
+
+    VL_Caminho := PChar(ExtractFilePath(ParamStr(0)) + '..\key_lib\win64\');
+
+    F_Key := LoadLibrary(VL_Caminho + 'key_lib.dll');
+
+    Pointer(F_DescriptaSenha3Des) := GetProcAddress(F_Key, 'DescriptaSenha3Des');
+    Pointer(F_EncriptaSenha3Des) := GetProcAddress(F_Key, 'EncriptaSenha3Des');
+    Pointer(F_Wk) := GetProcAddress(F_Key, 'wkc');
+    Pointer(F_Imk) := GetProcAddress(F_Key, 'imk');
+
+
+end;
+
+procedure TFTestePinPad.BConectarClick(Sender: TObject);
+    var
+        VO_Mensagem: PChar;
+begin
+    VO_Mensagem:='';
+    F_PinPadConectar(VO_Mensagem);
+
+    Memo1.Lines.Add(VO_Mensagem);
+end;
+
+procedure TFTestePinPad.BDesconectarClick(Sender: TObject);
+begin
+    F_PinPadDesconectar();
+end;
+
+procedure TFTestePinPad.BMostrarClick(Sender: TObject);
+var
+    VL_Mensagem: TMensagem;
+    VL_String: string;
+    VL_Char:PChar;
+begin
+    VL_String := '';
+    VL_Mensagem := TMensagem.Create;
+    VL_Mensagem.AddComando('0047', EMostrar.Text);
+    VL_Mensagem.TagToStr(VL_String);
+    F_PinPadComando(1,Pchar( VL_String),VL_Char, @Resposta);
+end;
+
+procedure TFTestePinPad.BSenhaClick(Sender: TObject);
+var
+    VL_Mensagem: TMensagem;
+    VL_String: string;
+    VL_Char:PChar;
+begin
+    VL_String := '';
+    VL_Char:='';
+    VL_Mensagem := TMensagem.Create;
+    VL_Mensagem.AddComando('005A', 'S');
+    VL_Mensagem.AddTag('005B', IntToStr(F_Imk()));
+    VL_Mensagem.AddTag('005C', ' DIGITE A SENHA');
+    VL_Mensagem.AddTag('005D', '4');
+    VL_Mensagem.AddTag('005E', '8');
+    VL_Mensagem.AddTag('005F', F_Wk());
+    VL_Mensagem.AddTag('0062', EPan.Text);
+    VL_Mensagem.TagToStr(VL_String);
+    F_PinPadComando(-1,Pchar( VL_String),VL_Char, @Resposta);
+
+end;
+
+procedure TFTestePinPad.BTarjaClick(Sender: TObject);
+var
+    VL_Mensagem: TMensagem;
+    VL_String: string;
+    VL_Char:PChar;
+begin
+    VL_String := '';
+    VL_Char:='';
+    VL_Mensagem := TMensagem.Create;
+    VL_Mensagem.AddComando('0048', '0');
+    VL_Mensagem.AddTag('0051', '60');
+    VL_Mensagem.TagToStr(VL_String);
+    F_PinPadComando(-1,Pchar( VL_String),VL_Char, @Resposta);
+
+end;
+
 
 end.

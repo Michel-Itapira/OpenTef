@@ -1,7 +1,7 @@
 object FTestePinPad: TFTestePinPad
-  Left = 1537
+  Left = 1916
   Height = 404
-  Top = 285
+  Top = 264
   Width = 506
   Caption = 'Teste Pin Pad'
   ClientHeight = 404
