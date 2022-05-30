@@ -1,0 +1,40 @@
+object DComunicador: TDComunicador
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
+  OldCreateOrder = False
+  Height = 317
+  HorizontalOffset = 2190
+  VerticalOffset = 337
+  Width = 305
+  object CriptoRsa: TLbRSA
+    PrimeTestIterations = 20
+    KeySize = aks128
+    Left = 48
+    Top = 16
+  end
+  object CriptoAes: TLbRijndael
+    CipherMode = cmECB
+    KeySize = ks256
+    Left = 152
+    Top = 16
+  end
+  object IdTCPCliente: TIdTCPClient
+    OnDisconnected = IdTCPClienteDisconnected
+    OnConnected = IdTCPClienteConnected
+    ConnectTimeout = 3000
+    Port = 0
+    ReadTimeout = 1000
+    Left = 152
+    Top = 152
+  end
+  object IdTCPServidor: TIdTCPServer
+    Bindings = <>
+    DefaultPort = 0
+    OnConnect = IdTCPServidorConnect
+    OnDisconnect = IdTCPServidorDisconnect
+    TerminateWaitTime = 0
+    OnExecute = IdTCPServidorExecute
+    Left = 48
+    Top = 152
+  end
+end

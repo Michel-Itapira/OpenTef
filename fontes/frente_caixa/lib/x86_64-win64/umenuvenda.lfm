@@ -1,0 +1,47 @@
+object F_MenuVenda: TF_MenuVenda
+  Left = 717
+  Height = 157
+  Top = 322
+  Width = 485
+  AutoSize = True
+  Caption = 'OpenTef'
+  ClientHeight = 157
+  ClientWidth = 485
+  OnClose = FormClose
+  LCLVersion = '2.2.0.4'
+  object Painel: TPanel
+    Left = 50
+    Height = 0
+    Top = 110
+    Width = 385
+    Align = alClient
+    BorderSpacing.Around = 50
+    BevelOuter = bvSpace
+    BorderWidth = 30
+    BorderStyle = bsSingle
+    TabOrder = 0
+  end
+  object GDados: TGroupBox
+    Left = 5
+    Height = 59
+    Top = 5
+    Width = 475
+    Align = alTop
+    BorderSpacing.Around = 5
+    Caption = 'Solicitação de dados'
+    ClientHeight = 39
+    ClientWidth = 471
+    TabOrder = 1
+    Visible = False
+    object EDados: TEdit
+      Left = 10
+      Height = 19
+      Top = 10
+      Width = 451
+      Align = alClient
+      BorderSpacing.Around = 10
+      ParentShowHint = False
+      TabOrder = 0
+    end
+  end
+end

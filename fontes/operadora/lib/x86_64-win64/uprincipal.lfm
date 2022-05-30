@@ -1,0 +1,110 @@
+object Form1: TForm1
+  Left = 1988
+  Height = 240
+  Top = 707
+  Width = 523
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 523
+  LCLVersion = '2.2.0.4'
+  object BInicializaDll: TButton
+    Left = 16
+    Height = 25
+    Top = 8
+    Width = 104
+    Caption = 'Inicializa DLL'
+    OnClick = BInicializaDllClick
+    TabOrder = 0
+  end
+  object BAtiva: TButton
+    Left = 16
+    Height = 25
+    Top = 40
+    Width = 75
+    Caption = 'Ativa'
+    OnClick = BAtivaClick
+    TabOrder = 1
+  end
+  object BDesativar: TButton
+    Left = 16
+    Height = 25
+    Top = 72
+    Width = 75
+    Caption = 'Desativar'
+    OnClick = BDesativarClick
+    TabOrder = 2
+  end
+  object Label1: TLabel
+    Left = 152
+    Height = 15
+    Top = 13
+    Width = 33
+    Caption = 'Chave'
+  end
+  object Label2: TLabel
+    Left = 152
+    Height = 15
+    Top = 38
+    Width = 59
+    Caption = 'Porta Caixa'
+  end
+  object EPortaCaixa: TRxSpinEdit
+    Left = 248
+    Height = 23
+    Top = 33
+    Width = 80
+    Value = 555
+    TabOrder = 3
+  end
+  object Label3: TLabel
+    Left = 152
+    Height = 15
+    Top = 63
+    Width = 69
+    Caption = 'Porta Serviço'
+  end
+  object Label4: TLabel
+    Left = 152
+    Height = 15
+    Top = 88
+    Width = 41
+    Caption = 'IP Caixa'
+  end
+  object EPortaServico: TRxSpinEdit
+    Left = 248
+    Height = 23
+    Top = 58
+    Width = 80
+    Value = 556
+    TabOrder = 5
+  end
+  object EIPCaixa: TEdit
+    Left = 248
+    Height = 23
+    Top = 83
+    Width = 176
+    TabOrder = 7
+  end
+  object EChave: TEdit
+    Left = 248
+    Height = 23
+    Top = 8
+    Width = 245
+    TabOrder = 8
+    Text = '123'
+  end
+  object Label5: TLabel
+    Left = 152
+    Height = 15
+    Top = 125
+    Width = 51
+    Caption = 'IP Servico'
+  end
+  object EIPServico: TEdit
+    Left = 248
+    Height = 23
+    Top = 120
+    Width = 176
+    TabOrder = 9
+  end
+end

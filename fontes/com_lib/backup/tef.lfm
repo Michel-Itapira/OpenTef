@@ -1,0 +1,14 @@
+object DTef: TDTef
+  OldCreateOrder = False
+  Height = 220
+  HorizontalOffset = 709
+  VerticalOffset = 270
+  Width = 291
+  object IdTCPClient1: TIdTCPClient
+    ConnectTimeout = 0
+    Port = 0
+    ReadTimeout = -1
+    Left = 39
+    Top = 17
+  end
+end
