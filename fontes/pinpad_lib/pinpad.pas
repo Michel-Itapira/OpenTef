@@ -239,7 +239,7 @@ begin
         while True do
         begin
             VL_Retorno := F_PinPad.PinPadLerSenha(VL_Dados, VP_Mensagem.GetTagAsInteger('005B'), VP_Mensagem.GetTagAsAstring(
-                '005F'), VP_Mensagem.GetTagAsAstring('0062'), VP_Mensagem.GetTagAsInteger('005D'), VP_Mensagem.GetTagAsInteger('005E'),
+                '005F'), VP_Mensagem.GetTagAsAstring('00D9'), VP_Mensagem.GetTagAsInteger('005D'), VP_Mensagem.GetTagAsInteger('005E'),
                 VP_Mensagem.GetTagAsAstring('005C'),VO_Mensagem);
             if VL_Retorno <> 0 then
             begin

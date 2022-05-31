@@ -20,8 +20,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="212"/>
-        <CursorPos X="77" Y="234"/>
+        <TopLine Value="209"/>
+        <CursorPos X="22" Y="217"/>
         <UsageCount Value="244"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,7 +31,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="898"/>
         <CursorPos Y="915"/>
-        <UsageCount Value="108"/>
+        <UsageCount Value="107"/>
       </Unit>
       <Unit>
         <Filename Value="..\mcom_lib\mcom.pas"/>
@@ -70,14 +70,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="144"/>
         <CursorPos X="49" Y="150"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="100"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\GitHub\OpenTef\versao_1\fontes\pinpad_lib\pinpad.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="164"/>
         <CursorPos X="39" Y="181"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="100"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
@@ -105,7 +105,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="5412"/>
         <CursorPos Y="5430"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="96"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -114,62 +114,34 @@
         <EditorIndex Value="3"/>
         <TopLine Value="85"/>
         <CursorPos Y="104"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="96"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="268" TopLine="247"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="269" TopLine="247"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1117" TopLine="1094"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1118" TopLine="1094"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="270" TopLine="247"/>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="234" TopLine="207"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="275" Column="83" TopLine="244"/>
+        <Caret Line="236" TopLine="207"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="254" TopLine="244"/>
+        <Caret Line="237" TopLine="207"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="256" TopLine="244"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="268" TopLine="247"/>
+        <Caret Line="239" Column="83" TopLine="207"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="272" TopLine="244"/>
+        <Caret Line="243" TopLine="219"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="288" Column="23" TopLine="267"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="254" TopLine="232"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="278" TopLine="256"/>
+        <Caret Line="245" TopLine="219"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
@@ -193,19 +165,51 @@
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="282" Column="69" TopLine="244"/>
+        <Caret Line="241" Column="12" TopLine="234"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="14" Column="5"/>
+        <Caret Line="229" TopLine="207"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="284" Column="85" TopLine="262"/>
+        <Caret Line="243" TopLine="207"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="280" TopLine="253"/>
+        <Caret Line="245" TopLine="208"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="268" TopLine="247"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="269" TopLine="247"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1117" TopLine="1094"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="246" TopLine="209"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="229" TopLine="209"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="243" TopLine="209"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="260" TopLine="238"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="262" TopLine="238"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
@@ -229,15 +233,11 @@
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="281" TopLine="253"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="270" TopLine="247"/>
+        <Caret Line="266" TopLine="244"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="234" Column="110" TopLine="211"/>
+        <Caret Line="229" TopLine="207"/>
       </Position>
     </JumpHistory>
     <RunParams>

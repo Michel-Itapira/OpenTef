@@ -58,8 +58,8 @@
         <ComponentName Value="DNucleo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <TopLine Value="423"/>
-        <CursorPos X="53" Y="424"/>
+        <TopLine Value="152"/>
+        <CursorPos X="57" Y="389"/>
         <UsageCount Value="223"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -69,8 +69,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="48"/>
-        <CursorPos X="41" Y="80"/>
+        <TopLine Value="861"/>
+        <CursorPos X="58" Y="844"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit>
@@ -226,6 +226,21 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\dbc\ZDbcCachedResultSet.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2234"/>
+        <CursorPos Y="2254"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\screen.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="227"/>
+        <CursorPos Y="247"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
         <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdIOHandler.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1723"/>
@@ -241,74 +256,18 @@
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
+        <ComponentName Value="DTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="1"/>
         <TopLine Value="395"/>
-        <CursorPos X="61" Y="426"/>
-        <UsageCount Value="14"/>
+        <CursorPos X="72" Y="408"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="24">
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1962" TopLine="1943"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="2001" TopLine="1981"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1964" Column="52" TopLine="1943"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="2001" TopLine="1981"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1962" TopLine="1943"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1989" Column="42" TopLine="1981"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1962" TopLine="1943"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="2009" TopLine="1881"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1926" Column="71" TopLine="1908"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1900" TopLine="1890"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1915" Column="67" TopLine="1892"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1896" TopLine="1889"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1897" TopLine="1889"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1898" TopLine="1889"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="1899" TopLine="1889"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
         <Caret Line="1900" TopLine="1889"/>
@@ -348,6 +307,86 @@
       <Position>
         <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
         <Caret Line="424" Column="53" TopLine="423"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="27" Column="17" TopLine="15"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="2273" Column="37" TopLine="2201"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="71" Column="19" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8028" Column="67" TopLine="8009"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8018" TopLine="8009"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8031" TopLine="8021"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8033" TopLine="8021"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8044" TopLine="8030"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8045" TopLine="8030"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8041" Column="59" TopLine="8018"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8018" TopLine="7995"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8031" TopLine="7995"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8033" TopLine="8020"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8044" TopLine="8032"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8045" TopLine="8032"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8047" TopLine="8032"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8049" TopLine="8032"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8031" TopLine="8009"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="8105" Column="87" TopLine="7729"/>
+      </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <Caret Line="15" Column="17"/>
       </Position>
     </JumpHistory>
     <RunParams>

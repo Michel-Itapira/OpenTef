@@ -46,8 +46,8 @@ type
         procedure LimpaTela;
     public
         F_Tabela: string;
-        F_Carregado : Boolean;
-        F_TagTipo : string;
+        F_Carregado: boolean;
+        F_TagTipo: string;
     end;
 
 
@@ -69,10 +69,10 @@ procedure TFTags.BPesquisarClick(Sender: TObject);
 var
     VL_Filtro: string;
 begin
-    if F_TagTipo='' then
-       VL_Filtro := ''
+    if F_TagTipo = '' then
+        VL_Filtro := ''
     else
-        VL_Filtro:='TAG_TIPO=(''*'+ F_TagTipo + '*'')';
+        VL_Filtro := 'TAG_TIPO=(''*' + F_TagTipo + '*'')';
 
     if MDTags.Active then
         MDTags.EmptyTable;
@@ -95,14 +95,14 @@ end;
 
 procedure TFTags.BCarregarClick(Sender: TObject);
 begin
-  F_Carregado := true;
-  close;
+    F_Carregado := True;
+    Close;
 end;
 
 procedure TFTags.FormShow(Sender: TObject);
 begin
     LimpaTela;
-    F_Carregado:=false;
+    F_Carregado := False;
 end;
 
 procedure TFTags.LimpaTela;

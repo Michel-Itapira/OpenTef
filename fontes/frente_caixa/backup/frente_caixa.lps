@@ -19,22 +19,11 @@
         <ComponentName Value="F_Principal"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="304"/>
-        <CursorPos X="99" Y="334"/>
+        <TopLine Value="313"/>
+        <CursorPos Y="327"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="utestepinpad.pas"/>
-        <ComponentName Value="FTestePinPad"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="61"/>
-        <CursorPos X="132" Y="99"/>
-        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="umenuvenda.pas"/>
@@ -48,16 +37,6 @@
         <UsageCount Value="238"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\..\teste\unit1.pas"/>
-        <ComponentName Value="Form1"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="4" Y="35"/>
-        <UsageCount Value="232"/>
-      </Unit>
-      <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
@@ -66,13 +45,33 @@
         <Loaded Value="True"/>
       </Unit>
       <Unit>
+        <Filename Value="utestepinpad.pas"/>
+        <ComponentName Value="FTestePinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="61"/>
+        <CursorPos X="132" Y="99"/>
+        <UsageCount Value="199"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\..\teste\unit1.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="4" Y="35"/>
+        <UsageCount Value="231"/>
+      </Unit>
+      <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="746"/>
-        <CursorPos Y="746"/>
+        <TopLine Value="884"/>
+        <CursorPos Y="906"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -82,16 +81,17 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="98"/>
         <CursorPos Y="123"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
         <ComponentName Value="DTef"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="52"/>
-        <CursorPos X="13"/>
+        <TopLine Value="199"/>
+        <CursorPos X="50" Y="219"/>
         <UsageCount Value="105"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -128,21 +128,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="4"/>
         <CursorPos Y="21"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\buttons.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="153"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customedit.inc"/>
         <EditorIndex Value="3"/>
         <TopLine Value="90"/>
         <CursorPos Y="109"/>
-        <UsageCount Value="79"/>
+        <UsageCount Value="83"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -151,8 +151,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="102"/>
-        <CursorPos Y="125"/>
+        <TopLine Value="124"/>
+        <CursorPos X="77" Y="147"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit>
@@ -160,7 +160,7 @@
         <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
         <EditorIndex Value="2"/>
         <TopLine Value="323"/>
-        <CursorPos X="113" Y="348"/>
+        <CursorPos Y="343"/>
         <UsageCount Value="139"/>
         <Loaded Value="True"/>
       </Unit>
@@ -169,7 +169,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="339"/>
         <CursorPos Y="356"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
@@ -177,129 +177,129 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2143"/>
         <CursorPos Y="2161"/>
-        <UsageCount Value="94"/>
+        <UsageCount Value="93"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\tef_lib\tef.pas"/>
-        <Caret Line="359" Column="91" TopLine="328"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1000" TopLine="976"/>
       </Position>
       <Position>
         <Filename Value="..\tef_lib\tef.pas"/>
-        <Caret Line="351" TopLine="328"/>
+        <Caret Line="302" TopLine="286"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="240" TopLine="334"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="999" TopLine="976"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="546" Column="5" TopLine="544"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1000" TopLine="976"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="546" Column="5" TopLine="544"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="304" TopLine="286"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="486" TopLine="473"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="306" TopLine="286"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="485" TopLine="472"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="312" TopLine="286"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="484" TopLine="471"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="313" TopLine="298"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="483" TopLine="470"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="321" TopLine="307"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="106" TopLine="84"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1020" TopLine="982"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="146" Column="15" TopLine="130"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1021" TopLine="983"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="415" Column="34" TopLine="403"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="906" TopLine="874"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="109" Column="29" TopLine="87"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="882" TopLine="874"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="231" Column="31" TopLine="193"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="907" TopLine="874"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="568" Column="5" TopLine="590"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="882" TopLine="874"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="43" Column="19" TopLine="15"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="907" TopLine="874"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="118" Column="68" TopLine="80"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1022" TopLine="999"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="148" Column="12" TopLine="125"/>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <Caret Line="147" Column="77" TopLine="124"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="239" Column="15" TopLine="233"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="906" TopLine="884"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="149" Column="15" TopLine="125"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="389" TopLine="364"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="240" Column="26" TopLine="240"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="283" TopLine="261"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="149" Column="11" TopLine="125"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="219" TopLine="197"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="118" Column="61" TopLine="112"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="236" TopLine="199"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="314" TopLine="292"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="306" TopLine="284"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="596" Column="21" TopLine="574"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="312" TopLine="284"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="240" Column="12" TopLine="217"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="313" TopLine="284"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="44" Column="63" TopLine="122"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="321" TopLine="284"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="119" Column="124" TopLine="96"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="306" TopLine="285"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="150" Column="92" TopLine="127"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="283" TopLine="261"/>
       </Position>
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="314" Column="92" TopLine="314"/>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="219" TopLine="197"/>
       </Position>
     </JumpHistory>
     <RunParams>

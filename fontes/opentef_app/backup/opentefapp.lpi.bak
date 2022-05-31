@@ -166,6 +166,7 @@
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf2"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>

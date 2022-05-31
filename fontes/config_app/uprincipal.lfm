@@ -199,9 +199,9 @@ object fprincipal: Tfprincipal
       Height = 659
       Top = 1
       Width = 1046
-      ActivePage = TabTag
+      ActivePage = TabModulo
       Align = alClient
-      TabIndex = 5
+      TabIndex = 4
       TabOrder = 0
       object TabCadastro: TTabSheet
         Caption = 'Gerenciador das Lojas'
@@ -631,7 +631,7 @@ object fprincipal: Tfprincipal
                 TabIndex = 0
                 TabOrder = 1
                 object TabMultLojaModulo: TTabSheet
-                  Caption = 'Configuração do Módulo da MultiLoja'
+                  Caption = 'Configuração da MultiLoja'
                   ClientHeight = 350
                   ClientWidth = 628
                   object PageMultiLojaVisualizaConfDadosFuncao: TPageControl
@@ -639,16 +639,16 @@ object fprincipal: Tfprincipal
                     Height = 340
                     Top = 5
                     Width = 622
-                    ActivePage = TabMultLojaTabFuncaoDados
+                    ActivePage = TabMultLojaTabModuloDados
                     Align = alClient
                     BorderSpacing.Left = 3
                     BorderSpacing.Top = 5
                     BorderSpacing.Right = 3
                     BorderSpacing.Bottom = 5
-                    TabIndex = 1
+                    TabIndex = 0
                     TabOrder = 0
                     object TabMultLojaTabModuloDados: TTabSheet
-                      Caption = 'Dados da Configuração do Módulo MultiLoja'
+                      Caption = 'Configuração do Módulo da MultiLoja'
                       ClientHeight = 312
                       ClientWidth = 614
                       OnShow = TabMultLojaTabModuloDadosShow
@@ -946,7 +946,7 @@ object fprincipal: Tfprincipal
                       end
                     end
                     object TabMultLojaTabFuncaoDados: TTabSheet
-                      Caption = 'Funções da Configuração do Módulo MultiLoja'
+                      Caption = 'Funções do Módulo da MultiLoja'
                       ClientHeight = 312
                       ClientWidth = 614
                       OnShow = TabMultLojaTabFuncaoDadosShow
@@ -1347,13 +1347,13 @@ object fprincipal: Tfprincipal
                 Height = 342
                 Top = 234
                 Width = 651
-                ActivePage = TabLojaFuncao
+                ActivePage = TabLojaTabModulo
                 Align = alBottom
                 BorderSpacing.Around = 5
-                TabIndex = 1
+                TabIndex = 0
                 TabOrder = 0
                 object TabLojaTabModulo: TTabSheet
-                  Caption = 'Dados do Módulo'
+                  Caption = 'Configuração da Loja'
                   ClientHeight = 314
                   ClientWidth = 643
                   object PageLojaVizualizarConfModuloFuncao: TPageControl
@@ -1361,13 +1361,13 @@ object fprincipal: Tfprincipal
                     Height = 304
                     Top = 5
                     Width = 633
-                    ActivePage = TabLojaTabFuncaoDados
+                    ActivePage = TabLojaTabModuloDados
                     Align = alClient
                     BorderSpacing.Around = 5
-                    TabIndex = 1
+                    TabIndex = 0
                     TabOrder = 0
                     object TabLojaTabModuloDados: TTabSheet
-                      Caption = 'Dados da Configuração do Módulo Loja'
+                      Caption = 'Configuração do Módulo da Loja'
                       ClientHeight = 276
                       ClientWidth = 625
                       OnShow = TabLojaTabModuloDadosShow
@@ -1667,7 +1667,7 @@ object fprincipal: Tfprincipal
                       end
                     end
                     object TabLojaTabFuncaoDados: TTabSheet
-                      Caption = 'Funções da Configuração do Módulo Loja'
+                      Caption = 'Funções do Módulo da Loja'
                       ClientHeight = 276
                       ClientWidth = 625
                       OnShow = TabLojaTabFuncaoDadosShow
@@ -1852,7 +1852,7 @@ object fprincipal: Tfprincipal
                   end
                 end
                 object TabLojaFuncao: TTabSheet
-                  Caption = 'Dados da Função'
+                  Caption = 'Funções da Loja'
                   ClientHeight = 314
                   ClientWidth = 643
                   OnShow = TabLojaFuncaoShow
@@ -2920,7 +2920,7 @@ object fprincipal: Tfprincipal
           TabIndex = 0
           TabOrder = 5
           object TabPinPadTabDadosFuncao: TTabSheet
-            Caption = 'Dados da Função'
+            Caption = 'Função do PinPad'
             ClientHeight = 237
             ClientWidth = 991
             OnShow = TabPinPadTabDadosFuncaoShow
@@ -3711,11 +3711,11 @@ object fprincipal: Tfprincipal
           Height = 251
           Top = 360
           Width = 999
-          ActivePage = TabPdvTabDadosFuncao
-          TabIndex = 1
+          ActivePage = TabPdvTabDadosModulo
+          TabIndex = 0
           TabOrder = 5
           object TabPdvTabDadosModulo: TTabSheet
-            Caption = 'Dados do Módulo'
+            Caption = 'Configurações Módulo do PDV'
             ClientHeight = 223
             ClientWidth = 991
             OnShow = TabPdvTabDadosModuloShow
@@ -4069,7 +4069,7 @@ object fprincipal: Tfprincipal
             end
           end
           object TabPdvTabDadosFuncao: TTabSheet
-            Caption = 'Dados da Função'
+            Caption = 'Funções Módulo do PDV'
             ClientHeight = 223
             ClientWidth = 991
             OnShow = TabPdvTabDadosFuncaoShow
@@ -5240,7 +5240,7 @@ object fprincipal: Tfprincipal
             TabIndex = 0
             TabOrder = 0
             object TabConfiguracao: TTabSheet
-              Caption = 'Módulo Configuração'
+              Caption = 'Configurações do Módulo'
               ClientHeight = 460
               ClientWidth = 792
               OnContextPopup = TabConfiguracaoContextPopup
@@ -5425,7 +5425,7 @@ object fprincipal: Tfprincipal
                 TabIndex = 1
                 TabOrder = 4
                 object TabModuloTabDadosModulo: TTabSheet
-                  Caption = 'Dados da configuração'
+                  Caption = 'Dados da Configuração'
                   ClientHeight = 260
                   ClientWidth = 773
                   object GroupBox1: TGroupBox
@@ -5850,7 +5850,7 @@ object fprincipal: Tfprincipal
                   object TabModuloTabDadosFuncaoLTitulo: TLabel
                     Left = 8
                     Height = 21
-                    Top = 9
+                    Top = 6
                     Width = 404
                     Caption = 'Funções Cadastradas Para a Configuração do Módulo'
                     Font.Height = -16
@@ -5858,26 +5858,26 @@ object fprincipal: Tfprincipal
                     ParentFont = False
                   end
                   object TabModuloTabDadosFuncaoLFiltro: TLabel
-                    Left = 11
+                    Left = 276
                     Height = 15
-                    Top = 40
+                    Top = 37
                     Width = 115
                     Caption = 'Filtrar por Descrição:'
                     Font.Style = [fsBold]
                     ParentFont = False
                   end
                   object TabModuloTabDadosFuncaoEFiltro: TEdit
-                    Left = 11
+                    Left = 276
                     Height = 23
-                    Top = 60
-                    Width = 421
+                    Top = 57
+                    Width = 269
                     CharCase = ecUppercase
                     OnChange = TabModuloTabDadosFuncaoEFiltroChange
                     TabOrder = 0
                     Text = 'TABFUNCAOEFILTRO'
                   end
                   object TabModuloTabDadosFuncaoCKSelecionada: TCheckBox
-                    Left = 448
+                    Left = 560
                     Height = 19
                     Top = 60
                     Width = 207
@@ -5890,7 +5890,7 @@ object fprincipal: Tfprincipal
                     Left = 8
                     Height = 158
                     Top = 88
-                    Width = 733
+                    Width = 760
                     ColumnDefValues.BlobText = '(blob)'
                     TitleButtons = False
                     AutoSort = True
@@ -6024,11 +6024,36 @@ object fprincipal: Tfprincipal
                     TabOrder = 2
                     OnCellClick = TabModuloTabDadosFuncaoGridCellClick
                   end
+                  object TabModuloTabDadosFuncaoETipoFiltro: TComboBox
+                    Left = 8
+                    Height = 23
+                    Top = 57
+                    Width = 256
+                    ItemHeight = 15
+                    Items.Strings = (
+                      'NÃO DEFINIDO'
+                      'COMANDO'
+                      'MENU_PDV'
+                      'MENU_OPERACIONAL'
+                      'PINPAD_FUNC'
+                    )
+                    TabOrder = 3
+                    Text = 'TabModuloTabDadosFuncaoETipoFiltro'
+                  end
+                  object TabModuloTabDadosFuncaoLTipoFiltro: TLabel
+                    Left = 8
+                    Height = 15
+                    Top = 37
+                    Width = 128
+                    Caption = 'Filtro da Função da Tag:'
+                    Font.Style = [fsBold]
+                    ParentFont = False
+                  end
                 end
               end
             end
             object TabModuloFuncao: TTabSheet
-              Caption = 'Módulo Funções'
+              Caption = 'Funções do Módulo'
               ClientHeight = 460
               ClientWidth = 792
               OnShow = TabModuloFuncaoShow
@@ -6582,14 +6607,14 @@ object fprincipal: Tfprincipal
           object TabTagLID: TLabel
             Left = 72
             Height = 15
-            Top = 22
+            Top = 53
             Width = 14
             Caption = 'ID:'
           end
           object TabTagEID: TEdit
             Left = 96
             Height = 23
-            Top = 17
+            Top = 48
             Width = 77
             CharCase = ecUppercase
             ReadOnly = True
@@ -6599,46 +6624,37 @@ object fprincipal: Tfprincipal
           object TabTagETagDefinicao: TEdit
             Left = 96
             Height = 23
-            Top = 99
+            Top = 125
             Width = 395
             CharCase = ecUppercase
-            TabOrder = 2
+            TabOrder = 1
             Text = 'EDIT2'
           end
           object TabTagLTagDefinicao: TLabel
             Left = 33
             Height = 15
-            Top = 102
+            Top = 128
             Width = 53
             Caption = 'Definição:'
           end
           object TabTagLTagObs: TLabel
             Left = 62
             Height = 15
-            Top = 208
+            Top = 240
             Width = 24
             Caption = 'Obs:'
           end
           object TabTagLTagTipo: TLabel
             Left = 21
             Height = 15
-            Top = 59
+            Top = 88
             Width = 65
             Caption = 'Tipo da Tag:'
-          end
-          object TabTagETagTipo: TEdit
-            Left = 96
-            Height = 23
-            Top = 56
-            Width = 395
-            CharCase = ecUppercase
-            TabOrder = 1
-            Text = 'EDIT4'
           end
           object TabTagETagObs: TMemo
             Left = 96
             Height = 129
-            Top = 177
+            Top = 209
             Width = 395
             CharCase = ecUppercase
             Font.Height = -13
@@ -6646,35 +6662,35 @@ object fprincipal: Tfprincipal
               ''
             )
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 2
           end
           object TabTagLTagNumero: TLabel
             Left = 288
             Height = 15
-            Top = 22
+            Top = 53
             Width = 69
             Caption = 'Tag Número:'
           end
           object TabTagETagNumero: TEdit
             Left = 362
             Height = 23
-            Top = 17
+            Top = 48
             Width = 129
             CharCase = ecUppercase
-            TabOrder = 4
+            TabOrder = 3
             Text = 'EDIT1'
           end
           object TabTagLTagTipoDados: TLabel
             Left = 7
             Height = 15
-            Top = 144
+            Top = 171
             Width = 79
             Caption = 'Tipo de Dados:'
           end
           object TabTagCTagTipoDados: TComboBox
             Left = 96
             Height = 23
-            Top = 141
+            Top = 168
             Width = 395
             ItemHeight = 15
             Items.Strings = (
@@ -6687,13 +6703,13 @@ object fprincipal: Tfprincipal
               'BOOLEANO'
               'IMPRESSAO'
             )
-            TabOrder = 5
+            TabOrder = 4
             Text = 'TabTagCTagTipoDados'
           end
           object TabTagETagDados: TMemo
             Left = 96
             Height = 160
-            Top = 323
+            Top = 355
             Width = 395
             CharCase = ecUppercase
             Font.Height = -13
@@ -6701,14 +6717,40 @@ object fprincipal: Tfprincipal
               ''
             )
             ParentFont = False
-            TabOrder = 6
+            TabOrder = 5
           end
           object TabTagLTagObs1: TLabel
             Left = 50
             Height = 15
-            Top = 368
+            Top = 400
             Width = 36
             Caption = 'Dados:'
+          end
+          object TabTagCkPadrao: TCheckBox
+            Left = 326
+            Height = 19
+            Top = 14
+            Width = 165
+            Caption = 'Tag Padrão para o OpenTef'
+            TabOrder = 6
+          end
+          object TabTagETagTipo: TComboBox
+            Left = 96
+            Height = 23
+            Top = 86
+            Width = 395
+            ItemHeight = 15
+            Items.Strings = (
+              'NÃO DEFINIDO'
+              'COMANDO'
+              'DADOS'
+              'MENU_PDV'
+              'MENU_OPERACIONAL'
+              'PINPAD_FUNC'
+              'MODULO'
+            )
+            TabOrder = 7
+            Text = 'TabTagETagTipo'
           end
         end
         object TabTagBExcluir: TBitBtn

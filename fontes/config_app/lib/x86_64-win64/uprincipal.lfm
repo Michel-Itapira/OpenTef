@@ -639,13 +639,13 @@ object fprincipal: Tfprincipal
                     Height = 340
                     Top = 5
                     Width = 622
-                    ActivePage = TabMultLojaTabFuncaoDados
+                    ActivePage = TabMultLojaTabModuloDados
                     Align = alClient
                     BorderSpacing.Left = 3
                     BorderSpacing.Top = 5
                     BorderSpacing.Right = 3
                     BorderSpacing.Bottom = 5
-                    TabIndex = 1
+                    TabIndex = 0
                     TabOrder = 0
                     object TabMultLojaTabModuloDados: TTabSheet
                       Caption = 'Dados da Configuração do Módulo MultiLoja'
@@ -1347,10 +1347,10 @@ object fprincipal: Tfprincipal
                 Height = 342
                 Top = 234
                 Width = 651
-                ActivePage = TabLojaFuncao
+                ActivePage = TabLojaTabModulo
                 Align = alBottom
                 BorderSpacing.Around = 5
-                TabIndex = 1
+                TabIndex = 0
                 TabOrder = 0
                 object TabLojaTabModulo: TTabSheet
                   Caption = 'Dados do Módulo'
@@ -1361,10 +1361,10 @@ object fprincipal: Tfprincipal
                     Height = 304
                     Top = 5
                     Width = 633
-                    ActivePage = TabLojaTabFuncaoDados
+                    ActivePage = TabLojaTabModuloDados
                     Align = alClient
                     BorderSpacing.Around = 5
-                    TabIndex = 1
+                    TabIndex = 0
                     TabOrder = 0
                     object TabLojaTabModuloDados: TTabSheet
                       Caption = 'Dados da Configuração do Módulo Loja'
@@ -3711,8 +3711,8 @@ object fprincipal: Tfprincipal
           Height = 251
           Top = 360
           Width = 999
-          ActivePage = TabPdvTabDadosFuncao
-          TabIndex = 1
+          ActivePage = TabPdvTabDadosModulo
+          TabIndex = 0
           TabOrder = 5
           object TabPdvTabDadosModulo: TTabSheet
             Caption = 'Dados do Módulo'
@@ -5421,8 +5421,8 @@ object fprincipal: Tfprincipal
                 Height = 288
                 Top = 168
                 Width = 781
-                ActivePage = TabModuloTabDadosFuncao
-                TabIndex = 1
+                ActivePage = TabModuloTabDadosModulo
+                TabIndex = 0
                 TabOrder = 4
                 object TabModuloTabDadosModulo: TTabSheet
                   Caption = 'Dados da configuração'

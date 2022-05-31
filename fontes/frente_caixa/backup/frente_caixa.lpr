@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, datetimectrls, uprincipal, rxnew, umenuvenda, Unit1, indylaz, def, funcoes;
+  Forms, datetimectrls, uprincipal, rxnew, umenuvenda, indylaz, def;
 
 {$R *.res}
 
@@ -19,8 +19,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TF_Principal, F_Principal);
-  Application.CreateForm(TFTestePinPad, F_TestePinPad);
-  Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
 

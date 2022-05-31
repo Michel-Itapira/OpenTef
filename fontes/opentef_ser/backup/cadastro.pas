@@ -829,12 +829,14 @@ begin
                             'TAG_TIPO,' +
                             'DEFINICAO,' +
                             'TIPO_DADOS,' +
+                            'PADRAO,' +
                             'OBS,' +
                             'DADOS)VALUES(''' +
                             VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''',''' +
                             VL_Tabela.FieldByName('TAG_TIPO').AsString + ''',''' +
                             VL_Tabela.FieldByName('DEFINICAO').AsString + ''',''' +
                             VL_Tabela.FieldByName('TIPO_DADOS').AsString + ''',''' +
+                            VL_Tabela.FieldByName('PADRAO').AsString + ''',''' +
                             VL_Tabela.FieldByName('OBS').AsString + ''',''' +
                             VL_Tabela.FieldByName('DADOS').AsString + ''')';
 
@@ -2269,9 +2271,8 @@ begin
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text :=
                         'SELECT (CASE WHEN (LF.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,LF.ID,LF.LOJA_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,LF.HABILITADO FROM TAG T, LOJA_FUNCAO LF where LF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''C'' '
-                        +
-                        'AND LF.LOJA_ID=' + IntToStr(VL_Dados) +
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,LF.HABILITADO FROM TAG T, LOJA_FUNCAO LF where LF.TAG_NUMERO=T.TAG_NUMERO and '+
+                        'T.TAG_TIPO=''C'' AND LF.LOJA_ID=' + IntToStr(VL_Dados) +
                         ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' FROM TAG T where ' +
                         'T.TAG_TIPO=''C'' AND (select COUNT(*) FROM LOJA_FUNCAO LF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND LF2.LOJA_ID='
                         +
@@ -2348,9 +2349,7 @@ begin
                         'T.TAG_TIPO=''C'' AND M.LOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) +
                         ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' from TAG T where ' +
                         'T.TAG_TIPO=''C'' AND (select COUNT(*) from LOJA_MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.LOJA_MODULO_CONF_ID='
-                        +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        +IntToStr(VL_Dados) + ' AND T2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2360,7 +2359,7 @@ begin
                 if VP_Mensagem.GetTag('006E', VL_Dados) = 0 then //pesquisa a tag pelo TAG_ID 0=todas
                 begin
                     VL_TTabela.Close;
-                    VL_TTabela.SQL.Text := 'SELECT *,CAST(DADOS AS VARCHAR(500)) AS DADOS_F FROM TAG WHERE ((ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) + ' is not null) and ' +
+                    VL_TTabela.SQL.Text := 'SELECT T.*,CAST(T.DADOS AS VARCHAR(500)) AS DADOS_F FROM TAG T WHERE ((ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) + ' is not null) and ' +
                         '((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
                     VL_TTabela.Open;
 
@@ -2403,13 +2402,13 @@ begin
 
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (PF.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,PF.ID,PF.PINPAD_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO FROM TAG T, PINPAD_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''C'' '
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO FROM TAG T, PINPAD_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''PINPAD_FUNC'' '
                         +
                         'AND PF.PINPAD_ID=' + IntToStr(VL_Dados) +
                         ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' FROM TAG T where ' +
-                        'T.TAG_TIPO=''C'' AND (select COUNT(*) FROM PINPAD_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PINPAD_ID=' +
+                        'T.TAG_TIPO=''PINPAD_FUNC'' AND (select COUNT(*) FROM PINPAD_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PINPAD_ID=' +
                         IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''C'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T2.TAG_TIPO=''PINPAD_FUNC'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2440,13 +2439,13 @@ begin
 
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (PF.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,PF.ID,PF.PDV_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO FROM TAG T, PDV_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''C'' '
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO FROM TAG T, PDV_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''MENU_PDV'' '
                         +
                         'AND PF.PDV_ID=' + IntToStr(VL_Dados) +
                         ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' FROM TAG T where ' +
-                        'T.TAG_TIPO=''C'' AND (select COUNT(*) FROM PDV_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PDV_ID=' +
+                        'T.TAG_TIPO=''MENU_PDV'' AND (select COUNT(*) FROM PDV_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PDV_ID=' +
                         IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''C'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T2.TAG_TIPO=''MENU_PDV'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -8047,7 +8046,7 @@ begin
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
 
-            VP_Mensagem.GetTag('00C9', VL_ID); //tag_id
+            VP_Mensagem.GetTag('006E', VL_ID); //tag_id
 
             if VL_ID < 1 then
             begin
@@ -8105,6 +8104,7 @@ begin
                     'DEFINICAO=''' + VL_Tabela.FieldByName('DEFINICAO').AsString + ''',' +
                     'TIPO_DADOS=''' + VL_Tabela.FieldByName('TIPO_DADOS').AsString + ''',' +
                     'OBS=''' + VL_Tabela.FieldByName('OBS').AsString + ''',' +
+                    'PADRAO=''' + VL_Tabela.FieldByName('PADRAO').AsString + ''',' +
                     'DADOS=''' + VL_Tabela.FieldByName('DADOS').AsString + '''' +
                     ' WHERE ' +
                     'ID=' + IntToStr(VL_ID);

@@ -57,6 +57,8 @@ type
 
     Tfprincipal = class(TForm)
         BConectar: TBitBtn;
+        TabTagETagTipo: TComboBox;
+        TabTagCkPadrao: TCheckBox;
         DSLojaModuloConfFuncao: TDataSource;
         DSMultiLojaModuloConfFuncao: TDataSource;
         MDLojaModuloConfFuncaoDEFINICAO: TStringField;
@@ -274,8 +276,8 @@ type
         TabTagEFiltro: TEdit;
         TabTagEID: TEdit;
         TabAdquirenteEContato: TMemo;
-        TabTagETagTipo: TEdit;
         TabAdquirenteEDescricao: TEdit;
+        TabModuloTabDadosFuncaoETipoFiltro: TComboBox;
         TabTagGrid: TDBGrid;
         TabAdquirenteGrid: TDBGrid;
         TabAdquirenteLFiltro: TLabel;
@@ -289,6 +291,7 @@ type
         TabAdquirenteLContato: TLabel;
         TabTagLTagTipo: TLabel;
         TabAdquirenteLDescricao: TLabel;
+        TabModuloTabDadosFuncaoLTipoFiltro: TLabel;
         TabTagLTagTipoDados: TLabel;
         TabTagLTitulo: TLabel;
         TabPdvModuloCkHabilitar: TCheckBox;
@@ -780,9 +783,21 @@ begin
         end;
         VL_Senha := ESenha.Text;
         case CTipo.ItemIndex of
-            Ord(pmC): VL_Tipo := 'C';
-            Ord(pmA): VL_Tipo := 'A';
-            Ord(pmU): VL_Tipo := 'U';
+            Ord(pmC):
+            begin
+                VL_Tipo := 'C';
+                F_TipoConfigurador := pmC;
+            end;
+            Ord(pmA):
+            begin
+                VL_Tipo := 'A';
+                F_TipoConfigurador := pmA;
+            end;
+            Ord(pmU):
+            begin
+                VL_Tipo := 'U';
+                F_TipoConfigurador := pmU;
+            end
             else
                 VL_Tipo := 'ndf';
         end;
@@ -805,7 +820,6 @@ begin
         end;
 
         F_OpenTefStatus(VL_Status);
-
 
         if Ord(csLogado) = VL_Status then
         begin
@@ -2677,6 +2691,7 @@ procedure Tfprincipal.FormCreate(Sender: TObject);
 begin
     F_Navegar := True;
     F_Permissao := False;
+    F_TipoConfigurador := pmS;
 
     F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
     Pointer(F_Inicializar) := GetProcAddress(F_ComLib, 'inicializar');
@@ -2751,7 +2766,7 @@ begin
     if F_Permissao = False then
         exit;
     //monta configurador
-    if (F_Permissao) then
+    if ((F_Permissao) and (F_TipoConfigurador = pmC)) then
     begin
         TabConf.TabVisible := True;
         TabModulo.TabVisible := True;
@@ -2941,8 +2956,12 @@ begin
         TabTagETagTipo.Text := MDTags.FieldByName('TAG_TIPO').AsString;
         TabTagETagDefinicao.Text := MDTags.FieldByName('DEFINICAO').AsString;
         TabTagETagObs.Lines.Text := MDTags.FieldByName('OBS').AsString;
-        TabTagETagDados.Lines.Text := MDTags.FieldByName('DADOS').AsWideString;
+        TabTagETagDados.Lines.Text := MDTags.FieldByName('DADOS_F').AsString;
         TabTagCTagTipoDados.Text := MDTags.FieldByName('TIPO_DADOS').AsString;
+        if MDTags.FieldByName('PADRAO').AsString = 'T' then
+            TabTagCkPadrao.Checked := True
+        else
+            TabTagCkPadrao.Checked := False;
     end;
     //TabAdquirente
     if (MDAdquirente.Active) then
@@ -3377,8 +3396,19 @@ begin
 
             MDTags.FieldByName('ID').AsInteger := VL_ID;
             MDTags.FieldByName('TAG_NUMERO').AsString := TabTagETagNumero.Text;
-            MDTags.FieldByName('TAG_TIPO').AsString := TabTagETagTipo.Text;
             MDTags.FieldByName('DEFINICAO').AsString := TabTagETagDefinicao.Text;
+
+            case TabTagETagTipo.ItemIndex of
+                1: MDTags.FieldByName('TAG_TIPO').AsString := 'COMANDO';
+                2: MDTags.FieldByName('TAG_TIPO').AsString := 'DADOS';
+                3: MDTags.FieldByName('TAG_TIPO').AsString := 'MENU_PDV';
+                4: MDTags.FieldByName('TAG_TIPO').AsString := 'MENU_OPERACIONAL';
+                5: MDTags.FieldByName('TAG_TIPO').AsString := 'PINPAD_FUNC';
+                6: MDTags.FieldByName('TAG_TIPO').AsString := 'MODULO';
+                else
+                    MDTags.FieldByName('TAG_TIPO').AsString := 'NDF';
+            end;
+
             case TabTagCTagTipoDados.ItemIndex of
                 1: MDTags.FieldByName('TIPO_DADOS').AsString := 'TEXTO';
                 2: MDTags.FieldByName('TIPO_DADOS').AsString := 'NUMERICO';
@@ -3390,8 +3420,14 @@ begin
                 else
                     MDTags.FieldByName('TIPO_DADOS').AsString := 'NDF';
             end;
+
             MDTags.FieldByName('OBS').AsString := TabTagETagObs.Lines.Text;
-            MDTags.FieldByName('DADOS').AsString := TabTagETagDados.Lines.Text;
+            MDTags.FieldByName('DADOS_F').AsString := TabTagETagDados.Lines.Text;
+            MDTags.FieldByName('DADOS').AsVariant := MDTags.FieldByName('DADOS_F').AsVariant;
+            if TabTagCkPadrao.Checked then
+                MDTags.FieldByName('PADRAO').AsString := 'T'
+            else
+                MDTags.FieldByName('PADRAO').AsString := 'F';
             MDTags.Post;
             Result := True;
         end
@@ -3583,7 +3619,6 @@ begin
             VL_Mensagem.AddTag('006C', 0); //modulo_id
         end
         else
-
             VL_Mensagem.AddTag(VP_Tag, VP_DadosN); //pesquisa tabela por id
 
 
@@ -3598,7 +3633,6 @@ begin
         end;
         VL_Mensagem.Limpar;
         VL_Mensagem.CarregaTags(VL_Tag);
-
 
         VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
 
@@ -4012,7 +4046,10 @@ begin
     TabPdvPageModuloFuncao.TabIndex := 0;
     TabConf.TabVisible := False;
     TabModulo.TabVisible := False;
+    TabTag.TabVisible := False;
+    TabAdquirente.TabVisible := False;
     F_Permissao := False;
+    F_TipoConfigurador := pmS;
 end;
 
 procedure Tfprincipal.LimparTela;
@@ -4057,6 +4094,7 @@ begin
     MDBin.EmptyTable;
     MDMultiLojaModuloConf.EmptyTable;
     MDLojaModuloConf.EmptyTable;
+    MDTags.EmptyTable;
 end;
 
 function Tfprincipal.FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
@@ -5146,11 +5184,13 @@ begin
                         MDMultiLoja.Edit;
                         MDMultiLoja.FieldByName('ID').AsInteger := VL_ID;
                         MDMultiLoja.Post;
+                        F_Navegar := True;
                     end;
                 end;
             end;
             CarregaCampos;
             ShowMessage('Registro incluido com sucesso');
+
         end;
     finally
         VL_Mensagem.Free;
@@ -6684,6 +6724,7 @@ begin
         exit;
     VL_FPesquisaTag := TFTags.Create(Self);
     VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
+    VL_FPesquisaTag.F_TagTipo := 'MENU';
     VL_FPesquisaTag.ShowModal;
     if VL_FPesquisaTag.F_Carregado then
     begin

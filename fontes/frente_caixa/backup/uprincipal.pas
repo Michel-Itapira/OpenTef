@@ -314,11 +314,11 @@ end;
 function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; stdcall;
 
     var
-        VL_btn: TMButton;
         VL_I: integer;
         VL_Tag: PChar;
         VL_Dados: PChar;
         VL_String:String;
+        VL_Resposta:Pointer;
 
     begin
 
@@ -328,15 +328,19 @@ function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): intege
         VL_Tag := '';
         VL_Dados := '';
         VL_String:='';
+        VL_Resposta:=NIL;
+        F_MensagemCreate(VL_Resposta);
+        F_MensagemAddComando(VL_Resposta,'00E1','R');
         F_MensagemCarregaTags(F_Mensagem, VP_Mensagem);
 
         for vl_i:=1 to F_MensagemTagCount(F_Mensagem) do
         begin
             F_MensagemGetTagIdx(F_Mensagem,VL_I,VL_Tag,VL_Dados);
             if VL_Tag='0013' then
-            F_MensagemAddTag(F_Mensagem,'0013',Pchar(F_Principal.EValorItens.Text));
+            F_MensagemAddTag(F_Resposta,'0013',Pchar(F_Principal.EValorItens.Text));
         end;
-        VL_String:=F_MensagemTagAsString(F_Mensagem);
+        VL_String:=F_MensagemTagAsString(F_Resposta);
+        F_MensagemFree(VL_Resposta);
 
         VO_Dados := StrAlloc(Length(VL_String) + 1);
         StrPCopy(VO_Dados, VL_String);
