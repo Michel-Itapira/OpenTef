@@ -465,13 +465,15 @@ begin
     if Conf.ReadInteger('Servidor', 'Porta', 0) <> 0 then
     begin
         DComunicador.IdTCPServidor.DefaultPort := Conf.ReadInteger('Servidor', 'Porta', 0);
+        DComunicador.IdTCPServidor.StartListening;
         DComunicador.IdTCPServidor.Active := Conf.ReadBool('Servidor', 'Ativa', False);
+
     end;
     F_Modulo_ID_Contador := 0;
     F_Tarefa_ID_Contador := 0;
     AtualizaMENU_OPERACIONAL(VL_RegModulo, nil);
     AtualizaMENU(VL_RegModulo, nil);
-    ModuloCarrega(0);
+  //  ModuloCarrega(0);
 
 end;
 
@@ -488,10 +490,12 @@ begin
         DComunicador.V_ThRecebeEscuta.WaitFor;
     end;
 
-    FreeAndNil(DComunicador);
-    ZConexao.Disconnect;
-    FreeAndNil(DNucleo);
+    DComunicador.Free;
+    DComunicador:=nil;
 
+    ZConexao.Disconnect;
+    DNucleo.free;
+    DNucleo:=nil;
 end;
 
 function TDNucleo.ModuloCarrega(VP_ModuloConfig_ID: integer): integer;
@@ -1487,8 +1491,10 @@ end;
 
 destructor TThModulo.Destroy;
 begin
-    FreeAndNil(VF_Evento);
-    FreeAndNil(V_ListaTarefas);
+    VF_Evento.Free;
+    VF_Evento:=nil;
+    V_ListaTarefas.Free;
+    V_ListaTarefas:=nil;
     if Assigned(DNucleo) then
         TDNucleo(VF_DNucleo^).VF_Bin.RemovePorModuloConf(TRegModulo(VF_modulo^).ModuloConfig_ID);
     inherited Destroy;
@@ -1507,7 +1513,8 @@ end;
 
 procedure TDNucleo.DataModuleDestroy(Sender: TObject);
 begin
-    FreeAndNil(VF_ListaThModulo);
+    VF_ListaThModulo.free;
+    VF_ListaThModulo:=nil;
     VF_Bin.Free;
     VF_Menu.Free;
     VF_MenuOperacional.Free;
@@ -1537,6 +1544,7 @@ begin
         '0021': Result := comando0021(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // PEDIDO DE CONEXÃO TROCA DE CHAVES
         '000A': Result := comando000A(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // INICIA VENDA DO FRENTE DE CAIXA
         '0018': Result := comando0018(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // SOLICITANDO OU INFOMANDO A OPÇÃO DO MENU DE VENDA
+        '002B': Result := comando002B(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR MODULO
         '0039': Result := comando0039(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // INCLUIR LOJA
         '003F': Result := comando003F(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // ALTERAR LOJA
         '0044': Result := comando0044(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // INCLUIR PDV
@@ -1590,7 +1598,6 @@ begin
         '00B9': Result := comando00B9(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // ALTERAR MODULO_FUNCAO
         '00BA': Result := comando00BA(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR MODULO_CONF
         '00BB': Result := comando00BB(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR CONFIGURADOR
-        '00BC': Result := comando00BC(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR MODULO
         '00BF': Result := comando00BF(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // ALTERAR LOJA_MODULO_CONF_FUNCAO
         '00C2': Result := comando00C2(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // INCLUIR PDV_FUNCAO
         '00C4': Result := comando00C4(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // ALTERAR PDV_FUNCAO
@@ -1603,6 +1610,7 @@ begin
         '00DC': Result := comando00DC(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR TAG
         '00DE': Result := comando00DE(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // INCLUIR ADQUIRENTE
         '00DF': Result := comando00DF(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // ALTERAR ADQUIRENTE
+        '00E0': Result := comando00E0(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR ADQUIRENTE
         else
             VP_AContext.Connection.Disconnect(True);
     end;

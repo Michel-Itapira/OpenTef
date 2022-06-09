@@ -3,8 +3,8 @@ object DNucleo: TDNucleo
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 1967
-  VerticalOffset = 266
+  HorizontalOffset = 1573
+  VerticalOffset = 283
   Width = 416
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8

@@ -30,6 +30,7 @@ type
         DSTags: TDataSource;
         ETag: TEdit;
         EDefinicao: TEdit;
+        LTipoFuncao: TLabel;
         LPesquisaTags: TLabel;
         LTag: TLabel;
         LDefinicao: TLabel;
@@ -38,6 +39,7 @@ type
         pnlBase: TPanel;
         GridPrincipal: TRxDBGrid;
         MDTags: TRxMemoryData;
+        ETipoFuncao: TComboBox;
         procedure BCarregarClick(Sender: TObject);
         procedure BPesquisarClick(Sender: TObject);
         procedure BSairClick(Sender: TObject);
@@ -69,6 +71,15 @@ procedure TFTags.BPesquisarClick(Sender: TObject);
 var
     VL_Filtro: string;
 begin
+    case ETipoFuncao.ItemIndex of
+      1: F_TagTipo:='COMANDO';
+      2: F_TagTipo:='MENU_PDV';
+      3: F_TagTipo:='MENU_OPERACIONAL';
+      4: F_TagTipo:='PINPAD_FUNC';
+    ELSE
+      if F_TagTipo = '' then
+          VL_Filtro:='';
+    end;
     if F_TagTipo = '' then
         VL_Filtro := ''
     else
@@ -109,6 +120,7 @@ procedure TFTags.LimpaTela;
 begin
     ETag.Text := '';
     EDefinicao.Text := '';
+    ETipoFuncao.ItemIndex := 0;
     if MDTags.Active then
         MDTags.EmptyTable;
 end;

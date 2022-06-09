@@ -1,7 +1,7 @@
 object FTags: TFTags
-  Left = 1679
+  Left = 1030
   Height = 598
-  Top = 211
+  Top = 214
   Width = 484
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -23,20 +23,20 @@ object FTags: TFTags
     TabOrder = 0
     object pnlTopo: TPanel
       Left = 2
-      Height = 120
+      Height = 144
       Top = 0
       Width = 480
       Align = alTop
       BorderSpacing.Left = 2
       BorderSpacing.Right = 2
       BevelInner = bvLowered
-      ClientHeight = 120
+      ClientHeight = 144
       ClientWidth = 480
       TabOrder = 0
       object LPesquisaTags: TLabel
         Left = 128
         Height = 21
-        Top = 12
+        Top = 8
         Width = 206
         Caption = 'Pesquisa Tags de Comando'
         Font.Height = -16
@@ -44,32 +44,32 @@ object FTags: TFTags
         ParentFont = False
       end
       object LTag: TLabel
-        Left = 8
+        Left = 16
         Height = 15
-        Top = 49
+        Top = 44
         Width = 25
         Caption = 'TAG:'
       end
       object ETag: TEdit
-        Left = 38
+        Left = 43
         Height = 23
-        Top = 46
+        Top = 41
         Width = 104
         CharCase = ecUppercase
         TabOrder = 0
         Text = 'ETAG'
       end
       object LDefinicao: TLabel
-        Left = 146
+        Left = 149
         Height = 15
-        Top = 49
+        Top = 44
         Width = 53
         Caption = 'Definição:'
       end
       object EDefinicao: TEdit
         Left = 203
         Height = 23
-        Top = 46
+        Top = 41
         Width = 269
         CharCase = ecUppercase
         TabOrder = 1
@@ -78,7 +78,7 @@ object FTags: TFTags
       object BSair: TBitBtn
         Left = 8
         Height = 23
-        Top = 84
+        Top = 114
         Width = 124
         Caption = 'Sair Sem Carregar'
         Glyph.Data = {
@@ -123,7 +123,7 @@ object FTags: TFTags
       object BCarregar: TBitBtn
         Left = 144
         Height = 23
-        Top = 84
+        Top = 114
         Width = 124
         Caption = 'Sair e Carregar'
         Glyph.Data = {
@@ -168,7 +168,7 @@ object FTags: TFTags
       object BPesquisar: TBitBtn
         Left = 348
         Height = 23
-        Top = 84
+        Top = 114
         Width = 124
         Caption = 'Pesquisar'
         Glyph.Data = {
@@ -210,11 +210,34 @@ object FTags: TFTags
         OnClick = BPesquisarClick
         TabOrder = 4
       end
+      object ETipoFuncao: TComboBox
+        Left = 152
+        Height = 23
+        Top = 78
+        Width = 320
+        ItemHeight = 15
+        Items.Strings = (
+          'TODOS'
+          'COMANDO'
+          'MENU_PDV'
+          'MENU_OPERACIONAL'
+          'PINPAD_FUNC'
+        )
+        TabOrder = 5
+        Text = 'ETipoFuncao'
+      end
+      object LTipoFuncao: TLabel
+        Left = 23
+        Height = 15
+        Top = 81
+        Width = 123
+        Caption = 'Tipo da Função da Tag:'
+      end
     end
     object pnlPrincipal: TPanel
       Left = 2
-      Height = 463
-      Top = 125
+      Height = 439
+      Top = 149
       Width = 480
       Align = alClient
       BorderSpacing.Left = 2
@@ -222,12 +245,12 @@ object FTags: TFTags
       BorderSpacing.Right = 2
       BorderSpacing.Bottom = 10
       BevelInner = bvLowered
-      ClientHeight = 463
+      ClientHeight = 439
       ClientWidth = 480
       TabOrder = 1
       object GridPrincipal: TRxDBGrid
         Left = 2
-        Height = 459
+        Height = 435
         Top = 2
         Width = 476
         ColumnDefValues.BlobText = '(blob)'

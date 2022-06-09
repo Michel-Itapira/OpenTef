@@ -146,8 +146,8 @@ begin
             TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.WaitFor;
         end;
 
-        FreeAndNil(TDModulo(VP_Modulo).V_DComunicador);
-        FreeAndNil(TDModulo(VP_Modulo));
+        TDModulo(VP_Modulo).V_DComunicador.free;
+        TDModulo(VP_Modulo).free;
 
 
 

@@ -42,7 +42,6 @@ type
 
 var
     FModuloConf: TFModuloConf;
-    F_Funcao: TDFuncoes;
 
 implementation
 
@@ -91,9 +90,9 @@ begin
 
     if CKModuloAtivo.Checked then
         if VL_Filtro = '' then
-            VL_Filtro := 'ATIVO=''T'''
+            VL_Filtro := 'HABILITADO=''T'''
         else
-            VL_Filtro := VL_Filtro + ' and ATIVO=''T''';
+            VL_Filtro := VL_Filtro + ' and HABILITADO=''T''';
 
     MDPesquisaModulo.Filter := VL_Filtro;
     MDPesquisaModulo.Filtered := True;

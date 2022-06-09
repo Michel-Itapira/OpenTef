@@ -257,7 +257,7 @@ begin
                 Exit;
             end;
 
-            if VL_TagDados = '' then
+            if VL_TagDados = '123' then
             begin
                 F_MensagemLimpar(VL_Mensagem_Dados);
 

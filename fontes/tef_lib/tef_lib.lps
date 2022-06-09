@@ -9,7 +9,7 @@
         <Filename Value="tef_lib.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
-        <CursorPos Y="42"/>
+        <CursorPos X="51" Y="11"/>
         <UsageCount Value="232"/>
         <Loaded Value="True"/>
       </Unit>
@@ -19,10 +19,9 @@
         <ComponentName Value="DTef"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="210"/>
-        <CursorPos X="75" Y="235"/>
+        <TopLine Value="642"/>
+        <CursorPos Y="654"/>
         <UsageCount Value="232"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -46,10 +45,12 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <TopLine Value="1110"/>
-        <CursorPos X="109" Y="1141"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="1087"/>
+        <CursorPos X="31" Y="1118"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="def.pas"/>
@@ -84,7 +85,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1481"/>
         <CursorPos X="6" Y="1483"/>
-        <UsageCount Value="47"/>
+        <UsageCount Value="46"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">
@@ -92,124 +93,124 @@
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="615" Column="9" TopLine="595"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="627" Column="9" TopLine="595"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="640" Column="9" TopLine="602"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="645" Column="9" TopLine="607"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="650" Column="9" TopLine="612"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="655" Column="9" TopLine="617"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="666" Column="9" TopLine="628"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="678" Column="9" TopLine="652"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1127" Column="5" TopLine="1102"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="379" Column="53" TopLine="357"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="129" Column="28" TopLine="112"/>
+        <Caret Line="653" Column="75" TopLine="624"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1036" Column="73" TopLine="1026"/>
+        <Caret Line="130" Column="22" TopLine="101"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="269" Column="42" TopLine="256"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="27" TopLine="107"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="328" Column="86" TopLine="301"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Column="28"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="302" Column="20" TopLine="291"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="373" Column="46" TopLine="359"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="196" Column="85" TopLine="187"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="40" TopLine="109"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="357" Column="17" TopLine="321"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="373" Column="46" TopLine="339"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="350" Column="25" TopLine="326"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="40" TopLine="109"/>
       </Position>
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="124" Column="20" TopLine="102"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="132" Column="32" TopLine="122"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="339" Column="32" TopLine="326"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1139" Column="25" TopLine="1116"/>
       </Position>
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="124" Column="18" TopLine="102"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="19" TopLine="109"/>
       </Position>
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="148" Column="19" TopLine="122"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="377" Column="29" TopLine="372"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="62" Column="56" TopLine="37"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="650" TopLine="621"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="85" Column="29" TopLine="61"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1148" Column="33" TopLine="1120"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="235" Column="50" TopLine="198"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="19" TopLine="109"/>
       </Position>
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="35" Column="18" TopLine="12"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="378" Column="4" TopLine="372"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="359" Column="15" TopLine="189"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="741" Column="21" TopLine="707"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="447" Column="48" TopLine="425"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="762" Column="34" TopLine="729"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="63" Column="63" TopLine="61"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="823" Column="25" TopLine="790"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="447" Column="102" TopLine="437"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="844" Column="38" TopLine="811"/>
       </Position>
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="212" Column="12" TopLine="209"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1066" Column="25" TopLine="1032"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="373" Column="28" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="130" Column="18" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="1118" Column="37" TopLine="1051"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="126" Column="21" TopLine="110"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="715" Column="5" TopLine="712"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="23" TopLine="106"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="386" Column="27" TopLine="372"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="130" Column="24" TopLine="109"/>
       </Position>
     </JumpHistory>
     <RunParams>

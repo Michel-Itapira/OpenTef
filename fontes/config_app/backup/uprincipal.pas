@@ -47,6 +47,7 @@ type
         Dados: string;
     end;
 
+
     TPermissao = (pmS, pmC, pmA, pmU);
 
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado);
@@ -57,6 +58,35 @@ type
 
     Tfprincipal = class(TForm)
         BConectar: TBitBtn;
+        MDLojaFuncaoTAG_TIPO: TStringField;
+        MDLojaModuloConfFuncaoTAG_TIPO: TStringField;
+        MDModuloConfFuncaoTAG_TIPO: TStringField;
+        MDModuloFuncTAG_TIPO: TStringField;
+        MDMultiLojaFuncaoTAG_TIPO: TStringField;
+        MDMultiLojaModuloConfFuncaoTAG_TIPO: TStringField;
+        MDPdvFuncaoTAG_TIPO: TStringField;
+        MDPinPadFuncaoTAG_TIPO: TStringField;
+        TabFuncaoModuloETipoFiltro: TComboBox;
+        TabFuncaoModuloLTipoFiltro: TLabel;
+        TabLojaTabFuncaoDadosETipoFiltro: TComboBox;
+        TabLojaTabFuncaoDadosLTipoFiltro: TLabel;
+        TabMultLojaConfFuncaoETipoFiltro: TComboBox;
+        TabMultLojaConfFuncaoLTipoFiltro: TLabel;
+        TabLojaFuncaoETipoFiltro: TComboBox;
+        TabLojaFuncaoLTipoFiltro: TLabel;
+        TabTagETipoFiltro: TComboBox;
+        TabTagLTipoFiltro: TLabel;
+        TabPdvGDados: TGroupBox;
+        TabPdvMDadosLoja: TMemo;
+        TabPdvCLoja: TRxDBLookupCombo;
+        TabPdvLLoja: TLabel;
+        TabPdvLPdv: TLabel;
+        TabPinPadFuncaoETipoFiltro: TComboBox;
+        TabMultLojaFuncaoETipoFiltrar: TComboBox;
+        TabPDVFuncaoETipoFiltro: TComboBox;
+        TabPinPadFuncaoLTipoFiltro: TLabel;
+        TabMultLojaFuncaoLTipoFiltrar: TLabel;
+        TabPDVFuncaoLTipoFiltro: TLabel;
         TabTagETagTipo: TComboBox;
         TabTagCkPadrao: TCheckBox;
         DSLojaModuloConfFuncao: TDataSource;
@@ -104,7 +134,6 @@ type
         TabLojaTabFuncaoDadosLFiltro: TLabel;
         TabLojaFuncaoLTitulo: TLabel;
         TabLojaTabFuncaoDadosLTitulo: TLabel;
-        TabLojaFuncaoMNota: TMemo;
         TabLojaLCnpj: TLabel;
         TabLojaLFantasia: TLabel;
         TabLojaLFantasia1: TLabel;
@@ -308,8 +337,6 @@ type
         TabPDVFuncaoLFiltro: TLabel;
         TabPinPadFuncaoLTitulo: TLabel;
         TabPDVFuncaoLTitulo: TLabel;
-        TabPinPadFuncaoMNota: TMemo;
-        TabPDVFuncaoMNota: TMemo;
         TabPDVModuloBAdicionar: TBitBtn;
         TabPDVModuloBExcluir: TBitBtn;
         TabPDVModuloBModificar: TBitBtn;
@@ -446,12 +473,9 @@ type
         TabMultLojaLFiltro: TLabel;
         TabConfBAdicionar: TBitBtn;
         TabPinPadBModificar: TBitBtn;
-        TabPdvLFiltro: TLabel;
         TabPdvBGeraChave: TSpeedButton;
-        TabPdvCLoja: TRxDBLookupCombo;
         TabPdvEChave: TMemo;
         TabPdvEDescricao: TEdit;
-        TabPdvEFiltro: TEdit;
         TabPdvEID: TEdit;
         TabPdvEIP: TEdit;
         TabPdvGrid: TDBGrid;
@@ -463,7 +487,6 @@ type
         TabPinPadLFiltro: TLabel;
         TabPdvLID: TLabel;
         TabPdvLIP: TLabel;
-        TabPdvLLoja: TLabel;
         TabPdvPnlCadastro: TPanel;
         TabPinPadEID: TEdit;
         TabPinPadLFabricante: TLabel;
@@ -509,14 +532,16 @@ type
         procedure MDAdquirenteAfterScroll(DataSet: TDataSet);
         procedure MDAdquirenteFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDBinAfterScroll(DataSet: TDataSet);
-        procedure MDLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDLojaFuncaoCalcFields(DataSet: TDataSet);
         procedure MDLojaModuloConfAfterScroll(DataSet: TDataSet);
         procedure MDLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDLojaPDVAfterScroll(DataSet: TDataSet);
         procedure MDModuloAfterScroll(DataSet: TDataSet);
         procedure MDModuloConfigAfterScroll(DataSet: TDataSet);
         procedure MDModuloConfFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDModuloFuncCalcFields(DataSet: TDataSet);
+        procedure MDMultiLojaAfterOpen(DataSet: TDataSet);
         procedure MDMultiLojaAfterScroll(DataSet: TDataSet);
         procedure MDMultiLojaFuncaoCalcFields(DataSet: TDataSet);
         procedure MDMultiLojaModuloConfAfterScroll(DataSet: TDataSet);
@@ -532,8 +557,11 @@ type
         procedure TabAdquirenteEFiltroChange(Sender: TObject);
         procedure TabConfiguracaoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: boolean);
         procedure TabFuncaoModuloConfShow(Sender: TObject);
+        procedure TabFuncaoModuloETipoFiltroChange(Sender: TObject);
+        procedure TabLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoEFiltroChange(Sender: TObject);
+        procedure TabLojaFuncaoETipoFiltroChange(Sender: TObject);
         procedure TabLojaFuncaoGridCellClick(Column: TColumn);
         procedure TabLojaFuncaoMNotaChange(Sender: TObject);
         procedure PTopoClick(Sender: TObject);
@@ -551,6 +579,7 @@ type
         procedure TabFuncaoModuloGridCellClick(Column: TColumn);
         procedure TabLojaModuloEFiltroChangeBounds(Sender: TObject);
         procedure TabLojaTabFuncaoDadosEFiltroChange(Sender: TObject);
+        procedure TabLojaTabFuncaoDadosETipoFiltroChange(Sender: TObject);
         procedure TabLojaTabFuncaoDadosGridCellClick(Column: TColumn);
         procedure TabLojaTabFuncaoDadosShow(Sender: TObject);
         procedure TabLojaTabModuloDadosShow(Sender: TObject);
@@ -588,7 +617,9 @@ type
         procedure TabModuloContextPopup(Sender: TObject; MousePos: TPoint; var Handled: boolean);
         procedure TabModuloEPesquisaModuloChange(Sender: TObject);
         procedure TabModuloShow(Sender: TObject);
+        procedure TabModuloTabDadosFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabModuloTabDadosFuncaoEFiltroChange(Sender: TObject);
+        procedure TabModuloTabDadosFuncaoETipoFiltroChange(Sender: TObject);
         procedure TabModuloTabDadosFuncaoGridCellClick(Column: TColumn);
         procedure TabModuloTabDadosFuncaoShow(Sender: TObject);
         procedure TabMultLojaBAdicionarClick(Sender: TObject);
@@ -597,10 +628,12 @@ type
         procedure TabMultLojaCkLojaMasterChange(Sender: TObject);
         procedure TabMultLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabMultLojaConfFuncaoEFiltroChange(Sender: TObject);
+        procedure TabMultLojaConfFuncaoETipoFiltroChange(Sender: TObject);
         procedure TabMultLojaConfFuncaoGridCellClick(Column: TColumn);
         procedure TabMultLojaEFiltroChange(Sender: TObject);
         procedure TabMultLojaFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabMultLojaFuncaoEFiltrarChange(Sender: TObject);
+        procedure TabMultLojaFuncaoETipoFiltrarChange(Sender: TObject);
         procedure TabMultLojaFuncaoGridCellClick(Column: TColumn);
         procedure TabMultLojaGridFiltroCellClick(Column: TColumn);
         procedure TabMultLojaModuloBAdicionarClick(Sender: TObject);
@@ -609,7 +642,6 @@ type
         procedure TabMultLojaModuloBPesquisaModuloConfClick(Sender: TObject);
         procedure TabMultLojaModuloEFiltroChange(Sender: TObject);
         procedure TabMultLojaFuncaoShow(Sender: TObject);
-        procedure TabMultLojaShow(Sender: TObject);
         procedure TabMultLojaTabFuncaoDadosShow(Sender: TObject);
         procedure TabMultLojaTabModuloDadosShow(Sender: TObject);
         procedure TabPdvBAdicionarClick(Sender: TObject);
@@ -619,8 +651,8 @@ type
         procedure TabPdvEFiltroChange(Sender: TObject);
         procedure TabPDVFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabPDVFuncaoEFiltroChange(Sender: TObject);
+        procedure TabPDVFuncaoETipoFiltroChange(Sender: TObject);
         procedure TabPDVFuncaoGridCellClick(Column: TColumn);
-        procedure TabPdvGridCellClick(Column: TColumn);
         procedure TabPDVModuloBAdicionarClick(Sender: TObject);
         procedure TabPDVModuloBExcluirClick(Sender: TObject);
         procedure TabPDVModuloBModificarClick(Sender: TObject);
@@ -636,26 +668,31 @@ type
         procedure TabPinPadEFiltroChange(Sender: TObject);
         procedure TabPinPadFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabPinPadFuncaoEFiltroChange(Sender: TObject);
+        procedure TabPinPadFuncaoETipoFiltroChange(Sender: TObject);
         procedure TabPinPadFuncaoGridCellClick(Column: TColumn);
+        procedure TabMultLojaFuncaoLTipoFiltrarClick(Sender: TObject);
         procedure TabPinPadShow(Sender: TObject);
         procedure TabPinPadTabDadosFuncaoShow(Sender: TObject);
         procedure TabTagBAdicionarClick(Sender: TObject);
         procedure TabTagBExcluirClick(Sender: TObject);
         procedure TabTagBModificarClick(Sender: TObject);
         procedure TabTagEFiltroChange(Sender: TObject);
+        procedure TabTagETipoFiltroChange(Sender: TObject);
         procedure TabTagGridCellClick(Column: TColumn);
+        procedure TabTagShow(Sender: TObject);
     private
         procedure Conectar;
         procedure Desconectar;
         procedure LimparTela;
         function FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
         function FiltrarTabela(VP_DBGrid: TDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
-        procedure CarregaCampos;
+        procedure CarregaCampos(VP_TabelaCarregamento: string);
         procedure CarregarTabelas(VP_CarregaTodasTabelas: boolean; VP_TagTabelaEspecifica: string; VP_Tag: string; VP_DadosN: integer);
         function PesquisaTabelas(VP_TagComando, VP_DadosComando, VP_Tag: ansistring; VP_ID: integer): ansistring;
         function GravaRegistros(VP_Tab: string; VP_Incluir: boolean = False): boolean;
         function IncluirRegistro(VP_Tabela: TRxMemoryData; VP_TagComando, VP_TagComandoDados, VP_TagTabela: string; var VO_Retorno: ansistring): integer;
-        procedure AlterarRegistro(VP_TagTabela: string; VP_Tabela: TRxMemoryData; VP_Tag: string; VP_ID: int64; VP_TagComando, VP_TagComandoDados: string);
+        procedure AlterarRegistro(VP_TagTabela: string; VP_Tabela: TRxMemoryData; VP_Tag: string; VP_ID: int64;
+            VP_TagComando, VP_TagComandoDados: string; VP_TabelaCarregamento: string);
         function ExcluirRegistro(VP_Tag: string; VP_ID: integer; VP_TagComando, VP_TagComandoDados: string; var VO_Retorno: ansistring): integer;
         function SolicitacaoBloc(VP_Dados: ansistring; var VO_Retorno: ansistring; VP_Tempo: integer): integer;
 
@@ -692,6 +729,7 @@ var
     F_Permissao: boolean;
     F_Navegar: boolean;
     F_TipoConfigurador: TPermissao;
+    F_Erro: TErroMensagem;
 
 const
     C_Versao_TefLib = '1.1.1';
@@ -736,7 +774,15 @@ begin
     else
         TabModuloFuncao.OnShow(self);
 
-    CarregaCampos;
+    if MDModuloConfFuncao.Active then
+    begin
+        MDModuloConfFuncao.EmptyTable;
+        TabModuloTabDadosFuncao.OnShow(self);
+    end
+    else
+        TabModuloTabDadosFuncao.OnShow(self);
+
+    CarregaCampos('MODULO');
 end;
 
 procedure Tfprincipal.BConectarClick(Sender: TObject);
@@ -746,6 +792,7 @@ var
     VL_Tag: string;
     VL_Senha: ansistring;
     VL_Tipo: ansistring;
+    VL_MErro: string;
     VL_PMensagem, VL_PTipo, VL_PSenha, VL_PChave, VL_PHost: PChar;
 begin
     if BConectar.Caption = 'Desconectar' then
@@ -813,9 +860,9 @@ begin
         StrPCopy(VL_PHost, F_Host);
         VL_Codigo := F_Login(VL_PHost, F_Porta, VL_PChave, C_Versao_Mensagem, VL_PSenha, VL_PTipo, VL_PMensagem);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_MErro) > 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + VL_MErro);
             Exit;
         end;
 
@@ -860,7 +907,7 @@ procedure Tfprincipal.MDAdquirenteAfterScroll(DataSet: TDataSet);
 begin
     if ((MDAdquirente.Active = False) or (MDAdquirente.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
+    CarregaCampos('ADQUIRENTE');
 end;
 
 procedure Tfprincipal.MDAdquirenteFilterRecord(DataSet: TDataSet; var Accept: boolean);
@@ -872,12 +919,7 @@ procedure Tfprincipal.MDBinAfterScroll(DataSet: TDataSet);
 begin
     if ((MDBin.Active = False) or (MDBin.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
-end;
-
-procedure Tfprincipal.MDLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
-begin
-
+    CarregaCampos('BIN');
 end;
 
 procedure Tfprincipal.MDLojaFuncaoCalcFields(DataSet: TDataSet);
@@ -893,7 +935,7 @@ procedure Tfprincipal.MDLojaModuloConfAfterScroll(DataSet: TDataSet);
 begin
     if ((MDLojaModuloConf.Active = False) or (MDLojaModuloConf.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
+    CarregaCampos('MULTILOJA');
 end;
 
 procedure Tfprincipal.MDLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
@@ -903,6 +945,30 @@ begin
         DataSet.FieldByName('VALIDADO_F').AsBoolean := DataSet.FieldByName('VALIDADO').AsBoolean;
         DataSet.FieldByName('HABILITADO_F').AsBoolean := DataSet.FieldByName('HABILITADO').AsBoolean;
     end;
+end;
+
+procedure Tfprincipal.MDLojaPDVAfterScroll(DataSet: TDataSet);
+begin
+    if ((MDLojaPDV.Active = False) or (MDLojaPDV.RecordCount = 0) or (F_Navegar = False)) then
+        exit;
+
+    if MDPdvModulo.Active then
+    begin
+        MDPdvModulo.EmptyTable;
+        TabPdvTabDadosModulo.OnShow(self);
+    end
+    else
+        TabPdvTabDadosModulo.OnShow(self);
+
+    if MDPdvFuncao.Active then
+    begin
+        MDPdvFuncao.EmptyTable;
+        TabPdvTabDadosFuncao.OnShow(self);
+    end
+    else
+        TabPdvTabDadosFuncao.OnShow(self);
+
+    CarregaCampos('LOJAPDV');
 end;
 
 procedure Tfprincipal.MDModuloConfigAfterScroll(DataSet: TDataSet);
@@ -917,7 +983,7 @@ begin
     end
     else
         TabModuloTabDadosFuncao.OnShow(self);
-    CarregaCampos;
+    CarregaCampos('MODULOCONFIG');
 end;
 
 procedure Tfprincipal.MDModuloConfFuncaoCalcFields(DataSet: TDataSet);
@@ -929,6 +995,11 @@ begin
     end;
 end;
 
+procedure Tfprincipal.MDModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDModuloFuncCalcFields(DataSet: TDataSet);
 begin
     if (F_Permissao) then
@@ -936,6 +1007,11 @@ begin
         DataSet.FieldByName('VALIDADO_F').AsBoolean := DataSet.FieldByName('VALIDADO').AsBoolean;
         DataSet.FieldByName('HABILITADO_F').AsBoolean := DataSet.FieldByName('HABILITADO').AsBoolean;
     end;
+end;
+
+procedure Tfprincipal.MDMultiLojaAfterOpen(DataSet: TDataSet);
+begin
+
 end;
 
 
@@ -968,7 +1044,7 @@ begin
     else
         TabMultLojaTabFuncaoDados.OnShow(self);
 
-    CarregaCampos;
+    CarregaCampos('MULTILOJA');
 
 end;
 
@@ -986,7 +1062,7 @@ procedure Tfprincipal.MDMultiLojaModuloConfAfterScroll(DataSet: TDataSet);
 begin
     if ((MDMultiLojaModuloConf.Active = False) or (MDMultiLojaModuloConf.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
+    CarregaCampos('MULTILOJA');
 end;
 
 procedure Tfprincipal.MDMultiLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
@@ -1011,7 +1087,7 @@ procedure Tfprincipal.MDPdvModuloAfterScroll(DataSet: TDataSet);
 begin
     if ((MDPdvModulo.Active = False) or (MDPdvModulo.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
+    CarregaCampos('PDV');
 end;
 
 procedure Tfprincipal.MDPinPadFuncaoCalcFields(DataSet: TDataSet);
@@ -1027,7 +1103,7 @@ procedure Tfprincipal.MDTagsAfterScroll(DataSet: TDataSet);
 begin
     if ((MDTags.Active = False) or (MDTags.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
+    CarregaCampos('TAG');
 end;
 
 procedure Tfprincipal.MDTagsFilterRecord(DataSet: TDataSet; var Accept: boolean);
@@ -1061,13 +1137,15 @@ begin
             ShowMessage('MDAdquirente não está ativo');
             Exit;
         end;
-
         if GravaRegistros('TabAdquirente', True) then
         begin
             VL_Codigo := IncluirRegistro(MDAdquirente, '00DE', 'S', '0082', VL_Tag);
-            if VL_Codigo <> 0 then
+
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDAdquirente.Locate('ID', 0, []) then
+                    MDAdquirente.Delete;
                 exit;
             end;
 
@@ -1079,7 +1157,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     if MDAdquirente.Locate('ID', 0, []) then
                         MDAdquirente.Delete;
                     Exit;
@@ -1090,11 +1169,14 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDAdquirente.Locate('ID', 0, []) then
+                            MDAdquirente.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
                         ShowMessage('ERRO:' + VL_Tag);
                         if MDAdquirente.Locate('ID', 0, []) then
                             MDAdquirente.Delete;
@@ -1108,9 +1190,11 @@ begin
                         MDAdquirente.FieldByName('ID').AsInteger := VL_ID;
                         MDAdquirente.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDAdquirente.Locate('ID', VL_ID, []);
+            CarregaCampos('ADQUIRENTE');
             ShowMessage('Registro incluido com sucesso');
         end;
     finally
@@ -1153,9 +1237,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('006F', StrToInt(TabAdquirenteEID.Text), '00E0', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1165,7 +1249,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '00E0':
@@ -1180,22 +1265,24 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('006F', VL_ID);
                 F_Navegar := False;
                 if MDAdquirente.Locate('ID', VL_ID, []) then
                     MDAdquirente.Delete;
+                F_Navegar := True;
             end;
         end;
-        CarregaCampos;
+        MDAdquirente.First;
+        CarregaCampos('ADQUIRENTE');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabAdquirenteBModificarClick(Sender: TObject);
@@ -1217,7 +1304,7 @@ begin
     end;
 
     if GravaRegistros('TabAdquirente', False) then
-        AlterarRegistro('0082', MDAdquirente, '006F', StrToInt(TabAdquirenteEID.Text), '00DF', 'S');
+        AlterarRegistro('0082', MDAdquirente, '006F', StrToInt(TabAdquirenteEID.Text), '00DF', 'S', 'ADQUIRENTE');
 end;
 
 procedure Tfprincipal.TabAdquirenteEFiltroChange(Sender: TObject);
@@ -1242,6 +1329,35 @@ begin
 
 end;
 
+procedure Tfprincipal.TabFuncaoModuloETipoFiltroChange(Sender: TObject);
+begin
+    TabFuncaoModuloCKSelecionada.Checked := False;
+    if TabFuncaoModuloETipoFiltro.ItemIndex < 1 then
+    begin
+        MDModuloFunc.Filter := '';
+        MDModuloFunc.Filtered := False;
+    end
+    else
+    begin
+        MDModuloFunc.Filter := 'TAG_TIPO=''' + TabFuncaoModuloETipoFiltro.Text + '''';
+        MDModuloFunc.Filtered := True;
+    end;
+end;
+
+procedure Tfprincipal.TabLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
+begin
+    if TabLojaConfFuncaoCKSelecionada.Checked then
+    begin
+        MDLojaModuloConfFuncao.Filter := 'VALIDADO=''T''';
+        MDLojaModuloConfFuncao.Filtered := True;
+    end
+    else
+    begin
+        TabLojaTabFuncaoDadosETipoFiltro.ItemIndex := 0;
+        TabLojaTabFuncaoDadosETipoFiltro.OnChange(SELF);
+    end;
+end;
+
 procedure Tfprincipal.TabLojaFuncaoCKSelecionadaChange(Sender: TObject);
 begin
     if TabLojaFuncaoCKSelecionada.Checked then
@@ -1251,8 +1367,8 @@ begin
     end
     else
     begin
-        MDLojaFuncao.Filter := '';
-        MDLojaFuncao.Filtered := False;
+        TabLojaFuncaoETipoFiltro.ItemIndex := 0;
+        TabLojaFuncaoETipoFiltro.OnChange(self);
     end;
 end;
 
@@ -1268,19 +1384,39 @@ begin
     MDLojaFuncao.Filtered := True;
 end;
 
+procedure Tfprincipal.TabLojaFuncaoETipoFiltroChange(Sender: TObject);
+begin
+    TabLojaFuncaoCKSelecionada.Checked := False;
+    if TabLojaFuncaoETipoFiltro.ItemIndex < 1 then
+    begin
+        MDLojaFuncao.Filter := '';
+        MDLojaFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDLojaFuncao.Filter := 'TAG_TIPO=''' + TabLojaFuncaoETipoFiltro.Text + '''';
+        MDLojaFuncao.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabLojaFuncaoGridCellClick(Column: TColumn);
 var
     VL_Status: integer;
     VL_Mensagem: TMensagem;
     VL_Codigo: integer;
     VL_ID: int64;
-    VL_Retorno, VL_Tag: string;
+    VL_Retorno, VL_Tag, VL_Validado, VL_Habilitado: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+    VL_Validado := '';
+    VL_Habilitado := '';
+
     if TabLojaFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabLojaFuncaoLFiltro.Caption := 'Filtrar por ' + TabLojaFuncaoGrid.SelectedColumn.Title.Caption;
     try
@@ -1291,29 +1427,31 @@ begin
             Desconectar;
             Exit;
         end;
-        if ((MDLoja.Active = False) or (MDLoja.RecordCount < 1)) then
+        if (MDLoja.Active = False) then
             exit;
-        if ((MDLojaFuncao.Active = False) or (MDLojaFuncao.RecordCount < 1)) then
+        if (MDLojaFuncao.Active = False) then
             exit;
         F_Navegar := False;
         if ((TabLojaFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') or
             (TabLojaFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDLojaFuncaoID.AsInteger;
+            VL_Validado := copy(BoolToStr(MDLojaFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
+            VL_Habilitado := copy(BoolToStr(MDLojaFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
             if (TabLojaFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDLojaFuncao.Edit;
-                MDLojaFuncao.FieldByName('VALIDADO').AsBoolean := not MDLojaFuncao.FieldByName('VALIDADO').AsBoolean;
+                MDLojaFuncao.FieldByName('VALIDADO').AsString := VL_Validado;
                 MDLojaFuncao.Post;
             end;
             if (TabLojaFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F') then
             begin
                 MDLojaFuncao.Edit;
-                MDLojaFuncao.FieldByName('HABILITADO').AsBoolean := not MDLojaFuncao.FieldByName('HABILITADO').AsBoolean;
+                MDLojaFuncao.FieldByName('HABILITADO').AsString := VL_Habilitado;
                 MDLojaFuncao.Post;
             end;
 
-            if ((MDLojaFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID < 1)) then
+            if ((MDLojaFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID < 1)) then
             begin
                 MDLojaFuncao.Edit;
                 MDLojaFuncao.FieldByName('LOJA_ID').AsString := MDLoja.FieldByName('ID').AsString;
@@ -1321,9 +1459,11 @@ begin
                 MDLojaFuncao.Post;
                 //incluir LOJA função
                 VL_Codigo := IncluirRegistro(MDLojaFuncao, '00AA', 'S', '00A7', VL_Tag);
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDLojaFuncao.Locate('ID', 0, []) then
+                        MDLojaFuncao.Delete;
                     exit;
                 end;
 
@@ -1335,7 +1475,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
                         if MDLojaFuncao.Locate('ID', 0, []) then
                             MDLojaFuncao.Delete;
                         Exit;
@@ -1346,11 +1487,14 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDLojaFuncao.Locate('ID', 0, []) then
+                                MDLojaFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
                             ShowMessage('ERRO:' + VL_Tag);
                             if MDLojaFuncao.Locate('ID', 0, []) then
                                 MDLojaFuncao.Delete;
@@ -1364,11 +1508,12 @@ begin
                             MDLojaFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDLojaFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
             else
-            if ((MDLojaFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID > 0)) then
+            if ((MDLojaFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID > 0)) then
             begin
                 //ALTERA LOJA_FUNCAO
                 VL_Mensagem.Limpar;
@@ -1377,9 +1522,10 @@ begin
                 VL_Mensagem.AddTag('00A8', MDLojaFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
 
@@ -1391,9 +1537,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaFuncao.Locate('ID', 0, []) then
-                            MDLojaFuncao.Delete;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '00AC':
@@ -1407,7 +1552,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                             Exit;
                         end;
                     end;
@@ -1415,13 +1561,13 @@ begin
             end
             else
             begin
-                //alterar multloja função
+                //EXCLUIR multloja função
                 VL_Codigo := ExcluirRegistro('00AB', VL_ID, '00AD', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(vL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -1431,10 +1577,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaFuncao.Locate('ID', 0, []) then
-                            MDLojaFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '00AD':
                     begin
@@ -1442,18 +1586,23 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
-                        end;
-                        VL_Mensagem.GetTag('004D', VL_Tag);
-                        if vl_tag <> '0' then
+                        end
+                        else
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            VL_Mensagem.GetTag('004D', VL_Tag);
+                            if vl_tag <> '0' then
+                            begin
+                                F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            end;
                         end;
                     end;
                 end;
-                MDLojaFuncao.Edit;
+                sair:
+                    MDLojaFuncao.Edit;
                 MDLojaFuncao.FieldByName('ID').AsInteger := -1;
+                MDLojaFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDLojaFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDLojaFuncao.Post;
             end;
         end;
@@ -1504,12 +1653,11 @@ begin
             ShowMessage('Não existe registro selecionado para exclusão');
             Exit;
         end;
-
         VL_Codigo := ExcluirRegistro('0056', StrToInt(TabConfEID.Text), '00BB', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1519,7 +1667,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '00BB':
@@ -1534,16 +1683,19 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0056', VL_ID);
                 F_Navegar := False;
                 if MDConfigurador.Locate('ID', VL_ID, []) then
                     MDConfigurador.Delete;
+                F_Navegar := True;
             end;
         end;
-        CarregaCampos;
+        MDConfigurador.First;
+        CarregaCampos('CONFIGURADOR');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
@@ -1587,9 +1739,12 @@ begin
         if GravaRegistros('TabBin', True) then
         begin
             VL_Codigo := IncluirRegistro(MDBin, '0077', 'S', '0083', VL_Tag);
-            if VL_Codigo <> 0 then
+
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDBin.Locate('ID', 0, []) then
+                    MDBin.Delete;
                 exit;
             end;
 
@@ -1601,7 +1756,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     if MDBin.Locate('ID', 0, []) then
                         MDBin.Delete;
                     Exit;
@@ -1611,14 +1767,18 @@ begin
                     if VL_Tag <> 'R' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        if MDBin.Locate('ID', 0, []) then
+                            MDBin.Delete;
                         Exit;
                     end;
 
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDBin.Locate('ID', 0, []) then
                             MDBin.Delete;
                         Exit;
@@ -1631,9 +1791,11 @@ begin
                         MDBin.FieldByName('ID').AsInteger := VL_ID;
                         MDBin.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDBin.Locate('ID', VL_ID, []);
+            CarregaCampos('MODULOCONFIG');
             ShowMessage('Registro incluido com sucesso');
         end;
     finally
@@ -1669,6 +1831,11 @@ begin
             ShowMessage('MDModuloConf não está ativo');
             Exit;
         end;
+        if MDModulo.Active = False then
+        begin
+            ShowMessage('MDModulo não está ativo');
+            Exit;
+        end;
         if TabConfiguracaoEDescricao.Text = '' then
         begin
             ShowMessage('Descricao é um campo obrigatório');
@@ -1679,9 +1846,12 @@ begin
         if GravaRegistros('TabModuloConf', True) then
         begin
             VL_Codigo := IncluirRegistro(MDModuloConfig, '0073', 'S', '003A', VL_Tag);
-            if VL_Codigo <> 0 then
+
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDModuloConfig.Locate('ID', 0, []) then
+                    MDModuloConfig.Delete;
                 exit;
             end;
 
@@ -1693,7 +1863,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     if MDModuloConfig.Locate('ID', 0, []) then
                         MDModuloConfig.Delete;
                     Exit;
@@ -1704,12 +1875,15 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDModuloConfig.Locate('ID', 0, []) then
+                            MDModuloConfig.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDModuloConfig.Locate('ID', 0, []) then
                             MDModuloConfig.Delete;
                         Exit;
@@ -1722,17 +1896,17 @@ begin
                         MDModuloConfig.FieldByName('ID').AsInteger := VL_ID;
                         MDModuloConfig.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDModuloConfig.Locate('ID', VL_ID, []);
+            CarregaCampos('MODULOCONFIG');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabConfiguracaoBExcluirBinClick(Sender: TObject);
@@ -1768,9 +1942,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('0076', StrToInt(MDBin.FieldByName('ID').AsString), '0078', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1780,7 +1954,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '0078':
@@ -1795,17 +1970,20 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0076', VL_ID); //BIN_ID
                 F_Navegar := False;
                 if MDBin.Locate('ID', VL_ID, []) then
                     MDBin.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDBin.First;
+        CarregaCampos('BIN');
         ShowMessage('Registro Excluido com sucesso');
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -1843,12 +2021,11 @@ begin
             ShowMessage('Não existe registro selecionado para exclusão');
             Exit;
         end;
-
         VL_Codigo := ExcluirRegistro('007B', StrToInt(MDModuloConfig.FieldByName('ID').AsString), '00BA', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1858,7 +2035,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '00BA':
@@ -1873,22 +2051,24 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('007B', VL_ID);
                 F_Navegar := False;
                 if MDModuloConfig.Locate('ID', VL_ID, []) then
                     MDModuloConfig.Delete;
+                F_Navegar := True;
             end;
         end;
-        CarregaCampos;
+        MDModuloConfig.First;
+        CarregaCampos('MODULOCONFIG');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabConfiguracaoBGerarChaveClick(Sender: TObject);
@@ -1910,13 +2090,14 @@ begin
             exit;
         end;
         VL_Mensagem.Limpar;
-        VL_Mensagem.AddComando('0071', ''); //VALIDA CHAVE
+        VL_Mensagem.AddComando('0071', 'S'); //VALIDA CHAVE
         VL_Mensagem.AddTag('0041', VL_Chave);
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-        if VL_Codigo <> 0 then
+
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage('Erro:' + IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             Exit;
         end;
         VL_Mensagem.Limpar;
@@ -1926,15 +2107,24 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                ShowMessage('ERRO:' + VL_Tag);
+                F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                 Exit;
             end;
-            '004D':
+            '0071':
             begin
-                if VL_TAG <> '0' then
+                if VL_TAG <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                    Exit;
+                end;
+                VL_Mensagem.GetTag('004D', VL_Tag);
+                if vl_tag <> '0' then
+                begin
+                    VL_Mensagem.GetTag('004D', VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     Exit;
                 end;
                 TabConfiguracaoEChave.Lines.Text := VL_Chave;
@@ -1943,7 +2133,6 @@ begin
     finally
         VL_Mensagem.Free;
     end;
-
 end;
 
 procedure Tfprincipal.TabConfiguracaoBModificarClick(Sender: TObject);
@@ -1969,7 +2158,7 @@ begin
         exit;
     end;
     if GravaRegistros('TabModuloConf', False) then
-        AlterarRegistro('003A', MDModuloConfig, '007B', StrToInt(TabConfiguracaoEID.Text), '0072', 'S');
+        AlterarRegistro('003A', MDModuloConfig, '007B', StrToInt(TabConfiguracaoEID.Text), '0072', 'S', 'MODULOCONFIG');
 
 end;
 
@@ -1988,9 +2177,9 @@ begin
         MDModuloConfig.FieldByName('ADQUIRENTE_DESCRICAO').AsString := VL_FPesquisaAdquirente.MDAdquirente.FieldByName('DESCRICAO').AsString;
         MDModuloConfig.Post;
         F_Navegar := True;
-        CarregaCampos;
+        TabConfiguracaoEAdquirente_ID.Text := VL_FPesquisaAdquirente.MDAdquirente.FieldByName('ID').AsString;
+        TabConfiguracaoEAdquirente_Nome.Text := VL_FPesquisaAdquirente.MDAdquirente.FieldByName('DESCRICAO').AsString;
     end;
-
 end;
 
 
@@ -2012,8 +2201,8 @@ begin
     end
     else
     begin
-        MDModuloFunc.Filter := '';
-        MDModuloFunc.Filtered := False;
+        TabFuncaoModuloETipoFiltro.ItemIndex := 0;
+        TabFuncaoModuloETipoFiltro.OnChange(SELF);
     end;
 end;
 
@@ -2036,6 +2225,8 @@ var
     VL_Codigo: integer;
     VL_ID: int64;
     VL_Retorno, VL_Tag: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
@@ -2054,7 +2245,7 @@ begin
         end;
         if ((MDModulo.Active = False) or (MDModulo.RecordCount < 1)) then
             exit;
-        if ((MDModuloFunc.Active = False) or (MDModuloFunc.RecordCount < 1)) then
+        if (MDModuloFunc.Active = False) then
             exit;
         F_Navegar := False;
         if ((Column.FieldName = 'VALIDADO_F') or (Column.FieldName = 'HABILITADO_F')) then
@@ -2072,7 +2263,7 @@ begin
                 MDModuloFunc.FieldByName('HABILITADO').AsBoolean := not MDModuloFunc.FieldByName('HABILITADO').AsBoolean;
                 MDModuloFunc.Post;
             end;
-            if ((MDModuloFunc.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID < 1)) then
+            if ((MDModuloFunc.FieldByName('VALIDADO').AsString = 'T') and (VL_ID < 1)) then
             begin
                 MDModuloFunc.Edit;
                 MDModuloFunc.FieldByName('MODULO_ID').AsString := TabModuloEID.Text;
@@ -2080,9 +2271,12 @@ begin
                 MDModuloFunc.Post;
                 //incluir modulo função
                 VL_Codigo := IncluirRegistro(MDModuloFunc, '007E', 'S', '0092', VL_Tag);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDModuloFunc.Locate('ID', 0, []) then
+                        MDModuloFunc.Delete;
                     exit;
                 end;
 
@@ -2094,7 +2288,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDModuloFunc.Locate('ID', 0, []) then
                             MDModuloFunc.Delete;
                         Exit;
@@ -2105,12 +2300,15 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDModuloFunc.Locate('ID', 0, []) then
+                                MDModuloFunc.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro:' + VL_Tag + #13 + VL_Retorno);
                             if MDModuloFunc.Locate('ID', 0, []) then
                                 MDModuloFunc.Delete;
                             Exit;
@@ -2123,11 +2321,12 @@ begin
                             MDModuloFunc.FieldByName('ID').AsInteger := VL_ID;
                             MDModuloFunc.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
             else
-            if ((MDModuloFunc.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID > 0)) then
+            if ((MDModuloFunc.FieldByName('VALIDADO').AsString = 'T') and (VL_ID > 0)) then
             begin
                 //ALTERA MODULO_FUNCAO
                 VL_Mensagem.Limpar;
@@ -2136,9 +2335,10 @@ begin
                 VL_Mensagem.AddTag('00C6', MDModuloConfFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
                 VL_Mensagem.Limpar;
@@ -2149,9 +2349,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDModuloConfFuncao.Locate('ID', 0, []) then
-                            MDModuloConfFuncao.Delete;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '00B9':
@@ -2165,7 +2364,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                             Exit;
                         end;
                     end;
@@ -2176,10 +2376,10 @@ begin
                 //EXCLUIR modulo função
                 VL_Codigo := ExcluirRegistro('008B', VL_ID, '007F', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -2188,10 +2388,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDModuloConfFuncao.Locate('ID', 0, []) then
-                            MDModuloConfFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '007F':
                     begin
@@ -2199,18 +2397,20 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         end;
                     end;
                 end;
-                MDModuloFunc.Edit;
+                sair:
+                    MDModuloFunc.Edit;
                 MDModuloFunc.FieldByName('ID').AsInteger := -1;
+                MDModuloFunc.FieldByName('HABILITADO').AsString := 'F';
+                MDModuloFunc.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDModuloFunc.Post;
             end;
         end;
@@ -2238,19 +2438,38 @@ begin
 
 end;
 
+procedure Tfprincipal.TabLojaTabFuncaoDadosETipoFiltroChange(Sender: TObject);
+begin
+    TabLojaConfFuncaoCKSelecionada.Checked := False;
+    if TabLojaTabFuncaoDadosETipoFiltro.ItemIndex < 1 then
+    begin
+        MDLojaFuncao.Filter := '';
+        MDLojaFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDLojaFuncao.Filter := 'TAG_TIPO=''' + TabLojaFuncaoETipoFiltro.Text + '''';
+        MDLojaFuncao.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabLojaTabFuncaoDadosGridCellClick(Column: TColumn);
 var
     VL_Status: integer;
     VL_Mensagem: TMensagem;
     VL_Codigo: integer;
     VL_ID: int64;
-    VL_Retorno, VL_Tag: string;
+    VL_Retorno, VL_Tag, VL_Validado, VL_Habilitado: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+    VL_Validado := '';
+    VL_Habilitado := '';
 
     if TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabLojaTabFuncaoDadosLFiltro.Caption := 'Filtrar por ' + TabLojaTabFuncaoDadosGrid.SelectedColumn.Title.Caption;
@@ -2262,29 +2481,32 @@ begin
             Desconectar;
             Exit;
         end;
-        if ((MDLojaModuloConf.Active = False) or (MDLojaModuloConf.RecordCount < 1)) then
+        if (MDLojaModuloConf.Active = False) then
             exit;
-        if ((MDLojaModuloConfFuncao.Active = False) or (MDLojaModuloConfFuncao.RecordCount < 1)) then
+        if (MDLojaModuloConfFuncao.Active = False) then
             exit;
         F_Navegar := False;
         if ((TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName = 'VALIDADO_F') or
             (TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDLojaModuloConfFuncaoID.AsInteger;
+            VL_Validado := COPY(BoolToStr(MDLojaModuloConfFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
+            VL_Habilitado := COPY(BoolToStr(MDLojaModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
             if (TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDLojaModuloConfFuncao.Edit;
-                MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean := not MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean;
+                MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsString := VL_Validado;
                 MDLojaModuloConfFuncao.Post;
             end;
             if (TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName = 'HABILITADO_F') then
             begin
                 MDLojaModuloConfFuncao.Edit;
-                MDLojaModuloConfFuncao.FieldByName('HABILITADO').AsBoolean := not MDLojaModuloConfFuncao.FieldByName('HABILITADO').AsBoolean;
+                MDLojaModuloConfFuncao.FieldByName('HABILITADO').AsString := VL_Habilitado;
                 MDLojaModuloConfFuncao.Post;
             end;
 
-            if ((MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID < 1)) then
+            if ((MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID < 1)) then
             begin
                 MDLojaModuloConfFuncao.Edit;
                 MDLojaModuloConfFuncao.FieldByName('LOJA_MODULO_CONF_ID').AsString := MDLojaModuloConf.FieldByName('ID').AsString;
@@ -2292,9 +2514,12 @@ begin
                 MDLojaModuloConfFuncao.Post;
                 //incluir loja_modulo_conf_funcao
                 VL_Codigo := IncluirRegistro(MDLojaModuloConfFuncao, '009B', 'S', '0098', VL_Tag);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
+                        MDLojaModuloConfFuncao.Delete;
                     exit;
                 end;
 
@@ -2306,7 +2531,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
                             MDLojaModuloConfFuncao.Delete;
                         Exit;
@@ -2317,11 +2543,14 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
+                                MDLojaModuloConfFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
+                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
                             ShowMessage('ERRO:' + VL_Tag);
                             if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
                                 MDLojaModuloConfFuncao.Delete;
@@ -2335,11 +2564,12 @@ begin
                             MDLojaModuloConfFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDLojaModuloConfFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
             else
-            if ((MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID > 0)) then
+            if ((MDLojaModuloConfFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID > 0)) then
             begin
                 //ALTERA LOJA_MODULO_CONF_FUNCAO
                 VL_Mensagem.Limpar;
@@ -2348,9 +2578,10 @@ begin
                 VL_Mensagem.AddTag('0089', MDLojaModuloConfFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
 
@@ -2362,9 +2593,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
-                            MDLojaModuloConfFuncao.Delete;
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '00BF':
@@ -2378,7 +2608,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                             Exit;
                         end;
                     end;
@@ -2389,10 +2620,10 @@ begin
                 //alterar multloja função
                 VL_Codigo := ExcluirRegistro('00BC', VL_ID, '0087', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -2402,10 +2633,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
-                            MDLojaModuloConfFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '0087':
                     begin
@@ -2413,18 +2642,23 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
-                        end;
-                        VL_Mensagem.GetTag('004D', VL_Tag);
-                        if vl_tag <> '0' then
+                        end
+                        else
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            VL_Mensagem.GetTag('004D', VL_Tag);
+                            if vl_tag <> '0' then
+                            begin
+                                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            end;
                         end;
                     end;
                 end;
-                MDLojaModuloConfFuncao.Edit;
+                sair:
+                    MDLojaModuloConfFuncao.Edit;
                 MDLojaModuloConfFuncao.FieldByName('ID').AsInteger := -1;
+                MDLojaModuloConfFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDLojaModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDLojaModuloConfFuncao.Post;
             end;
         end;
@@ -2436,9 +2670,15 @@ end;
 
 procedure Tfprincipal.TabLojaTabFuncaoDadosShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega LOJA_MODULO_CONF_FUNCAO
+    if ((F_Navegar) and (F_Permissao) and (MDLojaModuloConf.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '0098', '00AF', MDLojaModuloConf.FieldByName('ID').AsInteger);
+        TabLojaTabFuncaoDadosETipoFiltro.ItemIndex := 0;
+        TabLojaConfFuncaoCKSelecionada.Checked := False;
+        TabLojaTabFuncaoDadosETipoFiltro.OnChange(self);
+    end
+    else
+        MDLojaModuloConf.EmptyTable;
 end;
 
 procedure Tfprincipal.TabLojaTabModuloDadosShow(Sender: TObject);
@@ -2450,9 +2690,15 @@ end;
 
 procedure Tfprincipal.TabModuloFuncaoShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega moduloFUNC
+    if ((F_Navegar) and (F_Permissao) and (MDModulo.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '0092', '006C', MDModulo.FieldByName('ID').AsInteger);
+        TabFuncaoModuloETipoFiltro.ItemIndex := 0;
+        TabFuncaoModuloCKSelecionada.Checked := False;
+        TabFuncaoModuloETipoFiltro.OnChange(self);
+    end
+    else
+        MDModuloFunc.EmptyTable;
 end;
 
 procedure Tfprincipal.TabLojaBExcluirClick(Sender: TObject);
@@ -2495,9 +2741,10 @@ begin
             exit;
         end;
         VL_Codigo := ExcluirRegistro('003C', StrToInt(TabLojaEID.Text), '0069', 'S', VL_Tag);
-        if VL_Codigo <> 0 then
+
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -2508,7 +2755,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '0069':
@@ -2523,20 +2771,22 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 F_Navegar := False;
                 if MDLoja.Locate('ID', TabLojaEID.Text, []) then
                     MDLoja.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDLoja.First;
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabLojaBModificarClick(Sender: TObject);
@@ -2568,8 +2818,7 @@ begin
 
     if MDLoja.FieldByName('MULT').AsString = 'T' then
     begin
-        ShowMessage('Esta Loja esta configurada como Mult-Loja Master,não podera sofrer alteração');
-        exit;
+        ShowMessage('Esta Loja esta configurada como Mult-Loja Master');
     end;
 
     if (TabLojaCMultLoja.Text = '') then
@@ -2579,7 +2828,7 @@ begin
     end;
 
     if GravaRegistros('TabLoja', False) then
-        AlterarRegistro('003E', MDLoja, '003C', StrToInt(TabLojaEID.Text), '003F', 'S');
+        AlterarRegistro('003E', MDLoja, '003C', StrToInt(TabLojaEID.Text), '003F', 'S', 'MULTILOJA');
 
 end;
 
@@ -2624,14 +2873,15 @@ begin
             ShowMessage('Você deve selecionar uma Mult-Loja para incluir a Loja');
             exit;
         end;
-
         if GravaRegistros('TabLoja', True) then
         begin
             VL_Codigo := IncluirRegistro(MDLoja, '0039', 'S', '003E', VL_Tag);
 
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDLoja.Locate('ID', 0, []) then
+                    MDLoja.Delete;
                 exit;
             end;
 
@@ -2643,7 +2893,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     if MDLoja.Locate('ID', 0, []) then
                         MDLoja.Delete;
                     Exit;
@@ -2654,13 +2905,16 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDLoja.Locate('ID', 0, []) then
+                            MDLoja.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDLoja.Locate('ID', 0, []) then
                             MDLoja.Delete;
                         Exit;
@@ -2673,17 +2927,17 @@ begin
                         MDLoja.FieldByName('ID').AsInteger := VL_ID;
                         MDLoja.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDLoja.Locate('ID', VL_ID, []);
+            CarregaCampos('MULTILOJA');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.FormCreate(Sender: TObject);
@@ -2758,11 +3012,12 @@ procedure Tfprincipal.MDConfiguradorAfterScroll(DataSet: TDataSet);
 begin
     if ((MDConfigurador.Active = False) or (MDConfigurador.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    CarregaCampos;
+    CarregaCampos('CONFIGURADOR');
 end;
 
-procedure Tfprincipal.CarregaCampos;
+procedure Tfprincipal.CarregaCampos(VP_TabelaCarregamento: string);
 begin
+    VP_TabelaCarregamento := UpperCase(VP_TabelaCarregamento);
     if F_Permissao = False then
         exit;
     //monta configurador
@@ -2781,10 +3036,11 @@ begin
         TabAdquirente.TabVisible := False;
     end;
     //TabMultLoja
-    if ((MDMultiLoja.Active) and (MDLoja.Active) and (MDMultiLojaLoja.Active)) then
+    if ((MDMultiLoja.Active) and (MDLoja.Active) and (MDMultiLojaLoja.Active) and ((VP_TabelaCarregamento = 'MULTILOJA') or
+        (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabMultLojaMDadosLoja.Clear;
-        TabMultLojaMDadosLoja.Lines.add('ID:' + MDLoja.FieldByName('ID').AsString + ' CNPJ:' + MDLoja.FieldByName('CNPJ').AsString);
+        TabMultLojaMDadosLoja.Lines.add('ID:' + MDLoja.FieldByName('ID').AsString + ' CNPJ:' + FormataDoc(tdCNPJ, MDLoja.FieldByName('CNPJ').AsString));
         TabMultLojaMDadosLoja.Lines.add('');
         TabMultLojaMDadosLoja.Lines.add('Razão:' + MDLoja.FieldByName('RAZAO').AsString);
         TabMultLojaMDadosLoja.Lines.add('Fantasia:' + MDLoja.FieldByName('FANTASIA').AsString);
@@ -2850,17 +3106,39 @@ begin
         TabLojaModuloEModuloConf.Text := MDLojaModuloConf.FieldByName('MODULO_CONF').AsString;
     end;
     //TabPinPad
-    if MDPinPad.Active then
+    if ((MDPinPad.Active) and ((VP_TabelaCarregamento = 'PINPAD') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabPinPadEID.Text := MDPinPad.FieldByName('ID').AsString;
         TabPinPadMFabricante.Text := MDPinPad.FieldByName('FABRICANTE_MODELO').AsString;
 
     end;
-    //TabPdv
-    if MDPdv.Active then
+    //TabLojaPdv
+    if ((MDLojaPDV.Active) and ((VP_TabelaCarregamento = 'LOJAPDV') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
-        MDLojaPdv.Locate('ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
-        TabPdvCLoja.KeyValue := MDLojaPdv.FieldByName('RAZAO').AsVariant;
+        TabPdvMDadosLoja.Clear;
+        TabPdvMDadosLoja.Lines.Add('ID:  ' + MDLojaPDV.FieldByName('ID').AsString + ' CNPJ:  ' + FormataDoc(tdCNPJ, MDLojaPDV.FieldByName('CNPJ').AsString));
+        TabPdvMDadosLoja.Lines.Add('');
+        TabPdvMDadosLoja.Lines.Add('Razão:  ' + MDLojaPDV.FieldByName('RAZAO').AsString);
+        TabPdvMDadosLoja.Lines.Add('Fantasia:  ' + MDLojaPDV.FieldByName('FANTASIA').AsString);
+        TabPdvMDadosLoja.Lines.Add('');
+        if MDLojaPDV.FieldByName('HABILITADO').AsString = 'T' then
+            TabPdvMDadosLoja.Lines.Add('Loja Habilitado: Sim')
+        else
+            TabPdvMDadosLoja.Lines.Add('Loja Habilitado: Não');
+        //CARREGA FILTRO PDV POR LOJA
+        MDPdv.Filter := 'LOJA_ID=' + MDLojaPDV.FieldByName('ID').AsString;
+        MDPdv.Filtered := True;
+        TabPdvCLoja.KeyValue := MDLojaPDV.FieldByName('RAZAO').AsVariant;
+        if VP_TabelaCarregamento = 'LOJAPDV' then
+        begin
+            VP_TabelaCarregamento := 'PDV';
+            TabPdvTabDadosModulo.OnShow(self);
+
+        end;
+    end;
+    //TabPdv
+    if ((MDPdv.Active) and ((VP_TabelaCarregamento = 'PDV') or (VP_TabelaCarregamento = 'TODAS'))) then
+    begin
         MDPinPadPdv.Locate('ID', MDPdv.FieldByName('PINPAD_ID').AsInteger, []);
         TabPdvCPinPad.KeyValue := MDPinPadPdv.FieldByName('FABRICANTE_MODELO').AsVariant;
         TabPdvEID.Text := MDPdv.FieldByName('ID').AsString;
@@ -2891,7 +3169,7 @@ begin
             TabPdvModuloCkHabilitar.Checked := False;
     end;
     //TabConfigurador
-    if MDConfigurador.Active then
+    if ((MDConfigurador.Active) and ((VP_TabelaCarregamento = 'CONFIGURADOR') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabConfEID.Text := MDConfigurador.FieldByName('ID').AsString;
         TabConfEDescricao.Text := MDConfigurador.FieldByName('DESCRICAO').AsString;
@@ -2902,13 +3180,13 @@ begin
         TabTipoUsuESenha.Text := MDConfigurador.FieldByName('SENHA_USUARIO').AsString;
     end;
     //TabModulo
-    if (MDModulo.Active) then
+    if (MDModulo.Active) and ((VP_TabelaCarregamento = 'MODULO') or (VP_TabelaCarregamento = 'TODAS')) then
     begin
         TabModuloEID.Text := MDModulo.FieldByName('ID').AsString;
         TabModuloEDescricao.Text := MDModulo.FieldByName('DESCRICAO').AsString;
         TabModuloETagModulo.Text := MDModulo.FieldByName('TAG_NUMERO').AsString;
     end;
-    if ((MDModuloConfig.Active) and (MDModulo.Active)) then
+    if ((MDModuloConfig.Active) and (MDModulo.Active) and ((VP_TabelaCarregamento = 'MODULOCONFIG') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         //TabModuloConfig
         TabConfiguracaoEID.Text := MDModuloConfig.FieldByName('ID').AsString;
@@ -2940,7 +3218,7 @@ begin
             TabConfiguracaoCKMenuOp.Checked := False;
     end;
     //TabBin
-    if ((MDBin.Active) and (MDModulo.Active) and (MDModuloConfig.Active)) then
+    if ((MDBin.Active) and (MDModulo.Active) and (MDModuloConfig.Active) and ((VP_TabelaCarregamento = 'BIN') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         if length(TabConfiguracaoEID.Text) > 0 then
             MDBin.Filter := 'MODULO_CONF_ID=' + MDModuloConfig.FieldByName('ID').AsString
@@ -2949,7 +3227,7 @@ begin
         MDBin.Filtered := True;
     end;
     //TabTag
-    if (MDTags.Active) then
+    if ((MDTags.Active) and ((VP_TabelaCarregamento = 'TAG') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabTagEID.Text := MDTags.FieldByName('ID').AsString;
         TabTagETagNumero.Text := MDTags.FieldByName('TAG_NUMERO').AsString;
@@ -2964,7 +3242,7 @@ begin
             TabTagCkPadrao.Checked := False;
     end;
     //TabAdquirente
-    if (MDAdquirente.Active) then
+    if ((MDAdquirente.Active) and ((VP_TabelaCarregamento = 'ADQUIRENTE') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabAdquirenteEID.Text := MDAdquirente.FieldByName('ID').AsString;
         TabAdquirenteEDescricao.Text := MDAdquirente.FieldByName('DESCRICAO').AsString;
@@ -3487,7 +3765,8 @@ begin
     end;
 end;
 
-procedure Tfprincipal.AlterarRegistro(VP_TagTabela: string; VP_Tabela: TRxMemoryData; VP_Tag: string; VP_ID: int64; VP_TagComando, VP_TagComandoDados: string);
+procedure Tfprincipal.AlterarRegistro(VP_TagTabela: string; VP_Tabela: TRxMemoryData; VP_Tag: string; VP_ID: int64;
+    VP_TagComando, VP_TagComandoDados: string; VP_TabelaCarregamento: string);
 var
     VL_Mensagem: TMensagem;
     VL_Tabela: string;
@@ -3512,9 +3791,9 @@ begin
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -3524,10 +3803,11 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                ShowMessage('ERRO:' + VL_Tag);
+                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
                 // CarregarTabelas;
                 VP_Tabela.Locate('ID', VP_ID, []);
-                CarregaCampos;
+                CarregaCampos(VP_TabelaCarregamento);
                 F_Navegar := True;
                 Exit;
             end;
@@ -3536,7 +3816,8 @@ begin
                 if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('004D', VL_Tag);
@@ -3544,7 +3825,8 @@ begin
                     ShowMessage('Registro alterado com sucesso');
             end;
         end;
-        CarregaCampos;
+        VP_Tabela.Locate('ID', VP_ID, []);
+        CarregaCampos(VP_TabelaCarregamento);
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -3626,9 +3908,9 @@ begin
 
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -3640,7 +3922,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                ShowMessage('ERRO:' + VL_Tag);
+                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                 Exit;
             end;
             '0070':
@@ -3649,7 +3932,8 @@ begin
                 if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     Exit;
                 end;
                 //TABELA LOJA
@@ -3666,6 +3950,7 @@ begin
                         MDLoja.Open;
                         StrToRxMemData(VL_Tag, MDLojaPdv);
                         MDLojaPdv.Open;
+                        MDLOJA.First;
                     end;
                 end;
                 //TABELA MULT-LOJA
@@ -3712,7 +3997,6 @@ begin
                         StrToRxMemData(VL_Tag, MDAdquirente);
                         MDAdquirente.Open;
                     end;
-
                 end;
                 //BIN
                 if ((VP_CarregaTodasTabelas) and (VP_TagTabelaEspecifica = '')) or
@@ -3967,7 +4251,7 @@ begin
             end;
         end;
         F_Navegar := True;
-        CarregaCampos;
+        CarregaCampos('TODAS');
     finally
         VL_Mensagem.Free;
     end;
@@ -4002,7 +4286,6 @@ begin
         end;
         Result := VL_Tag;
         F_Navegar := True;
-        CarregaCampos;
     finally
         VL_Mensagem.Free;
     end;
@@ -4041,13 +4324,17 @@ begin
     PagePrincipal.TabIndex := 0;
     PageCadastroLoja.TabIndex := 0;
     PageMultiLojaVisualizarModuloFuncao.TabIndex := 0;
+    PageMultiLojaVisualizaConfDadosFuncao.TabIndex := 0;
     PageLojaVisualizarModuloFuncao.TabIndex := 0;
+    PageLojaVizualizarConfModuloFuncao.TabIndex := 0;
     TabPinPadPageModuloFuncao.TabIndex := 0;
     TabPdvPageModuloFuncao.TabIndex := 0;
+
     TabConf.TabVisible := False;
     TabModulo.TabVisible := False;
     TabTag.TabVisible := False;
     TabAdquirente.TabVisible := False;
+
     F_Permissao := False;
     F_TipoConfigurador := pmS;
 end;
@@ -4055,7 +4342,6 @@ end;
 procedure Tfprincipal.LimparTela;
 var
     i: integer;
-    VL_Nota: string;
 begin
     with self do
     begin
@@ -4075,13 +4361,6 @@ begin
                 TCheckBox(Components[i]).Checked := False;
         end;
     end;
-    //campos que não devem ser limpos
-    VL_Nota := 'Para trocar o campo de filtro, clique sobre o ' + #13 +
-        'campo desejado na tabela correspondente e o filtro irá mudar automaticamente.';
-
-    TabLojaFuncaoMNota.Lines.Text := VL_Nota;
-    TabPinPadFuncaoMNota.Lines.Text := VL_Nota;
-    TabPDVFuncaoMNota.Lines.Text := VL_Nota;
 
     MDLoja.EmptyTable;
     MDLojaPdv.EmptyTable;
@@ -4093,6 +4372,7 @@ begin
     MDModuloConfig.EmptyTable;
     MDBin.EmptyTable;
     MDMultiLojaModuloConf.EmptyTable;
+    MDMultiLojaModuloConfFuncao.EmptyTable;
     MDLojaModuloConf.EmptyTable;
     MDTags.EmptyTable;
 end;
@@ -4142,6 +4422,7 @@ procedure Tfprincipal.MDLojaAfterScroll(DataSet: TDataSet);
 begin
     if ((MDLoja.Active = False) or (MDLoja.RecordCount = 0) or (F_Navegar = False)) then
         exit;
+
     if MDLojaModuloConf.Active then
     begin
         MDLojaModuloConf.EmptyTable;
@@ -4158,7 +4439,15 @@ begin
     else
         TabLojaFuncao.OnShow(self);
 
-    CarregaCampos;
+    if MDLojaModuloConfFuncao.Active then
+    begin
+        MDLojaModuloConfFuncao.EmptyTable;
+        TabLojaTabFuncaoDados.OnShow(self);
+    end
+    else
+        TabLojaTabFuncaoDados.OnShow(self);
+
+    CarregaCampos('MULTILOJA');
 end;
 
 
@@ -4183,7 +4472,7 @@ begin
     else
         TabPdvTabDadosFuncao.OnShow(self);
 
-    CarregaCampos;
+    CarregaCampos('PDV');
 end;
 
 procedure Tfprincipal.MDPdvFilterRecord(DataSet: TDataSet; var Accept: boolean);
@@ -4204,7 +4493,7 @@ begin
         TabPinPadTabDadosFuncao.OnShow(self);
 
 
-    CarregaCampos;
+    CarregaCampos('PINPAD');
 end;
 
 procedure Tfprincipal.TabConfBAdicionarClick(Sender: TObject);
@@ -4243,13 +4532,15 @@ begin
             ShowMessage('Senha é um campo obrigatório');
             exit;
         end;
-
         if GravaRegistros('TabConf', True) then
         begin
             VL_Codigo := IncluirRegistro(MDConfigurador, '0057', 'S', '008F', VL_Tag);
-            if VL_Codigo <> 0 then
+
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDConfigurador.Locate('ID', 0, []) then
+                    MDConfigurador.Delete;
                 exit;
             end;
 
@@ -4261,6 +4552,7 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
                     ShowMessage('ERRO:' + VL_Tag);
                     if MDConfigurador.Locate('ID', 0, []) then
                         MDConfigurador.Delete;
@@ -4272,11 +4564,14 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDConfigurador.Locate('ID', 0, []) then
+                            MDConfigurador.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
                         ShowMessage('ERRO:' + VL_Tag);
                         if MDConfigurador.Locate('ID', 0, []) then
                             MDConfigurador.Delete;
@@ -4290,12 +4585,13 @@ begin
                         MDConfigurador.FieldByName('ID').AsInteger := VL_ID;
                         MDConfigurador.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDConfigurador.Locate('ID', VL_ID, []);
+            CarregaCampos('CONFIGURADOR');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -4321,13 +4617,14 @@ begin
             exit;
         end;
         VL_Mensagem.Limpar;
-        VL_Mensagem.AddComando('0059', '');
+        VL_Mensagem.AddComando('0059', 'S');
         VL_Mensagem.AddTag('003D', VL_Chave);
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-        if VL_Codigo <> 0 then
+
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage('Erro:' + IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             Exit;
         end;
         VL_Mensagem.Limpar;
@@ -4337,15 +4634,24 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                ShowMessage('ERRO:' + VL_Tag);
+                F_Erro.TrataErro(vl_tag, VL_Retorno);
+                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                 Exit;
             end;
-            '004D':
+            '0059':
             begin
-                if VL_TAG <> '0' then
+                if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                    Exit;
+                end;
+                VL_Mensagem.GetTag('004D', VL_Tag);
+                if vl_tag <> '0' then
+                begin
+                    VL_Mensagem.GetTag('004D', VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     Exit;
                 end;
                 TabConfEChave.Lines.Text := VL_Chave;
@@ -4354,7 +4660,6 @@ begin
     finally
         VL_Mensagem.Free;
     end;
-
 end;
 
 
@@ -4381,7 +4686,7 @@ begin
         exit;
     end;
     if GravaRegistros('TabConf', False) then
-        AlterarRegistro('008F', MDConfigurador, '0056', StrToInt(TabConfEID.Text), '0058', 'S');
+        AlterarRegistro('008F', MDConfigurador, '0056', StrToInt(TabConfEID.Text), '0058', 'S', 'CONFIGURADOR');
 
 end;
 
@@ -4460,9 +4765,11 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDLojaModuloConf, '00AE', 'S', '00A7', VL_Tag);
 
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDLojaModuloConf.Locate('ID', 0, []) then
+                    MDLojaModuloConf.Delete;
                 exit;
             end;
 
@@ -4474,7 +4781,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     if MDLojaModuloConf.Locate('ID', 0, []) then
                         MDLojaModuloConf.Delete;
                     Exit;
@@ -4485,13 +4793,16 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDLojaModuloConf.Locate('ID', 0, []) then
+                            MDLojaModuloConf.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDLojaModuloConf.Locate('ID', 0, []) then
                             MDLojaModuloConf.Delete;
                         Exit;
@@ -4504,17 +4815,17 @@ begin
                         MDLojaModuloConf.FieldByName('ID').AsInteger := VL_ID;
                         MDLojaModuloConf.Post;
                     end;
+                    F_Navegar := False;
                 end;
             end;
-            CarregaCampos;
+            MDLojaModuloConf.Locate('ID', VL_ID, []);
+            CarregaCampos('MULTILOJA');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabLojaModuloBExcluirClick(Sender: TObject);
@@ -4548,11 +4859,11 @@ begin
             ShowMessage('Não existe registro selecionado para exclusão');
             Exit;
         end;
-
         VL_Codigo := ExcluirRegistro('00AF', StrToInt(TabLojaModuloEID.Text), '00B2', 'S', VL_Tag);
-        if VL_Codigo <> 0 then
+
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -4563,7 +4874,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '00B1':
@@ -4578,22 +4890,24 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('00AF', VL_ID);
                 F_Navegar := False;
                 if MDLojaModuloConf.Locate('ID', VL_ID, []) then
                     MDLojaModuloConf.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDLojaModuloConf.First;
+        CarregaCampos('MULTILOJA');
         ShowMessage('Registro Excluido com sucesso');
-        CarregaCampos;
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabLojaModuloBModificarClick(Sender: TObject);
@@ -4614,7 +4928,7 @@ begin
     end;
 
     if GravaRegistros('TabLojaModulo', False) then
-        AlterarRegistro('00A7', MDLojaModuloConf, '00AF', StrToInt(TabLojaModuloEID.Text), '00B1', 'S');
+        AlterarRegistro('00A7', MDLojaModuloConf, '00AF', StrToInt(TabLojaModuloEID.Text), '00B1', 'S', 'CONFIGURADOR');
 
 end;
 
@@ -4657,9 +4971,15 @@ end;
 
 procedure Tfprincipal.TabLojaFuncaoShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega loja_funcao
+    if ((F_Navegar) and (F_Permissao) and (MDLoja.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '00A9', '003C', MDLoja.FieldByName('ID').AsInteger);
+        TabLojaFuncaoETipoFiltro.ItemIndex := 0;
+        TabLojaFuncaoCKSelecionada.Checked := False;
+        TabLojaFuncaoETipoFiltro.OnChange(self);
+    end
+    else
+        MDLojaFuncao.EmptyTable;
 end;
 
 procedure Tfprincipal.TabModuloBAdicionarClick(Sender: TObject);
@@ -4693,13 +5013,14 @@ begin
             ShowMessage('Descricao é um campo obrigatório');
             exit;
         end;
-
         if GravaRegistros('TabModulo', True) then
         begin
             VL_Codigo := IncluirRegistro(MDModulo, '0074', 'S', '0090', VL_Tag);
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDModulo.Locate('ID', 0, []) then
+                    MDModulo.Delete;
                 exit;
             end;
 
@@ -4711,7 +5032,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     if MDModulo.Locate('ID', 0, []) then
                         MDModulo.Delete;
                     Exit;
@@ -4722,12 +5044,15 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDModulo.Locate('ID', 0, []) then
+                            MDModulo.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDModulo.Locate('ID', 0, []) then
                             MDModulo.Delete;
                         Exit;
@@ -4740,12 +5065,13 @@ begin
                         MDModulo.FieldByName('ID').AsInteger := VL_ID;
                         MDModulo.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDModulo.Locate('ID', VL_ID, []);
+            CarregaCampos('MODULO');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -4783,11 +5109,11 @@ begin
             ShowMessage('Não existe Módulo para ser excluido');
             exit;
         end;
-        VL_Codigo := ExcluirRegistro('006C', MDModulo.FieldByName('ID').AsInteger, '008C', 'S', VL_Tag);
+        VL_Codigo := ExcluirRegistro('006C', MDModulo.FieldByName('ID').AsInteger, '002B', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -4797,10 +5123,11 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
-            '008C':
+            '002B':
             begin
                 if VL_Tag <> 'R' then
                 begin
@@ -4812,16 +5139,19 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('006C', VL_ID); //MODULO_ID
                 F_Navegar := False;
                 if MDModulo.Locate('ID', VL_ID, []) then
                     MDModulo.Delete;
+                F_Navegar := True;
             end;
         end;
-        CarregaCampos;
+        MDModulo.First;
+        CarregaCampos('MODULO');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
@@ -4844,7 +5174,7 @@ begin
         MDModulo.FieldByName('TAG_NUMERO').AsString := VL_FPesquisaTag.MDTags.FieldByName('TAG_NUMERO').AsString;
         MDModulo.Post;
         F_Navegar := True;
-        CarregaCampos;
+        TabModuloETagModulo.Text := VL_FPesquisaTag.MDTags.FieldByName('TAG_NUMERO').AsString;
     end;
 end;
 
@@ -4871,7 +5201,7 @@ begin
         exit;
     end;
     if GravaRegistros('TabModulo', False) then
-        AlterarRegistro('0090', MDModulo, '006C', StrToInt(TabModuloEID.Text), '0075', 'S');
+        AlterarRegistro('0090', MDModulo, '006C', StrToInt(TabModuloEID.Text), '0075', 'S', 'MODULO');
 
 end;
 
@@ -4893,6 +5223,20 @@ begin
     TabConfiguracao.OnShow(SELF);
 end;
 
+procedure Tfprincipal.TabModuloTabDadosFuncaoCKSelecionadaChange(Sender: TObject);
+begin
+    if TabModuloTabDadosFuncaoCKSelecionada.Checked then
+    begin
+        MDModuloConfFuncao.Filter := 'VALIDADO=''T''';
+        MDModuloConfFuncao.Filtered := True;
+    end
+    else
+    begin
+        TabModuloTabDadosFuncaoETipoFiltro.ItemIndex := 0;
+        TabModuloTabDadosFuncaoETipoFiltro.OnChange(SELF);
+    end;
+end;
+
 procedure Tfprincipal.TabModuloTabDadosFuncaoEFiltroChange(Sender: TObject);
 var
     VL_Filtro: string;
@@ -4905,6 +5249,21 @@ begin
     MDModuloConfFuncao.Filtered := True;
 end;
 
+procedure Tfprincipal.TabModuloTabDadosFuncaoETipoFiltroChange(Sender: TObject);
+begin
+    TabModuloTabDadosFuncaoCKSelecionada.Checked := False;
+    if TabModuloTabDadosFuncaoETipoFiltro.ItemIndex < 1 then
+    begin
+        MDModuloConfFuncao.Filter := '';
+        MDModuloConfFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDModuloConfFuncao.Filter := 'TAG_TIPO=''' + TabModuloTabDadosFuncaoETipoFiltro.Text + '''';
+        MDModuloConfFuncao.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabModuloTabDadosFuncaoGridCellClick(Column: TColumn);
 var
     VL_Status: integer;
@@ -4912,6 +5271,8 @@ var
     VL_Codigo: integer;
     VL_ID: int64;
     VL_Retorno, VL_Tag: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
@@ -4919,7 +5280,7 @@ begin
     VL_Retorno := '';
     VL_Tag := '';
     if TabModuloTabDadosFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
-        TabModuloTabDadosFuncaoEFiltro.Caption := 'Filtrar por ' + TabModuloTabDadosFuncaoGrid.SelectedColumn.Title.Caption;
+        TabModuloTabDadosFuncaoLFiltro.Caption := 'Filtrar por ' + TabModuloTabDadosFuncaoGrid.SelectedColumn.Title.Caption;
     try
         F_OpenTefStatus(VL_Status);
         if VL_Status <> Ord(csLogado) then
@@ -4958,9 +5319,12 @@ begin
                 MDModuloConfFuncao.Post;
                 //incluir modulo função
                 VL_Codigo := IncluirRegistro(MDModuloConfFuncao, '0079', 'S', '0093', VL_Tag);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDModuloConfFuncao.Locate('ID', 0, []) then
+                        MDModuloConfFuncao.Delete;
                     exit;
                 end;
 
@@ -4972,7 +5336,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDModuloConfFuncao.Locate('ID', 0, []) then
                             MDModuloConfFuncao.Delete;
                         Exit;
@@ -4983,12 +5348,15 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDModuloConfFuncao.Locate('ID', 0, []) then
+                                MDModuloConfFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                             if MDModuloConfFuncao.Locate('ID', 0, []) then
                                 MDModuloConfFuncao.Delete;
                             Exit;
@@ -5001,6 +5369,7 @@ begin
                             MDModuloConfFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDModuloConfFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
@@ -5014,9 +5383,10 @@ begin
                 VL_Mensagem.AddTag('0086', MDModuloConfFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
                 VL_Mensagem.Limpar;
@@ -5027,9 +5397,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDModuloConfFuncao.Locate('ID', 0, []) then
-                            MDModuloConfFuncao.Delete;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '0085':
@@ -5043,7 +5412,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                             Exit;
                         end;
                     end;
@@ -5053,10 +5423,10 @@ begin
             begin
                 //EXCLUIR modulo_CONF_função
                 VL_Codigo := ExcluirRegistro('006D', VL_ID, '008A', 'S', VL_Tag);
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -5065,10 +5435,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDModuloConfFuncao.Locate('ID', 0, []) then
-                            MDModuloConfFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '008A':
                     begin
@@ -5076,18 +5444,20 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         end;
                     end;
                 end;
-                MDModuloConfFuncao.Edit;
+                sair:
+                    MDModuloConfFuncao.Edit;
                 MDModuloConfFuncao.FieldByName('ID').AsInteger := -1;
+                MDModuloConfFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDModuloConfFuncao.Post;
             end;
         end;
@@ -5099,9 +5469,15 @@ end;
 
 procedure Tfprincipal.TabModuloTabDadosFuncaoShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega ModuloFunc_conf
+    if ((F_Navegar) and (F_Permissao) and (MDModuloConfig.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '0093', '007B', MDModuloConfig.FieldByName('ID').AsInteger);
+        TabModuloTabDadosFuncaoETipoFiltro.ItemIndex := 0;
+        TabModuloTabDadosFuncaoCKSelecionada.Checked := False;
+        TabModuloTabDadosFuncaoETipoFiltro.OnChange(SELF);
+    end
+    else
+        MDModuloConfFuncao.EmptyTable;
 end;
 
 procedure Tfprincipal.TabMultLojaBAdicionarClick(Sender: TObject);
@@ -5142,12 +5518,11 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDMultiLoja, '0064', 'S', '0080', VL_Tag);
 
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                 exit;
             end;
-
             VL_Mensagem.Limpar;
             VL_Mensagem.CarregaTags(VL_Tag);
             VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
@@ -5156,7 +5531,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     if MDMultiLoja.Locate('ID', 0, []) then
                         MDMultiLoja.Delete;
                     Exit;
@@ -5166,13 +5542,17 @@ begin
                     if VL_Tag <> 'R' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        if MDMultiLoja.Locate('ID', 0, []) then
+                            MDMultiLoja.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if VL_Tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDMultiLoja.Locate('ID', 0, []) then
                             MDMultiLoja.Delete;
                         Exit;
@@ -5188,15 +5568,14 @@ begin
                     end;
                 end;
             end;
-            CarregaCampos;
+            MDMultiLoja.Locate('ID', VL_ID, []);
+            CarregaCampos('MULTILOJA');
             ShowMessage('Registro incluido com sucesso');
-
         end;
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabMultLojaBAtualizarClick(Sender: TObject);
@@ -5220,7 +5599,7 @@ begin
     end;
 
     if GravaRegistros('TabMultLoja', False) then
-        AlterarRegistro('0080', MDMultiLoja, '0065', MDMultiLoja.FieldByName('ID').AsInteger, '0067', 'S');
+        AlterarRegistro('0080', MDMultiLoja, '0065', MDMultiLoja.FieldByName('ID').AsInteger, '0067', 'S', 'MULTILOJA');
 
 end;
 
@@ -5252,9 +5631,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('0065', MDMultiLoja.FieldByName('ID').AsInteger, '0066', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -5265,7 +5644,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '0066':
@@ -5273,22 +5653,31 @@ begin
                 if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('004D', VL_TAG);
                 if VL_Tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 F_Navegar := False;
+                //ATUALIZA LOJA
+                MDLoja.Locate('ID', MDMultiLoja.FieldByName('LOJA_ID').AsInteger, []);
+                MDLoja.Edit;
+                MDLoja.FieldByName('MULT').AsString := 'F';
+                MDLoja.Post;
                 MDMultiLoja.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDMultiLoja.First;
+        CarregaCampos('MULTILOJA');
         ShowMessage('Registro Excluido com sucesso');
-        CarregarTabelas(True, '', '', 0);
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -5308,13 +5697,13 @@ procedure Tfprincipal.TabMultLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
 begin
     if TabMultLojaConfFuncaoCKSelecionada.Checked then
     begin
-        MDMultiLojaModuloConf.Filter := 'VALIDADO=''T''';
-        MDMultiLojaModuloConf.Filtered := True;
+        MDMultiLojaModuloConfFuncao.Filter := 'VALIDADO=''T''';
+        MDMultiLojaModuloConfFuncao.Filtered := True;
     end
     else
     begin
-        MDMultiLojaModuloConf.Filter := '';
-        MDMultiLojaModuloConf.Filtered := False;
+        TabMultLojaConfFuncaoETipoFiltro.ItemIndex := 0;
+        TabMultLojaConfFuncaoETipoFiltro.OnChange(SELF);
     end;
 end;
 
@@ -5326,8 +5715,23 @@ begin
         EXIT;
     VL_Filtro := '';
     MDMultiLojaModuloConfFuncao.Filter := FiltrarTabela(TabMultLojaConfFuncaoGrid, VL_Filtro, TabMultLojaConfFuncaoEFiltro);
-    TabMultLojaModuloLFiltro.Caption := VL_Filtro;
+    TabMultLojaConfFuncaoLFiltro.Caption := VL_Filtro;
     MDMultiLojaModuloConfFuncao.Filtered := True;
+end;
+
+procedure Tfprincipal.TabMultLojaConfFuncaoETipoFiltroChange(Sender: TObject);
+begin
+    TabMultLojaConfFuncaoCKSelecionada.Checked := False;
+    if TabMultLojaConfFuncaoETipoFiltro.ItemIndex < 1 then
+    begin
+        MDMultiLojaModuloConfFuncao.Filter := '';
+        MDMultiLojaModuloConfFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDMultiLojaModuloConfFuncao.Filter := 'TAG_TIPO=''' + TabMultLojaConfFuncaoETipoFiltro.Text + '''';
+        MDMultiLojaModuloConfFuncao.Filtered := True;
+    end;
 end;
 
 procedure Tfprincipal.TabMultLojaConfFuncaoGridCellClick(Column: TColumn);
@@ -5337,15 +5741,21 @@ var
     VL_Codigo: integer;
     VL_ID: int64;
     VL_Retorno, VL_Tag: string;
+    VL_Validado, VL_Habilitado: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+    VL_Validado := '';
+    VL_Habilitado := '';
 
+    F_Navegar := False;
     if TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
-        TabLojaTabFuncaoDadosLFiltro.Caption := 'Filtrar por ' + TabMultLojaConfFuncaoGrid.SelectedColumn.Title.Caption;
+        TabMultLojaConfFuncaoLFiltro.Caption := 'Filtrar por ' + TabMultLojaConfFuncaoGrid.SelectedColumn.Title.Caption;
     try
         F_OpenTefStatus(VL_Status);
         if VL_Status <> Ord(csLogado) then
@@ -5358,38 +5768,42 @@ begin
             exit;
         if ((MDMultiLojaModuloConfFuncao.Active = False) or (MDMultiLojaModuloConfFuncao.RecordCount < 1)) then
             exit;
-        F_Navegar := False;
         if ((TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') or
             (TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
-            VL_ID := MDLojaModuloConfFuncaoID.AsInteger;
+            VL_ID := MDMultiLojaModuloConfFuncaoID.AsInteger;
+            VL_Validado := COPY(BoolToStr(MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
+            VL_Habilitado := COPY(BoolToStr(MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
             if (TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDMultiLojaModuloConfFuncao.Edit;
-                MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean := not MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean;
+                MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsString := VL_Validado;
+
                 MDMultiLojaModuloConfFuncao.Post;
             end;
             if (TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F') then
             begin
                 MDMultiLojaModuloConfFuncao.Edit;
-                MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO').AsBoolean := not MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO').AsBoolean;
+                MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO').AsString := VL_Habilitado;
                 MDMultiLojaModuloConfFuncao.Post;
             end;
 
-            if ((MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID < 1)) then
+            if ((MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID < 1)) then
             begin
                 MDMultiLojaModuloConfFuncao.Edit;
                 MDMultiLojaModuloConfFuncao.FieldByName('MULTILOJA_MODULO_CONF_ID').AsString := MDMultiLojaModuloConf.FieldByName('ID').AsString;
                 MDMultiLojaModuloConfFuncao.FieldByName('ID').AsInteger := 0;
                 MDMultiLojaModuloConfFuncao.Post;
+
                 //incluir loja_modulo_conf_funcao
                 VL_Codigo := IncluirRegistro(MDMultiLojaModuloConfFuncao, '00CA', 'S', '00D0', VL_Tag);
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
+                        MDMultiLojaModuloConfFuncao.Delete;
                     exit;
                 end;
-
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
                 VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
@@ -5398,7 +5812,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                             MDMultiLojaModuloConfFuncao.Delete;
                         Exit;
@@ -5409,12 +5824,15 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
+                                MDMultiLojaModuloConfFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                             if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                                 MDMultiLojaModuloConfFuncao.Delete;
                             Exit;
@@ -5427,11 +5845,12 @@ begin
                             MDMultiLojaModuloConfFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDMultiLojaModuloConfFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
             else
-            if ((MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID > 0)) then
+            if ((MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID > 0)) then
             begin
                 //ALTERA MULTILOJA_MODULO_CONF_FUNCAO
                 VL_Mensagem.Limpar;
@@ -5440,12 +5859,13 @@ begin
                 VL_Mensagem.AddTag('0084', MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
+                        MDMultiLojaModuloConfFuncao.Delete;
                     exit;
                 end;
-
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
                 VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
@@ -5454,7 +5874,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                             MDMultiLojaModuloConfFuncao.Delete;
                         Exit;
@@ -5465,12 +5886,17 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
+                                MDMultiLojaModuloConfFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
+                                MDMultiLojaModuloConfFuncao.Delete;
                             Exit;
                         end;
                     end;
@@ -5481,10 +5907,10 @@ begin
                 //excluir multloja_modulo_conf_função
                 VL_Codigo := ExcluirRegistro('00BD', VL_ID, '0088', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -5494,10 +5920,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
-                            MDMultiLojaModuloConfFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '0088':
                     begin
@@ -5505,19 +5929,25 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
-                        end;
-                        VL_Mensagem.GetTag('004D', VL_Tag);
-                        if vl_tag <> '0' then
+                        end
+                        else
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            VL_Mensagem.GetTag('004D', VL_Tag);
+                            if vl_tag <> '0' then
+                            begin
+                                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            end;
                         end;
                     end;
                 end;
-                MDMultiLojaModuloConfFuncao.Edit;
+
+                sair:
+                    MDMultiLojaModuloConfFuncao.Edit;
                 MDMultiLojaModuloConfFuncao.FieldByName('ID').AsInteger := -1;
-                MDMultiLojaModuloConfFuncao.Post;
+                MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
+                MDMultiLojaModuloConfFuncao.POST;
             end;
         end;
     finally
@@ -5548,8 +5978,8 @@ begin
     end
     else
     begin
-        MDMultiLojaFuncao.Filter := '';
-        MDMultiLojaFuncao.Filtered := False;
+        TabMultLojaFuncaoETipoFiltrar.ItemIndex := 0;
+        TabMultLojaFuncaoETipoFiltrar.OnChange(SELF);
     end;
 end;
 
@@ -5566,19 +5996,38 @@ begin
     MDMultiLojaFuncao.Filtered := True;
 end;
 
+procedure Tfprincipal.TabMultLojaFuncaoETipoFiltrarChange(Sender: TObject);
+begin
+    TabMultLojaFuncaoCKSelecionada.Checked := False;
+    if TabMultLojaFuncaoETipoFiltrar.ItemIndex < 1 then
+    begin
+        MDMultiLojaFuncao.Filter := '';
+        MDMultiLojaFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDMultiLojaFuncao.Filter := 'TAG_TIPO=''' + TabMultLojaFuncaoETipoFiltrar.Text + '''';
+        MDMultiLojaFuncao.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabMultLojaFuncaoGridCellClick(Column: TColumn);
 var
     VL_Status: integer;
     VL_Mensagem: TMensagem;
     VL_Codigo: integer;
     VL_ID: int64;
-    VL_Retorno, VL_Tag: string;
+    VL_Retorno, VL_Tag, VL_Validado, VL_Habilitado: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+    VL_Validado := '';
+    VL_Habilitado := '';
     if TabMultLojaFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabMultLojaFuncaoLFiltrar.Caption := 'Filtrar por ' + TabMultLojaFuncaoGrid.SelectedColumn.Title.Caption;
     try
@@ -5598,16 +6047,18 @@ begin
             (TabMultLojaFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDMultiLojaFuncaoID.AsInteger;
+            VL_Validado := COPY(BoolToStr(MDMultiLojaFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
+            VL_Habilitado := COPY(BoolToStr(MDMultiLojaFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
             if (TabMultLojaFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDMultiLojaFuncao.Edit;
-                MDMultiLojaFuncao.FieldByName('VALIDADO').AsBoolean := not MDMultiLojaFuncao.FieldByName('VALIDADO').AsBoolean;
+                MDMultiLojaFuncao.FieldByName('VALIDADO').AsString := VL_Validado;
                 MDMultiLojaFuncao.Post;
             end;
             if (TabMultLojaFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F') then
             begin
                 MDMultiLojaFuncao.Edit;
-                MDMultiLojaFuncao.FieldByName('HABILITADO').AsBoolean := not MDMultiLojaFuncao.FieldByName('HABILITADO').AsBoolean;
+                MDMultiLojaFuncao.FieldByName('HABILITADO').AsString := VL_Habilitado;
                 MDMultiLojaFuncao.Post;
             end;
 
@@ -5620,12 +6071,13 @@ begin
                 MDMultiLojaFuncao.Post;
                 //incluir MULTLOJA função
                 VL_Codigo := IncluirRegistro(MDMultiLojaFuncao, '009D', 'S', '009C', VL_Tag);
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDMultiLojaFuncao.Locate('ID', 0, []) then
+                        MDMultiLojaFuncao.Delete;
                     exit;
                 end;
-
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
                 VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
@@ -5634,7 +6086,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDMultiLojaFuncao.Locate('ID', 0, []) then
                             MDMultiLojaFuncao.Delete;
                         Exit;
@@ -5645,12 +6098,15 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDMultiLojaFuncao.Locate('ID', 0, []) then
+                                MDMultiLojaFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if VL_Tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                             if MDMultiLojaFuncao.Locate('ID', 0, []) then
                                 MDMultiLojaFuncao.Delete;
                             Exit;
@@ -5663,6 +6119,7 @@ begin
                             MDMultiLojaFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDMultiLojaFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
@@ -5676,9 +6133,10 @@ begin
                 VL_Mensagem.AddTag('00A1', MDMultiLojaFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
 
@@ -5689,10 +6147,9 @@ begin
                 case VL_Retorno of
                     '0026':
                     begin
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDMultiLojaFuncao.Locate('ID', 0, []) then
-                            MDMultiLojaFuncao.Delete;
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '009F':
@@ -5706,7 +6163,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if VL_Tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                             Exit;
                         end;
                     end;
@@ -5717,12 +6175,11 @@ begin
                 //alterar multloja função
                 VL_Codigo := ExcluirRegistro('009E', VL_ID, '00A0', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
-
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
                 VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
@@ -5731,10 +6188,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDMultiLojaFuncao.Locate('ID', 0, []) then
-                            MDMultiLojaFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '00A0':
                     begin
@@ -5742,18 +6197,23 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
-                        end;
-                        VL_Mensagem.GetTag('004D', VL_Tag);
-                        if VL_Tag <> '0' then
+                        end
+                        else
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            VL_Mensagem.GetTag('004D', VL_Tag);
+                            if VL_Tag <> '0' then
+                            begin
+                                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            end;
                         end;
                     end;
                 end;
-                MDMultiLojaFuncao.Edit;
+                sair:
+                    MDMultiLojaFuncao.Edit;
                 MDMultiLojaFuncao.FieldByName('ID').AsInteger := -1;
+                MDMultiLojaFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDMultiLojaFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDMultiLojaFuncao.Post;
             end;
         end;
@@ -5761,7 +6221,6 @@ begin
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
 procedure Tfprincipal.TabMultLojaGridFiltroCellClick(Column: TColumn);
@@ -5795,16 +6254,27 @@ begin
             ShowMessage('MDMultiLojaModulo não está ativo');
             Exit;
         end;
+        if MDMultiLoja.Active = False then
+        begin
+            ShowMessage('MDMultiLoja não está ativo');
+            Exit;
+        end;
+        if TabMultLojaModuloEModuloConfID.Text = '' then
+        begin
+            ShowMessage('Voce deve selecionar um modulo para a inclusão');
+            Exit;
+        end;
         if GravaRegistros('TabMultLojaModulo', True) then
         begin
             VL_Codigo := IncluirRegistro(MDMultiLojaModuloConf, '0096', 'S', '0094', VL_Tag);
 
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDMultiLojaModuloConf.Locate('ID', 0, []) then
+                    MDMultiLojaModuloConf.Delete;
                 exit;
             end;
-
             VL_Mensagem.Limpar;
             VL_Mensagem.CarregaTags(VL_Tag);
             VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
@@ -5813,7 +6283,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     if MDMultiLojaModuloConf.Locate('ID', 0, []) then
                         MDMultiLojaModuloConf.Delete;
                     Exit;
@@ -5823,13 +6294,16 @@ begin
                     if VL_Tag <> 'R' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + 'Este não é um comando de retorno');
+                        if MDMultiLojaModuloConf.Locate('ID', 0, []) then
+                            MDMultiLojaModuloConf.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if VL_Tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
                         if MDMultiLojaModuloConf.Locate('ID', 0, []) then
                             MDMultiLojaModuloConf.Delete;
                         Exit;
@@ -5842,12 +6316,13 @@ begin
                         MDMultiLojaModuloConf.FieldByName('ID').AsInteger := VL_ID;
                         MDMultiLojaModuloConf.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDMultiLojaModuloConf.Locate('ID', VL_ID, []);
+            CarregaCampos('MULTILOJA');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -5887,9 +6362,9 @@ begin
         end;
 
         VL_Codigo := ExcluirRegistro('0097', StrToInt(TabMultLojaModuloEID.Text), '0099', 'S', VL_Tag);
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -5900,7 +6375,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '0099':
@@ -5911,23 +6387,25 @@ begin
                     ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
                     Exit;
                 end;
-
                 VL_Mensagem.GetTag('004D', VL_Tag);
 
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_id, VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0097', VL_ID);
                 F_Navegar := False;
                 if MDMultiLojaModuloConf.Locate('ID', VL_ID, []) then
                     MDMultiLojaModuloConf.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDMultiLojaModuloConf.First;
+        CarregaCampos('MULTILOJA');
         ShowMessage('Registro Excluido com sucesso');
-        CarregaCampos;
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -5951,8 +6429,14 @@ begin
         Exit;
     end;
 
+    if TabMultLojaModuloEID.Text = '' then
+    begin
+        ShowMessage('Não existe configuração selecionada para ser alterada');
+        Exit;
+    end;
+
     if GravaRegistros('TabMultLojaModulo', False) then
-        AlterarRegistro('0094', MDMultiLojaModuloConf, '0097', StrToInt(TabMultLojaModuloEID.Text), '009A', 'S');
+        AlterarRegistro('0094', MDMultiLojaModuloConf, '0097', StrToInt(TabMultLojaModuloEID.Text), '009A', 'S', 'MULTILOJA');
 
 end;
 
@@ -5989,22 +6473,28 @@ end;
 
 procedure Tfprincipal.TabMultLojaFuncaoShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega multloja_funcao
+    if ((F_Navegar) and (F_Permissao) and (MDMultiLoja.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '009C', '0065', MDMultiLoja.FieldByName('ID').AsInteger);
-end;
-
-procedure Tfprincipal.TabMultLojaShow(Sender: TObject);
-begin
-    PageMultiLojaVisualizarModuloFuncao.PageIndex := 0;
-    PageMultiLojaVisualizaConfDadosFuncao.PageIndex := 0;
+        TabMultLojaFuncaoETipoFiltrar.ItemIndex := 0;
+        TabMultLojaConfFuncaoCKSelecionada.Checked := False;
+        TabMultLojaFuncaoETipoFiltrar.OnChange(self);
+    end
+    else
+        MDMultiLojaFuncao.EmptyTable;
 end;
 
 procedure Tfprincipal.TabMultLojaTabFuncaoDadosShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega multloja_CONF_funcao
+    if ((F_Navegar) and (F_Permissao) and (MDMultiLojaModuloConf.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '00D0', '0097', MDMultiLojaModuloConf.FieldByName('ID').AsInteger);
+        TabMultLojaConfFuncaoETipoFiltro.ItemIndex := 0;
+        TabMultLojaConfFuncaoCKSelecionada.Checked := False;
+        TabMultLojaConfFuncaoETipoFiltro.OnChange(SELF);
+    end
+    else
+        MDMultiLojaModuloConf.EmptyTable;
 end;
 
 
@@ -6035,7 +6525,7 @@ begin
             Desconectar;
             Exit;
         end;
-        if MDLoja.Active = False then
+        if MDLojaPDV.Active = False then
         begin
             ShowMessage('MDLoja não está ativo');
             Exit;
@@ -6054,9 +6544,11 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDPdv, '0044', 'S', '008E', VL_Tag);
 
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDPdv.Locate('ID', 0, []) then
+                    MDPdv.Delete;
                 exit;
             end;
 
@@ -6068,7 +6560,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
                     if MDPdv.Locate('ID', 0, []) then
                         MDPdv.Delete;
                     Exit;
@@ -6079,12 +6572,15 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDPdv.Locate('ID', 0, []) then
+                            MDPdv.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(vl_tag, VL_Retorno);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
                         if MDPdv.Locate('ID', 0, []) then
                             MDPdv.Delete;
                         Exit;
@@ -6097,9 +6593,11 @@ begin
                         MDPdv.FieldByName('ID').AsInteger := VL_ID;
                         MDPdv.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDPdv.Locate('ID', VL_ID, []);
+            CarregaCampos('PDV');
             ShowMessage('Registro incluido com sucesso');
         end;
     finally
@@ -6142,19 +6640,22 @@ begin
 
         VL_Codigo := ExcluirRegistro('0043', StrToInt(TabPdvEID.Text), '006B', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
+
         VL_Mensagem.Limpar;
         VL_Mensagem.CarregaTags(VL_Tag);
         VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
+
         case VL_Retorno of
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '006B':
@@ -6169,16 +6670,19 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0043', VL_ID);
                 F_Navegar := False;
                 if MDPdv.Locate('ID', VL_ID, []) then
                     MDPdv.Delete;
+                F_Navegar := True;
             end;
         end;
-        CarregaCampos;
+        MDPdv.First;
+        CarregaCampos('PDV');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
@@ -6206,13 +6710,14 @@ begin
             exit;
         end;
         VL_Mensagem.Limpar;
-        VL_Mensagem.AddComando('0045', '');
+        VL_Mensagem.AddComando('0045', 'S');
         VL_Mensagem.AddTag('003B', VL_Chave);
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-        if VL_Codigo <> 0 then
+
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage('Erro:' + IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             Exit;
         end;
         VL_Mensagem.Limpar;
@@ -6222,15 +6727,24 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                ShowMessage('ERRO:' + VL_Tag);
+                F_Erro.TrataErro(vl_tag, VL_Retorno);
+                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                 Exit;
             end;
-            '004D':
+            '0045':
             begin
-                if VL_TAG <> '0' then
+                if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                    Exit;
+                end;
+                VL_Mensagem.GetTag('004D', VL_Tag);
+                if vl_tag <> '0' then
+                begin
+                    VL_Mensagem.GetTag('004D', VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     Exit;
                 end;
                 TabPdvEChave.Text := VL_Chave;
@@ -6239,7 +6753,6 @@ begin
     finally
         VL_Mensagem.Free;
     end;
-
 end;
 
 procedure Tfprincipal.TabPdvBModificarClick(Sender: TObject);
@@ -6264,26 +6777,19 @@ begin
         ShowMessage('Descrição é um campo obrigatório');
         exit;
     end;
-    if TabPdvCLoja.Text = '' then
+    if ((TabPdvCLoja.Text = '') or (TabPdvCLoja.LookupDisplayIndex = -1)) then
     begin
         ShowMessage('Voce deve selecionar uma loja para incluir o Pdv, campo obrigatório');
         exit;
     end;
     if GravaRegistros('TabPdv', False) then
-        AlterarRegistro('008E', MDPdv, '0043', StrToInt(TabPdvEID.Text), '004B', 'S');
+        AlterarRegistro('008E', MDPdv, '0043', StrToInt(TabPdvEID.Text), '004B', 'S', 'PDV');
 
 end;
 
 procedure Tfprincipal.TabPdvEFiltroChange(Sender: TObject);
-var
-    VL_Filtro: string;
 begin
-    if F_Permissao = False then
-        EXIT;
-    VL_Filtro := '';
-    MDPdv.Filter := FiltrarTabela(TabPdvGrid, VL_Filtro, TabPdvEFiltro);
-    TabPdvLFiltro.Caption := VL_Filtro;
-    MDPdv.Filtered := True;
+
 end;
 
 procedure Tfprincipal.TabPDVFuncaoCKSelecionadaChange(Sender: TObject);
@@ -6295,8 +6801,8 @@ begin
     end
     else
     begin
-        MDPdvFuncao.Filter := '';
-        MDPdvFuncao.Filtered := False;
+        TabPDVFuncaoETipoFiltro.ItemIndex := 0;
+        TabPDVFuncaoETipoFiltro.OnChange(SELF);
     end;
 end;
 
@@ -6312,6 +6818,21 @@ begin
     MDPdvFuncao.Filtered := True;
 end;
 
+procedure Tfprincipal.TabPDVFuncaoETipoFiltroChange(Sender: TObject);
+begin
+    TabPDVFuncaoCKSelecionada.Checked := False;
+    if TabPDVFuncaoETipoFiltro.ItemIndex < 1 then
+    begin
+        MDPdvFuncao.Filter := '';
+        MDPdvFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDPdvFuncao.Filter := 'TAG_TIPO=''' + TabPDVFuncaoETipoFiltro.Text + '''';
+        MDPdvFuncao.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabPDVFuncaoGridCellClick(Column: TColumn);
 var
     VL_Status: integer;
@@ -6319,6 +6840,8 @@ var
     VL_Codigo: integer;
     VL_ID: int64;
     VL_Retorno, VL_Tag: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
@@ -6364,9 +6887,12 @@ begin
                 MDPdvFuncao.Post;
                 //incluir PDV função
                 VL_Codigo := IncluirRegistro(MDPdvFuncao, '00C2', 'S', '00C1', VL_Tag);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDLojaFuncao.Locate('ID', 0, []) then
+                        MDLojaFuncao.Delete;
                     exit;
                 end;
 
@@ -6378,7 +6904,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDLojaFuncao.Locate('ID', 0, []) then
                             MDLojaFuncao.Delete;
                         Exit;
@@ -6389,12 +6916,15 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDLojaFuncao.Locate('ID', 0, []) then
+                                MDLojaFuncao.Delete;
                             Exit;
                         end;
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                             if MDLojaFuncao.Locate('ID', 0, []) then
                                 MDLojaFuncao.Delete;
                             Exit;
@@ -6407,6 +6937,7 @@ begin
                             MDPdvFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDPdvFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
@@ -6420,9 +6951,10 @@ begin
                 VL_Mensagem.AddTag('00C0', MDPdvFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
                 VL_Mensagem.Limpar;
@@ -6432,9 +6964,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaFuncao.Locate('ID', 0, []) then
-                            MDLojaFuncao.Delete;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '00C4':
@@ -6448,7 +6979,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                             Exit;
                         end;
                     end;
@@ -6459,10 +6991,10 @@ begin
                 //alterar PDV função
                 VL_Codigo := ExcluirRegistro('00C3', VL_ID, '00C5', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -6471,10 +7003,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaFuncao.Locate('ID', 0, []) then
-                            MDLojaFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '00C5':
                     begin
@@ -6482,18 +7012,23 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
-                        end;
-                        VL_Mensagem.GetTag('004D', VL_Tag);
-                        if vl_tag <> '0' then
+                        end
+                        else
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            VL_Mensagem.GetTag('004D', VL_Tag);
+                            if vl_tag <> '0' then
+                            begin
+                                F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            end;
                         end;
                     end;
                 end;
-                MDPdvFuncao.Edit;
+                sair:
+                    MDPdvFuncao.Edit;
                 MDPdvFuncao.FieldByName('ID').AsInteger := -1;
+                MDPdvFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDPdvFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDPdvFuncao.Post;
             end;
         end;
@@ -6501,13 +7036,8 @@ begin
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
-
 end;
 
-procedure Tfprincipal.TabPdvGridCellClick(Column: TColumn);
-begin
-    TabPdvLFiltro.Caption := 'Filtrar por ' + TabPdvGrid.SelectedColumn.Title.Caption;
-end;
 
 procedure Tfprincipal.TabPDVModuloBAdicionarClick(Sender: TObject);
 var
@@ -6539,9 +7069,11 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDPdvModulo, '00C8', 'S', '00C7', VL_Tag);
 
-            if VL_Codigo <> 0 then
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDPdvModulo.Locate('ID', 0, []) then
+                    MDPdvModulo.Delete;
                 exit;
             end;
 
@@ -6553,7 +7085,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                     if MDPdvModulo.Locate('ID', 0, []) then
                         MDPdvModulo.Delete;
                     Exit;
@@ -6566,11 +7099,11 @@ begin
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
                         Exit;
                     end;
-
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDPdvModulo.Locate('ID', 0, []) then
                             MDPdvModulo.Delete;
                         Exit;
@@ -6583,12 +7116,13 @@ begin
                         MDPdvModulo.FieldByName('ID').AsInteger := VL_ID;
                         MDPdvModulo.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDPdvModulo.Locate('ID', VL_ID, []);
+            CarregaCampos('PDV');
             ShowMessage('Registro incluido com sucesso');
         end;
-
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -6627,11 +7161,11 @@ begin
             ShowMessage('Não existe registro selecionado para exclusão');
             Exit;
         end;
-
         VL_Codigo := ExcluirRegistro('00C9', StrToInt(TabPdvModuloEID.Text), '00CC', 'S', VL_Tag);
-        if VL_Codigo <> 0 then
+
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -6642,7 +7176,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '00CC':
@@ -6657,17 +7192,20 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('00C9', VL_ID);
                 F_Navegar := False;
                 if MDPdvModulo.Locate('ID', VL_ID, []) then
                     MDPdvModulo.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDPdvModulo.First;
+        CarregaCampos('PDV');
         ShowMessage('Registro Excluido com sucesso');
-        CarregaCampos;
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
@@ -6693,7 +7231,7 @@ begin
     end;
 
     if GravaRegistros('TabPdvModulo', False) then
-        AlterarRegistro('00C7', MDPdvModulo, '00C9', StrToInt(TabPdvModuloEID.Text), '00CB', 'S');
+        AlterarRegistro('00C7', MDPdvModulo, '00C9', StrToInt(TabPdvModuloEID.Text), '00CB', 'S', 'PDV');
 
 end;
 
@@ -6724,7 +7262,7 @@ begin
         exit;
     VL_FPesquisaTag := TFTags.Create(Self);
     VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-    VL_FPesquisaTag.F_TagTipo := 'MENU';
+    VL_FPesquisaTag.F_TagTipo := '';
     VL_FPesquisaTag.ShowModal;
     if VL_FPesquisaTag.F_Carregado then
     begin
@@ -6754,9 +7292,15 @@ end;
 
 procedure Tfprincipal.TabPdvTabDadosFuncaoShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega pdv_funcao
+    if ((F_Navegar) and (F_Permissao) and (MDPdv.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '00C1', '0043', MDPdv.FieldByName('ID').AsInteger);
+        TabPDVFuncaoETipoFiltro.ItemIndex := 0;
+        TabPDVFuncaoCKSelecionada.Checked := False;
+        TabPDVFuncaoETipoFiltro.OnChange(SELF);
+    end
+    else
+        MDPdvFuncao.EmptyTable;
 end;
 
 procedure Tfprincipal.TabPdvTabDadosModuloShow(Sender: TObject);
@@ -6795,9 +7339,13 @@ begin
         begin
             vl_codigo := IncluirRegistro(MDPinPad, '0053', 'S', '008D', VL_Tag);
 
+            VL_Codigo:=F_Erro.TrataErro(VL_Codigo, VL_Retorno);
+
             if VL_Codigo <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDPinPad.Locate('ID', 0, []) then
+                    MDPinPad.Delete;
                 exit;
             end;
 
@@ -6809,7 +7357,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     if MDPinPad.Locate('ID', 0, []) then
                         MDPinPad.Delete;
                     Exit;
@@ -6820,12 +7369,15 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDPinPad.Locate('ID', 0, []) then
+                            MDPinPad.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDPinPad.Locate('ID', 0, []) then
                             MDPinPad.Delete;
                         Exit;
@@ -6838,9 +7390,11 @@ begin
                         MDPinPad.FieldByName('ID').AsInteger := VL_ID;
                         MDPinPad.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDPinPad.Locate('ID', VL_ID, []);
+            CarregaCampos('PINPAD');
             ShowMessage('Registro incluido com sucesso');
         end;
 
@@ -6884,9 +7438,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('0054', StrToInt(TabPinPadEID.Text), '006A', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -6896,7 +7450,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(vl_id, VL_Retorno);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '006A':
@@ -6911,15 +7466,19 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0054', VL_ID);
                 F_Navegar := False;
                 if MDPinPad.Locate('ID', VL_ID, []) then
                     MDPinPad.Delete;
+                F_Navegar := True;
             end;
         end;
+        MDPinPad.First;
+        CarregaCampos('PinPad');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
@@ -6950,7 +7509,7 @@ begin
         exit;
     end;
     if GravaRegistros('TabPinPad', False) then
-        AlterarRegistro('008D', MDPinPad, '0054', StrToInt(TabPinPadEID.Text), '0055', 'S');
+        AlterarRegistro('008D', MDPinPad, '0054', StrToInt(TabPinPadEID.Text), '0055', 'S', 'PINPAD');
 
 end;
 
@@ -6969,8 +7528,8 @@ begin
     end
     else
     begin
-        MDPinPadFuncao.Filter := '';
-        MDPinPadFuncao.Filtered := False;
+        TabPinPadFuncaoETipoFiltro.ItemIndex := 0;
+        TabPinPadFuncaoETipoFiltro.OnChange(SELF);
     end;
 end;
 
@@ -6986,19 +7545,38 @@ begin
     MDPinPadFuncao.Filtered := True;
 end;
 
+procedure Tfprincipal.TabPinPadFuncaoETipoFiltroChange(Sender: TObject);
+begin
+    TabPinPadFuncaoCKSelecionada.Checked := False;
+    if TabPinPadFuncaoETipoFiltro.ItemIndex < 1 then
+    begin
+        MDPinPadFuncao.Filter := '';
+        MDPinPadFuncao.Filtered := False;
+    end
+    else
+    begin
+        MDPinPadFuncao.Filter := 'TAG_TIPO=''' + TabPinPadFuncaoETipoFiltro.Text + '''';
+        MDPinPadFuncao.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabPinPadFuncaoGridCellClick(Column: TColumn);
 var
     VL_Status: integer;
     VL_Mensagem: TMensagem;
     VL_Codigo: integer;
     VL_ID: int64;
-    VL_Retorno, VL_Tag: string;
+    VL_Retorno, VL_Tag, VL_Validado, VL_Habilitado: string;
+label
+    sair;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Codigo := 0;
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+    VL_Validado := '';
+    VL_Habilitado := '';
     if TabPinPadFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabPinPadFuncaoLFiltro.Caption := 'Filtrar por ' + TabPinPadFuncaoGrid.SelectedColumn.Title.Caption;
     try
@@ -7009,28 +7587,30 @@ begin
             Desconectar;
             Exit;
         end;
-        if ((MDPinPad.Active = False) or (MDPinPad.RecordCount < 1)) then
+        if (MDPinPad.Active = False) then
             exit;
-        if ((MDPinPadFuncao.Active = False) or (MDPinPadFuncao.RecordCount < 1)) then
+        if (MDPinPadFuncao.Active = False) then
             exit;
         F_Navegar := False;
         if ((TabPinPadFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') or
             (TabPinPadFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDPinPadFuncaoID.AsInteger;
+            VL_Validado := copy(BoolToStr(MDPINPADFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
+            VL_Habilitado := copy(BoolToStr(MDPINPADFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
             if TabPinPadFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F' then
             begin
                 MDPinPadFuncao.Edit;
-                MDPinPadFuncao.FieldByName('VALIDADO').AsBoolean := not MDPINPADFuncao.FieldByName('VALIDADO').AsBoolean;
+                MDPinPadFuncao.FieldByName('VALIDADO').AsString := VL_Validado;
                 MDPinPadFuncao.Post;
             end;
             if TabPinPadFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F' then
             begin
                 MDPinPadFuncao.Edit;
-                MDPinPadFuncao.FieldByName('HABILITADO').AsBoolean := not MDPINPADFuncao.FieldByName('HABILITADO').AsBoolean;
+                MDPinPadFuncao.FieldByName('HABILITADO').AsString := VL_Habilitado;
                 MDPinPadFuncao.Post;
             end;
-            if ((MDPINPADFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID < 1)) then
+            if ((MDPINPADFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID < 1)) then
             begin
                 MDPinPadFuncao.Edit;
                 MDPinPadFuncao.FieldByName('PINPAD_ID').AsString := MDPinPad.FieldByName('ID').AsString;
@@ -7038,9 +7618,11 @@ begin
                 MDPinPadFuncao.Post;
                 //incluir PINPAD função
                 VL_Codigo := IncluirRegistro(MDPinPadFuncao, '00B5', 'S', '00B4', VL_Tag);
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    if MDLojaFuncao.Locate('ID', 0, []) then
+                        MDLojaFuncao.Delete;
                     exit;
                 end;
 
@@ -7052,18 +7634,20 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         if MDLojaFuncao.Locate('ID', 0, []) then
                             MDLojaFuncao.Delete;
                         Exit;
                     end;
                     '00B5':
                     begin
-
                         if VL_Tag <> 'R' then
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                            if MDLojaFuncao.Locate('ID', 0, []) then
+                                MDLojaFuncao.Delete;
                             Exit;
                         end;
 
@@ -7071,7 +7655,8 @@ begin
 
                         if vl_tag <> '0' then
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
+                            ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
                             if MDLojaFuncao.Locate('ID', 0, []) then
                                 MDLojaFuncao.Delete;
                             Exit;
@@ -7084,11 +7669,12 @@ begin
                             MDPinPadFuncao.FieldByName('ID').AsInteger := VL_ID;
                             MDPinPadFuncao.Post;
                         end;
+                        F_Navegar := True;
                     end;
                 end;
             end
             else
-            if ((MDPINPADFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID > 0)) then
+            if ((MDPINPADFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID > 0)) then
             begin
                 //ALTERA PINPAD_FUNCAO
                 VL_Mensagem.Limpar;
@@ -7097,9 +7683,10 @@ begin
                 VL_Mensagem.AddTag('00B3', MDPinPadFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if VL_Codigo <> 0 then
+
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
                     exit;
                 end;
 
@@ -7111,9 +7698,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaFuncao.Locate('ID', 0, []) then
-                            MDLojaFuncao.Delete;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         Exit;
                     end;
                     '00B6':
@@ -7129,6 +7715,7 @@ begin
 
                         if vl_tag <> '0' then
                         begin
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
                             ShowMessage('ERRO:' + VL_Tag);
                             Exit;
                         end;
@@ -7137,13 +7724,13 @@ begin
             end
             else
             begin
-                //alterar PINPAD função
+                //EXCLUIR PINPAD função
                 VL_Codigo := ExcluirRegistro('00B7', VL_ID, '00B8', 'S', VL_Tag);
 
-                if VL_Codigo <> 0 then
+                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
                 begin
-                    ShowMessage(IntToStr(VL_Codigo));
-                    exit;
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    goto sair;
                 end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.CarregaTags(VL_Tag);
@@ -7153,10 +7740,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO:' + VL_Tag);
-                        if MDLojaFuncao.Locate('ID', 0, []) then
-                            MDLojaFuncao.Delete;
-                        Exit;
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                     end;
                     '00B8':
                     begin
@@ -7164,20 +7749,21 @@ begin
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
-                            Exit;
-                        end;
-
-                        VL_Mensagem.GetTag('004D', VL_Tag);
-
-                        if vl_tag <> '0' then
+                        end
+                        else
                         begin
-                            ShowMessage('ERRO:' + VL_Tag);
-                            Exit;
+                            VL_Mensagem.GetTag('004D', VL_Tag);
+                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            if vl_tag <> '0' then
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
                         end;
                     end;
                 end;
-                MDPinPadFuncao.Edit;
+                sair:
+                    MDPinPadFuncao.Edit;
                 MDPinPadFuncao.FieldByName('ID').AsInteger := -1;
+                MDPinPadFuncao.FieldByName('HABILITADO').AsString := 'F';
+                MDPinPadFuncao.FieldByName('HABILITADO_F').AsBoolean := False;
                 MDPinPadFuncao.Post;
             end;
         end;
@@ -7185,6 +7771,10 @@ begin
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
+end;
+
+procedure Tfprincipal.TabMultLojaFuncaoLTipoFiltrarClick(Sender: TObject);
+begin
 
 end;
 
@@ -7195,10 +7785,15 @@ end;
 
 procedure Tfprincipal.TabPinPadTabDadosFuncaoShow(Sender: TObject);
 begin
-    if ((F_Navegar) and (F_Permissao)) then
-        //carrega pinpad_funcao
+    if ((F_Navegar) and (F_Permissao) and (MDPinPad.RecordCount > 0)) then
+    begin
         CarregarTabelas(False, '00B4', '0054', MDPinPad.FieldByName('ID').AsInteger);
-
+        TabPinPadFuncaoETipoFiltro.ItemIndex := 0;
+        TabPinPadFuncaoCKSelecionada.Checked := False;
+        TabPinPadFuncaoETipoFiltro.OnChange(self);
+    end
+    else
+        MDPinPadFuncao.EmptyTable;
 end;
 
 procedure Tfprincipal.TabTagBAdicionarClick(Sender: TObject);
@@ -7231,9 +7826,12 @@ begin
         if GravaRegistros('TabTag', True) then
         begin
             VL_Codigo := IncluirRegistro(MDTags, '0052', 'S', '0081', VL_Tag);
-            if VL_Codigo <> 0 then
+
+            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
-                ShowMessage(IntToStr(VL_Codigo));
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                if MDTags.Locate('ID', 0, []) then
+                    MDTags.Delete;
                 exit;
             end;
 
@@ -7245,7 +7843,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                    ShowMessage('Erro: ' + VL_Tag + VL_Retorno);
                     if MDTags.Locate('ID', 0, []) then
                         MDTags.Delete;
                     Exit;
@@ -7256,12 +7855,15 @@ begin
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         ShowMessage('ERRO: O Comando não é um retorno erro numero:' + VL_Tag);
+                        if MDTags.Locate('ID', 0, []) then
+                            MDTags.Delete;
                         Exit;
                     end;
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        ShowMessage('ERRO:' + VL_Tag);
+                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
                         if MDTags.Locate('ID', 0, []) then
                             MDTags.Delete;
                         Exit;
@@ -7274,9 +7876,11 @@ begin
                         MDTags.FieldByName('ID').AsInteger := VL_ID;
                         MDTags.Post;
                     end;
+                    F_Navegar := True;
                 end;
             end;
-            CarregaCampos;
+            MDTags.Locate('ID', VL_ID, []);
+            CarregaCampos('TAG');
             ShowMessage('Registro incluido com sucesso');
         end;
     finally
@@ -7319,9 +7923,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('006E', StrToInt(TabTagEID.Text), '00DC', 'S', VL_Tag);
 
-        if VL_Codigo <> 0 then
+        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
-            ShowMessage(IntToStr(VL_Codigo));
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -7331,7 +7935,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                ShowMessage('ERRO:' + IntToStr(VL_ID));
+                F_Erro.TrataErro(VL_ID, VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                 Exit;
             end;
             '00DC':
@@ -7346,16 +7951,19 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    ShowMessage('ERRO:' + IntToStr(VL_ID));
+                    F_Erro.TrataErro(VL_ID, VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('006E', VL_ID);
                 F_Navegar := False;
                 if MDTags.Locate('ID', VL_ID, []) then
                     MDTags.Delete;
+                F_Navegar := True;
             end;
         end;
-        CarregaCampos;
+        MDTags.First;
+        CarregaCampos('TAG');
         ShowMessage('Registro Excluido com sucesso');
     finally
         VL_Mensagem.Free;
@@ -7382,7 +7990,7 @@ begin
     end;
 
     if GravaRegistros('TabTag', False) then
-        AlterarRegistro('0081', MDTags, '006E', StrToInt(TabTagEID.Text), '00DB', 'S');
+        AlterarRegistro('0081', MDTags, '006E', StrToInt(TabTagEID.Text), '00DB', 'S', 'TAG');
 
 end;
 
@@ -7398,9 +8006,35 @@ begin
 
 end;
 
+procedure Tfprincipal.TabTagETipoFiltroChange(Sender: TObject);
+begin
+    if TabTagETipoFiltro.ItemIndex < 1 then
+    begin
+        MDTags.Filter := '';
+        MDTags.Filtered := False;
+    end
+    else
+    begin
+        MDTags.Filter := 'TAG_TIPO=''' + TabTagETipoFiltro.Text + '''';
+        MDTags.Filtered := True;
+    end;
+end;
+
 procedure Tfprincipal.TabTagGridCellClick(Column: TColumn);
 begin
     TabTagLFiltro.Caption := 'Filtrar por ' + TabTagGrid.SelectedColumn.Title.Caption;
+end;
+
+procedure Tfprincipal.TabTagShow(Sender: TObject);
+begin
+    if ((F_Navegar) and (F_Permissao)) then
+    begin
+        CarregarTabelas(False, '0081', '006E', 0);
+        TabTagETipoFiltro.ItemIndex := 0;
+        TabTagETipoFiltro.OnChange(SELF);
+    end
+    else
+        MDTags.EmptyTable;
 end;
 
 end.

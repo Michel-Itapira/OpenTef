@@ -80,7 +80,8 @@ begin
     ThExecuta.Terminate;
     // Wait for the thread to terminate.
     ThExecuta.WaitFor;
-    FreeAndNil(ThExecuta);
+    ThExecuta.free;
+    ThExecuta:=nil;
   end;
   OK := True;
 end;

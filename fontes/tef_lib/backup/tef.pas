@@ -11,7 +11,7 @@ uses
 type
 
     TSolicitaDadosPDV = function(VP_Menu: PChar; var VO_Botao, VO_Dados: PChar): integer; stdcall;
-    TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var  VO_Dados: PChar): integer; stdcall;
+    TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var VO_Dados: PChar): integer; stdcall;
     TImprime = function(VP_Dados: PChar): integer; stdcall;
     TMostraMenu = function(VP_Dados: PChar; var VO_Selecionado: PChar): integer; stdcall;
     TMensagemOperador = function(VP_Dados: PChar): integer; stdcall;
@@ -59,8 +59,8 @@ type
     end;
 
 function inicializar(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
-    VP_Procedimento: TRetorno;VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV; VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu;
-    VP_MensagemOperador: TMensagemOperador): integer; stdcall;
+    VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador): integer; stdcall;
 function finalizar(): integer; stdcall;
 function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; stdcall;
 function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; stdcall;
@@ -216,7 +216,7 @@ begin
             else
             if (VL_Mensagem.Comando() = '00E1') then  // SOLICITACAO DE DADOS DA VENDA
             begin
-                VL_Erro := F_SolicitaDadosTransacao(PChar(VL_Mensagem.TagsAsString),VL_Dados);
+                VL_Erro := F_SolicitaDadosTransacao(PChar(VL_Mensagem.TagsAsString), VL_Dados);
                 VL_Mensagem.Limpar;
                 if VL_Erro <> 0 then
                 begin
@@ -224,18 +224,19 @@ begin
                     ftransacao.STATUS := tsComErro;
                     Exit;
                 end;
-                VL_Erro:=VL_Mensagem.CarregaTags(VL_Dados);
+                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
                 if VL_Erro <> 0 then
                 begin
                     ftransacao.erro := VL_Erro;
                     ftransacao.STATUS := tsComErro;
                     Exit;
                 end;
-                for VL_I:=1 to VL_Mensagem.TagCount do
+                for VL_I := 1 to VL_Mensagem.TagCount do
                 begin
-                    VL_Mensagem.GetTag(VL_I,VL_Tag,VL_TagDados);
-                    ftransacao.fMensagem.AddTag(VL_Tag,VL_TagDados);
+                    VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
+                    ftransacao.fMensagem.AddTag(VL_Tag, VL_TagDados);
                 end;
+                VL_Mensagem.Limpar;
             end
             else
             if (VL_Mensagem.Comando() = '0048') then  // SOLICITACAO DE CAPTURA DO CARTÃO
@@ -373,11 +374,11 @@ begin
             else
             if (VL_Mensagem.Comando() = '002C') then  // mensagem ao operador
             begin
-                ftransacao.STATUS:=IntToTransacaoStatus(VL_Mensagem.GetTagAsInteger('004A'));
+                ftransacao.STATUS := IntToTransacaoStatus(VL_Mensagem.GetTagAsInteger('004A'));
                 F_MensagemOperador(PChar(VL_Mensagem.GetTagAsAstring('00DA')));
 
-                if(ftransacao.STATUS<>tsProcessando) and (ftransacao.STATUS<>tsAguardandoComando) then
-                Exit;
+                if (ftransacao.STATUS <> tsProcessando) and (ftransacao.STATUS <> tsAguardandoComando) then
+                    Exit;
             end
             else
 
@@ -444,8 +445,8 @@ begin
 end;
 
 function inicializar(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
-    VP_Procedimento: TRetorno;VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV; VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu;
-    VP_MensagemOperador: TMensagemOperador): integer; stdcall;
+    VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador): integer; stdcall;
 begin
 
     if not Assigned(F_DComunicador) then

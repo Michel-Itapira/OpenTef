@@ -7,6 +7,7 @@ interface
 uses
     Classes, SysUtils, IniFiles, comunicador, ZConnection, ZDataset, funcoes, rxmemds, StrUtils, IdContext, SyncObjs;
 
+function comando002B(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //excluir modulo
 function comando0039(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //incluir Loja
 function comando003F(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //alterar Loja
 function comando0044(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //incluir PDV
@@ -59,7 +60,6 @@ function comando00B8(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_ACont
 function comando00B9(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //alterar MODULO_FUNCAO
 function comando00BA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //excluir MODULO_CONF
 function comando00BB(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //excluir CONFIGURADOR
-function comando00BC(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //excluir MODULO
 function comando00BF(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //alterar LOJA_MODULO_CONF_FUNCAO
 function comando00C2(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //incluir PDV_FUNCAO
 function comando00C4(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //alterar PDV_FUNCAO
@@ -102,7 +102,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0039', 'R');
-                VL_Mensagem.AddComando('004D', '45');  //sem permissao
+                VL_Mensagem.AddTag('004D', '45');  //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '040520221522';
@@ -111,11 +111,11 @@ begin
             end;
             //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('003E', VL_Tag);  //carrega tabela LOJA
-            if LENGTH(VL_Tag) = 0 then
+            if Length(VL_Tag) = 0 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0039', 'R');
-                VL_Mensagem.AddComando('004D', '47');  //sem REGISTRO
+                VL_Mensagem.Addtag('004D', '47');  //sem REGISTRO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520221116';
@@ -124,11 +124,12 @@ begin
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             if VL_Tabela.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0039', 'R');
-                VL_Mensagem.AddComando('004D', '47');  //sem REGISTRO
+                VL_Mensagem.Addtag('004D', '47');  //sem REGISTRO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520221203';
@@ -150,7 +151,7 @@ begin
                     begin
                         VL_Mensagem.Limpar;
                         VL_Mensagem.AddComando('0039', 'R');
-                        VL_Mensagem.AddComando('004D', '43');//registro em duplicidade
+                        VL_Mensagem.Addtag('004D', '43');//registro em duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '040520221525';
@@ -158,6 +159,7 @@ begin
                             VL_Tabela.FieldByName('CNPJ').AsString + ' já cadastrado)', '', VL_Erro);
                         Exit;
                     end;
+                    //COMEÇA A INCLUSÃO
                     VL_TLoja.Close;
                     VL_TLoja.SQL.Text := 'INSERT INTO LOJA(CNPJ,RAZAO,FANTASIA,MULTILOJA_ID,HABILITADO)VALUES(''' + VL_Tabela.FieldByName(
                         'CNPJ').AsString + ''',''' + VL_Tabela.FieldByName('RAZAO').AsString + ''',''' +
@@ -168,6 +170,12 @@ begin
                     VL_Linha := '300520221119';
                     VL_TLoja.ExecSQL;
 
+                    VL_TLoja.Close;
+                    VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE CNPJ=''' + VL_Tabela.FieldByName('CNPJ').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620221219';
+                    VL_TLoja.Open;
+
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('0039', 'R');
                     VL_Mensagem.AddTag('004D', '0');
@@ -177,6 +185,9 @@ begin
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0039', 'R');
+            VL_Mensagem.AddTag('004D', '44');
         except
             on E: Exception do
             begin
@@ -241,7 +252,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('003F', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //sem permissao
+                VL_Mensagem.AddTag('004D', '45'); //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221219';
@@ -253,7 +264,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('003F', 'R');
-                VL_Mensagem.AddComando('004D', '47');  //sem DADOS
+                VL_Mensagem.AddTag('004D', '47');  //sem DADOS
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520221123';
@@ -285,7 +296,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('003F', 'R');
-                VL_Mensagem.AddComando('004D', '48'); //registro não localizado
+                VL_Mensagem.AddTag('004D', '48'); //registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221228';
@@ -303,7 +314,7 @@ begin
                 begin
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('003F', 'R');
-                    VL_Mensagem.AddComando('004D', '49'); //dados chaves não podem sofer alteração
+                    VL_Mensagem.AddTag('004D', '49'); //dados chaves não podem sofer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '050520221230';
@@ -326,8 +337,11 @@ begin
                 VL_Mensagem.AddComando('003F', 'R');//retorno do comando
                 VL_Mensagem.AddTag('004D', '0');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('003F', 'R');//retorno do comando
+            VL_Mensagem.AddTag('004D', '46');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -388,7 +402,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0044', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //SEM PERMISSAO
+                VL_Mensagem.AddTag('004D', '45'); //SEM PERMISSAO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '040520221539';
@@ -401,26 +415,16 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0044', 'R');
-                VL_Mensagem.AddComando('004D', '47');  //sem dados
+                VL_Mensagem.AddTag('004D', '47');  //sem dados
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520221134';
-                GravaLog(F_ArquivoLog, 0, '003F', 'cadastro', VL_Linha, 'Parametro informado na tag:008E esta em branco ou nula', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, 'Parametro informado na tag:008E esta em branco ou nula', '', VL_Erro);
                 Exit;
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
-            if VL_Tabela.RecordCount = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0044', 'R');
-                VL_Mensagem.AddComando('004D', '47');  //sem dados
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 47;
-                VL_Linha := '300520221205';
-                GravaLog(F_ArquivoLog, 0, '003F', 'cadastro', VL_Linha, 'Parametro informado na tag:008E esta em branco ou nula', '', VL_Erro);
-                Exit;
-            end;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -428,21 +432,24 @@ begin
                 begin
                     //verifica se o pdv ja foi cadastrado
                     VL_TPdv.Close;
-                    VL_TPdv.SQL.Text := 'SELECT FIRST 1 ID FROM PDV WHERE CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + '''';
+                    VL_TPdv.SQL.Text := 'SELECT FIRST 1 ID FROM PDV WHERE DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''' AND ' +
+                        'LOJA_ID=' + IntToStr(VL_Tabela.FieldByName('LOJA_ID').AsInteger) + ' AND CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + '''';
                     VL_Erro := 55;
                     VL_Linha := '300520221135';
                     VL_TPdv.Open;
+
                     if VL_TPdv.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
                         VL_Mensagem.AddComando('0044', 'R');
-                        VL_Mensagem.AddComando('004D', '43');//registro em duplicidade
+                        VL_Mensagem.Addtag('004D', '43');//registro em duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '040520221541';
                         GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, 'registro em duplicidade na tabela PDV (chave ja cadastrada)', '', VL_Erro);
                         Exit;
                     end;
+
                     VL_TPdv.Close;
                     VL_TPdv.SQL.Text := 'INSERT INTO PDV(LOJA_ID,DESCRICAO,IP,CODIGO,PINPAD_ID,PINPAD_COM,HABILITADO,CHAVE)VALUES(''' + VL_Tabela.FieldByName(
                         'LOJA_ID').AsString + ''',''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',''' +
@@ -456,6 +463,13 @@ begin
                     VL_Linha := '300520221136';
                     VL_TPdv.ExecSQL;
 
+                    VL_TPdv.Close;
+                    VL_TPdv.SQL.Text := 'SELECT FIRST 1 ID FROM PDV WHERE DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''' AND ' +
+                        'LOJA_ID=' + IntToStr(VL_Tabela.FieldByName('LOJA_ID').AsInteger) + ' AND CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '060620221653';
+                    VL_TPdv.Open;
+
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('0044', 'R');
                     VL_Mensagem.AddTag('004D', '0');
@@ -465,6 +479,10 @@ begin
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0044', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -474,12 +492,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName +
+                            '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -493,10 +513,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
+                    DNucleo.FreeOnRelease;
                 end;
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0044', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -507,46 +529,103 @@ var
     VL_Mensagem: TMensagem;
     VL_TPdv: TZQuery;
     VL_Tag: ansistring;
+    VL_Erro: integer;
+    VL_Linha: string;
 begin
     Result := 0;
     VL_Mensagem := TMensagem.Create;
     VL_TPdv := TZQuery.Create(DComunicador);
     VL_TPdv.Connection := DNucleo.ZConexao;
     VL_Tag := '';
+    VL_Linha := '';
+    VL_Erro := 0;
     try
-        if TTConexao(VP_AContext.Data).Status <> csLogado then
-        begin
+        try
+            //verifica permissao
+            if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0045', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //SEM PERMISSAO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 45;
+                VL_Linha := '060620221704';
+                GravaLog(F_ArquivoLog, 0, '0045', 'cadastro', VL_Linha, 'sem permissao para incluir chave no PDV', '', VL_Erro);
+                Exit;
+            end;
+            //VERIFICA PARAMETROS
+            VP_Mensagem.GetTag('003B', VL_Tag); //chave pdv
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0045', 'R');
+                VL_Mensagem.AddTag('004D', '47');  //sem dados
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '060620221706';
+                GravaLog(F_ArquivoLog, 0, '0045', 'cadastro', VL_Linha, 'Parametro informado na tag:003B esta em branco ou nula', '', VL_Erro);
+                Exit;
+            end;
+            VL_TPdv.Close;
+            VL_TPdv.SQL.Text := 'SELECT FIRST 1 ID FROM PDV WHERE CHAVE=''' + VL_Tag + '''';
+            VL_Erro := 55;
+            VL_Linha := '060620221707';
+            VL_TPdv.Open;
+            if VL_TPdv.RecordCount > 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0045', 'R');
+                VL_Mensagem.AddTag('004D', '43');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 43;
+                VL_Linha := '060620221708';
+                GravaLog(F_ArquivoLog, 0, '0045', 'cadastro', VL_Linha, 'Registro em duplicidade, a chave ja esta cadastrada para o pdv', '', VL_Erro);
+                Exit;
+            end;
             VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0026', '35');
+            VL_Mensagem.AddComando('0045', 'R');
+            VL_Mensagem.AddTag('004D', '0');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
+        except
+            on E: Exception do
+            begin
+                try
+                    if Assigned(DNucleo) then
+                    begin
+                        if DNucleo.ZConexao.Connected then
+                            if DNucleo.ZConexao.InTransaction then
+                                DNucleo.ZConexao.Rollback;
+                        DNucleo.FreeOnRelease;
+                    end;
+                except
+                    on E: Exception do
+                        GravaLog(F_ArquivoLog, 0, '0045', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName +
+                            '/ mensagem:' + e.Message, '', VL_Erro);
+                end;
+                GravaLog(F_ArquivoLog, 0, '0045', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
+            end;
         end;
-        VP_Mensagem.GetTag('0041', VL_Tag);
-        if Length(VL_Tag) = 0 then
-        begin
-            Result := 47;
-            Exit;
-        end;
-        VL_TPdv.Close;
-        VL_TPdv.SQL.Text := 'SELECT FIRST 1 ID FROM PDV WHERE CHAVE=''' + VL_Tag + '''';
-        VL_TPdv.Open;
-        if VL_TPdv.RecordCount > 0 then
-        begin
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0026', '43');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
-        end;
-        VL_Mensagem.Limpar;
-        VL_Mensagem.AddComando('0046', 'ok');
-        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
     finally
-        VL_Mensagem.Free;
+        begin
+            VL_Mensagem.Free;
+            try
+                if Assigned(DNucleo) then
+                begin
+                    if DNucleo.ZConexao.Connected then
+                        if DNucleo.ZConexao.InTransaction then
+                            DNucleo.ZConexao.Commit;
+                    DNucleo.FreeOnRelease;
+                end;
+            except
+                on E: Exception do
+                    GravaLog(F_ArquivoLog, 0, '0045', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName +
+                        '/ mensagem:' + e.Message, '', VL_Erro);
+            end;
+        end;
     end;
-
 end;
 
-function comando004B(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; // alterar pdv
+function comando004B(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; // ALTERAR PDV
 var
     VL_Mensagem: TMensagem;
     VL_Tabela: TRxMemoryData;
@@ -572,7 +651,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('004B', 'R');
-                VL_Mensagem.AddComando('004D', '45');//sem permissão
+                VL_Mensagem.Addtag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221600';
@@ -584,7 +663,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo zerado
+                VL_Mensagem.AddComando('004B', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo zerado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '050520221556';
@@ -596,7 +676,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('004B', 'R');
-                VL_Mensagem.AddComando('004D', '47');  //sem DADOS
+                VL_Mensagem.Addtag('004D', '47');  //sem DADOS
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520221142';
@@ -605,18 +685,19 @@ begin
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             //verifica se existe o id pra amodificação
             VL_TPdv.Close;
             VL_TPdv.SQL.Text := 'SELECT * FROM PDV WHERE ID=' + IntToStr(VL_ID);
             VL_Erro := 55;
             VL_Linha := '300520221143';
             VL_TPdv.Open;
-
+            //VERIFICA SE EXISTE DADOS NA TABELA
             if VL_TPdv.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('004B', 'R');
-                VL_Mensagem.AddComando('004D', '48');//registro não encontrado
+                VL_Mensagem.Addtag('004D', '48');//registro não encontrado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221601';
@@ -624,6 +705,7 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //COMEÇA A ALTERAÇÃO
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if ((VL_Tabela.FieldByName('ID').AsInteger <> VL_TPdv.FieldByName('ID').AsInteger) or
@@ -631,7 +713,8 @@ begin
                     (VL_TPdv.FieldByName('CHAVE').AsString <> ''))) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49'); //campos chaves
+                    VL_Mensagem.AddComando('004B', 'R');
+                    VL_Mensagem.AddTag('004D', '49');//campos chaves
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '050520221604';
@@ -639,7 +722,7 @@ begin
                         '', VL_Erro);
                     Exit;
                 end;
-
+                //ALTERA
                 VL_TPdv.Close;
                 VL_TPdv.SQL.Text := 'UPDATE PDV SET ' + 'LOJA_ID=''' + VL_Tabela.FieldByName('LOJA_ID').AsString + ''',' +
                     'DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',' +
@@ -658,6 +741,13 @@ begin
                 VL_Mensagem.AddTag('004D', '0');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
+            end
+            else
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('004B', 'R');
+                VL_Mensagem.AddTag('004D', '46');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end;
         except
             on E: Exception do
@@ -742,17 +832,6 @@ begin
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
-            if VL_Tabela.RecordCount = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0052', 'R');
-                VL_Mensagem.AddTag('004D', '47');//DADOS INFORMADOS VAZIO
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 47;
-                VL_Linha := '3005202211206';
-                GravaLog(F_ArquivoLog, 0, '0052', 'CADASTRO', VL_Linha, 'parametro informado na Tag:0081 esta vazia ou zerada', '', VL_Erro);
-                Exit;
-            end;
 
             VL_Tabela.First;
             while not VL_Tabela.EOF do
@@ -776,7 +855,6 @@ begin
                         Exit;
                     end;
                     //verifica tamanho da tag_numero
-
                     if length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) <> 4 then
                     begin
                         VL_Mensagem.Limpar;
@@ -807,7 +885,6 @@ begin
                     VL_Erro := 55;
                     VL_Linha := '270520221715';
                     VL_TTag.Open;
-
 
                     if VL_TTag.RecordCount > 0 then
                     begin
@@ -842,9 +919,9 @@ begin
 
                         VL_Erro := 44;
                         VL_Linha := '270520221716';
-
                         VL_TTag.ExecSQL;
                     end;
+
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('0052', 'R');
                     VL_Mensagem.AddTag('004D', '0');
@@ -854,6 +931,10 @@ begin
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0052', 'R');
+            VL_Mensagem.AddTag('004D', '48');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -915,7 +996,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0053', 'R');
-                VL_Mensagem.AddComando('004D', '45');// sem permissao
+                VL_Mensagem.Addtag('004D', '45');// sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '040520221507';
@@ -948,6 +1029,7 @@ begin
                 GravaLog(F_ArquivoLog, 0, '0053', 'CADASTRO', VL_Linha, 'parametro informado na Tag:008D esta vazia ou zerada', '', VL_Erro);
                 Exit;
             end;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -966,10 +1048,13 @@ begin
                     VL_Mensagem.AddTag('0054', VL_TPinPad.FieldByName('ID').AsString);
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     exit;
-
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0053', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -998,7 +1083,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-
                 end;
             except
                 on E: Exception do
@@ -1034,7 +1118,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0055', 'R');
-                VL_Mensagem.AddComando('004D', '45');//sem permissao
+                VL_Mensagem.Addtag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221434';
@@ -1047,7 +1131,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0055', 'R');
-                VL_Mensagem.AddComando('004D', '47');//dados zeradoS
+                VL_Mensagem.Addtag('004D', '47');//dados zeradoS
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '050520221433';
@@ -1080,7 +1164,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0055', 'R');
-                VL_Mensagem.AddComando('004D', '48');//tabela vazia
+                VL_Mensagem.Addtag('004D', '48');//tabela vazia
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221438';
@@ -1094,7 +1178,7 @@ begin
                 begin
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('0055', 'R');
-                    VL_Mensagem.AddComando('004D', '49');//dados chaves não podem sofer alteração
+                    VL_Mensagem.Addtag('004D', '49');//dados chaves não podem sofer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '050520221440';
@@ -1115,6 +1199,10 @@ begin
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0055', 'R');
+            VL_Mensagem.AddTag('004D', '46');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -1176,7 +1264,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0057', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //SEM PERMISSAO DE INCLUSAO
+                VL_Mensagem.Addtag('004D', '45'); //SEM PERMISSAO DE INCLUSAO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '040520221554';
@@ -1185,7 +1273,7 @@ begin
             end;
             //VERIFICA PARAMENTROS
             VP_Mensagem.GetTag('008F', VL_Tag); // tabela configurador
-            if Length(VL_Tag) = 0 then
+            if Length(VL_Tag) < 1 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0057', 'R');
@@ -1198,17 +1286,7 @@ begin
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
-            if VL_Tabela.RecordCount = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0057', 'R');
-                VL_Mensagem.AddTag('004D', '47');//DADOS INFORMADOS VAZIO
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 47;
-                VL_Linha := '300520221209';
-                GravaLog(F_ArquivoLog, 0, '0057', 'CADASTRO', VL_Linha, 'parametro informado na Tag:008F esta vazia ou zerada', '', VL_Erro);
-                Exit;
-            end;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -1218,14 +1296,15 @@ begin
                     VL_TConfigurador.Close;
                     VL_TConfigurador.SQL.Text := 'SELECT FIRST 1 ID FROM CONFIGURADOR WHERE CHAVE=''' +
                         VL_Tabela.FieldByName('CHAVE').AsString + '''';
-                    VL_Erro:=55;
+                    VL_Erro := 55;
                     VL_Linha := '300520221210';
                     VL_TConfigurador.Open;
+
                     if VL_TConfigurador.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
                         VL_Mensagem.AddComando('0057', 'R');
-                        VL_Mensagem.AddComando('004D', '43');//duplicidade no registro
+                        VL_Mensagem.Addtag('004D', '43');//duplicidade no registro
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '040520221556';
@@ -1241,7 +1320,7 @@ begin
                     begin
                         VL_Mensagem.Limpar;
                         VL_Mensagem.AddComando('0057', 'R');
-                        VL_Mensagem.AddComando('004D', '52');//campos obrigatorios
+                        VL_Mensagem.Addtag('004D', '52');//campos obrigatorios
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '040520221557';
@@ -1249,6 +1328,7 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
+                    //COMEÇA A INCLUSÃO
                     VL_TConfigurador.Close;
                     VL_TConfigurador.SQL.Text := 'INSERT INTO CONFIGURADOR(DESCRICAO,IP,CHAVE,SENHA_CONFIGURADOR,' +
                         'SENHA_ADMINISTRADOR,SENHA_USUARIO)VALUES(''' + VL_Tabela.FieldByName('DESCRICAO').AsString +
@@ -1256,33 +1336,29 @@ begin
                         ''',''' + VL_Tabela.FieldByName('SENHA_CONFIGURADOR').AsString + ''',''' +
                         VL_Tabela.FieldByName('SENHA_ADMINISTRADOR').AsString + ''',''' + VL_Tabela.FieldByName(
                         'SENHA_USUARIO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620221039';
                     VL_TConfigurador.ExecSQL;
+
                     VL_TConfigurador.Close;
                     VL_TConfigurador.SQL.Text := 'SELECT * FROM CONFIGURADOR WHERE CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221040';
                     VL_TConfigurador.Open;
-                    if VL_TConfigurador.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusao
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '040520221558';
-                        GravaLog(F_ArquivoLog, 0, '0057', 'cadastro', VL_Linha, 'erro na inclusao do registro na tabela configurador', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0057', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('0056', VL_TConfigurador.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0057', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('0056', VL_TConfigurador.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0057', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -1292,7 +1368,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -1312,9 +1387,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '0057', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -1344,41 +1417,59 @@ begin
     VL_Linha := '';
     try
         try
-            //verifica parametros
-            VP_Mensagem.GetTag('0056', VL_ID); //configurador_id
-            if VL_ID = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo zerado
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 47;
-                VL_Linha := '050520221624';
-                GravaLog(F_ArquivoLog, 0, '0058', 'cadastro', VL_Linha, 'para alterar a tabela configurador o id informado não pode ser zero', '', VL_Erro);
-                Exit;
-            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissão
+                VL_Mensagem.AddComando('0058', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221629';
                 GravaLog(F_ArquivoLog, 0, '0058', 'cadastro', VL_Linha, 'sem permissão para gerenciar alteração na tabela configurador', '', VL_Erro);
                 Exit;
             end;
+            //verifica parametros
+            VP_Mensagem.GetTag('0056', VL_ID); //configurador_id
+            if VL_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0058', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '050520221624';
+                GravaLog(F_ArquivoLog, 0, '0058', 'cadastro', VL_Linha, 'para alterar a tabela configurador o id informado não pode ser zero', '', VL_Erro);
+                Exit;
+            end;
             VP_Mensagem.GetTag('008F', VL_Tag); //tabela configurador
+
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0058', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221052';
+                GravaLog(F_ArquivoLog, 0, '0058', 'cadastro', VL_Linha, 'o parametro informado na Tag:008F esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             //verifica se existe o id pra modificação
             VL_TConfigurador.Close;
             VL_TConfigurador.SQL.Text := 'SELECT * FROM CONFIGURADOR WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221053';
             VL_TConfigurador.Open;
 
             if VL_TConfigurador.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //registro não localizado
+                VL_Mensagem.AddComando('0058', 'R');
+                VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221631';
@@ -1392,7 +1483,8 @@ begin
                     (VL_TConfigurador.FieldByName('CHAVE').AsString <> ''))) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49');//campo não pode sofrer alteração
+                    VL_Mensagem.AddComando('0058', 'R');
+                    VL_Mensagem.AddTag('004D', '49');//campo não pode sofrer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '050520221632';
@@ -1401,27 +1493,17 @@ begin
                         '', VL_Erro);
                     Exit;
                 end;
-
+                //COMEÇA A ALTERAÇÃO
                 VL_TConfigurador.Close;
                 VL_TConfigurador.SQL.Text := 'UPDATE CONFIGURADOR SET ' + 'DESCRICAO=''' + VL_Tabela.FieldByName(
                     'DESCRICAO').AsString + ''',' + 'IP=''' + VL_Tabela.FieldByName('IP').AsString + ''',' + 'CHAVE=''' +
                     VL_Tabela.FieldByName('CHAVE').AsString + ''',' + 'SENHA_CONFIGURADOR=''' + VL_Tabela.FieldByName('SENHA_CONFIGURADOR').AsString +
                     ''',' + 'SENHA_ADMINISTRADOR=''' + VL_Tabela.FieldByName('SENHA_ADMINISTRADOR').AsString + ''',' +
                     'SENHA_USUARIO=''' + VL_Tabela.FieldByName('SENHA_USUARIO').AsString + ''' WHERE ' + 'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '030620221056';
                 VL_TConfigurador.ExecSQL;
-                VL_TConfigurador.Close;
-                VL_TConfigurador.SQL.Text := 'SELECT * FROM CONFIGURADOR WHERE ID=' + IntToStr(VL_ID);
-                VL_TConfigurador.Open;
-                if VL_TConfigurador.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46'); //erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '050520221635';
-                    GravaLog(F_ArquivoLog, 0, '0058', 'cadastro', VL_Linha, 'erro na alteração do registro na tabela configurador', '', VL_Erro);
-                    Exit;
-                end;
+
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0058', 'R');
                 VL_Mensagem.AddTag('004D', '0');
@@ -1431,9 +1513,9 @@ begin
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');
+                VL_Mensagem.AddComando('0058', 'R');
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
         except
             on E: Exception do
@@ -1444,7 +1526,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -1464,16 +1545,13 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '0058', 'cadastro', VL_Linha, '', '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando0059(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;
@@ -1481,43 +1559,101 @@ var
     VL_Mensagem: TMensagem;
     VL_TConfigurador: TZQuery;
     VL_Tag: ansistring;
+    VL_Erro: integer;
+    VL_Linha: string;
 begin
     Result := 0;
     VL_Mensagem := TMensagem.Create;
     VL_TConfigurador := TZQuery.Create(DComunicador);
     VL_TConfigurador.Connection := DNucleo.ZConexao;
     VL_Tag := '';
+    VL_Erro := 0;
+    VL_Linha := '';
     try
-        if TTConexao(VP_AContext.Data).Status <> csLogado then
-        begin
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0026', '35');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
-        end;
-        VP_Mensagem.GetTag('0041', VL_Tag);
-        if Length(VL_Tag) = 0 then
-        begin
-            Result := 47;
-            Exit;
-        end;
-        VL_TConfigurador.Close;
-        VL_TConfigurador.SQL.Text := 'SELECT FIRST 1 ID FROM CONFIGURADOR WHERE CHAVE=''' + VL_Tag + '''';
-        VL_TConfigurador.Open;
-        if VL_TConfigurador.RecordCount > 0 then
-        begin
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0026', '43');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
-        end;
-        VL_Mensagem.Limpar;
-        VL_Mensagem.AddComando('0046', 'ok');
-        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-    finally
-        VL_Mensagem.Free;
-    end;
+        try
+            //verifica permissao
+            if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0059', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //SEM PERMISSAO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 45;
+                VL_Linha := '060620221725';
+                GravaLog(F_ArquivoLog, 0, '0059', 'cadastro', VL_Linha, 'sem permissao para incluir chave no Concentrador', '', VL_Erro);
+                Exit;
+            end;
+            //VERIFICA PARAMETROS
+            VP_Mensagem.GetTag('003D', VL_Tag); //chave concentrador
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0059', 'R');
+                VL_Mensagem.AddTag('004D', '47');  //sem dados
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '060620221726';
+                GravaLog(F_ArquivoLog, 0, '0059', 'cadastro', VL_Linha, 'Parametro informado na tag:003D esta em branco ou nula', '', VL_Erro);
+                Exit;
+            end;
+            VL_TConfigurador.Close;
+            VL_TConfigurador.SQL.Text := 'SELECT FIRST 1 ID FROM CONFIGURADOR WHERE CHAVE=''' + VL_Tag + '''';
+            VL_Erro := 55;
+            VL_Linha := '060620221727';
+            VL_TConfigurador.Open;
 
+            if VL_TConfigurador.RecordCount > 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0059', 'R');
+                VL_Mensagem.AddTag('004D', '43');  //duplicidade
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '060620221729';
+                GravaLog(F_ArquivoLog, 0, '0059', 'cadastro', VL_Linha, 'chave informada para cadastro no concentrador ja existe', '', VL_Erro);
+                Exit;
+            end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0059', 'R');
+            VL_Mensagem.AddTag('004D', '0');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+        except
+            on E: Exception do
+            begin
+                try
+                    if Assigned(DNucleo) then
+                    begin
+                        if DNucleo.ZConexao.Connected then
+                            if DNucleo.ZConexao.InTransaction then
+                                DNucleo.ZConexao.Rollback;
+                        DNucleo.FreeOnRelease;
+                    end;
+                except
+                    on E: Exception do
+                        GravaLog(F_ArquivoLog, 0, '0059', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
+                end;
+                GravaLog(F_ArquivoLog, 0, '0059', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
+            end;
+        end;
+    finally
+        begin
+            VL_Mensagem.Free;
+            try
+                if Assigned(DNucleo) then
+                begin
+                    if DNucleo.ZConexao.Connected then
+                        if DNucleo.ZConexao.InTransaction then
+                            DNucleo.ZConexao.Commit;
+                    DNucleo.FreeOnRelease;
+                end;
+            except
+                on E: Exception do
+                    GravaLog(F_ArquivoLog, 0, '0059', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
+            end;
+        end;
+    end;
 end;
 
 function comando0064(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;   //incluir mult-loja
@@ -1541,14 +1677,27 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //45- permissao não autorizada;
+                VL_Mensagem.AddComando('0064', 'R');
+                VL_Mensagem.AddTag('004D', '45');  //permissao não autorizada;
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '040520220950';
                 GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'nao tem permissao para dar manutencao ao cadastro de mult-loja', '', VL_Erro);
                 Exit;
             end;
-            VP_Mensagem.GetTag('0080', VL_Tag);   //tabela mult-loja
+            //VERIFICA PARAMETROS
+            VP_Mensagem.GetTag('0080', VL_Tag); //tabela mult-loja
+            if LENGTH(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0064', 'R');
+                VL_Mensagem.AddTag('004D', '47');//DADOS INFORMADO ZERADO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620220813';
+                GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'parametro informado na Tag:0080 não pode ser nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
             VL_Tabela.First;
@@ -1556,36 +1705,52 @@ begin
             begin
                 if VL_Tabela.FieldByName('ID').AsInteger = 0 then
                 begin
+                    //verifica se a loja ja esta cadastrada como multiloja
+                    VL_TMultLoja.Close;
+                    VL_TMultLoja.SQL.Text := 'SELECT * FROM MULTILOJA WHERE LOJA_ID=''' + VL_Tabela.FieldByName('LOJA_ID').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620220814';
+                    VL_TMultLoja.Open;
+
+                    if VL_TMultLoja.RecordCount > 0 then
+                    begin
+                        VL_Mensagem.Limpar;
+                        VL_Mensagem.AddComando('0026', '43');//REGISTRO EM DUPLICIDADE
+                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                        VL_Erro := 43;
+                        VL_Linha := '020520220822';
+                        GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'a loja informada com o codigo:' + VL_Tabela.FieldByName('LOJA_ID').AsString +
+                            ' ja esta cadastrada na tabela multiloja', '', VL_Erro);
+                        Exit;
+                    end;
+                    //começa a inclusão
                     VL_TMultLoja.Close;
                     VL_TMultLoja.SQL.Text := 'INSERT INTO MULTILOJA(LOJA_ID,HABILITADO)VALUES' +
                         '(''' + VL_Tabela.FieldByName('LOJA_ID').AsString + ''',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''')';
+                    VL_Erro := 44;
+                    VL_Linha := '020620220825';
                     VL_TMultLoja.ExecSQL;
+
                     VL_TMultLoja.Close;
                     VL_TMultLoja.SQL.Text := 'SELECT * FROM MULTILOJA WHERE LOJA_ID=''' + VL_Tabela.FieldByName('LOJA_ID').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620220826';
                     VL_TMultLoja.Open;
-                    if VL_TMultLoja.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44'); //44 erro na inclusao do registro
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '040520221005';
-                        GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'erro na inclusao do registro da mult-loja', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0064', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('0065', VL_TMultLoja.FieldByName('ID').AsInteger);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0064', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('0065', VL_TMultLoja.FieldByName('ID').AsInteger);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0064', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -1595,13 +1760,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -1615,12 +1781,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0064', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -1650,7 +1816,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47'); //47 dados informado não pode ser nulo
+                VL_Mensagem.AddComando('0066', 'R');
+                VL_Mensagem.AddTag('004D', '47'); //dados informado não pode ser nulo
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 28;
                 VL_Linha := '040520221028';
@@ -1661,7 +1828,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //45 permissao não autorizada
+                VL_Mensagem.AddComando('0066', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //permissao não autorizada
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '040520221036';
@@ -1671,12 +1839,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TMultLoja.Close;
             VL_TMultLoja.SQL.Text := 'SELECT * FROM MULTILOJA WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620220842';
             VL_TMultLoja.Open;
 
             if VL_TMultLoja.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //tabela vazia
+                VL_Mensagem.AddComando('0066', 'R');
+                VL_Mensagem.AddTag('004D', '48'); //tabela vazia
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '040520221040';
@@ -1687,11 +1858,15 @@ begin
             //exclui multloja
             VL_TMultLoja.Close;
             VL_TMultLoja.SQL.Text := 'DELETE FROM MULTILOJA WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '020620220849';
             VL_TMultLoja.ExecSQL;
 
             //atualiza loja
             VL_TMultLoja.Close;
             VL_TMultLoja.SQL.Text := 'UPDATE LOJA SET MULTILOJA_ID=NULL WHERE MULTILOJA_ID=' + IntToStr(VL_ID);
+            VL_Erro := 46;
+            VL_Linha := '020620220850';
             VL_TMultLoja.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -1709,13 +1884,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0066', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0066', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0066', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0066', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -1728,16 +1904,15 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0066', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0066', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName +
+                        '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando0067(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //alterar mult-loja
@@ -1765,7 +1940,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissao
+                VL_Mensagem.AddComando('0067', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '230520221108';
@@ -1773,7 +1949,20 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('0080', VL_Tag); //carrega tabela multiloja
+            if Length(VL_TAG) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0067', 'R');
+                VL_Mensagem.AddTag('004D', '47'); //TABELA VAZIA
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620220912';
+                GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, 'o parametro informado na Tag:0080 esta nula ou zerada',
+                    '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
 
@@ -1781,7 +1970,8 @@ begin
             if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//dados informado não pode ser zero
+                VL_Mensagem.AddComando('0067', 'R');
+                VL_Mensagem.AddTag('004D', '47');//dados informado não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '230520221110';
@@ -1792,12 +1982,15 @@ begin
             //verifica se existe o registro para alterar
             VL_MultiLoja.Close;
             VL_MultiLoja.SQL.Text := 'SELECT * FROM MULTILOJA WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620220915';
             VL_MultiLoja.Open;
 
             if VL_MultiLoja.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //registro não localizado
+                VL_Mensagem.AddComando('0067', 'R');
+                VL_Mensagem.AddTag('004D', '48'); //registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '230520221111';
@@ -1806,12 +1999,14 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if (VL_Tabela.FieldByName('LOJA_ID').AsInteger <> VL_MultiLoja.FieldByName('LOJA_ID').AsInteger) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49'); //dados chaves não podem sofer alteração
+                    VL_Mensagem.AddComando('0067', 'R');
+                    VL_Mensagem.AddTag('004D', '49'); //dados chaves não podem sofer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '230520221112';
@@ -1823,21 +2018,16 @@ begin
                 VL_MultiLoja.Close;
                 VL_MultiLoja.SQL.Text := 'UPDATE MULTILOJA SET ' + 'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''' WHERE ' +
                     'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '020620220919';
                 VL_MultiLoja.ExecSQL;
+
                 VL_MultiLoja.Close;
                 VL_MultiLoja.SQL.Text := 'SELECT * FROM MULTILOJA WHERE ID=' + IntToStr(VL_ID);
+                VL_Erro := 55;
+                VL_Linha := '020620220920';
                 VL_MultiLoja.Open;
-                if VL_MultiLoja.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46');//erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '230520221114';
-                    GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, 'erro ao alterar registro numero:' + IntToStr(VL_ID) +
-                        ' na tabela de multiloja', '', VL_Erro);
-                    Exit;
-                end;
+
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0067', 'R');
                 VL_Mensagem.AddTag('004D', '0');
@@ -1860,13 +2050,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -1879,16 +2070,15 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0067', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando0069(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;  //excluir loja
@@ -1915,7 +2105,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo não pode ser zero
+                VL_Mensagem.AddComando('0069', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '060520221144';
@@ -1926,7 +2117,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('0069', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '060520221147';
@@ -1936,12 +2128,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TLoja.Close;
             VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221233';
             VL_TLoja.Open;
 
             if VL_TLoja.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); // id não encontrado na tabela
+                VL_Mensagem.AddComando('0069', 'R');
+                VL_Mensagem.AddTag('004D', '48'); // id não encontrado na tabela
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '060520221148';
@@ -1952,6 +2147,8 @@ begin
             //exclui loja
             VL_TLoja.Close;
             VL_TLoja.SQL.Text := 'DELETE FROM LOJA WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '020620221234';
             VL_TLoja.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -1969,13 +2166,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0069', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0069', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0069', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0069', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -1988,16 +2186,15 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0069', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0069', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName +
+                        '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando006A(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //excluir pinpad
@@ -2024,7 +2221,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//nulo
+                VL_Mensagem.AddComando('006A', 'R');
+                VL_Mensagem.AddTag('004D', '47');//nulo
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '050520221533';
@@ -2036,7 +2234,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissão
+                VL_Mensagem.AddComando('006A', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221537';
@@ -2046,12 +2245,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TPinPad.Close;
             VL_TPinPad.SQL.Text := 'SELECT * FROM PINPAD WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221710';
             VL_TPinPad.Open;
 
             if VL_TPinPad.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48');//id não encontrado
+                VL_Mensagem.AddComando('006A', 'R');
+                VL_Mensagem.AddTag('004D', '48');//id não encontrado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221538';
@@ -2062,12 +2264,16 @@ begin
             //exclui PINPAD
             VL_TPinPad.Close;
             VL_TPinPad.SQL.Text := 'DELETE FROM PINPAD WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '020620221711';
             VL_TPinPad.ExecSQL;
 
             //ATUALIZA PDV
             //atualiza loja
             VL_TPinPad.Close;
             VL_TPinPad.SQL.Text := 'UPDATE PDV SET PINPAD_ID=NULL WHERE PINPAD_ID=' + IntToStr(VL_ID);
+            VL_Erro := 46;
+            VL_Linha := '020620221712';
             VL_TPinPad.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -2084,13 +2290,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '006A', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '006A', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '006A', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '006A', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -2103,12 +2310,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '006A', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '006A', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -2138,7 +2345,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');// campo zerado
+                VL_Mensagem.AddComando('006B', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo zerado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '060520221417';
@@ -2149,7 +2357,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissão
+                VL_Mensagem.AddComando('006B', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '060520221420';
@@ -2159,12 +2368,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TPdv.Close;
             VL_TPdv.SQL.Text := 'SELECT * FROM PDV WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620220913';
             VL_TPdv.Open;
 
             if VL_TPdv.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48');//registro não localizado
+                VL_Mensagem.AddComando('006B', 'R');
+                VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '060520221421';
@@ -2174,6 +2386,8 @@ begin
             //exclui PDV
             VL_TPdv.Close;
             VL_TPdv.SQL.Text := 'DELETE FROM PDV WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '030620220915';
             VL_TPdv.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -2191,13 +2405,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '006B', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '006B', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '006B', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '006B', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -2210,12 +2425,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '006B', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '006B', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName +
+                        '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -2248,7 +2463,8 @@ begin
                 if VP_Mensagem.GetTag('003C', VL_Dados) = 0 then //pesquisa a loja pelo campo loja_ID 0=todas
                 begin
                     VL_TTabela.Close;
-                    VL_TTabela.SQL.Text := 'SELECT L.*, case WHEN (SELECT m.LOJA_ID from MULTILOJA m where m.LOJA_ID=l.ID) ' +
+                    VL_TTabela.SQL.Text :=
+                        'SELECT L.*, case WHEN (SELECT m.LOJA_ID from MULTILOJA m where m.LOJA_ID=l.ID) ' +
                         'is null then ''F'' else ''T'' end AS MULT FROM LOJA L WHERE ((ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) +
                         ' is not null) and ((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
                     VL_TTabela.Open;
@@ -2271,13 +2487,12 @@ begin
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text :=
                         'SELECT (CASE WHEN (LF.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,LF.ID,LF.LOJA_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,LF.HABILITADO FROM TAG T, LOJA_FUNCAO LF where LF.TAG_NUMERO=T.TAG_NUMERO and '+
-                        'T.TAG_TIPO=''C'' AND LF.LOJA_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' FROM TAG T where ' +
-                        'T.TAG_TIPO=''C'' AND (select COUNT(*) FROM LOJA_FUNCAO LF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND LF2.LOJA_ID='
-                        +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''C'' AND  LF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,LF.HABILITADO,T.TAG_TIPO FROM TAG T, LOJA_FUNCAO LF where LF.TAG_NUMERO=T.TAG_NUMERO and ' +
+                        'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND LF.LOJA_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO FROM TAG T where ' +
+                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) FROM LOJA_FUNCAO LF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND ' +
+                        'LF2.LOJA_ID=' + IntToStr(VL_Dados) +
+                        ' AND T2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND  LF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2309,12 +2524,12 @@ begin
 
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MULTILOJA_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO from TAG T, MULTILOJA_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and ' +
-                        'T.TAG_TIPO=''C'' AND M.MULTILOJA_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' from TAG T where ' +
-                        'T.TAG_TIPO=''C'' AND (select COUNT(*) from MULTILOJA_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MULTILOJA_ID=' +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, MULTILOJA_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and ' +
+                        'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MULTILOJA_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
+                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MULTILOJA_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND T2.PADRAO=''T'' AND '
+                        +
+                        'M2.MULTILOJA_ID=' + IntToStr(VL_Dados) + ' AND T2.TAG_TIPO<>''DADOS'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2325,16 +2540,14 @@ begin
                 if VP_Mensagem.GetTag('0097', VL_Dados) = 0 then //pesquisa a multloja_modulo_conf_funcao pelo MULTILOJA_MODULO_CONF_ID 0=todas
                 begin
                     VL_TTabela.Close;
-                    VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MULTILOJA_MODULO_CONF_ID,'
+                    VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,' +
+                        'M.MULTILOJA_MODULO_CONF_ID,T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, ' +
+                        'MULTILOJA_MODULO_CONF_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND ' +
+                        'M.MULTILOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) + ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, ' +
+                        'T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MULTILOJA_MODULO_CONF_FUNCAO M2,TAG T2 '
                         +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO from TAG T, MULTILOJA_MODULO_CONF_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and '
-                        +
-                        'T.TAG_TIPO=''C'' AND M.MULTILOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' from TAG T where ' +
-                        'T.TAG_TIPO=''C'' AND (select COUNT(*) from MULTILOJA_MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MULTILOJA_MODULO_CONF_ID='
-                        +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MULTILOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) + ' AND T2.TAG_TIPO<>''DADOS'' AND ' +
+                        'T2.PADRAO=''T'' AND M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2345,21 +2558,23 @@ begin
                 begin
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.LOJA_MODULO_CONF_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO from TAG T, LOJA_MODULO_CONF_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and ' +
-                        'T.TAG_TIPO=''C'' AND M.LOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' from TAG T where ' +
-                        'T.TAG_TIPO=''C'' AND (select COUNT(*) from LOJA_MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.LOJA_MODULO_CONF_ID='
-                        +IntToStr(VL_Dados) + ' AND T2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, LOJA_MODULO_CONF_FUNCAO M where ' +
+                        'M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.LOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
+                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from LOJA_MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND ' +
+                        'M2.LOJA_MODULO_CONF_ID=' + IntToStr(VL_Dados) + ' AND T2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND ' +
+                        'M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
-                    VL_Mensagem.AddTag('0098', VL_TAG); //TABELA MULTILOJA_CONF_FUNCAO
+                    VL_Mensagem.AddTag('0098', VL_TAG); //TABELA LOJA_CONF_FUNCAO
                 end;
                 //pesquisa tabela tag
                 if VP_Mensagem.GetTag('006E', VL_Dados) = 0 then //pesquisa a tag pelo TAG_ID 0=todas
                 begin
                     VL_TTabela.Close;
-                    VL_TTabela.SQL.Text := 'SELECT T.*,CAST(T.DADOS AS VARCHAR(500)) AS DADOS_F FROM TAG T WHERE ((ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) + ' is not null) and ' +
+                    VL_TTabela.SQL.Text := 'SELECT T.*,CAST(T.DADOS AS VARCHAR(500)) AS DADOS_F FROM TAG T WHERE ((ID=' +
+                        IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) + ' is not null) and ' +
                         '((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
                     VL_TTabela.Open;
 
@@ -2402,13 +2617,11 @@ begin
 
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (PF.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,PF.ID,PF.PINPAD_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO FROM TAG T, PINPAD_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''PINPAD_FUNC'' '
-                        +
-                        'AND PF.PINPAD_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' FROM TAG T where ' +
-                        'T.TAG_TIPO=''PINPAD_FUNC'' AND (select COUNT(*) FROM PINPAD_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PINPAD_ID=' +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''PINPAD_FUNC'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO,T.TAG_TIPO FROM TAG T, PINPAD_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and ' +
+                        'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND PF.PINPAD_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO FROM TAG T where ' +
+                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) FROM PINPAD_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PINPAD_ID=' +
+                        IntToStr(VL_Dados) + ' AND T2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2439,13 +2652,12 @@ begin
 
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text := 'SELECT (CASE WHEN (PF.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,PF.ID,PF.PDV_ID,' +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO FROM TAG T, PDV_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''MENU_PDV'' '
-                        +
-                        'AND PF.PDV_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' FROM TAG T where ' +
-                        'T.TAG_TIPO=''MENU_PDV'' AND (select COUNT(*) FROM PDV_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PDV_ID=' +
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,PF.HABILITADO,T.TAG_TIPO FROM TAG T, PDV_FUNCAO PF where PF.TAG_NUMERO=T.TAG_NUMERO and ' +
+                        'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND PF.PDV_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO FROM TAG T where ' +
+                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) FROM PDV_FUNCAO PF2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND PF2.PDV_ID=' +
                         IntToStr(VL_Dados) + ' AND ' +
-                        'T2.TAG_TIPO=''MENU_PDV'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'T2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND PF2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2494,15 +2706,12 @@ begin
 
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text :=
-                        'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MODULO_ID AS MODULO_ID,'
-                        +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO from TAG T, MODULO_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''C'' AND '
-                        +
-                        'M.MODULO_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' from TAG T where ' +
-                        't.TAG_TIPO=''C'' AND (select COUNT(*) from MODULO_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MODULO_ID=' +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        't2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MODULO_ID AS MODULO_ID,' +
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, MODULO_FUNCAO M where ' +
+                        'M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MODULO_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
+                        't.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MODULO_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MODULO_ID=' +
+                        IntToStr(VL_Dados) + ' AND t2.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
                     VL_Mensagem.AddTag('0092', VL_TAG); //TABELA MODULO_FUNCAO
@@ -2511,15 +2720,14 @@ begin
                 begin
                     VL_TTabela.Close;
                     VL_TTabela.SQL.Text :=
-                        'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MODULO_CONF_ID AS MODULO_CONF_ID,'
+                        'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MODULO_CONF_ID AS MODULO_CONF_ID,' +
+                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, MODULO_CONF_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and '
                         +
-                        'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO from TAG T, MODULO_CONF_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO=''C'' AND '
+                        'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MODULO_CONF_ID=' + IntToStr(VL_Dados) +
+                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
+                        't.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MODULO_CONF_ID='
                         +
-                        'M.MODULO_CONF_ID=' + IntToStr(VL_Dados) +
-                        ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'' from TAG T where ' +
-                        't.TAG_TIPO=''C'' AND (select COUNT(*) from MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MODULO_CONF_ID=' +
-                        IntToStr(VL_Dados) + ' AND ' +
-                        't2.TAG_TIPO=''C'' AND  M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+                        IntToStr(VL_Dados) + ' AND t2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
                     VL_Tag := ZQueryToStrRxMemData(VL_TTabela);
@@ -2542,13 +2750,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0070', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0070', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                            '/ menssagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0070', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0070', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName + '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -2561,11 +2770,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0070', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0070', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                        '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -2576,41 +2786,102 @@ var
     VL_Mensagem: TMensagem;
     VL_TModuloConf: TZQuery;
     VL_Tag: ansistring;
+    VL_Erro: integer;
+    VL_Linha: string;
+    VL_ID: Int64;
 begin
     Result := 0;
     VL_Mensagem := TMensagem.Create;
     VL_TModuloConf := TZQuery.Create(DComunicador);
     VL_TModuloConf.Connection := DNucleo.ZConexao;
     VL_Tag := '';
+    VL_Linha:='';
+    VL_Erro:=0;
+    VL_ID:=0;
     try
-        if TTConexao(VP_AContext.Data).Status <> csLogado then
-        begin
+        try
+            //verifica permissao
+            if TTConexao(VP_AContext.Data).Permissao <> pmC then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0071', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //sem permissão
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 45;
+                VL_Linha := '070620220858';
+                GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'sem permissão para gerenciar a alteração da chave na tabela modulo_conf', '', VL_Erro);
+                Exit;
+            end;
+            //verifica parametros
+            VP_Mensagem.GetTag('0041', VL_ID); // chave do modulo_conf
+            if VL_ID < 1 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0071', 'R');
+                VL_Mensagem.AddTag('004D', '47');//registro zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '070620220859';
+                GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'o parametro informado na Tag:0041 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
+            VL_TModuloConf.Close;
+            VL_TModuloConf.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO_CONF WHERE CHAVE=''' + VL_Tag + '''';
+            VL_Erro := 55;
+            VL_Linha := '070620220900';
+            VL_TModuloConf.Open;
+
+            if VL_TModuloConf.RecordCount > 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0071', 'R');
+                VL_Mensagem.AddTag('004D', '43');//duplicidade
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 43;
+                VL_Linha := '070620220901';
+                GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'a chave informada ja esta cadastrada para outro registro', '', VL_Erro);
+                Exit;
+            end;
             VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0026', '35');
+            VL_Mensagem.AddComando('0071', 'R');
+            VL_Mensagem.AddTag('004D', '0');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
+        except
+            on E: Exception do
+            begin
+                try
+                    if Assigned(DNucleo) then
+                    begin
+                        if DNucleo.ZConexao.Connected then
+                            if DNucleo.ZConexao.InTransaction then
+                                DNucleo.ZConexao.Rollback;
+                        DNucleo.FreeOnRelease;
+                    end;
+                except
+                    on E: Exception do
+                        GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
+                end;
+                GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
+            end;
         end;
-        VP_Mensagem.GetTag('0041', VL_Tag);
-        if Length(VL_Tag) = 0 then
-        begin
-            Result := 47;
-            Exit;
-        end;
-        VL_TModuloConf.Close;
-        VL_TModuloConf.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO_CONF WHERE CHAVE=''' + VL_Tag + '''';
-        VL_TModuloConf.Open;
-        if VL_TModuloConf.RecordCount > 0 then
-        begin
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0026', '43');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
-        end;
-        VL_Mensagem.Limpar;
-        VL_Mensagem.AddComando('0046', 'ok');
-        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
     finally
-        VL_Mensagem.Free;
+        begin
+            VL_Mensagem.Free;
+            try
+                if Assigned(DNucleo) then
+                begin
+                    if DNucleo.ZConexao.Connected then
+                        if DNucleo.ZConexao.InTransaction then
+                            DNucleo.ZConexao.Commit;
+                    DNucleo.FreeOnRelease;
+                end;
+            except
+                on E: Exception do
+                    GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
+            end;
+        end;
     end;
 end;
 
@@ -2635,41 +2906,58 @@ begin
     VL_Linha := '';
     try
         try
-            //verifica parametros
-            VP_Mensagem.GetTag('007B', VL_ID); // modulo_conf_id
-            if VL_ID = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');// registro zerado
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 47;
-                VL_Linha := '050520221706';
-                GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'para alteração na tabela modulo_conf o id não pode ser zero', '', VL_Erro);
-                Exit;
-            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissão
+                VL_Mensagem.AddComando('0072', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221708';
                 GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'sem permissão para gerenciar a alteração na tabela modulo_conf', '', VL_Erro);
                 Exit;
             end;
+            //verifica parametros
+            VP_Mensagem.GetTag('007B', VL_ID); // modulo_conf_id
+            if VL_ID < 1 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0072', 'R');
+                VL_Mensagem.AddTag('004D', '47');//registro zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '050520221706';
+                GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'o parametro informado na Tag:007B esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             VP_Mensagem.GetTag('003A', VL_Tag);  //tabela modulo_conf
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0072', 'R');
+                VL_Mensagem.AddTag('004D', '47');//registro zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221205';
+                GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'o parametro informado na Tag:003A esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             //verifica se existe o id pra modificação
             VL_TModuloConf.Close;
             VL_TModuloConf.SQL.Text := 'SELECT * FROM MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221206';
             VL_TModuloConf.Open;
 
             if VL_TModuloConf.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48');//registro não localizado
+                VL_Mensagem.AddComando('0072', 'R');
+                VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221709';
@@ -2677,6 +2965,7 @@ begin
                     ' não localizado para alteração na tabela modulo_conf', '', VL_Erro);
                 Exit;
             end;
+
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if ((VL_Tabela.FieldByName('ID').AsInteger <> VL_TModuloConf.FieldByName('ID').AsInteger) or
@@ -2685,7 +2974,8 @@ begin
                     (VL_TModuloConf.FieldByName('CHAVE').AsString <> ''))) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49');//campos chaves não pode alterar
+                    VL_Mensagem.AddComando('0072', 'R');
+                    VL_Mensagem.AddTag('004D', '49');//campos chaves não pode alterar
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '050520221711';
@@ -2694,7 +2984,7 @@ begin
                         '', VL_Erro);
                     Exit;
                 end;
-
+                //COMEÇA A ALTERAÇÃO
                 VL_TModuloConf.Close;
                 VL_TModuloConf.SQL.Text := 'UPDATE MODULO_CONF SET ' +
                     'DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',' +
@@ -2709,21 +2999,10 @@ begin
                     'MENU_ESTATICO_OPERACIONAL=''' + VL_Tabela.FieldByName('MENU_ESTATICO_OPERACIONAL').AsString + ''',' +
                     'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''' WHERE ' +
                     'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '030620221210';
                 VL_TModuloConf.ExecSQL;
-                VL_TModuloConf.Close;
-                VL_TModuloConf.SQL.Text := 'SELECT * FROM MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
-                VL_TModuloConf.Open;
 
-                if VL_TModuloConf.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46');//erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '050520221713';
-                    GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'erro na alteração na tabela modulo_conf', '', VL_Erro);
-                    Exit;
-                end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0072', 'R');
                 VL_Mensagem.AddTag('004D', '0');
@@ -2733,9 +3012,9 @@ begin
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');
+                VL_Mensagem.AddComando('0072', 'R');
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
         except
             on E: Exception do
@@ -2746,13 +3025,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -2766,16 +3046,15 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0072', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando0073(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;  //INCLUIR MODULO_CONF
@@ -2801,7 +3080,8 @@ begin
             if (TTConexao(VP_AContext.Data).Permissao <> pmC) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//SEM PERMISSAO
+                VL_Mensagem.AddComando('0073', 'R');
+                VL_Mensagem.AddTag('004D', '45');//SEM PERMISSAO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520220840';
@@ -2809,9 +3089,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('003A', VL_Tag); //TABELA MODULO_CONFIG
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0073', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO NULO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221151';
+                GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, 'o parametro informado na Tag:003A esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -2819,14 +3112,20 @@ begin
                 begin
                     //verifica se o modulo_conf ja foi cadastrado
                     VL_TModuloConf.Close;
-                    VL_TModuloConf.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO_CONF WHERE (CHAVE=''' +
+                    VL_TModuloConf.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO_CONF WHERE MODULO_ID=' +
+                        IntToStr(VL_Tabela.FieldByName('MODULO_ID').AsInteger) + ' AND DESCRICAO=''' +
+                        VL_Tabela.FieldByName('DESCRICAO').AsString + ''' OR (CHAVE=''' +
                         VL_Tabela.FieldByName('CHAVE').AsString + ''' AND ''' +
                         VL_Tabela.FieldByName('CHAVE').AsString + ''' <> '''')';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221152';
                     VL_TModuloConf.Open;
+
                     if VL_TModuloConf.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43'); //registro em duplicidade
+                        VL_Mensagem.AddComando('0073', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//registro em duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '050520220842';
@@ -2840,7 +3139,8 @@ begin
                         (VL_Tabela.FieldByName('ADQUIRENTE_ID').AsInteger = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//CAMPO OBRIGATORIO NULO
+                        VL_Mensagem.AddComando('0073', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//CAMPO OBRIGATORIO NULO
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '050520220850';
@@ -2848,7 +3148,7 @@ begin
                             'campos obrigatórios não podem ser nulos para inclusão de registro na tabela modulo_conf', '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INCLUSÃO
                     VL_TModuloConf.Close;
                     VL_TModuloConf.SQL.Text := 'INSERT INTO MODULO_CONF(' +
                         'MODULO_ID,' +
@@ -2875,33 +3175,31 @@ begin
                         VL_Tabela.FieldByName('MENU_ESTATICO').AsString + ''',''' +
                         VL_Tabela.FieldByName('MENU_ESTATICO_OPERACIONAL').AsString + ''',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620221154';
                     VL_TModuloConf.ExecSQL;
+
                     VL_TModuloConf.Close;
-                    VL_TModuloConf.SQL.Text := 'SELECT * FROM MODULO_CONF WHERE CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + '''';
+                    VL_TModuloConf.SQL.Text := 'SELECT * FROM MODULO_CONF WHERE MODULO_ID=' +
+                        IntToStr(VL_Tabela.FieldByName('MODULO_ID').AsInteger) + ' AND DESCRICAO=''' +
+                        VL_Tabela.FieldByName('DESCRICAO').AsString + ''' AND CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221155';
                     VL_TModuloConf.Open;
-                    if VL_TModuloConf.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '050520220851';
-                        GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela modulo_conf', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0073', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('007B', VL_TModuloConf.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0073', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('007B', VL_TModuloConf.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0073', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -2911,13 +3209,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -2931,12 +3230,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0073', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -2965,16 +3264,30 @@ begin
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //SEM PERMISSAO DE ACESSO
+                VL_Mensagem.AddComando('0074', 'R');
+                VL_Mensagem.AddTag('004D', '45');//SEM PERMISSAO DE ACESSO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520220820';
                 GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, 'sem permissao para gerenciar inclusão de módulos', '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('0090', VL_Tag);  //tabela modulo
+            if Length(VL_TAG) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0074', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221110';
+                GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, 'o parametro informado na Tag:0090 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -2984,7 +3297,8 @@ begin
                     if length(VL_Tabela.FieldByName('DESCRICAO').AsString) = 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52'); //52 campos obrigatório não pode ser nulo
+                        VL_Mensagem.AddComando('0074', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//52 campos obrigatório não pode ser nulo
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '050520220824';
@@ -2994,11 +3308,15 @@ begin
                     //verifica se o modulo ja foi cadastrado
                     VL_TModulo.Close;
                     VL_TModulo.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO WHERE TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221112';
                     VL_TModulo.Open;
+
                     if VL_TModulo.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//registro em duplicidade
+                        VL_Mensagem.AddComando('0074', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//registro em duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '050520220826';
@@ -3007,39 +3325,36 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
+
                     VL_TModulo.Close;
                     VL_TModulo.SQL.Text := 'INSERT INTO MODULO(' +
                         'DESCRICAO,' +
                         'TAG_NUMERO)VALUES(''' +
                         VL_Tabela.FieldByName('DESCRICAO').AsString + ''',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620221113';
                     VL_TModulo.ExecSQL;
+
                     VL_TModulo.Close;
                     VL_TModulo.SQL.Text := 'SELECT * FROM MODULO WHERE DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221114';
                     VL_TModulo.Open;
-                    if VL_TModulo.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44'); //erro na inclusao
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '050520220828';
-                        GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, 'erro na inclusão do registro na tabela de módulos', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0074', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('006C', VL_TModulo.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0074', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('006C', VL_TModulo.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0074', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -3049,13 +3364,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -3069,12 +3385,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0074', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -3101,42 +3417,58 @@ begin
     VL_Linha := '';
     try
         try
-            //verifica parametros
-            VP_Mensagem.GetTag('006C', VL_ID);  //modulo_id
-            if VL_ID = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo zerado
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 47;
-                VL_Linha := '050520221646';
-                GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'o campo informado não pode ser vazio para alteração na tabela de modulo',
-                    '', VL_Erro);
-                Exit;
-            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissão
+                VL_Mensagem.AddComando('0075', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221650';
                 GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'sem permissão para gerenciar a alteração da tabela modulo', '', VL_Erro);
                 Exit;
             end;
+            //verifica parametros
+            VP_Mensagem.GetTag('006C', VL_ID);  //modulo_id
+            if VL_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0075', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '050520221646';
+                GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'o parametro informado na Tag:006C esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             VP_Mensagem.GetTag('0090', VL_Tag); // tabela modulo
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0075', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo zerado
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221124';
+                GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'o parametro informado na Tag:0090 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             //verifica se existe o id pra modificação
             VL_TModulo.Close;
             VL_TModulo.SQL.Text := 'SELECT * FROM MODULO WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221125';
             VL_TModulo.Open;
 
             if VL_TModulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48');//registro não localizado
+                VL_Mensagem.AddComando('0075', 'R');
+                VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221654';
@@ -3144,39 +3476,30 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if (VL_Tabela.FieldByName('ID').AsInteger <> VL_TModulo.FieldByName('ID').AsInteger) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49');//campos chave não pode alterar
+                    VL_Mensagem.AddComando('0075', 'R');
+                    VL_Mensagem.AddTag('004D', '49');//campos chave não pode alterar
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '050520221658';
                     GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'campo chave (id) não pode sofrer alteração na tabela modulo', '', VL_Erro);
                     Exit;
                 end;
-
+                //COMEÇA A ALTERAÇÃO
                 VL_TModulo.Close;
                 VL_TModulo.SQL.Text := 'UPDATE MODULO SET ' +
                     'DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',' +
                     'TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''' WHERE ' +
                     'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '030620221126';
                 VL_TModulo.ExecSQL;
-                VL_TModulo.Close;
-                VL_TModulo.SQL.Text := 'SELECT * FROM MODULO WHERE ID=' + IntToStr(VL_ID);
-                VL_TModulo.Open;
 
-                if VL_TModulo.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46');//erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '050520221659';
-                    GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'erro ao alterar a tabela modulo', '', VL_Erro);
-                    Exit;
-                end;
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0075', 'R');
                 VL_Mensagem.AddTag('004D', '0');
@@ -3186,9 +3509,9 @@ begin
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');
+                VL_Mensagem.AddComando('0075', 'R');
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
         except
             on E: Exception do
@@ -3199,13 +3522,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'erro inesperado na classe:' +
+                            e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -3219,16 +3543,15 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0075', 'cadastro', VL_Linha, 'erro inesperado na classe:' + e.ClassName + '/ mensagem:' +
+                        e.Message, '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando0077(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //incluir bin
@@ -3254,16 +3577,30 @@ begin
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissao
+                VL_Mensagem.AddComando('0077', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520220909';
                 GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, 'sem permissão pra gerenciar a inclusão de registro na tabela BIN', '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETRO
             VP_Mensagem.GetTag('0083', VL_Tag); //tabela bin
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0077', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO NULO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221221';
+                GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, 'o parametro informado na Tag:0083 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -3272,11 +3609,15 @@ begin
                     //verifica se o bin ja foi cadastrado
                     VL_TBin.Close;
                     VL_TBin.SQL.Text := 'SELECT FIRST 1 ID,MODULO_CONF_ID FROM BIN WHERE (IIN=''' + VL_Tabela.FieldByName('IIN').AsString + ''')';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221222';
                     VL_TBin.Open;
+
                     if VL_TBin.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('0077', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '050520220911';
@@ -3290,7 +3631,8 @@ begin
                         (length(VL_Tabela.FieldByName('MODULO_CONF_ID').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos obrigatorios
+                        VL_Mensagem.AddComando('0077', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//campos obrigatorios
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '050520220913';
@@ -3305,34 +3647,30 @@ begin
                         'IIN)VALUES(''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''',''' +
                         VL_Tabela.FieldByName('IIN').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620221224';
                     VL_TBin.ExecSQL;
+
                     VL_TBin.Close;
                     VL_TBin.SQL.Text := 'SELECT FIRST 1 ID FROM BIN WHERE ((IIN=''' + VL_Tabela.FieldByName('IIN').AsString + ''') AND ' +
                         '(MODULO_CONF_ID=''' + VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + '''))';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221225';
                     VL_TBin.Open;
-                    if VL_TBin.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro de inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '050520220914';
-                        GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela BIN', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0077', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('0076', VL_TBin.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0077', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('0076', VL_TBin.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0077', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -3342,13 +3680,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                            '/ menssagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName + '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -3362,18 +3701,18 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0077', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                        '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
-function comando0078(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;
+function comando0078(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;   //cadastro EXCLUIR BIN
 var
     VL_Mensagem: TMensagem;
     VL_TBin: TZQuery;
@@ -3394,10 +3733,11 @@ begin
         try
             //verifica parametros
             VP_Mensagem.GetTag('0076', VL_ID);  //BIN_ID
-            if VL_ID = 0 then
+            if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo obrigatorio não pode ser zero
+                VL_Mensagem.AddComando('0078', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo obrigatorio não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '050520221722';
@@ -3408,7 +3748,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissão
+                VL_Mensagem.AddComando('0078', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '050520221725';
@@ -3418,30 +3759,36 @@ begin
             //verifica se existe o id pra exclusão
             VL_TBin.Close;
             VL_TBin.SQL.Text := 'SELECT * FROM BIN WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221229';
             VL_TBin.Open;
 
             if VL_TBin.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48');//id não localizado
+                VL_Mensagem.AddComando('0078', 'R');
+                VL_Mensagem.AddTag('004D', '48');//id não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '050520221726';
                 GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, 'não foi possivel localizar o id numero ' + IntToStr(VL_ID) +
                     ' para excluir na tabela bin', '', VL_Erro);
-                Exit;
+            end
+            else
+            begin
+                //exclui BIN
+                VL_TBin.Close;
+                VL_TBin.SQL.Text := 'DELETE FROM BIN WHERE ' + 'ID=' + IntToStr(VL_ID);
+                VL_Erro := 82;
+                VL_Linha := '030620221231';
+                VL_TBin.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0078', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('0076', VL_ID);  //ID DO BIN
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end;
-            //exclui BIN
-            VL_TBin.Close;
-            VL_TBin.SQL.Text := 'DELETE FROM BIN WHERE ' + 'ID=' + IntToStr(VL_ID);
-            VL_TBin.ExecSQL;
-
-
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0078', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            VL_Mensagem.AddTag('0076', VL_ID);  //ID DO BIN
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -3451,13 +3798,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                            '/ menssagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName + '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -3470,12 +3818,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
+                    DNucleo.FreeOnRelease;
                 end;
-
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '0078', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                        '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -3504,7 +3852,8 @@ begin
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('0079', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '250520220852';
@@ -3512,9 +3861,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PAREMETROS
             VP_Mensagem.GetTag('0093', VL_Tag); //tabela modulo_conf_funcao
+            if LENGTH(VL_TAG) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0079', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO NULO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221431';
+                GravaLog(F_ArquivoLog, 0, '0079', 'cadastro', VL_Linha, 'o parametro informado na Tag:0093 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -3525,11 +3887,15 @@ begin
                     VL_TModuloConfFuncao.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO_CONF_FUNCAO WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221431';
                     VL_TModuloConfFuncao.Open;
+
                     if VL_TModuloConfFuncao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('0079', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '250520220854';
@@ -3543,7 +3909,8 @@ begin
                         (length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos nulos
+                        VL_Mensagem.AddComando('0079', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//campos nulos
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '250520220855';
@@ -3552,43 +3919,37 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INCLUSÃO
                     VL_TModuloConfFuncao.Close;
                     VL_TModuloConfFuncao.SQL.Text := 'INSERT INTO MODULO_CONF_FUNCAO(' +
                         'MODULO_CONF_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620221435';
                     VL_TModuloConfFuncao.ExecSQL;
+
                     VL_TModuloConfFuncao.Close;
-                    VL_TModuloConfFuncao.SQL.Text := 'SELECT * FROM MODULO_CONF_FUNCAO WHERE MODULO_ID=' + VL_Tabela.FieldByName(
+                    VL_TModuloConfFuncao.SQL.Text := 'SELECT * FROM MODULO_CONF_FUNCAO WHERE MODULO_CONF_ID=' + VL_Tabela.FieldByName(
                         'MODULO_CONF_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '030620221437';
                     VL_TModuloConfFuncao.Open;
-                    if VL_TModuloConfFuncao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '250520220857';
-                        GravaLog(F_ArquivoLog, 0, '0079', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela modulo_conf_funcao', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0079', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('006D', VL_TModuloConfFuncao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0079', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('006D', VL_TModuloConfFuncao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0079', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -3598,7 +3959,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -3618,16 +3978,13 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '0079', 'cadastro', VL_Linha, '', '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando007E(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;  //INCLUIR MODULO_FUNC
@@ -3664,12 +4021,11 @@ begin
             end;
             //VERIFICA PARAMETRO DE ENTRADA
             VP_Mensagem.GetTag('0092', VL_Tag); //tabela modulo_funcao
-
             if Length(VL_Tag) = 0 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('007E', 'R');
-                VL_Mensagem.AddComando('004D', '47');//sem permissao
+                VL_Mensagem.Addtag('004D', '47');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '270520221111';
@@ -3680,6 +4036,7 @@ begin
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -3693,6 +4050,7 @@ begin
                     VL_Erro := 55;
                     VL_Linha := '270520221115';
                     VL_TModuloFunc.Open;
+
                     if VL_TModuloFunc.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
@@ -3720,19 +4078,27 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INSERIR
                     VL_TModuloFunc.Close;
                     VL_TModuloFunc.SQL.Text := 'INSERT INTO MODULO_FUNCAO(' +
                         'MODULO_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('MODULO_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
                     VL_Erro := 44;
                     VL_Linha := '270520221120';
                     VL_TModuloFunc.ExecSQL;
-                    VL_Mensagem.Limpar;
 
+                    //CARREGA TABELA CADASTRADA
+                    VL_TModuloFunc.Close;
+                    VL_TModuloFunc.SQL.Text := 'SELECT FIRST 1 ID FROM MODULO_FUNCAO WHERE MODULO_ID=''' +
+                        VL_Tabela.FieldByName('MODULO_ID').AsString + ''' AND TAG_NUMERO=''' +
+                        VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '310520221230';
+                    VL_TModuloFunc.Open;
+
+                    VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('007E', 'R');
                     VL_Mensagem.AddTag('004D', '0');
                     VL_Mensagem.AddTag('008B', VL_TModuloFunc.FieldByName('ID').AsString);
@@ -3741,6 +4107,10 @@ begin
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('007E', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -3750,7 +4120,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -3770,7 +4139,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -3841,6 +4209,11 @@ begin
                 VL_Erro := 46;
                 VL_Linha := '270520221206';
                 VL_TModuloFunc.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('007F', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end
             else
             begin
@@ -3852,13 +4225,7 @@ begin
                 VL_Linha := '270520221208';
                 GravaLog(F_ArquivoLog, 0, '007F', 'cadastro', VL_Linha, 'não foi encontrado o registro numero:' + IntToStr(VL_MODULO_FUNCAO_ID) +
                     ' na tabela modulo_funcao', '', VL_Erro);
-                Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('007F', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -3868,7 +4235,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -3921,11 +4287,23 @@ begin
             VP_Mensagem.GetTag('006D', VL_Modulo_Conf_Funcao_ID);  // ID DA TABELA  MODULO_CONF_FUNCAO
             VP_Mensagem.GetTag('0086', VL_Habilitado);  // HABILITADO DA TABELA  MODULO_CONF_FUNCAO
 
+            if VL_Modulo_Conf_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0085', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221448';
+                GravaLog(F_ArquivoLog, 0, '0085', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:006D esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo_conf_funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('0085', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '260520220850';
@@ -3933,10 +4311,11 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra modulo_conf_funcao
             VL_TModulo_Conf_Funcao.Close;
             VL_TModulo_Conf_Funcao.SQL.Text := 'SELECT * FROM MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Modulo_Conf_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221449';
             VL_TModulo_Conf_Funcao.Open;
 
             if VL_TModulo_Conf_Funcao.RecordCount > 0 then
@@ -3945,27 +4324,22 @@ begin
                 VL_TModulo_Conf_Funcao.Close;
                 VL_TModulo_Conf_Funcao.SQL.Text := 'UPDATE MODULO_CONF_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_Modulo_Conf_Funcao_ID);
+                VL_Erro := 46;
+                VL_Linha := '030620221450';
                 VL_TModulo_Conf_Funcao.ExecSQL;
-            end;
-            VL_TModulo_Conf_Funcao.Close;
-            VL_TModulo_Conf_Funcao.SQL.Text := 'SELECT * FROM MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Modulo_Conf_Funcao_ID);
-            VL_TModulo_Conf_Funcao.Open;
 
-            if VL_TModulo_Conf_Funcao.RecordCount > 0 then
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0085', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+            end
+            else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
+                VL_Mensagem.AddComando('0085', 'R');
+                VL_Mensagem.AddTag('004D', '48');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '260520220854';
-                GravaLog(F_ArquivoLog, 0, '0085', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela modulo_conf_funcao', '', VL_Erro);
-                Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0085', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -3975,7 +4349,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -3994,7 +4367,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -4026,11 +4398,23 @@ begin
             //verifica parametros
             VP_Mensagem.GetTag('00BC', VL_Loja_Modulo_Conf_Funcao_ID);  // ID DA TABELA  LOJA_MODULO_CONF_FUNCAO
 
+            if VL_Loja_Modulo_Conf_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0087', 'R');
+                VL_Mensagem.AddTag('004D', '47');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221534';
+                GravaLog(F_ArquivoLog, 0, '0087', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:00BC esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('0087', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '260520221727';
@@ -4042,35 +4426,23 @@ begin
             //verifica se existe o id pra modulo_função
             VL_TLoja_Modulo_Conf_Funcao.Close;
             VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221536';
             VL_TLoja_Modulo_Conf_Funcao.Open;
 
             if VL_TLoja_Modulo_Conf_Funcao.RecordCount > 0 then
             begin
                 //exclui a loja_modulo_conf_funcao
                 VL_TLoja_Modulo_Conf_Funcao.Close;
-                VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'DELETE FROM LOJA_MODULO_CONF_FUNCAO WHERE ' +
-                    'ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
+                VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'DELETE FROM LOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
+                VL_Erro := 82;
+                VL_Linha := '020620221537';
                 VL_TLoja_Modulo_Conf_Funcao.ExecSQL;
-            end;
-            VL_TLoja_Modulo_Conf_Funcao.Close;
-            VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
-            VL_TLoja_Modulo_Conf_Funcao.Open;
-
-            if VL_TLoja_Modulo_Conf_Funcao.RecordCount > 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '260520221729';
-                GravaLog(F_ArquivoLog, 0, '0087', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela loja_modulo_conf_funcao', '', VL_Erro);
-                Exit;
             end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('0087', 'R');
             VL_Mensagem.AddTag('004D', '0');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -4080,7 +4452,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -4099,9 +4470,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '0087', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -4136,7 +4505,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0088', 'R');
-                VL_Mensagem.AddComando('004D', '47'); //dados informados não podem ser zero 0
+                VL_Mensagem.Addtag('004D', '47'); //dados informados não podem ser zero 0
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '270520220933';
@@ -4150,7 +4519,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0088', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //permissao não autorizada
+                VL_Mensagem.Addtag('004D', '45'); //permissao não autorizada
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '270520220938';
@@ -4172,14 +4541,15 @@ begin
                 VL_TMultiLoja_Modulo_Conf_Funcao.Close;
                 VL_TMultiLoja_Modulo_Conf_Funcao.SQL.Text := 'DELETE FROM MULTILOJA_MODULO_CONF_FUNCAO WHERE ' +
                     'ID=' + IntToStr(VL_MultiLoja_Modulo_Conf_Funcao_ID);
-                VL_Erro := 46;
+                VL_Erro := 82;
                 VL_Linha := '270520220943';
                 VL_TMultiLoja_Modulo_Conf_Funcao.ExecSQL;
             end
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //TABELA SEM REGISTRO
+                VL_Mensagem.AddComando('0088', 'R');
+                VL_Mensagem.AddTag('004D', '48'); //TABELA SEM REGISTRO
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '270520220947';
@@ -4257,7 +4627,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('008A', 'R');
-                VL_Mensagem.AddComando('004D', '47'); //dados informados não podem ser zero 0
+                VL_Mensagem.Addtag('004D', '47'); //dados informados não podem ser zero 0
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '270520221237';
@@ -4271,7 +4641,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('008A', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //permissao não autorizada
+                VL_Mensagem.Addtag('004D', '45'); //permissao não autorizada
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '270520221238';
@@ -4279,7 +4649,6 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra modulo_conf_função
             VL_TModulo_Conf_Funcao.Close;
             VL_TModulo_Conf_Funcao.SQL.Text := 'SELECT * FROM MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Modulo_Conf_Funcao_ID);
@@ -4293,9 +4662,15 @@ begin
                 VL_TModulo_Conf_Funcao.Close;
                 VL_TModulo_Conf_Funcao.SQL.Text := 'DELETE FROM MODULO_CONF_FUNCAO WHERE ' +
                     'ID=' + IntToStr(VL_Modulo_Conf_Funcao_ID);
-                VL_Erro := 46;
+                VL_Erro := 82;
                 VL_Linha := '270520221240';
                 VL_TModulo_Conf_Funcao.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('008A', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                Exit;
             end
             else
             begin
@@ -4308,13 +4683,7 @@ begin
                 GravaLog(F_ArquivoLog, 0, '008A', 'CADASTRO',
                     VL_Linha, 'não existe registro na tabela modulo_conf_funcao com o parametro informado ID:' +
                     IntToStr(VL_Modulo_Conf_Funcao_ID), '', VL_Erro);
-                exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('008A', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -4324,7 +4693,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -4343,7 +4711,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -4376,7 +4743,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('0096', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '120520220818';
@@ -4384,7 +4752,18 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
-            VP_Mensagem.GetTag('0094', VL_Tag);
+            VP_Mensagem.GetTag('0094', VL_Tag); //CARREGA TABELA MULTILOJA_MODULO_CONF
+            if Length(VL_TAG) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0096', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO ZERADO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620220929';
+                GravaLog(F_ArquivoLog, 0, '0096', 'cadastro', VL_Linha, 'parametro informado na Tag:0094 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
             VL_Tabela.First;
@@ -4397,11 +4776,14 @@ begin
                     VL_TMultLojaModulo.SQL.Text := 'SELECT FIRST 1 ID FROM MULTILOJA_MODULO_CONF WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND CODIGO=''' +
                         VL_Tabela.FieldByName('CODIGO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620220931';
                     VL_TMultLojaModulo.Open;
                     if VL_TMultLojaModulo.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('0096', 'R');
+                        VL_Mensagem.AddComando('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '120520220819';
@@ -4420,38 +4802,31 @@ begin
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('CODIGO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '020620220934';
                     VL_TMultLojaModulo.ExecSQL;
-                    VL_TMultLojaModulo.Close;
 
+                    VL_TMultLojaModulo.Close;
                     VL_TMultLojaModulo.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND CODIGO=''' +
                         VL_Tabela.FieldByName('CODIGO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '020620220935';
                     VL_TMultLojaModulo.Open;
-                    if VL_TMultLojaModulo.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '120520220828';
-                        GravaLog(F_ArquivoLog, 0, '0096', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela multloja_modulo', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0096', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('0097', VL_TMultLojaModulo.FieldByName('ID').AsString); //MULTLOJA_MODULO_ID
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0096', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('0097', VL_TMultLojaModulo.FieldByName('ID').AsString); //MULTLOJA_MODULO_ID
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('0096', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -4461,7 +4836,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -4481,16 +4855,13 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '0096', 'cadastro', VL_Linha, '', '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando0099(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro MULTLOJA_MODULO EXCLUIR
@@ -4517,7 +4888,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo não pode ser zero
+                VL_Mensagem.AddComando('0099', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '120520221012';
@@ -4528,7 +4900,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('0099', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '120520221013';
@@ -4538,12 +4911,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TMultLoja_Modulo.Close;
             VL_TMultLoja_Modulo.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221007';
             VL_TMultLoja_Modulo.Open;
 
             if VL_TMultLoja_Modulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); // id não encontrado na tabela
+                VL_Mensagem.AddComando('0099', 'R');
+                VL_Mensagem.AddTag('004D', '48'); // id não encontrado na tabela
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '120520221014';
@@ -4554,6 +4930,8 @@ begin
             //exclui multloja_modulo
             VL_TMultLoja_Modulo.Close;
             VL_TMultLoja_Modulo.SQL.Text := 'DELETE FROM MULTILOJA_MODULO_CONF WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '020620221008';
             VL_TMultLoja_Modulo.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -4561,7 +4939,6 @@ begin
             VL_Mensagem.AddTag('004D', '0');
             VL_Mensagem.AddTag('0097', VL_ID); //multloja_modulo_id
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-
         except
             on E: Exception do
             begin
@@ -4571,7 +4948,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -4590,9 +4966,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '0099', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -4626,7 +5000,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissao
+                VL_Mensagem.AddComando('009A', 'R');
+                VL_Mensagem.AddTag('004D', '45'); //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '120520221034';
@@ -4635,6 +5010,17 @@ begin
                 Exit;
             end;
             VP_Mensagem.GetTag('0094', VL_Tag); //carrega tabela multloja_modulo
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('009A', 'R');
+                VL_Mensagem.AddTag('004D', '47'); //PARAMETRO INFORMADO NULO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620220953';
+                GravaLog(F_ArquivoLog, 0, '009A', 'cadastro', VL_Linha, 'parametro informado na Tag:0094 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
 
@@ -4642,24 +5028,27 @@ begin
             if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//dados informado não pode ser zero
+                VL_Mensagem.AddComando('009A', 'R');
+                VL_Mensagem.AddTag('004D', '47');//dados informado não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '120520221222';
                 GravaLog(F_ArquivoLog, 0, '009A', 'cadastro', VL_Linha,
-                    'alteração não executada, o id informado da multloja_modulo_conf não pode ser zero',
-                    '', VL_Erro);
+                    'alteração não executada, o id informado da multloja_modulo_conf não pode ser zero', '', VL_Erro);
                 Exit;
             end;
             //verifica se existe o registro para alterar
             VL_TMultLoja_Modulo.Close;
             VL_TMultLoja_Modulo.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620220956';
             VL_TMultLoja_Modulo.Open;
 
             if VL_TMultLoja_Modulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //registro não localizado
+                VL_Mensagem.AddComando('009A', 'R');
+                VL_Mensagem.AddTag('004D', '48'); //registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '120520221037';
@@ -4674,7 +5063,8 @@ begin
                     (VL_Tabela.FieldByName('MULTILOJA_ID').AsInteger <> VL_TMultLoja_Modulo.FieldByName('MULTILOJA_ID').AsInteger)) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49'); //dados chaves não podem sofer alteração
+                    VL_Mensagem.AddComando('009A', 'R');
+                    VL_Mensagem.AddTag('004D', '49'); //dados chaves não podem sofer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '120520221038';
@@ -4687,34 +5077,25 @@ begin
                 VL_TMultLoja_Modulo.SQL.Text := 'UPDATE MULTILOJA_MODULO_CONF SET ' + 'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                     'MODULO_CONF_ID=''' + IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ''',' + 'CODIGO=''' +
                     VL_Tabela.FieldByName('CODIGO').AsString + ''' WHERE ' + 'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '020620221000';
                 VL_TMultLoja_Modulo.ExecSQL;
+
                 VL_TMultLoja_Modulo.Close;
                 VL_TMultLoja_Modulo.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+                VL_Erro := 55;
+                VL_Linha := '020620221001';
                 VL_TMultLoja_Modulo.Open;
-                if VL_TMultLoja_Modulo.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46');//erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '120520221043';
-                    GravaLog(F_ArquivoLog, 0, '009A', 'cadastro', VL_Linha, 'erro ao alterar registro numero:' + IntToStr(VL_ID) +
-                        ' na tabela de multloja_modulo_conf', '', VL_Erro);
-                    Exit;
-                end;
+
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('009A', 'R');
                 VL_Mensagem.AddTag('004D', '0');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
-            end
-            else
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//46 erro na alteração do registro
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('009A', 'R');
+            VL_Mensagem.AddTag('004D', '46');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -4724,7 +5105,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -4743,9 +5123,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '009A', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -4777,7 +5155,8 @@ begin
             if TTConexao(VP_AContext.Data).Permissao <> pmC then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('009B', 'R');
+                VL_Mensagem.Addtag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '260520221653';
@@ -4786,9 +5165,21 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //verifica parametros
             VP_Mensagem.GetTag('0098', VL_Tag); //tabela loja_modulo_conf_funcao
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('009B', 'R');
+                VL_Mensagem.Addtag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '010620220835';
+                GravaLog(F_ArquivoLog, 0, '009B', 'cadastro', VL_Linha, 'parametro informado na Tag:0098 está nula ou vazia', '', VL_Erro);
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -4799,11 +5190,15 @@ begin
                     VL_TLojaModuloConfFuncao.SQL.Text := 'SELECT FIRST 1 ID FROM LOJA_MODULO_CONF_FUNCAO WHERE LOJA_MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('LOJA_MODULO_CONF_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '010620220836';
                     VL_TLojaModuloConfFuncao.Open;
+
                     if VL_TLojaModuloConfFuncao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('009B', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '260520221656';
@@ -4817,7 +5212,8 @@ begin
                         (length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos nulos
+                        VL_Mensagem.AddComando('009B', 'R');
+                        VL_Mensagem.AddComando('004D', '52');//campos nulos
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '260520221657';
@@ -4826,44 +5222,37 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INSERIR
                     VL_TLojaModuloConfFuncao.Close;
                     VL_TLojaModuloConfFuncao.SQL.Text := 'INSERT INTO LOJA_MODULO_CONF_FUNCAO(' +
                         'LOJA_MODULO_CONF_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('LOJA_MODULO_CONF_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '010620220837';
                     VL_TLojaModuloConfFuncao.ExecSQL;
+
                     VL_TLojaModuloConfFuncao.Close;
                     VL_TLojaModuloConfFuncao.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF_FUNCAO WHERE LOJA_MODULO_CONF_ID=' + VL_Tabela.FieldByName(
                         'LOJA_MODULO_CONF_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '010620220838';
                     VL_TLojaModuloConfFuncao.Open;
-                    if VL_TLojaModuloConfFuncao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '260520221659';
-                        GravaLog(F_ArquivoLog, 0, '009B', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela loja_modulo_conf_funcao',
-                            '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('009B', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('00BC', VL_TLojaModuloConfFuncao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('009B', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('00BC', VL_TLojaModuloConfFuncao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('009B', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -4873,7 +5262,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -4893,9 +5281,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '009B', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -4927,7 +5313,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('009D', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '120520221407';
@@ -4935,9 +5322,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
-            VP_Mensagem.GetTag('009C', VL_Tag);
+            //testa parametros
+            VP_Mensagem.GetTag('009C', VL_Tag); //CARREGA TABELA MULTILOJA_FUNCAO
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('009D', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221120';
+                GravaLog(F_ArquivoLog, 0, '009D', 'cadastro', VL_Linha, 'o parametro informado na Tag:009C esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -4949,11 +5349,15 @@ begin
                     VL_TMultLoja_Funcao.SQL.Text := 'SELECT FIRST 1 ID FROM MULTILOJA_FUNCAO WHERE MULTILOJA_ID=''' +
                         VL_Tabela.FieldByName('MULTILOJA_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620221122';
                     VL_TMultLoja_Funcao.Open;
+
                     if VL_TMultLoja_Funcao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('009D', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '120520221410';
@@ -4966,7 +5370,8 @@ begin
                         (length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos nulos
+                        VL_Mensagem.AddComando('009D', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//campos nulos
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '120520221411';
@@ -4975,40 +5380,30 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INCLUSAO
                     VL_TMultLoja_Funcao.Close;
                     VL_TMultLoja_Funcao.SQL.Text := 'INSERT INTO MULTILOJA_FUNCAO(' +
                         'MULTILOJA_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('MULTILOJA_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '020620221125';
                     VL_TMultLoja_Funcao.ExecSQL;
+
                     VL_TMultLoja_Funcao.Close;
                     VL_TMultLoja_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_FUNCAO WHERE MULTILOJA_ID=' + VL_Tabela.FieldByName(
                         'MULTILOJA_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '020620221126';
                     VL_TMultLoja_Funcao.Open;
-                    if VL_TMultLoja_Funcao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '120520221414';
-                        GravaLog(F_ArquivoLog, 0, '009D', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela multloja_funcao', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('009D', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('009E', VL_TMultLoja_Funcao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('009D', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('009E', VL_TMultLoja_Funcao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
@@ -5021,7 +5416,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5041,16 +5435,13 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '009D', 'cadastro', VL_Linha, '', '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando009F(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro MULTLOJA_FUNCAO ALTERAR
@@ -5078,21 +5469,34 @@ begin
             VP_Mensagem.GetTag('009E', VL_MultLoja_Funcao_ID);  // ID DA TABELA  MODULO_FUNCAO
             VP_Mensagem.GetTag('00A1', VL_Habilitado);  // HABILITADO DA TABELA  MODULO_FUNCAO
 
+            if VL_MultLoja_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('009F', 'R');
+                VL_Mensagem.AddTag('004D', '47');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221132';
+                GravaLog(F_ArquivoLog, 0, '009F', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:009E esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('009F', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '230520221702';
                 GravaLog(F_ArquivoLog, 0, '009F', 'CADASTRO', VL_Linha, 'nao tem permissao para dar manutencao ao cadastro de multloja funcao', '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra modulo_função
             VL_TMultLoja_Funcao.Close;
             VL_TMultLoja_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_FUNCAO WHERE ID=' + IntToStr(VL_MultLoja_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221134';
             VL_TMultLoja_Funcao.Open;
 
             if VL_TMultLoja_Funcao.RecordCount > 0 then
@@ -5101,22 +5505,16 @@ begin
                 VL_TMultLoja_Funcao.Close;
                 VL_TMultLoja_Funcao.SQL.Text := 'UPDATE MULTILOJA_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_MultLoja_Funcao_ID);
+                VL_Erro := 46;
+                VL_Linha := '020620221135';
                 VL_TMultLoja_Funcao.ExecSQL;
             end;
             VL_TMultLoja_Funcao.Close;
             VL_TMultLoja_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_FUNCAO WHERE ID=' + IntToStr(VL_MultLoja_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221136';
             VL_TMultLoja_Funcao.Open;
 
-            if VL_TMultLoja_Funcao.RecordCount = 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '230520221704';
-                GravaLog(F_ArquivoLog, 0, '009F', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela multloja_funcao', '', VL_Erro);
-                Exit;
-            end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('009F', 'R');
             VL_Mensagem.AddTag('004D', '0');
@@ -5131,7 +5529,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5150,9 +5547,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '009F', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -5183,21 +5578,34 @@ begin
             //verifica parametros
             VP_Mensagem.GetTag('009E', VL_MultLoja_Funcao_ID);  // ID DA TABELA  MODULO_FUNCAO
 
+            if VL_MultLoja_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00A0', 'R');
+                VL_Mensagem.AddTag('004D', '47');//parametro nulo
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221141';
+                GravaLog(F_ArquivoLog, 0, '00A0', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:009E esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00A0', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '120520221423';
                 GravaLog(F_ArquivoLog, 0, '00A0', 'CADASTRO', VL_Linha, 'nao tem permissao para dar manutencao ao cadastro de multloja funcao', '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra modulo_função
             VL_TMultLoja_Funcao.Close;
             VL_TMultLoja_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_FUNCAO WHERE ID=' + IntToStr(VL_MultLoja_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221143';
             VL_TMultLoja_Funcao.Open;
 
             if VL_TMultLoja_Funcao.RecordCount > 0 then
@@ -5206,22 +5614,16 @@ begin
                 VL_TMultLoja_Funcao.Close;
                 VL_TMultLoja_Funcao.SQL.Text := 'DELETE FROM MULTILOJA_FUNCAO WHERE ' +
                     'ID=' + IntToStr(VL_MultLoja_Funcao_ID);
+                VL_Erro := 82;
+                VL_Linha := '020620221144';
                 VL_TMultLoja_Funcao.ExecSQL;
             end;
             VL_TMultLoja_Funcao.Close;
             VL_TMultLoja_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_FUNCAO WHERE ID=' + IntToStr(VL_MultLoja_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221145';
             VL_TMultLoja_Funcao.Open;
 
-            if VL_TMultLoja_Funcao.RecordCount > 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '120520221425';
-                GravaLog(F_ArquivoLog, 0, '00A0', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela multloja_funcao', '', VL_Erro);
-                Exit;
-            end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('00A0', 'R');
             VL_Mensagem.AddTag('004D', '0');
@@ -5236,7 +5638,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5255,16 +5656,13 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00A0', 'cadastro', VL_Linha, '', '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando00AA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro LOJA_FUNCAO INCLUIR
@@ -5290,7 +5688,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00AA', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '160520221608';
@@ -5298,9 +5697,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('00A7', VL_Tag); //tabela loja_modulo
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00AA', 'R');
+                VL_Mensagem.AddTag('004D', '47');//parametro vazio
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221551';
+                GravaLog(F_ArquivoLog, 0, '00AA', 'cadastro', VL_Linha, 'o parametro informado na Tag:00A7 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -5311,11 +5723,15 @@ begin
                     VL_TLoja_Funcao.SQL.Text := 'SELECT FIRST 1 ID FROM LOJA_FUNCAO WHERE LOJA_ID=''' +
                         VL_Tabela.FieldByName('LOJA_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620221553';
                     VL_TLoja_Funcao.Open;
+
                     if VL_TLoja_Funcao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('00AA', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '160520221609';
@@ -5328,7 +5744,8 @@ begin
                         (length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos nulos
+                        VL_Mensagem.AddComando('00AA', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//campos nulos
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '160520221610';
@@ -5337,43 +5754,37 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //FAZ A INCLUSÃO
                     VL_TLoja_Funcao.Close;
                     VL_TLoja_Funcao.SQL.Text := 'INSERT INTO LOJA_FUNCAO(' +
                         'LOJA_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('LOJA_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '020620221555';
                     VL_TLoja_Funcao.ExecSQL;
+
                     VL_TLoja_Funcao.Close;
                     VL_TLoja_Funcao.SQL.Text := 'SELECT * FROM LOJA_FUNCAO WHERE LOJA_ID=' + VL_Tabela.FieldByName(
                         'LOJA_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '020620221556';
                     VL_TLoja_Funcao.Open;
-                    if VL_TLoja_Funcao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '160520221611';
-                        GravaLog(F_ArquivoLog, 0, '00AA', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela loja_funcao', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('00AA', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('00AB', VL_TLoja_Funcao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00AA', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('00AB', VL_TLoja_Funcao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00AA', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -5383,7 +5794,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5403,9 +5813,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00AA', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -5439,21 +5847,34 @@ begin
             VP_Mensagem.GetTag('00AB', VL_Loja_Funcao_ID);  // ID DA TABELA  LOJA_FUNCAO
             VP_Mensagem.GetTag('00A8', VL_Habilitado);  // HABILITADO DA TABELA  LOJA_FUNCAO
 
+            if VL_Loja_Funcao_ID < 1 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00AC', 'R');
+                VL_Mensagem.Addtag('004D', '47'); //PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '010620220922';
+                GravaLog(F_ArquivoLog, 0, '00AC', 'CADASTRO', VL_Linha, 'parametro informado na Tag:00AB esta nula ou zerada', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de loja funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00AC', 'R');  //sem permissao
+                VL_Mensagem.Addtag('004D', '45');  //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '240520221019';
                 GravaLog(F_ArquivoLog, 0, '00AC', 'CADASTRO', VL_Linha, 'nao tem permissao para dar manutencao ao cadastro de loja funcao', '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra loja_funcao
             VL_TLoja_Funcao.Close;
             VL_TLoja_Funcao.SQL.Text := 'SELECT * FROM LOJA_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '010520220924';
             VL_TLoja_Funcao.Open;
 
             if VL_TLoja_Funcao.RecordCount > 0 then
@@ -5462,27 +5883,20 @@ begin
                 VL_TLoja_Funcao.Close;
                 VL_TLoja_Funcao.SQL.Text := 'UPDATE LOJA_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_Loja_Funcao_ID);
-                VL_TLoja_Funcao.ExecSQL;
-            end;
-            VL_TLoja_Funcao.Close;
-            VL_TLoja_Funcao.SQL.Text := 'SELECT * FROM LOJA_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Funcao_ID);
-            VL_TLoja_Funcao.Open;
-
-            if VL_TLoja_Funcao.RecordCount > 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 46;
-                VL_Linha := '240520221020';
-                GravaLog(F_ArquivoLog, 0, '00AC', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela loja_funcao', '', VL_Erro);
+                VL_Linha := '010520220926';
+                VL_TLoja_Funcao.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00AC', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('00AC', 'R');
-            VL_Mensagem.AddTag('004D', '0');
+            VL_Mensagem.AddTag('004D', '46');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -5492,7 +5906,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5511,16 +5924,13 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00AC', 'cadastro', VL_Linha, '', '', VL_Erro);
             end;
         end;
     end;
-
 end;
 
 function comando00AD(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro LOJA_FUNCAO EXCLUIR
@@ -5544,12 +5954,23 @@ begin
         try
             //verifica parametros
             VP_Mensagem.GetTag('00AB', VL_Loja_Funcao_ID);  // ID DA TABELA  MODULO_FUNCAO
-
+            if VL_Loja_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00AD', 'R');
+                VL_Mensagem.AddTag('004D', '47');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221643';
+                GravaLog(F_ArquivoLog, 0, '00AD', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:00AB esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00AD', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '160520221704';
@@ -5560,6 +5981,8 @@ begin
             //verifica se existe o id pra modulo_função
             VL_TLoja_Funcao.Close;
             VL_TLoja_Funcao.SQL.Text := 'SELECT * FROM LOJA_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221646';
             VL_TLoja_Funcao.Open;
 
             if VL_TLoja_Funcao.RecordCount > 0 then
@@ -5568,27 +5991,20 @@ begin
                 VL_TLoja_Funcao.Close;
                 VL_TLoja_Funcao.SQL.Text := 'DELETE FROM LOJA_FUNCAO WHERE ' +
                     'ID=' + IntToStr(VL_Loja_Funcao_ID);
+                VL_Erro := 82;
+                VL_Linha := '020620221647';
                 VL_TLoja_Funcao.ExecSQL;
-            end;
-            VL_TLoja_Funcao.Close;
-            VL_TLoja_Funcao.SQL.Text := 'SELECT * FROM LOJA_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Funcao_ID);
-            VL_TLoja_Funcao.Open;
 
-            if VL_TLoja_Funcao.RecordCount > 0 then
-            begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
+                VL_Mensagem.AddComando('00AD', 'R');
+                VL_Mensagem.AddTag('004D', '0');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '160520221705';
-                GravaLog(F_ArquivoLog, 0, '00AD', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela loja_funcao', '', VL_Erro);
                 Exit;
             end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('00AD', 'R');
-            VL_Mensagem.AddTag('004D', '0');
+            VL_Mensagem.AddTag('004D', '82');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -5652,7 +6068,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00AE', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '170520220901';
@@ -5660,9 +6077,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('00A7', VL_Tag); //TABELA LOJA_MODULO
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00AE', 'R');
+                VL_Mensagem.AddTag('004D', '47');//parametro vazio
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221434';
+                GravaLog(F_ArquivoLog, 0, '00AE', 'cadastro', VL_Linha, 'o parametro informado na Tag:00A7 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -5673,21 +6103,25 @@ begin
                     VL_TLojaModulo.SQL.Text := 'SELECT FIRST 1 ID FROM LOJA_MODULO_CONF WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND LOJA_ID=' +
                         IntToStr(VL_Tabela.FieldByName('LOJA_ID').AsInteger);
+                    VL_Erro := 55;
+                    VL_Linha := '020620221436';
                     VL_TLojaModulo.Open;
+
                     if VL_TLojaModulo.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('00AE', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '170520220904';
                         GravaLog(F_ArquivoLog, 0, '00AE', 'cadastro', VL_Linha,
-                            'registro em duplicidade na tabela loja_modulo_conf, ja existe um modulo config cadastrada com esta configuracao: (modulo_conf = '
-                            +
-                            VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ') (loja_id =' +
+                            'registro em duplicidade na tabela loja_modulo_conf, ja existe um modulo config cadastrada com esta configuracao: ' +
+                            '(modulo_conf = ' + VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ') (loja_id =' +
                             VL_Tabela.FieldByName('LOJA_ID').AsString + ')', '', VL_Erro);
                         Exit;
                     end;
+                    //COMEÇA A INSERIR
                     VL_TLojaModulo.Close;
                     VL_TLojaModulo.SQL.Text := 'INSERT INTO LOJA_MODULO_CONF(' +
                         'LOJA_ID,' +
@@ -5698,37 +6132,31 @@ begin
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('CODIGO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '020620221439';
                     VL_TLojaModulo.ExecSQL;
                     VL_TLojaModulo.Close;
 
                     VL_TLojaModulo.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND LOJA_ID=' +
                         IntToStr(VL_Tabela.FieldByName('LOJA_ID').AsInteger);
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '020620221440';
                     VL_TLojaModulo.Open;
-                    if VL_TLojaModulo.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '170520220909';
-                        GravaLog(F_ArquivoLog, 0, '00AE', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela loja_modulo', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('004D', '0');
-                        VL_Mensagem.AddTag('00AF', VL_TLojaModulo.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00AE', 'R');
+                    VL_Mensagem.Addtag('004D', '0');
+                    VL_Mensagem.AddTag('00AF', VL_TLojaModulo.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00AE', 'R');
+            VL_Mensagem.Addtag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -5738,7 +6166,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5758,9 +6185,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00AE', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -5794,6 +6219,17 @@ begin
             VP_Mensagem.GetTag('00BD', VL_MultiLoja_Modulo_Conf_Funcao_ID);  // ID DA TABELA  MODULO_CONF_FUNCAO
             VP_Mensagem.GetTag('0084', VL_Habilitado);  // HABILITADO DA TABELA  MODULO_CONF_FUNCAO
 
+            if VL_MultiLoja_Modulo_Conf_Funcao_ID <= 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B0', 'R');
+                VL_Mensagem.AddTag('004D', '47');  //sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221043';
+                GravaLog(F_ArquivoLog, 0, '00B0', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:00B0 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo_conf_funcao
             begin
@@ -5807,10 +6243,11 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra loja_modulo_conf_funcao
             VL_TMultiLoja_Modulo_Conf_Funcao.Close;
             VL_TMultiLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_MultiLoja_Modulo_Conf_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '310520221611';
             VL_TMultiLoja_Modulo_Conf_Funcao.Open;
 
             if VL_TMultiLoja_Modulo_Conf_Funcao.RecordCount > 0 then
@@ -5819,28 +6256,26 @@ begin
                 VL_TMultiLoja_Modulo_Conf_Funcao.Close;
                 VL_TMultiLoja_Modulo_Conf_Funcao.SQL.Text := 'UPDATE MULTILOJA_MODULO_CONF_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_MultiLoja_Modulo_Conf_Funcao_ID);
+                VL_Erro := 46;
+                VL_Linha := '270520220915';
                 VL_TMultiLoja_Modulo_Conf_Funcao.ExecSQL;
-            end;
-            VL_TMultiLoja_Modulo_Conf_Funcao.Close;
-            VL_TMultiLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_MultiLoja_Modulo_Conf_Funcao_ID);
-            VL_TMultiLoja_Modulo_Conf_Funcao.Open;
-
-            if VL_TMultiLoja_Modulo_Conf_Funcao.RecordCount > 0 then
+            end
+            else
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00B0', 'R');
-                VL_Mensagem.AddTag('004D', '46');  //erro na exclusao
+                VL_Mensagem.AddTag('004D', '48');  //erro registro não encontrado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '270520220915';
-                GravaLog(F_ArquivoLog, 0, '00B0', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela multiloja_modulo_conf_funcao', '', VL_Erro);
+                VL_Erro := 48;
+                VL_Linha := '310520221615';
+                GravaLog(F_ArquivoLog, 0, '00B0', 'cadastro', VL_Linha, 'não encontrado o registro numero:' +
+                    IntToStr(VL_MultiLoja_Modulo_Conf_Funcao_ID) + ' na tabela multiloja_modulo_conf_funcao', '', VL_Erro);
                 Exit;
             end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('00B0', 'R');
             VL_Mensagem.AddTag('004D', '0');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -5850,7 +6285,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -5869,7 +6303,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -5904,7 +6337,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissao
+                VL_Mensagem.AddComando('00B1', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '170520221109';
@@ -5912,7 +6346,19 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('00A7', VL_Tag); //carrega tabela LOJA_MODULO
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B1', 'R');
+                VL_Mensagem.AddTag('004D', '47');//parametro vazio
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221444';
+                GravaLog(F_ArquivoLog, 0, '00B1', 'cadastro', VL_Linha, 'o parametro informado na Tag:00A7 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
 
@@ -5920,7 +6366,8 @@ begin
             if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//dados informado não pode ser zero
+                VL_Mensagem.AddComando('00B1', 'R');
+                VL_Mensagem.AddTag('004D', '47');//dados informado não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '170520221111';
@@ -5931,12 +6378,15 @@ begin
             //verifica se existe o registro para alterar
             VL_TLoja_Modulo.Close;
             VL_TLoja_Modulo.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221446';
             VL_TLoja_Modulo.Open;
 
             if VL_TLoja_Modulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //registro não localizado
+                VL_Mensagem.AddComando('00B1', 'R');
+                VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '170520221112';
@@ -5951,7 +6401,8 @@ begin
                     (VL_Tabela.FieldByName('LOJA_ID').AsInteger <> VL_TLoja_Modulo.FieldByName('LOJA_ID').AsInteger)) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49'); //dados chaves não podem sofer alteração
+                    VL_Mensagem.AddComando('00B1', 'R');
+                    VL_Mensagem.AddTag('004D', '49'); //dados chaves não podem sofer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '170520221113';
@@ -5960,25 +6411,21 @@ begin
                         '', VL_Erro);
                     Exit;
                 end;
+
                 VL_TLoja_Modulo.Close;
                 VL_TLoja_Modulo.SQL.Text := 'UPDATE LOJA_MODULO_CONF SET ' + 'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                     'MODULO_CONF_ID=''' + IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ''',' + 'CODIGO=''' +
                     VL_Tabela.FieldByName('CODIGO').AsString + ''' WHERE ' + 'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '020620221449';
                 VL_TLoja_Modulo.ExecSQL;
+
                 VL_TLoja_Modulo.Close;
                 VL_TLoja_Modulo.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+                VL_Erro := 55;
+                VL_Linha := '020620221450';
                 VL_TLoja_Modulo.Open;
-                if VL_TLoja_Modulo.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46');//erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '170520221114';
-                    GravaLog(F_ArquivoLog, 0, '00B1', 'cadastro', VL_Linha, 'erro ao alterar registro numero:' + IntToStr(VL_ID) +
-                        ' na tabela de loja_modulo_conf', '', VL_Erro);
-                    Exit;
-                end;
+
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00B1', 'R');//alteração aceita
                 VL_Mensagem.AddTag('004D', '0');
@@ -5988,9 +6435,9 @@ begin
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//46 erro na alteração do registro
+                VL_Mensagem.AddComando('00B1', 'R');//alteração recusada
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
         except
             on E: Exception do
@@ -6001,7 +6448,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -6020,9 +6466,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00B1', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -6055,7 +6499,8 @@ begin
             if VL_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo não pode ser zero
+                VL_Mensagem.AddComando('00B2', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '170520221128';
@@ -6066,7 +6511,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00B2', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '170520221129';
@@ -6076,12 +6522,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TLoja_Modulo.Close;
             VL_TLoja_Modulo.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '020620221500';
             VL_TLoja_Modulo.Open;
 
             if VL_TLoja_Modulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); // id não encontrado na tabela
+                VL_Mensagem.AddComando('00B2', 'R');
+                VL_Mensagem.AddTag('004D', '48'); // id não encontrado na tabela
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '170520221130';
@@ -6092,6 +6541,8 @@ begin
             //exclui loja_modulo
             VL_TLoja_Modulo.Close;
             VL_TLoja_Modulo.SQL.Text := 'DELETE FROM LOJA_MODULO_CONF WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '020620221502';
             VL_TLoja_Modulo.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -6099,7 +6550,6 @@ begin
             VL_Mensagem.AddTag('004D', '0');
             VL_Mensagem.AddTag('00AF', VL_ID); //retorno loja_id
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-
         except
             on E: Exception do
             begin
@@ -6109,7 +6559,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -6128,7 +6577,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
 
             except
@@ -6162,7 +6610,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00B5', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520220854';
@@ -6170,9 +6619,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETRO
             VP_Mensagem.GetTag('00B4', VL_Tag); // tabela pinpad_funcao
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B5', 'R');
+                VL_Mensagem.AddTag('004D', '47');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '060220221721';
+                GravaLog(F_ArquivoLog, 0, '00B5', 'cadastro', VL_Linha, 'o parametro informado na Tag:00B4 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -6183,11 +6645,15 @@ begin
                     VL_TPinPad_Funcao.SQL.Text := 'SELECT FIRST 1 ID FROM PINPAD_FUNCAO WHERE PINPAD_ID=''' +
                         VL_Tabela.FieldByName('PINPAD_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '060220221722';
                     VL_TPinPad_Funcao.Open;
+
                     if VL_TPinPad_Funcao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('00B5', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '180520220856';
@@ -6200,7 +6666,8 @@ begin
                         (length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos nulos
+                        VL_Mensagem.AddComando('00B5', 'R');//campos nulos
+                        VL_Mensagem.AddTag('004D', '52');//campos nulos
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '180520220857';
@@ -6209,43 +6676,37 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INCLUSÃO
                     VL_TPinPad_Funcao.Close;
                     VL_TPinPad_Funcao.SQL.Text := 'INSERT INTO PINPAD_FUNCAO(' +
                         'PINPAD_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('PINPAD_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '020620221724';
                     VL_TPinPad_Funcao.ExecSQL;
+
                     VL_TPinPad_Funcao.Close;
                     VL_TPinPad_Funcao.SQL.Text := 'SELECT * FROM PINPAD_FUNCAO WHERE PINPAD_ID=' + VL_Tabela.FieldByName(
                         'PINPAD_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '020620221725';
                     VL_TPinPad_Funcao.Open;
-                    if VL_TPinPad_Funcao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '180520220858';
-                        GravaLog(F_ArquivoLog, 0, '00B5', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela pinpad_funcao', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('00B5', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('00B7', VL_TPinPad_Funcao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00B5', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('00B7', VL_TPinPad_Funcao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00B5', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -6255,7 +6716,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -6275,9 +6735,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00B5', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -6311,11 +6769,24 @@ begin
             VP_Mensagem.GetTag('00B7', VL_PinPad_Funcao_ID);  // ID DA TABELA  PINPAD_FUNCAO
             VP_Mensagem.GetTag('00B3', VL_Habilitado);  // HABILITADO DA TABELA  PINPAD_FUNCAO
 
+            if VL_PinPad_Funcao_ID < 1 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B6', 'R');
+                VL_Mensagem.AddTag('004D', '47');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '010620220936';
+                GravaLog(F_ArquivoLog, 0, '00B6', 'CADASTRO', VL_Linha, 'parametro informado na Tag:00B7 esta nula ou zerada', '', VL_Erro);
+                Exit;
+            end;
+
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de pinpad funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00B', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '240520221047';
@@ -6326,6 +6797,8 @@ begin
             //verifica se existe o id pra pinpad_funcao
             VL_TPinPad_Funcao.Close;
             VL_TPinPad_Funcao.SQL.Text := 'SELECT * FROM PINPAD_FUNCAO WHERE ID=' + IntToStr(VL_PinPad_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '010620220946';
             VL_TPinPad_Funcao.Open;
 
             if VL_TPinPad_Funcao.RecordCount > 0 then
@@ -6334,27 +6807,22 @@ begin
                 VL_TPinPad_Funcao.Close;
                 VL_TPinPad_Funcao.SQL.Text := 'UPDATE PINPAD_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_PinPad_Funcao_ID);
+                VL_Erro := 46;
+                VL_Linha := '010620220947';
                 VL_TPinPad_Funcao.ExecSQL;
-            end;
-            VL_TPinPad_Funcao.Close;
-            VL_TPinPad_Funcao.SQL.Text := 'SELECT * FROM PINPAD_FUNCAO WHERE ID=' + IntToStr(VL_PinPad_Funcao_ID);
-            VL_TPinPad_Funcao.Open;
 
-            if VL_TPinPad_Funcao.RecordCount > 0 then
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B6', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+            end
+            else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
+                VL_Mensagem.AddComando('00B6', 'R');
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '240520221049';
-                GravaLog(F_ArquivoLog, 0, '00B6', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela pinpad_funcao', '', VL_Erro);
-                Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00B6', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -6364,7 +6832,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -6383,9 +6850,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00B6', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -6397,7 +6862,6 @@ end;
 function comando00B8(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro PINPAD_FUNCAO EXCLUIR
 var
     VL_Mensagem: TMensagem;
-    VL_Tabela: TRxMemoryData;
     VL_TPinPad_Funcao: TZQuery;
     VL_Tag: ansistring;
     VL_PinPad_Funcao_ID: int64;
@@ -6406,7 +6870,6 @@ var
 begin
     Result := 0;
     VL_Mensagem := TMensagem.Create;
-    VL_Tabela := TRxMemoryData.Create(nil);
     VL_TPinPad_Funcao := TZQuery.Create(DComunicador);
     VL_TPinPad_Funcao.Connection := DNucleo.ZConexao;
     VL_Tag := '';
@@ -6415,26 +6878,36 @@ begin
     VL_PinPad_Funcao_ID := 0;
     try
         try
-            //verifica parametros
-            VP_Mensagem.GetTag('00B7', VL_PinPad_Funcao_ID);  // ID DA TABELA  PINPAD_FUNCAO
-
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00B8', 'R');
+                VL_Mensagem.AddComando('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520220906';
                 GravaLog(F_ArquivoLog, 0, '00B8', 'CADASTRO', VL_Linha, 'nao tem permissao para dar manutencao ao cadastro de pinpad funcao', '', VL_Erro);
                 Exit;
             end;
-            VP_Mensagem.GetTag('003A', VL_Tag);
-            StrToRxMemData(VL_Tag, VL_Tabela);
-            VL_Tabela.Open;
+            //verifica parametros
+            VP_Mensagem.GetTag('00B7', VL_PinPad_Funcao_ID);  // ID DA TABELA  PINPAD_FUNCAO
+            if VL_PinPad_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B8', 'R');
+                VL_Mensagem.AddTag('004D', '47');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620220815';
+                GravaLog(F_ArquivoLog, 0, '00B8', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:00B7 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica se existe o id pra pinpad_função
             VL_TPinPad_Funcao.Close;
             VL_TPinPad_Funcao.SQL.Text := 'SELECT * FROM PINPAD_FUNCAO WHERE ID=' + IntToStr(VL_PinPad_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620220817';
             VL_TPinPad_Funcao.Open;
 
             if VL_TPinPad_Funcao.RecordCount > 0 then
@@ -6443,27 +6916,22 @@ begin
                 VL_TPinPad_Funcao.Close;
                 VL_TPinPad_Funcao.SQL.Text := 'DELETE FROM PINPAD_FUNCAO WHERE ' +
                     'ID=' + IntToStr(VL_PinPad_Funcao_ID);
+                VL_Erro := 82;
+                VL_Linha := '030620220818';
                 VL_TPinPad_Funcao.ExecSQL;
-            end;
-            VL_TPinPad_Funcao.Close;
-            VL_TPinPad_Funcao.SQL.Text := 'SELECT * FROM PINPAD_FUNCAO WHERE ID=' + IntToStr(VL_PinPad_Funcao_ID);
-            VL_TPinPad_Funcao.Open;
 
-            if VL_TPinPad_Funcao.RecordCount > 0 then
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B8', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+            end
+            else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
+                VL_Mensagem.AddComando('00B8', 'R');
+                VL_Mensagem.AddTag('004D', '82');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '180520220908';
-                GravaLog(F_ArquivoLog, 0, '00B8', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela pinpad_funcao', '', VL_Erro);
-                Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00B8', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -6485,7 +6953,6 @@ begin
     finally
         begin
             VL_Mensagem.Free;
-            VL_Tabela.Free;
             VL_TPinPad_Funcao.Free;
             try
                 if Assigned(DNucleo) then
@@ -6575,6 +7042,11 @@ begin
                 VL_Erro := 46;
                 VL_Linha := '270520221149';
                 VL_TModulo_Funcao.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00B9', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end
             else
             begin
@@ -6588,10 +7060,6 @@ begin
                     ' na tabela modulo_funcao', '', VL_Erro);
                 Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00B9', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -6601,7 +7069,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -6620,7 +7087,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -6651,7 +7117,7 @@ begin
         try
             //verifica parametros
             VP_Mensagem.GetTag('007B', VL_Modulo_Conf_ID); //configurador_id
-            if VL_Modulo_Conf_ID = 0 then
+            if VL_Modulo_Conf_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00BA', 'R');
@@ -6688,9 +7154,15 @@ begin
                 //exclui MODULO_CONF
                 VL_TModulo_Conf.Close;
                 VL_TModulo_Conf.SQL.Text := 'DELETE FROM MODULO_CONF WHERE ' + 'ID=' + IntToStr(VL_Modulo_Conf_ID);
-                VL_Erro := 46;
+                VL_Erro := 82;
                 VL_Linha := '270520221517';
                 VL_TModulo_Conf.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00BA', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('007B', VL_Modulo_Conf_ID);
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end
             else
             begin
@@ -6704,11 +7176,6 @@ begin
                     IntToStr(VL_Modulo_Conf_ID), '', VL_Erro);
                 Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00BA', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            VL_Mensagem.AddTag('007B', VL_Modulo_Conf_ID);
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -6803,9 +7270,16 @@ begin
                 //exclui CONFIGURADOR
                 VL_TConfigurador.Close;
                 VL_TConfigurador.SQL.Text := 'DELETE FROM CONFIGURADOR WHERE ' + 'ID=' + IntToStr(VL_Configurador_ID);
-                VL_Erro := 46;
+                VL_Erro := 82;
                 VL_Linha := '270520221456';
                 VL_TConfigurador.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00BB', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('0056', VL_Configurador_ID);
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                EXIT;
             end
             else
             begin
@@ -6819,11 +7293,6 @@ begin
                     IntToStr(VL_Configurador_ID), '', VL_Erro);
                 Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00BB', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            VL_Mensagem.AddTag('0056', VL_Configurador_ID);
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -6860,7 +7329,7 @@ begin
     end;
 end;
 
-function comando00BC(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro MODULO EXCLUIR
+function comando002B(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;     //cadastro MODULO EXCLUIR
 var
     VL_Mensagem: TMensagem;
     VL_TModulo: TZQuery;
@@ -6884,12 +7353,12 @@ begin
             if VL_Modulo_ID = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('00BC', 'R');
+                VL_Mensagem.AddComando('002B', 'R');
                 VL_Mensagem.AddTag('004D', '47');// campo zerado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '270520221538';
-                GravaLog(F_ArquivoLog, 0, '00BC', 'cadastro', VL_Linha, 'parametro informado na Tag:' + IntToStr(VL_Modulo_ID) +
+                GravaLog(F_ArquivoLog, 0, '002B', 'cadastro', VL_Linha, 'parametro informado na Tag:' + IntToStr(VL_Modulo_ID) +
                     ' não pode estar zerado ou nulo para exclusão na tabela modulo', '', VL_Erro);
                 Exit;
             end;
@@ -6897,12 +7366,12 @@ begin
             if (TTConexao(VP_AContext.Data).Permissao <> pmC) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('00BC', 'R');
+                VL_Mensagem.AddComando('002B', 'R');
                 VL_Mensagem.AddTag('004D', '45');//sem permissão
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '270520221539';
-                GravaLog(F_ArquivoLog, 0, '00BC', 'cadastro', VL_Linha, 'sem permissõa para gerenciar exclusão de registro na tabela modulo',
+                GravaLog(F_ArquivoLog, 0, '002B', 'cadastro', VL_Linha, 'sem permissõa para gerenciar exclusão de registro na tabela modulo',
                     '', VL_Erro);
                 Exit;
             end;
@@ -6918,27 +7387,28 @@ begin
                 //exclui MODULO
                 VL_TModulo.Close;
                 VL_TModulo.SQL.Text := 'DELETE FROM MODULO WHERE ' + 'ID=' + IntToStr(VL_Modulo_ID);
-                VL_Erro := 46;
+                VL_Erro := 82;
                 VL_Linha := '270520221541';
                 VL_TModulo.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('002B', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('006C', VL_Modulo_ID);
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('00BC', 'R');
+                VL_Mensagem.AddComando('002B', 'R');
                 VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '270520221542';
-                GravaLog(F_ArquivoLog, 0, '00BC', 'cadastro', VL_Linha, 'não localizado na tabela modulo o registro numero:' +
+                GravaLog(F_ArquivoLog, 0, '002B', 'cadastro', VL_Linha, 'não localizado na tabela modulo o registro numero:' +
                     IntToStr(VL_Modulo_ID), '', VL_Erro);
                 Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00BC', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            VL_Mensagem.AddTag('006C', VL_Modulo_ID);
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -6948,12 +7418,14 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
+                        DNucleo.FreeOnRelease;
                     end;
                 except
                     on E: Exception do
-                        GravaLog(F_ArquivoLog, 0, '00BC', 'cadastro', VL_Linha, '', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '002B', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                            '/ menssagem:' + e.Message, '', VL_Erro);
                 end;
-                GravaLog(F_ArquivoLog, 0, '00BC', 'cadastro', VL_Linha, '', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '002B', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName + '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     finally
@@ -6966,10 +7438,12 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
+                    DNucleo.FreeOnRelease;
                 end;
             except
                 on E: Exception do
-                    GravaLog(F_ArquivoLog, 0, '00BC', 'cadastro', VL_Linha, '', '', VL_Erro);
+                    GravaLog(F_ArquivoLog, 0, '002B', 'cadastro', VL_Linha, 'erro inesperado classe: ' + e.ClassName +
+                        '/ menssagem:' + e.Message, '', VL_Erro);
             end;
         end;
     end;
@@ -7000,11 +7474,23 @@ begin
             VP_Mensagem.GetTag('00BC', VL_Loja_Modulo_Conf_Funcao_ID);  // ID DA TABELA  MODULO_CONF_FUNCAO
             VP_Mensagem.GetTag('0089', VL_Habilitado);  // HABILITADO DA TABELA  MODULO_CONF_FUNCAO
 
+            if VL_Loja_Modulo_Conf_Funcao_ID < 1 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00BF', 'R');
+                VL_Mensagem.Addtag('004D', '45');  //parametro vazio
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '010620220856';
+                GravaLog(F_ArquivoLog, 0, '00BF', 'CADASTRO', VL_Linha, 'parametro informado na Tag:00BC esta nula ou zerada', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo_conf_funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00BF', 'R');
+                VL_Mensagem.Addtag('004D', '45');  //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '260520221715';
@@ -7016,6 +7502,8 @@ begin
             //verifica se existe o id pra loja_modulo_conf_funcao
             VL_TLoja_Modulo_Conf_Funcao.Close;
             VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '010620220857';
             VL_TLoja_Modulo_Conf_Funcao.Open;
 
             if VL_TLoja_Modulo_Conf_Funcao.RecordCount > 0 then
@@ -7024,27 +7512,26 @@ begin
                 VL_TLoja_Modulo_Conf_Funcao.Close;
                 VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'UPDATE LOJA_MODULO_CONF_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
-                VL_TLoja_Modulo_Conf_Funcao.ExecSQL;
-            end;
-            VL_TLoja_Modulo_Conf_Funcao.Close;
-            VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
-            VL_TLoja_Modulo_Conf_Funcao.Open;
-
-            if VL_TLoja_Modulo_Conf_Funcao.RecordCount > 0 then
-            begin
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
-                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 46;
-                VL_Linha := '260520221717';
-                GravaLog(F_ArquivoLog, 0, '00BF', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela loja_modulo_conf_funcao', '', VL_Erro);
-                Exit;
+                VL_Linha := '010620220858';
+                VL_TLoja_Modulo_Conf_Funcao.ExecSQL;
+
+                VL_TLoja_Modulo_Conf_Funcao.Close;
+                VL_TLoja_Modulo_Conf_Funcao.SQL.Text := 'SELECT * FROM LOJA_MODULO_CONF_FUNCAO WHERE ID=' + IntToStr(VL_Loja_Modulo_Conf_Funcao_ID);
+                VL_Erro := 55;
+                VL_Linha := '010620220859';
+                VL_TLoja_Modulo_Conf_Funcao.Open;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00BF', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                exit;
             end;
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('00BF', 'R');
-            VL_Mensagem.AddTag('004D', '0');
+            VL_Mensagem.AddTag('004D', '46');
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -7054,7 +7541,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7073,7 +7559,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -7106,7 +7591,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00C2', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520221133';
@@ -7114,9 +7600,22 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('00C1', VL_Tag); // tabela pdv_funcao
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00C2', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620220957';
+                GravaLog(F_ArquivoLog, 0, '00C2', 'cadastro', VL_Linha, 'o parametro informado na Tag:00C1 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -7127,11 +7626,15 @@ begin
                     VL_TPdv_Funcao.SQL.Text := 'SELECT FIRST 1 ID FROM PDV_FUNCAO WHERE PDV_ID=''' +
                         VL_Tabela.FieldByName('PDV_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620220958';
                     VL_TPdv_Funcao.Open;
+
                     if VL_TPdv_Funcao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('00C2', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '180520221134';
@@ -7144,7 +7647,8 @@ begin
                         (length(VL_Tabela.FieldByName('TAG_NUMERO').AsString) = 0)) then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '52');//campos nulos
+                        VL_Mensagem.AddComando('00C2', 'R');
+                        VL_Mensagem.AddTag('004D', '52');//campos nulos
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 52;
                         VL_Linha := '180520221135';
@@ -7153,43 +7657,38 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //COMEÇA A INCLUSÃO
                     VL_TPdv_Funcao.Close;
                     VL_TPdv_Funcao.SQL.Text := 'INSERT INTO PDV_FUNCAO(' +
                         'PDV_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('PDV_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620221001';
                     VL_TPdv_Funcao.ExecSQL;
+
                     VL_TPdv_Funcao.Close;
-                    VL_TPdv_Funcao.SQL.Text := 'SELECT * FROM PDV_FUNCAO WHERE PDV_ID=' + VL_Tabela.FieldByName(
-                        'PDV_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_TPdv_Funcao.SQL.Text := 'SELECT * FROM PDV_FUNCAO WHERE PDV_ID=''' +
+                        VL_Tabela.FieldByName('PDV_ID').AsString + ''' AND TAG_NUMERO=''' +
+                        VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620221003';
                     VL_TPdv_Funcao.Open;
-                    if VL_TPdv_Funcao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '180520221136';
-                        GravaLog(F_ArquivoLog, 0, '00C2', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela pdv_funcao', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('00C2', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('00C3', VL_TPdv_Funcao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00C2', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('00C3', VL_TPdv_Funcao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00C2', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -7199,7 +7698,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7219,9 +7717,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00C2', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -7255,11 +7751,23 @@ begin
             VP_Mensagem.GetTag('00C3', VL_Pdv_Funcao_ID);  // ID DA TABELA  PDV_FUNCAO
             VP_Mensagem.GetTag('00C0', VL_Habilitado);  // HABILITADO DA TABELA  PDV_FUNCAO
 
+            if VL_Pdv_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00C4', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221012';
+                GravaLog(F_ArquivoLog, 0, '00C4', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:00C3 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de pinpad funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00C4', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '240520221143';
@@ -7270,6 +7778,8 @@ begin
             //verifica se existe o id pra pdv_funcao
             VL_TPdv_Funcao.Close;
             VL_TPdv_Funcao.SQL.Text := 'SELECT * FROM PDV_FUNCAO WHERE ID=' + IntToStr(VL_Pdv_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221013';
             VL_TPdv_Funcao.Open;
 
             if VL_TPdv_Funcao.RecordCount > 0 then
@@ -7278,27 +7788,23 @@ begin
                 VL_TPdv_Funcao.Close;
                 VL_TPdv_Funcao.SQL.Text := 'UPDATE PDV_FUNCAO SET HABILITADO=''' + VL_HABILITADO + ''' WHERE ' +
                     'ID=' + IntToStr(VL_Pdv_Funcao_ID);
+                VL_Erro := 46;
+                VL_Linha := '030620221015';
                 VL_TPdv_Funcao.ExecSQL;
-            end;
-            VL_TPdv_Funcao.Close;
-            VL_TPdv_Funcao.SQL.Text := 'SELECT * FROM PDV_FUNCAO WHERE ID=' + IntToStr(VL_Pdv_Funcao_ID);
-            VL_TPdv_Funcao.Open;
 
-            if VL_TPdv_Funcao.RecordCount < 1 then
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00C4', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                Exit;
+            end
+            else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
+                VL_Mensagem.AddComando('00C4', 'R');
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '240520221145';
-                GravaLog(F_ArquivoLog, 0, '00C4', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela pdv_funcao', '', VL_Erro);
-                Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00C4', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -7308,7 +7814,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7327,7 +7832,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -7358,22 +7862,34 @@ begin
         try
             //verifica parametros
             VP_Mensagem.GetTag('00C3', VL_Pdv_Funcao_ID);  // ID DA TABELA  PDV_FUNCAO
-
+            if VL_Pdv_Funcao_ID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00C5', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO NULO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620221022';
+                GravaLog(F_ArquivoLog, 0, '00C5', 'CADASTRO', VL_Linha, 'o parametro informado na Tag:00C3 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             //verifica permissao
             if TTConexao(VP_AContext.Data).Permissao <> pmC then   // nao tem permissao para dar manutencao ao cadastro de modulo funcao
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');  //sem permissao
+                VL_Mensagem.AddComando('00C5', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520221142';
                 GravaLog(F_ArquivoLog, 0, '00C5', 'CADASTRO', VL_Linha, 'nao tem permissao para dar manutencao ao cadastro de pdv funcao', '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o id pra pdv_função
             VL_TPdv_Funcao.Close;
             VL_TPdv_Funcao.SQL.Text := 'SELECT * FROM PDV_FUNCAO WHERE ID=' + IntToStr(VL_Pdv_Funcao_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620221023';
             VL_TPdv_Funcao.Open;
 
             if VL_TPdv_Funcao.RecordCount > 0 then
@@ -7382,27 +7898,22 @@ begin
                 VL_TPdv_Funcao.Close;
                 VL_TPdv_Funcao.SQL.Text := 'DELETE FROM PDV_FUNCAO WHERE ' +
                     'ID=' + IntToStr(VL_Pdv_Funcao_ID);
+                VL_Erro := 82;
+                VL_Linha := '030620221024';
                 VL_TPdv_Funcao.ExecSQL;
-            end;
-            VL_TPdv_Funcao.Close;
-            VL_TPdv_Funcao.SQL.Text := 'SELECT * FROM PDV_FUNCAO WHERE ID=' + IntToStr(VL_Pdv_Funcao_ID);
-            VL_TPdv_Funcao.Open;
 
-            if VL_TPdv_Funcao.RecordCount > 0 then
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00C5', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+            end
+            else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//erro na exclusao
+                VL_Mensagem.AddComando('00C5', 'R');
+                VL_Mensagem.AddTag('004D', '82');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                VL_Erro := 46;
-                VL_Linha := '180520221143';
-                GravaLog(F_ArquivoLog, 0, '00C5', 'cadastro', VL_Linha, 'erro na rotina de atualização na tabela pdv_funcao', '', VL_Erro);
-                Exit;
             end;
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00C5', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-            Exit;
         except
             on E: Exception do
             begin
@@ -7412,7 +7923,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7431,9 +7941,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00C5', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -7465,7 +7973,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00C8', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520221451';
@@ -7473,9 +7982,23 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('00C7', VL_Tag); //tabela pdv_modulo
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00C8', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620220922';
+                GravaLog(F_ArquivoLog, 0, '00C8', 'cadastro', VL_Linha, 'sem permissão para gerenciar a inclusão de registro na tabela pdv_modulo_conf',
+                    '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -7486,11 +8009,15 @@ begin
                     VL_TPdvModulo.SQL.Text := 'SELECT FIRST 1 ID FROM PDV_MODULO_CONF WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '030620220923';
                     VL_TPdvModulo.Open;
+
                     if VL_TPdvModulo.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '43');//duplicidade
+                        VL_Mensagem.AddComando('00C8', 'R');
+                        VL_Mensagem.AddTag('004D', '43');//duplicidade
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '180520221452';
@@ -7500,6 +8027,7 @@ begin
                             VL_Tabela.FieldByName('PDV_ID').AsString + ')', '', VL_Erro);
                         Exit;
                     end;
+
                     VL_TPdvModulo.Close;
                     VL_TPdvModulo.SQL.Text := 'INSERT INTO PDV_MODULO_CONF(' +
                         'PDV_ID,' +
@@ -7510,38 +8038,31 @@ begin
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '030620220924';
                     VL_TPdvModulo.ExecSQL;
-                    VL_TPdvModulo.Close;
 
+                    VL_TPdvModulo.Close;
                     VL_TPdvModulo.SQL.Text := 'SELECT * FROM PDV_MODULO_CONF WHERE MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '030620220925';
                     VL_TPdvModulo.Open;
-                    if VL_TPdvModulo.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '180520221453';
-                        GravaLog(F_ArquivoLog, 0, '00C8', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela pdv_modulo', '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('00C8', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('00C9', VL_TPdvModulo.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00C8', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('00C9', VL_TPdvModulo.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00C8', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -7551,7 +8072,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7571,9 +8091,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00C8', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -7615,7 +8133,19 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //verifica parametro
             VP_Mensagem.GetTag('00D0', VL_Tag); //tabela multiloja_modulo_conf_funcao
+            if Length(vl_tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00CA', 'R');
+                VL_Mensagem.AddTag('004D', '47');//dados zerados
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '020620221027';
+                GravaLog(F_ArquivoLog, 0, '00CA', 'cadastro', VL_Linha, 'o parametro informado na Tag:00D0 está nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
             VL_Tabela.First;
@@ -7628,7 +8158,10 @@ begin
                     VL_TMultiLojaModuloConfFuncao.SQL.Text := 'SELECT FIRST 1 ID FROM MULTILOJA_MODULO_CONF_FUNCAO WHERE MULTILOJA_MODULO_CONF_ID=''' +
                         VL_Tabela.FieldByName('MULTILOJA_MODULO_CONF_ID').AsString + ''' AND TAG_NUMERO=''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '020620221028';
                     VL_TMultiLojaModuloConfFuncao.Open;
+
                     if VL_TMultiLojaModuloConfFuncao.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
@@ -7657,42 +8190,31 @@ begin
                             '', VL_Erro);
                         Exit;
                     end;
-
+                    //começa a inclusão
                     VL_TMultiLojaModuloConfFuncao.Close;
                     VL_TMultiLojaModuloConfFuncao.SQL.Text := 'INSERT INTO MULTILOJA_MODULO_CONF_FUNCAO(' +
                         'MULTILOJA_MODULO_CONF_ID,' +
                         'TAG_NUMERO)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('MULTILOJA_MODULO_CONF_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''')';
-
+                    VL_Erro := 44;
+                    VL_Linha := '020620221033';
                     VL_TMultiLojaModuloConfFuncao.ExecSQL;
                     VL_TMultiLojaModuloConfFuncao.Close;
+
                     VL_TMultiLojaModuloConfFuncao.SQL.Text := 'SELECT * FROM MULTILOJA_MODULO_CONF_FUNCAO WHERE MULTILOJA_MODULO_CONF_ID=' +
                         VL_Tabela.FieldByName(
                         'MULTILOJA_MODULO_CONF_ID').AsString + ' AND TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
-
-
+                    VL_Erro := 55;
+                    VL_Linha := '020620221034';
                     VL_TMultiLojaModuloConfFuncao.Open;
-                    if VL_TMultiLojaModuloConfFuncao.RecordCount = 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '44');//erro na inclusão
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 44;
-                        VL_Linha := '270520220902';
-                        GravaLog(F_ArquivoLog, 0, '00CA', 'cadastro', VL_Linha, 'erro na inclusão de registro na tabela multiloja_modulo_conf_funcao',
-                            '', VL_Erro);
-                        Exit;
-                    end
-                    else
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('00CA', 'R');
-                        VL_Mensagem.AddTag('004D', '0');
-                        VL_Mensagem.AddTag('00BD', VL_TMultiLojaModuloConfFuncao.FieldByName('ID').AsString);
-                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        exit;
-                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00CA', 'R');
+                    VL_Mensagem.AddTag('004D', '0');
+                    VL_Mensagem.AddTag('00BD', VL_TMultiLojaModuloConfFuncao.FieldByName('ID').AsString);
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    exit;
                 end;
                 VL_Tabela.Next;
             end;
@@ -7705,7 +8227,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7725,7 +8246,6 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
             except
                 on E: Exception do
@@ -7760,7 +8280,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45'); //sem permissao
+                VL_Mensagem.AddComando('00CB', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520221507';
@@ -7768,7 +8289,19 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+            //VERIFICA PARAMETROS
             VP_Mensagem.GetTag('00C7', VL_Tag); //carrega tabela pdv_modulo
+            if Length(VL_Tag) = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00CB', 'R');
+                VL_Mensagem.AddTag('004D', '47');//PARAMETRO VAZIO
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                VL_Erro := 47;
+                VL_Linha := '030620220936';
+                GravaLog(F_ArquivoLog, 0, '00CB', 'cadastro', VL_Linha, 'o parametro informado na Tag:00C7 esta nulo ou zerado', '', VL_Erro);
+                Exit;
+            end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
 
@@ -7776,7 +8309,8 @@ begin
             if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//dados informado não pode ser zero
+                VL_Mensagem.AddComando('00CB', 'R');
+                VL_Mensagem.AddTag('004D', '47');//dados informado não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '180520221508';
@@ -7787,12 +8321,15 @@ begin
             //verifica se existe o registro para alterar
             VL_TPdv_Modulo.Close;
             VL_TPdv_Modulo.SQL.Text := 'SELECT * FROM PDV_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620220937';
             VL_TPdv_Modulo.Open;
 
             if VL_TPdv_Modulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); //registro não localizado
+                VL_Mensagem.AddComando('00CB', 'R');
+                VL_Mensagem.AddTag('004D', '48');//registro não localizado
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '180520221509';
@@ -7801,13 +8338,15 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if ((VL_Tabela.FieldByName('ID').AsInteger <> VL_TPdv_Modulo.FieldByName('ID').AsInteger) or
                     (VL_Tabela.FieldByName('PDV_ID').AsInteger <> VL_TPdv_Modulo.FieldByName('PDV_ID').AsInteger)) then
                 begin
                     VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '49'); //dados chaves não podem sofer alteração
+                    VL_Mensagem.AddComando('00CB', 'R');
+                    VL_Mensagem.AddTag('004D', '49');//dados chaves não podem sofer alteração
                     DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                     VL_Erro := 49;
                     VL_Linha := '180520221510';
@@ -7816,27 +8355,17 @@ begin
                         '', VL_Erro);
                     Exit;
                 end;
+                //COMEÇA A ALTERAÇÃO
                 VL_TPdv_Modulo.Close;
                 VL_TPdv_Modulo.SQL.Text := 'UPDATE PDV_MODULO_CONF SET ' +
                     'TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''',' +
                     'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                     'MODULO_CONF_ID=' + IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ' WHERE ' +
                     'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '030620220940';
                 VL_TPdv_Modulo.ExecSQL;
-                VL_TPdv_Modulo.Close;
-                VL_TPdv_Modulo.SQL.Text := 'SELECT * FROM PDV_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
-                VL_TPdv_Modulo.Open;
-                if VL_TPdv_Modulo.RecordCount = 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '46');//erro na alteração
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    VL_Erro := 46;
-                    VL_Linha := '180520221511';
-                    GravaLog(F_ArquivoLog, 0, '00CB', 'cadastro', VL_Linha, 'erro ao alterar registro numero:' + IntToStr(VL_ID) +
-                        ' na tabela de pdv_modulo', '', VL_Erro);
-                    Exit;
-                end;
+
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00CB', 'R');//alteração aceita
                 VL_Mensagem.AddTag('004D', '0');
@@ -7846,9 +8375,9 @@ begin
             else
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '46');//46 erro na alteração do registro
+                VL_Mensagem.AddComando('00CB', 'R');
+                VL_Mensagem.AddComando('004D', '46');//46 erro na alteração do registro
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                Exit;
             end;
         except
             on E: Exception do
@@ -7859,7 +8388,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7878,9 +8406,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00CB', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -7908,10 +8434,11 @@ begin
         try
             //verifica parametros
             VP_Mensagem.GetTag('00C9', VL_ID); //pdv_modulo_id
-            if VL_ID = 0 then
+            if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '47');//campo não pode ser zero
+                VL_Mensagem.AddComando('00CC', 'R');
+                VL_Mensagem.AddTag('004D', '47');//campo não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '180520221525';
@@ -7922,7 +8449,8 @@ begin
             if ((TTConexao(VP_AContext.Data).Permissao = pmU) or (TTConexao(VP_AContext.Data).Permissao = pmS)) then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '45');//sem permissao
+                VL_Mensagem.AddComando('00CC', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '180520221526';
@@ -7932,12 +8460,15 @@ begin
             //verifica se existe o id pra exclusão
             VL_TPdv_Modulo.Close;
             VL_TPdv_Modulo.SQL.Text := 'SELECT * FROM PDV_MODULO_CONF WHERE ID=' + IntToStr(VL_ID);
+            VL_Erro := 55;
+            VL_Linha := '030620220947';
             VL_TPdv_Modulo.Open;
 
             if VL_TPdv_Modulo.RecordCount = 0 then
             begin
                 VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0026', '48'); // id não encontrado na tabela
+                VL_Mensagem.AddComando('00CC', 'R');
+                VL_Mensagem.AddTag('004D', '48');//id não encontrado na tabela
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '180520221527';
@@ -7948,6 +8479,8 @@ begin
             //exclui pdv_modulo
             VL_TPdv_Modulo.Close;
             VL_TPdv_Modulo.SQL.Text := 'DELETE FROM PDV_MODULO_CONF WHERE ' + 'ID=' + IntToStr(VL_ID);
+            VL_Erro := 82;
+            VL_Linha := '030620220948';
             VL_TPdv_Modulo.ExecSQL;
 
             VL_Mensagem.Limpar;
@@ -7955,7 +8488,6 @@ begin
             VL_Mensagem.AddTag('004D', '0');
             VL_Mensagem.AddTag('00C9', VL_ID); //retorno pdv_id
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-
         except
             on E: Exception do
             begin
@@ -7965,7 +8497,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -7984,9 +8515,7 @@ begin
                     if DNucleo.ZConexao.Connected then
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
-                    //FreeAndNil(DNucleo);
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00CC', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -8021,7 +8550,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00DB', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //sem permissao
+                VL_Mensagem.Addtag('004D', '45'); //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '300520220826';
@@ -8031,7 +8560,6 @@ begin
             end;
             //verifica parametros
             VP_Mensagem.GetTag('0081', VL_Tag); //carrega tabela tag
-
             if Length(VL_Tag) = 0 then
             begin
                 VL_Mensagem.Limpar;
@@ -8047,7 +8575,6 @@ begin
             VL_Tabela.Open;
 
             VP_Mensagem.GetTag('006E', VL_ID); //tag_id
-
             if VL_ID < 1 then
             begin
                 VL_Mensagem.Limpar;
@@ -8060,7 +8587,6 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
-
             //verifica se existe o registro para alterar
             VL_TTag.Close;
             VL_TTag.SQL.Text := 'SELECT * FROM TAG WHERE ID=' + IntToStr(VL_ID);
@@ -8081,6 +8607,7 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if ((VL_Tabela.FieldByName('ID').AsInteger <> VL_TTag.FieldByName('ID').AsInteger) or
@@ -8115,6 +8642,13 @@ begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00DB', 'R');//alteração aceita
                 VL_Mensagem.AddTag('004D', '0');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+            end
+            else
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00DB', 'R');
+                VL_Mensagem.AddTag('004D', '46');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end;
         except
@@ -8179,7 +8713,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00DC', 'R');
-                VL_Mensagem.AddComando('004D', '47');//campo não pode ser zero
+                VL_Mensagem.Addtag('004D', '47');//campo não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520220907';
@@ -8191,7 +8725,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00DC', 'R');
-                VL_Mensagem.AddComando('004D', '45');//sem permissao
+                VL_Mensagem.Addtag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '300520220909';
@@ -8209,27 +8743,29 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00DC', 'R');
-                VL_Mensagem.AddComando('004D', '48');// id não encontrado na tabela
+                VL_Mensagem.Addtag('004D', '48');// id não encontrado na tabela
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '300520220911';
                 GravaLog(F_ArquivoLog, 0, '00DC', 'cadastro', VL_Linha, 'campo informado ID numero:' + IntToStr(VL_ID) +
                     ' para exclusão não foi localizado na tabela tag', '', VL_Erro);
                 Exit;
+            end
+            else
+            begin
+                //exclui tag
+                VL_TTag.Close;
+                VL_TTag.SQL.Text := 'DELETE FROM TAG WHERE ' + 'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '300520220913';
+                VL_TTag.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00DC', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('006E', VL_ID); //retorno tag_id
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end;
-            //exclui tag
-            VL_TTag.Close;
-            VL_TTag.SQL.Text := 'DELETE FROM TAG WHERE ' + 'ID=' + IntToStr(VL_ID);
-            VL_Erro := 46;
-            VL_Linha := '300520220913';
-            VL_TTag.ExecSQL;
-
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00DC', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            VL_Mensagem.AddTag('006E', VL_ID); //retorno tag_id
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-
         except
             on E: Exception do
             begin
@@ -8312,6 +8848,7 @@ begin
             end;
             StrToRxMemData(VL_Tag, VL_Tabela);
             VL_Tabela.Open;
+
             VL_Tabela.First;
             while not VL_Tabela.EOF do
             begin
@@ -8360,16 +8897,27 @@ begin
                         VL_Erro := 44;
                         VL_Linha := '300520221014';
                         VL_TAdquirente.ExecSQL;
+
+                        VL_TAdquirente.Close;
+                        VL_TAdquirente.SQL.Text := 'SELECT * FROM ADQUIRENTE WHERE DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + '''';
+                        VL_Erro := 55;
+                        VL_Linha := '060620220948';
+                        VL_TAdquirente.Open;
+
+                        VL_Mensagem.Limpar;
+                        VL_Mensagem.AddComando('00DE', 'R');
+                        VL_Mensagem.AddTag('004D', '0');
+                        VL_Mensagem.AddTag('006F', VL_TAdquirente.FieldByName('ID').AsString);
+                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                        exit;
                     end;
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('00DE', 'R');
-                    VL_Mensagem.AddTag('004D', '0');
-                    VL_Mensagem.AddTag('006F', VL_TAdquirente.FieldByName('ID').AsString);
-                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                    exit;
                 end;
                 VL_Tabela.Next;
             end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00DE', 'R');
+            VL_Mensagem.AddTag('004D', '44');
+            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
         except
             on E: Exception do
             begin
@@ -8433,7 +8981,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00DF', 'R');
-                VL_Mensagem.AddComando('004D', '45'); //sem permissao
+                VL_Mensagem.Addtag('004D', '45'); //sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '300520221027';
@@ -8492,6 +9040,7 @@ begin
                     '', VL_Erro);
                 Exit;
             end;
+
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if ((VL_Tabela.FieldByName('ID').AsInteger <> VL_TAdquirente.FieldByName('ID').AsInteger) or
@@ -8522,6 +9071,13 @@ begin
                 VL_Mensagem.AddComando('00DF', 'R');//alteração aceita
                 VL_Mensagem.AddTag('004D', '0');
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+            end
+            else
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00DF', 'R');
+                VL_Mensagem.AddTag('004D', '46');
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end;
         except
             on E: Exception do
@@ -8532,7 +9088,6 @@ begin
                         if DNucleo.ZConexao.Connected then
                             if DNucleo.ZConexao.InTransaction then
                                 DNucleo.ZConexao.Rollback;
-                        //FreeAndNil(DNucleo);
                     end;
                 except
                     on E: Exception do
@@ -8552,7 +9107,6 @@ begin
                         if DNucleo.ZConexao.InTransaction then
                             DNucleo.ZConexao.Commit;
                 end;
-
             except
                 on E: Exception do
                     GravaLog(F_ArquivoLog, 0, '00DF', 'cadastro', VL_Linha, '', '', VL_Erro);
@@ -8584,7 +9138,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00E0', 'R');
-                VL_Mensagem.AddComando('004D', '47');//campo não pode ser zero
+                VL_Mensagem.Addtag('004D', '47');//campo não pode ser zero
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 47;
                 VL_Linha := '300520221042';
@@ -8596,7 +9150,7 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00E0', 'R');
-                VL_Mensagem.AddComando('004D', '45');//sem permissao
+                VL_Mensagem.Addtag('004D', '45');//sem permissao
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '300520221043';
@@ -8614,27 +9168,28 @@ begin
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00E0', 'R');
-                VL_Mensagem.AddComando('004D', '48');// id não encontrado na tabela
+                VL_Mensagem.Addtag('004D', '48');// id não encontrado na tabela
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 48;
                 VL_Linha := '300520221045';
                 GravaLog(F_ArquivoLog, 0, '00E0', 'cadastro', VL_Linha, 'campo informado ID numero:' + IntToStr(VL_ID) +
                     ' para exclusão não foi localizado na tabela adquirente', '', VL_Erro);
-                Exit;
+            end
+            else
+            begin
+                //exclui adquirente
+                VL_TAdquirente.Close;
+                VL_TAdquirente.SQL.Text := 'DELETE FROM ADQUIRENTE WHERE ' + 'ID=' + IntToStr(VL_ID);
+                VL_Erro := 46;
+                VL_Linha := '300520221046';
+                VL_TAdquirente.ExecSQL;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00E0', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('006F', VL_ID); //retorno tag_id
+                DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
             end;
-            //exclui adquirente
-            VL_TAdquirente.Close;
-            VL_TAdquirente.SQL.Text := 'DELETE FROM ADQUIRENTE WHERE ' + 'ID=' + IntToStr(VL_ID);
-            VL_Erro := 46;
-            VL_Linha := '300520221046';
-            VL_TAdquirente.ExecSQL;
-
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('00E0', 'R');
-            VL_Mensagem.AddTag('004D', '0');
-            VL_Mensagem.AddTag('006F', VL_ID); //retorno tag_id
-            DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-
         except
             on E: Exception do
             begin

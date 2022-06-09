@@ -282,7 +282,7 @@ begin
             else
             begin
                 F_MensagemLimpar(VL_Mensagem_Dados);
-                VL_String := 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 + 'CPF:' + VL_TagDados;
+                VL_String := 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 + 'CPF:' + VL_TagDados+#13+'Valor dos itens:'+VL_Valor;
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar(VL_String));
                 F_MensagemAddTag(VL_Mensagem_Dados, '004A', PChar(IntToStr(Ord(tsAbortada))));  // transacao obortada

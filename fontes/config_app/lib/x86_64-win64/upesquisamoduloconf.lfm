@@ -1,7 +1,7 @@
 object FModuloConf: TFModuloConf
-  Left = 1868
+  Left = 1092
   Height = 656
-  Top = 163
+  Top = 120
   Width = 564
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -101,8 +101,8 @@ object FModuloConf: TFModuloConf
         Left = 324
         Height = 19
         Top = 107
-        Width = 182
-        Caption = 'Filtrar apenas Módulos Ativos'
+        Width = 208
+        Caption = 'Filtrar apenas Módulos Habilitados'
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 3

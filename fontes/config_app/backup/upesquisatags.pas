@@ -30,6 +30,7 @@ type
         DSTags: TDataSource;
         ETag: TEdit;
         EDefinicao: TEdit;
+        LTipoFuncao: TLabel;
         LPesquisaTags: TLabel;
         LTag: TLabel;
         LDefinicao: TLabel;
@@ -38,6 +39,7 @@ type
         pnlBase: TPanel;
         GridPrincipal: TRxDBGrid;
         MDTags: TRxMemoryData;
+        ETipoFuncao: TComboBox;
         procedure BCarregarClick(Sender: TObject);
         procedure BPesquisarClick(Sender: TObject);
         procedure BSairClick(Sender: TObject);
@@ -47,7 +49,7 @@ type
     public
         F_Tabela: string;
         F_Carregado: boolean;
-        F_TagTipo: array of string;
+        F_TagTipo: string;
     end;
 
 
@@ -69,10 +71,10 @@ procedure TFTags.BPesquisarClick(Sender: TObject);
 var
     VL_Filtro: string;
 begin
-    if F_TagTipo[0] = '' then
+    if F_TagTipo = '' then
         VL_Filtro := ''
     else
-        VL_Filtro := 'TAG_TIPO=(''*' + F_TagTipo[0] + '*'') AND TAG_TIPO=(''*' + F_TagTipo[1] + '*'')';
+        VL_Filtro := 'TAG_TIPO=(''*' + F_TagTipo + '*'')';
 
     if MDTags.Active then
         MDTags.EmptyTable;
