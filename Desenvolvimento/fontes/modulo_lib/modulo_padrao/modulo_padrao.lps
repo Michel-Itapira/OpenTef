@@ -19,8 +19,8 @@
         <ComponentName Value="DModulo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <TopLine Value="71"/>
-        <CursorPos X="40" Y="85"/>
+        <TopLine Value="278"/>
+        <CursorPos X="31" Y="79"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,9 +31,8 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="1162"/>
+        <TopLine Value="888"/>
         <CursorPos X="9" Y="888"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -52,9 +51,10 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="35"/>
-        <CursorPos X="52" Y="55"/>
+        <CursorPos X="60" Y="61"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,7 +67,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="175"/>
         <CursorPos X="3" Y="186"/>
-        <UsageCount Value="132"/>
+        <UsageCount Value="131"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\com_lib\com.pas"/>
@@ -86,7 +86,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="modulo.pas"/>
         <Caret Line="41" Column="11" TopLine="22"/>
@@ -182,10 +182,6 @@
       <Position>
         <Filename Value="..\..\libs\func\comunicador.pas"/>
         <Caret Line="130" Column="18" TopLine="112"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\comunicador.pas"/>
-        <Caret Line="1057" Column="5" TopLine="1068"/>
       </Position>
       <Position>
         <Filename Value="..\..\libs\func\comunicador.pas"/>

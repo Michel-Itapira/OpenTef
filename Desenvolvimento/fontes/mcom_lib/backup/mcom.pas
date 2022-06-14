@@ -35,8 +35,8 @@ type
         VF_PortaCaixa, VF_PortaServico: integer;
 
         function iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string; VP_PortaCaixa, VP_PortaServico: integer): integer;
-        function RecebeComandoCaixa(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
-        function RecebeComandoServico(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
+        function RecebeComandoCaixa(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
+        function RecebeComandoServico(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
 
         function comando0001(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext; VP_DComunicador: TDComunicador): integer;
         function comando0021(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext; VP_DComunicador: TDComunicador): integer;
@@ -62,8 +62,8 @@ var
     F_ComunicadorServico: TDComunicador;
     F_ServidorRecebimentoLibCaixa, F_ServidorRecebimentoLibServico: TServidorRecebimentoLib;
 
-procedure ComandoCaixa(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
-procedure ComandoServico(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
+procedure ComandoCaixa(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
+procedure ComandoServico(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
 
 implementation
 
@@ -111,10 +111,18 @@ end;
 function respondecaixa(VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; stdcall;
 var
     VL_Mensagem: TMensagem;
+    VL_TagDados: string;
 begin
     try
+        VL_TagDados := '';
         VL_Mensagem := TMensagem.Create;
         Result := VL_Mensagem.CarregaTags(VP_Dados);
+        if VL_Mensagem.GetTag('00E3', VL_TagDados) = 0 then
+        begin
+            VL_Mensagem.AddTag('00E4',Ord(F_ComunicadorCaixa.CriptoRsa.PublicKey.KeySize));        //tamanho chave
+            VL_Mensagem.AddTag('0027', F_ComunicadorCaixa.CriptoRsa.PublicKey.ExponentAsString);        //expoente
+            VL_Mensagem.AddTag('0008', F_ComunicadorCaixa.CriptoRsa.PublicKey.ModulusAsString);        //modulos
+        end;
         if Result <> 0 then
             Exit;
         Result := F_ComunicadorCaixa.ServidorTransmiteSolicitacaoID(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_ID);
@@ -130,9 +138,18 @@ begin
     try
         VL_Mensagem := TMensagem.Create;
         Result := VL_Mensagem.CarregaTags(VP_Dados);
+        if VL_Mensagem.GetTag('00E3', VL_TagDados) = 0 then
+        begin
+            VL_Mensagem.AddTag('00E4',Ord(F_ComunicadorServico.CriptoRsa.PublicKey.KeySize));        //tamanho chave
+            VL_Mensagem.AddTag('0027', F_ComunicadorServico.CriptoRsa.PublicKey.ExponentAsString);        //expoente
+            VL_Mensagem.AddTag('0008', F_ComunicadorServico.CriptoRsa.PublicKey.ModulusAsString);        //modulos
+        end;
+
+
+
         if Result <> 0 then
             Exit;
-        Result := F_ComunicadorCaixa.ServidorTransmiteSolicitacaoID(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_ID);
+        Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_ID);
     finally
         VL_Mensagem.Free;
     end;
@@ -156,14 +173,14 @@ begin
     inherited Create(VP_Suspenso);
 end;
 
-procedure ComandoCaixa(VP_Codigo:Integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
+procedure ComandoCaixa(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
 begin
-    DMCom.RecebeComandoCaixa(VP_Codigo,VP_Transmissao_ID, VP_DadosRecebidos, VP_AContext);
+    DMCom.RecebeComandoCaixa(VP_Codigo, VP_Transmissao_ID, VP_DadosRecebidos, VP_AContext);
 end;
 
-procedure ComandoServico(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
+procedure ComandoServico(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VP_AContext: TIdContext);
 begin
-    DMCom.RecebeComandoServico(VP_Codigo,VP_Transmissao_ID, VP_DadosRecebidos, VP_AContext);
+    DMCom.RecebeComandoServico(VP_Codigo, VP_Transmissao_ID, VP_DadosRecebidos, VP_AContext);
 end;
 
 
@@ -200,12 +217,13 @@ begin
     Result := 0;
 end;
 
-function TDMCom.RecebeComandoCaixa(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
+function TDMCom.RecebeComandoCaixa(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
 var
     VL_Mensagem: TMensagem;
+    VL_DadosCriptografados: string;
 
 begin
-
+    VL_DadosCriptografados := '';
     VL_Mensagem := TMensagem.Create;
 
     if VL_Mensagem.CarregaTags(VP_DadosRecebidos) <> 0 then
@@ -220,13 +238,22 @@ begin
             VP_AContext.Connection.Disconnect;
             Exit;
         end;
-
     end;
+
+    VL_DadosCriptografados := VL_Mensagem.GetTagAsAstring('00E3');
+    if VL_DadosCriptografados <> '' then
+    begin
+        VL_DadosCriptografados := F_ComunicadorCaixa.CriptoRsa.DecryptString(VL_DadosCriptografados);
+        VL_Mensagem.AddTag('00E3', VL_DadosCriptografados);
+        VP_DadosRecebidos := VL_Mensagem.TagsAsString;
+    end;
+
+
     case VL_Mensagem.Comando() of
         '0001': comando0001(VP_Transmissao_ID, VL_Mensagem, VP_AContext, F_ComunicadorCaixa);
         '0021': comando0021(VP_Transmissao_ID, VL_Mensagem, VP_AContext, F_ComunicadorCaixa);
         else
-            F_ServidorRecebimentoLibCaixa(VP_Codigo,PChar(VP_Transmissao_ID), PChar(VP_DadosRecebidos), PChar(TTConexao(VP_AContext.Data).ClienteIp),
+            F_ServidorRecebimentoLibCaixa(VP_Codigo, PChar(VP_Transmissao_ID), PChar(VP_DadosRecebidos), PChar(TTConexao(VP_AContext.Data).ClienteIp),
                 TTConexao(VP_AContext.Data).ID);
     end;
     VL_Mensagem.Free;
@@ -235,11 +262,12 @@ begin
 
 end;
 
-function TDMCom.RecebeComandoServico(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
+function TDMCom.RecebeComandoServico(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
 var
     VL_Mensagem: TMensagem;
+    VL_DadosCriptografados: string;
 begin
-
+    VL_DadosCriptografados := '';
     VL_Mensagem := TMensagem.Create;
 
     if VL_Mensagem.CarregaTags(VP_DadosRecebidos) <> 0 then
@@ -256,12 +284,19 @@ begin
         end;
     end;
 
+    VL_DadosCriptografados := VL_Mensagem.GetTagAsAstring('00E3');
+    if VL_DadosCriptografados <> '' then
+    begin
+        VL_DadosCriptografados := F_ComunicadorServico.CriptoRsa.DecryptString(VL_DadosCriptografados);
+        VL_Mensagem.AddTag('00E3', VL_DadosCriptografados);
+        VP_DadosRecebidos := VL_Mensagem.TagsAsString;
+    end;
 
     case VL_Mensagem.Comando() of
         '0001': comando0001(VP_Transmissao_ID, VL_Mensagem, VP_AContext, F_ComunicadorServico);
         '0021': comando0021(VP_Transmissao_ID, VL_Mensagem, VP_AContext, F_ComunicadorServico);
         else
-            F_ServidorRecebimentoLibServico(VP_Codigo,PChar(VP_Transmissao_ID), PChar(VP_DadosRecebidos), PChar(TTConexao(VP_AContext.Data).ClienteIp),
+            F_ServidorRecebimentoLibServico(VP_Codigo, PChar(VP_Transmissao_ID), PChar(VP_DadosRecebidos), PChar(TTConexao(VP_AContext.Data).ClienteIp),
                 TTConexao(VP_AContext.Data).ID);
     end;
     VL_Mensagem.Free;
@@ -294,7 +329,7 @@ begin
             VL_Mensagem.AddComando('0028', 'OK');
         end;
 
-        VP_DComunicador.ServidorTransmiteSolicitacao(3000,False,nil, VP_Transmissao_ID, VL_Mensagem,F_Mensagem, VP_AContext);
+        VP_DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_AContext);
 
     finally
         VL_Mensagem.Free;

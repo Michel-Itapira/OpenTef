@@ -473,7 +473,7 @@ begin
     F_Tarefa_ID_Contador := 0;
     AtualizaMENU_OPERACIONAL(VL_RegModulo, nil);
     AtualizaMENU(VL_RegModulo, nil);
-  //  ModuloCarrega(0);
+    ModuloCarrega(0);
 
 end;
 
@@ -482,13 +482,6 @@ begin
     if not Assigned(DNucleo) then
         Exit;
     ModuloDescarrega(0);
-
-    if Assigned(DComunicador.V_ThRecebeEscuta) then
-    begin
-        DComunicador.V_ThRecebeEscuta.parar;
-        DComunicador.V_ThRecebeEscuta.Terminate;
-        DComunicador.V_ThRecebeEscuta.WaitFor;
-    end;
 
     DComunicador.Free;
     DComunicador:=nil;
@@ -574,7 +567,6 @@ begin
                     begin
                         TThModulo(VF_ListaThModulo[0]).FreeOnTerminate := True;
                         TThModulo(VF_ListaThModulo[0]).Terminate;
-
                     end
                     else
                         TThModulo(VF_ListaThModulo[0]).Free;
@@ -583,6 +575,7 @@ begin
     end
     else
     if Assigned(VF_ListaThModulo) then
+    begin
         for VL_I := 0 to VF_ListaThModulo.Count - 1 do
         begin
             if Assigned(VF_ListaThModulo.Items[VL_I]) then
@@ -596,9 +589,28 @@ begin
                     else
                         TThModulo(VF_ListaThModulo[VL_I]).Free;
                     VF_ListaThModulo.Delete(VL_I);
+                Break;
                 end;
             Result := 0;
         end;
+        for VL_I := 0 to VF_ListaThModulo.Count - 1 do     // faz de novo poi cada modulo tem 2 threads
+        begin
+            if Assigned(VF_ListaThModulo.Items[VL_I]) then
+                if (TRegModulo(TThModulo(VF_ListaThModulo[VL_I]).VF_modulo^).ModuloConfig_ID = VP_ModuloConfig_ID) then
+                begin
+                    if TThModulo(VF_ListaThModulo[VL_I]).VF_Rodando then
+                    begin
+                        TThModulo(VF_ListaThModulo[VL_I]).FreeOnTerminate := True;
+                        TThModulo(VF_ListaThModulo[VL_I]).Terminate;
+                    end
+                    else
+                        TThModulo(VF_ListaThModulo[VL_I]).Free;
+                    VF_ListaThModulo.Delete(VL_I);
+                Break;
+                end;
+            Result := 0;
+        end;
+    end;
 end;
 
 function TDNucleo.ModuloAddSolicitacao(VP_SocketID:Integer;VP_SocketTransmissaoID,VP_Transmissao_ID:string; VP_TempoEspera, VP_ModuloConfig_ID: integer;
@@ -1476,7 +1488,7 @@ end;
 
 constructor TThModulo.Create(VP_Suspenso: boolean; VP_Modulo: Pointer; VP_ConexaoTipo: TConexaoTipo; VP_ArquivoLog: string; VP_DNucleo: Pointer);
 begin
-    FreeOnTerminate := False;
+    FreeOnTerminate := True;
     VF_modulo := VP_Modulo;
     VF_DNucleo := VP_DNucleo;
     VF_LibCarregada := False;

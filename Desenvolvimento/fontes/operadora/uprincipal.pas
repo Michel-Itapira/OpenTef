@@ -147,20 +147,24 @@ var
     VL_Valor:PChar;
     VL_Mensagem: Pointer;
     VL_Mensagem_Dados: Pointer;
+    VL_Mensagem_Dados_Protegidos: Pointer;
     VL_TagDados: PChar;
-    VL_Pan: PChar;
+    VL_Pan,VL_TK2: PChar;
     VL_String: string;
 
 begin
     try
         VL_Mensagem := nil;
         VL_Mensagem_Dados := nil;
+        VL_Mensagem_Dados_Protegidos:=nil;
         F_MensagemCreate(VL_Mensagem);
         F_MensagemCreate(VL_Mensagem_Dados);
+        F_MensagemCreate(VL_Mensagem_Dados_Protegidos);
         VL_Senha := '';
         VL_TagDados := '';
         VL_String := '';
         VL_Valor:='';
+        VL_TK2:='';
 
 
         vl_erro := F_MensagemCarregaTags(VL_Mensagem, PChar(fVP_DadosRecebidos));
@@ -215,20 +219,32 @@ begin
 
         if ((F_MensagemComando(VL_Mensagem) = '000A') and (F_MensagemComandoDados(VL_Mensagem) = 'S')) then        // APROVACAO DA TRANSACAO
         begin
-
+            VL_TagDados:='';
             F_MensagemGetTag(VL_Mensagem, '007D', VL_TagDados);
+            if VL_TagDados<>'' then
             F_MensagemCarregaTags(VL_Mensagem_Dados, VL_TagDados);
 
-            VL_Pan := '';
+            VL_TagDados:='';
+            F_MensagemGetTag(VL_Mensagem, '00E3', VL_TagDados);
+            if VL_TagDados<>'' then
+            F_MensagemCarregaTags(VL_Mensagem_Dados_Protegidos, VL_TagDados);
 
-            F_MensagemGetTag(VL_Mensagem_Dados, PChar('0060'), VL_Senha);            // senha criptografada
-            F_MensagemGetTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);                 // pan
-            F_MensagemGetTag(VL_Mensagem_Dados, PChar('0033'), VL_TagDados);            // dados capturados
-            F_MensagemGetTag(VL_Mensagem_Dados, PChar('0013'), VL_Valor);            // valordados capturados
+            F_MensagemLimpar(VL_Mensagem_Dados);
+            F_MensagemAddTag(VL_Mensagem_Dados, PChar('00E3'), PChar(''));  // solicita dados protegidos
+
+
+
+            VL_Pan := '6298671234567890123';
+
+            F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0060'), VL_Senha);            // senha criptografada
+            F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('004F'), VL_TK2);            // tk2
+           // F_MensagemGetTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);                 // pan nao enviado de proposito
+            F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0033'), VL_TagDados);            // dados capturados
+            F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0013'), VL_Valor);            // valordados capturados
 
             if VL_Valor = '' then
             begin
-                F_MensagemLimpar(VL_Mensagem_Dados);
+
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('00E1'), PChar('S'));   //solicita dados da venda
 
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('0013'), PChar(''));  // solicita valor total da venda
@@ -242,7 +258,7 @@ begin
 
             if VL_Senha = '' then
             begin
-                F_MensagemLimpar(VL_Mensagem_Dados);
+//                F_MensagemLimpar(VL_Mensagem_Dados);
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('005A'), PChar('S'));   //solicita senha
 
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('005B'), PChar(IntToStr(F_Imk())));
@@ -250,14 +266,14 @@ begin
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('005D'), PChar('4'));
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('005E'), PChar('8'));
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('005F'), PChar(F_Wk()));
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);
+                F_MensagemAddTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);  // pan ficticio não precisa ser o cartão
 
                 VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
                 fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
                 Exit;
             end;
 
-            if VL_TagDados = '123' then
+           { if VL_TagDados = '' then         // exemplo de captura de dados
             begin
                 F_MensagemLimpar(VL_Mensagem_Dados);
 
@@ -279,10 +295,10 @@ begin
 
             end
 
-            else
+            else }
             begin
-                F_MensagemLimpar(VL_Mensagem_Dados);
-                VL_String := 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 + 'CPF:' + VL_TagDados+#13+'Valor dos itens:'+VL_Valor;
+  //              F_MensagemLimpar(VL_Mensagem_Dados);
+                VL_String :='Cartão:'+VL_TK2+#13+ 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 + 'CPF:' + VL_TagDados+#13+'Valor dos itens:'+VL_Valor;
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar(VL_String));
                 F_MensagemAddTag(VL_Mensagem_Dados, '004A', PChar(IntToStr(Ord(tsAbortada))));  // transacao obortada
@@ -297,6 +313,7 @@ begin
 
         F_MensagemLimpar(VL_Mensagem);
 
+        F_MensagemAddTag(VL_Mensagem, '00E3', PChar('')); //dados protegidos
         F_MensagemAddComando(VL_Mensagem, '0018', PChar('S'));   //renorno da lista de menu
         F_MensagemAddTag(VL_Mensagem, '00D3', PChar('Cancela Venda')); //item do menu
         F_MensagemAddTag(VL_Mensagem, 'FFD3', PChar('Cancela Plano')); //item do menu
@@ -309,6 +326,7 @@ begin
     finally
         F_MensagemFree(VL_Mensagem);
         F_MensagemFree(VL_Mensagem_Dados);
+        F_MensagemFree(VL_Mensagem_Dados_Protegidos);
     end;
 
 end;

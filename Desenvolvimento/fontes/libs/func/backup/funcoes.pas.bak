@@ -30,7 +30,7 @@ type
         function GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer;
         function GetTag(VP_Posicao: integer; var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
         function GetTag(VP_Posicao: integer; var VO_Tag: TTag): integer;
-        function GetTag(VP_Tag: ansistring; var VO_Dados: Int64): Integer;
+        function GetTag(VP_Tag: ansistring; var VO_Dados: int64): integer;
         function GetTagAsAstring(VP_Tag: ansistring): ansistring;
         function Comando(): ansistring;
         function ComandoDados(): ansistring;
@@ -44,19 +44,29 @@ type
     end;
 
 
+    { TErroMensagem }
+
+    TErroMensagem = class
+    private
+
+    public
+        function TrataErro(VP_CodigoErro: Variant; var VO_RespostaMensagem: string): integer;
+    end;
+
     TPinPadModelo = (pNDF, pGERTEC_PPC930);
-    TRespostaPinPad = procedure(VP_Processo_ID:Integer; VP_Mensagem: TMensagem);
+    TRespostaPinPad = procedure(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
     TPinPadErro = procedure(errCode: int16; msg: pansichar);
 
 
     TConexaoTipo = (cnCaixa, cnServico, cnNaoDefinido);
     TAguardaEvento = (agTempo, agEvento, agAborta);
-    TRetornoModulo = procedure(VP_Transmissao_ID: PChar;VP_Tarefa_ID, VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
-    TRetorno = procedure(VP_Transmissao_ID: PChar;VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
-    TServidorRecebimento = procedure(VP_Codigo:Integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VO_AContext: TIdContext);
-    TServidorRecebimentoLib = function(VP_Codigo:Integer;VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer): integer; stdcall;
+    TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+    TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+    TServidorRecebimento = procedure(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VO_AContext: TIdContext);
+    TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer): integer; stdcall;
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado, csNaoInicializado);
-    TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro,tsAbortada);
+    TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada,
+        tsComErro, tsAbortada, tsAguardandoDadosPDV);
 
 
     TPermissao = (pmS, pmC, pmA, pmU);  // pmS=permissao de sistema
@@ -64,6 +74,7 @@ type
     // pmA permissao de administrador pode gerenciar as transacao e fazer cadastros
     // pmU permissao de usuario consulta e visualizacao das transacoes
 
+    TTipoDocumento = (tdCNPJ, tdCPF); // tipo do documento prar formatação
 
     { TTEmporizadorEvento }
 
@@ -106,10 +117,10 @@ type
         fTemporizador: TTemporizador;
     private
         function GetErro: integer;
-        function GetErroDescricao: String;
+        function GetErroDescricao: string;
         procedure SetErro(VP_Erro: integer);
         function GetStatus: TTransacaoStatus;
-        procedure SetErroDescricao(VP_Descricao: String);
+        procedure SetErroDescricao(VP_Descricao: string);
         procedure SetStatus(VP_Status: TTransacaoStatus);
         function GetID: ansistring;
 
@@ -119,7 +130,7 @@ type
         function AsString: ansistring;
         function TempoAguarda: integer;
         property erro: integer read GetErro write SetErro;
-        property erroDescricao: String read GetErroDescricao write SetErroDescricao;
+        property erroDescricao: string read GetErroDescricao write SetErroDescricao;
         property ID: ansistring read GetID;
         property STATUS: TTransacaoStatus read GetSTATUS write SetStatus;
     end;
@@ -150,7 +161,7 @@ function PinPadModeloToInt(VP_PinPadModelo: TPinPadModelo): integer;
 function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
 function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
 function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
-
+function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
 
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
@@ -266,11 +277,123 @@ end;
 
 procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
 begin
-  TMensagem(VP_Mensagem).Limpar;
+    TMensagem(VP_Mensagem).Limpar;
 end;
 
 
 {$R *.lfm}
+
+{ TErroMensagem }
+
+function TErroMensagem.TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
+
+begin
+    VO_RespostaMensagem := '';
+    Result := 0;
+
+    if StrToIntDef(VP_CodigoErro,0)=0 then
+        VP_CodigoErro := 0;
+
+    if VP_CodigoErro = 0 then
+    begin
+        Result := 0;
+        exit;
+    end
+    else
+    begin
+        case VP_CodigoErro of
+            2: VO_RespostaMensagem := 'PORTA PINPAD NÃO INFORMADA';
+            3: VO_RespostaMensagem := 'MODELO PINPAD NÃO INFORMADO';
+            4: VO_RespostaMensagem := 'MODELO PINPAD NÃO SUPORTADO';
+            5: VO_RespostaMensagem := 'FALHA NA CONEXÃO COM PINPAD';
+            6: VO_RespostaMensagem := 'PINPAD RETORNOU FALHA(CONSULTA Nº DA FALHA NO RETORNO AUXILIAR)';
+            7: VO_RespostaMensagem := 'DLL OU S.O DO PINPAD NÃO ENCONTRADA';
+            8: VO_RespostaMensagem := 'DLL OU S.O DO PINPAD NÃO COMPATÍVEL(VERIFIQUE 32 OU 64 BITS)';
+            9: VO_RespostaMensagem := 'HOST  NÃO INFORMADO PARA O TEF';
+            10: VO_RespostaMensagem := 'HOST NÃO COMPATÍVEL PARA O TEF';
+            11: VO_RespostaMensagem := 'PORTA NÃO INFORMADA PARA O TEF';
+            12: VO_RespostaMensagem := 'PORTA NÃO COMPATÍVEL  PARA O TEF';
+            13: VO_RespostaMensagem := 'VERSÃO_COMUNICAÇÃO NÃO INFORMADA PARA O TEF';
+            14: VO_RespostaMensagem := 'VERSÃO_COMUNICAÇÃO NÃO COMPATÍVEL PARA O TEF';
+            15: VO_RespostaMensagem := 'CHAVE NÃO INFORMADA PARA O TEF';
+            16: VO_RespostaMensagem := 'CHAVE NÃO COMPATÍVEL PARA O TEF';
+            17: VO_RespostaMensagem := 'VERSÃO DLL DO TEF NÃO COMPATÍVEL (SUGERE ATUALIZAÇÃO)';
+            18: VO_RespostaMensagem := 'PACOTE COM A PRIMEIRA TAG DIFERENTE DE ‘0000’';
+            19: VO_RespostaMensagem := 'ERRO O TAMANHO DO PACOTE NÃO PODE SER ZERO';
+            20: VO_RespostaMensagem := 'ERRO O TAMANHO DO PACOTE DIFERENTE DO TAMANHO DA MENSAGEM';
+            21: VO_RespostaMensagem := 'ERRO OS DADOS DO PACOTE MAIOR QUE OS DADOS DA MENSAGEM';
+            22: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO GET DA TAG';
+            23: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO “TAGTOSTR”';
+            24: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL ENVIAR MENSAGEM';
+            25: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR PARA ESCUTAR';
+            26: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR ABERTURA SOCKET';
+            27: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO ADD DA TAG';
+            28: VO_RespostaMensagem := 'ERRO, PARÂMETRO NULO OU DIFERENTE DA ESTRUTURA DA TAG';
+            29: VO_RespostaMensagem := 'ERRO TAG NÃO LOCALIZADA NO PACOTE DA FUNÇÃO GET DA TAG';
+            30: VO_RespostaMensagem := 'DADOS DO PACOTE MAL FORMATADO OU INCOMPATÍVEL, IMPOSSÍVEL DE LER';
+            31: VO_RespostaMensagem := 'CHAVE PUBLICA NÃO LOCALIZADA';
+            32: VO_RespostaMensagem := 'PROBLEMA NAS TROCAS DE CHAVES NO CONECTAR';
+            33: VO_RespostaMensagem := 'SOCKET DO SERVIDOR VINCULADO ESTA DESCONECTADO';
+            34: VO_RespostaMensagem := 'LOGIN RECUSADO';
+            35: VO_RespostaMensagem := 'SERVIDOR NÃO ESTA EM STATUS DE LOGADO';
+            36: VO_RespostaMensagem := 'CHAVE NÃO LOCALIZADA PARA OPENTEF';
+            37: VO_RespostaMensagem := 'SENHA DE ACESSO NÃO INFORMADO PARA O TEF';
+            38: VO_RespostaMensagem := 'IP NÃO NÃO COMPATIVEL PARA O TERMINAL';
+            39: VO_RespostaMensagem := 'SENHA NÃO COMPATÍVEL PARA O TERMINAL';
+            40: VO_RespostaMensagem := 'ERRO VALIDAÇÃO DO TERMINAL';
+            41: VO_RespostaMensagem := 'CHAVE DO TERMINAL NÃO LOCALIZADA';
+            42: VO_RespostaMensagem := 'TIPO DE PERMISSÃO NÃO INFORMADA PARA O TEF';
+            43: VO_RespostaMensagem := 'REGISTRO EM DUPLICIDADE NO BANCO DE DADOS';
+            44: VO_RespostaMensagem := 'ERRO NA INCLUSÃO DO REGISTRO';
+            45: VO_RespostaMensagem := 'PERMISSÃO NÃO AUTORIZADO PARA ESTE PROCEDIMENTO';
+            46: VO_RespostaMensagem := 'ERRO NA ALTERAÇÃO DO REGISTRO';
+            47: VO_RespostaMensagem := 'DADOS INFORMADO NÃO PODE SER ZERO';
+            48: VO_RespostaMensagem := 'TABELA SEM REGISTRO NO BANCO DE DADOS';
+            49: VO_RespostaMensagem := 'DADOS CHAVES PARA O CADASTRO NÃO PODEM SOFRER ALTERAÇÃO';
+            50: VO_RespostaMensagem := 'BIBLIOTECA DO PINPAD NÃO FOI POSSIVEL CARREGAR';
+            51: VO_RespostaMensagem := 'TIPO DE LEITURA DE CARTÃO NÃO SUPORTADO';
+            52: VO_RespostaMensagem := 'CAMPO OBRIGATÓRIO NÃO PODE SER NULO';
+            53: VO_RespostaMensagem := 'NÃO FOI POSSIVEL ENVIAR A MENSAGEM DE RETORNO PARA O ID INFORMADO';
+            54: VO_RespostaMensagem := 'NÃO FOI POSSIVEL INICIALIZAR O MODULO';
+            55: VO_RespostaMensagem := 'ERRO NA PESQUISA DA TABELA';
+            56: VO_RespostaMensagem := 'NÃO FOI ENCONTRADO NENHUMA CONFIGURAÇÃO DE MENU DE CAIXA';
+            57: VO_RespostaMensagem := 'ERRO NO FLUXO DAS TRANSAÇÕES DA TAG 0018';
+            58: VO_RespostaMensagem := 'ERRO AO CRIAR A TRANSACAO';
+            59: VO_RespostaMensagem := 'ERRO AO PEGAR O STATUS DA TRANSACAO';
+            60: VO_RespostaMensagem := 'ERRO AO EXCLUIR UMA TRANSACAO NO TEF_LIB';
+            61: VO_RespostaMensagem := 'ERRO AO RECEBER A FUNCAO TRANSACAO CREATE DO OPENTEF';
+            62: VO_RespostaMensagem := 'ERRO NO PEDIDO DE CRIAÇÃO DE TRANSAÇÃO';
+            63: VO_RespostaMensagem := 'BIN JA ESTAVA CADASTRADO PARA OUTRO MODULO';
+            64: VO_RespostaMensagem := 'REGISTRO DE MODULO NÃO CARREGADO OU NÃO LOCALIZADO';
+            65: VO_RespostaMensagem := 'NÃO FOI POSSIVE ATUALIZAR A TABELA DE BINS';
+            66: VO_RespostaMensagem := 'CONEXAO DO TEMPORIZADOR NAO ENCONTRADA';
+            67: VO_RespostaMensagem := 'A TRANSMISSAO NAO REPONDIDA EM TEMPO HABIL';
+            68: VO_RespostaMensagem := 'DADOS DA TRANSMISSÃO NÃO TEM COMANDO 00D1';
+            69: VO_RespostaMensagem := 'A COMUNICACAO FOI ABORTADA';
+            70: VO_RespostaMensagem := 'Modulo config não carregado para incluir solicitação';
+            71: VO_RespostaMensagem := 'NAO FOI POSSIVEL ATUALIZAR A TABELA DE MENUS';
+            72: VO_RespostaMensagem := 'MENU JA ESTAVA CADASTRADO PARA OUTRO MODULO';
+            73: VO_RespostaMensagem := 'MENU NÃO ESTA NA LISTA DE MENUS OFICIAIS HABILITADOS USE TAG INICIO “FF”';
+            74: VO_RespostaMensagem := 'BIN inválido';
+            75: VO_RespostaMensagem := 'Tag do botao do menu inválido';
+            76: VO_RespostaMensagem := 'Texto do botao do menu inválido';
+            77: VO_RespostaMensagem := 'pinpad_lib  NÃO CARREGADO';
+            78: VO_RespostaMensagem := 'COMANDO NAO IMPLEMENTADO PELO PINPD';
+            79: VO_RespostaMensagem := 'Não foi possível achar uma operadora para processar o cartão';
+            80: VO_RespostaMensagem := 'Essa solicitação de aprovação não esta em conformidade';
+            81: VO_RespostaMensagem := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
+            82: VO_RespostaMensagem := 'ERRO NA EXCLUSÃO DO REGISTRO';
+            else
+            begin
+                Result := 1;
+                VO_RespostaMensagem := 'Erro Desconhecido ou não catalogado';
+                exit;
+            end;
+        end;
+        Result := VP_CodigoErro;
+    end;
+end;
+
 
 { TTemporizador }
 
@@ -333,7 +456,10 @@ begin
         fTEmporizadorTThread.Start;
         fTEmporizadorTThread.WaitFor;
         if Assigned(fTEmporizadorTThread) then
-            FreeAndNil(fTEmporizadorTThread);
+        begin
+//            fTEmporizadorTThread.free;
+            fTEmporizadorTThread:=nil;
+        end;
 
         if V_Executado then
             Result := agEvento
@@ -387,7 +513,7 @@ begin
     inherited Create(VP_Suspenso);
     TTemporizador(VP_Temporizador).fEvento := agEvento;
     fTemporizador := VP_Temporizador;
-    FreeOnTerminate := False;
+    FreeOnTerminate := True;
     f_parar := False;
 
 end;
@@ -399,7 +525,7 @@ begin
     Result := fMensagem.GetTagAsInteger('004D');
 end;
 
-function TTransacao.GetErroDescricao: String;
+function TTransacao.GetErroDescricao: string;
 begin
     Result := fMensagem.GetTagAsAstring('004A');
 end;
@@ -414,7 +540,7 @@ begin
     Result := IntToTransacaoStatus(fMensagem.GetTagAsInteger('00A4'));
 end;
 
-procedure TTransacao.SetErroDescricao(VP_Descricao: String);
+procedure TTransacao.SetErroDescricao(VP_Descricao: string);
 begin
     fMensagem.AddTag('004A', VP_Descricao);
 end;
@@ -556,7 +682,7 @@ function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
 var
     VL_MemDataset: TRxMemoryData;
 begin
-    Result :='';
+    Result := '';
     VL_MemDataset := TRxMemoryData.Create(nil);
     try
         VO_ZQuery.First;
@@ -578,9 +704,9 @@ begin
     for I := 0 to 50 do
     begin
         if Length(VL_Chave) < 50 then
-            VL_Chave := VL_Chave + IntToStr(Random(999));
+            VL_Chave := VL_Chave + IntToStr(Random(99))+IntToStr(Random(999));
     end;
-    VO_Chave := Copy(VL_Chave, 1, 50);
+    VO_Chave := Copy(VL_Chave,1 , 50);
 end;
 
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
@@ -650,7 +776,7 @@ end;
 
 function PinPadModeloToInt(VP_PinPadModelo: TPinPadModelo): integer;
 begin
-   Result := Ord(VP_PinPadModelo);
+    Result := Ord(VP_PinPadModelo);
 end;
 
 function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
@@ -671,27 +797,55 @@ begin
         1: Result := pGERTEC_PPC930;
 
         else
-           Result:=pNDF;
+            Result := pNDF;
     end;
 
 end;
 
 function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
 begin
-    VP_PinPadModelo:=UpperCase(VP_PinPadModelo);
+    VP_PinPadModelo := UpperCase(VP_PinPadModelo);
     case VP_PinPadModelo of
-        'NDF': Result:=pNDF;
-        'GERTEC_PPC930':Result:= pGERTEC_PPC930;
+        'NDF': Result := pNDF;
+        'GERTEC_PPC930': Result := pGERTEC_PPC930;
         else
-           Result:=pNDF;
+            Result := pNDF;
     end;
 
+end;
 
+function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
+begin
+    if VP_Tipo = tdCNPJ then
+    begin
+        if ((Length(VP_Documento) = 0) or (Length(VP_Documento) <> 14)) then
+        begin
+            Result := '';
+            exit;
+        end;
+        Result := copy(VP_Documento, 0, 2) + '.' +
+            copy(VP_Documento, 2, 3) + '.' +
+            copy(VP_Documento, 6, 3) + '/' +
+            copy(VP_Documento, 9, 4) + '-' +
+            copy(VP_Documento, 13, 2);
+    end;
+    if VP_Tipo = tdCPF then
+    begin
+        if ((Length(VP_Documento) = 0) or (Length(VP_Documento) <> 11)) then
+        begin
+            Result := '';
+            exit;
+        end;
+        Result := copy(VP_Documento, 0, 3) + '.' +
+            copy(VP_Documento, 3, 3) + '.' +
+            copy(VP_Documento, 6, 3) + '-' +
+            copy(VP_Documento, 9, 2);
+    end;
 end;
 
 function IntToTransacaoStatus(VP_TranscaoStatus: integer): TTransacaoStatus;
 begin
-    Result:=tsNaoLocalizada;
+    Result := tsNaoLocalizada;
 
     case VP_TranscaoStatus of
         0: Result := tsEfetivada;
@@ -703,6 +857,7 @@ begin
         6: Result := tsInicializada;
         7: Result := tsComErro;
         8: Result := tsAbortada;
+        9: Result := tsAguardandoDadosPDV;
 
     end;
 
@@ -909,6 +1064,7 @@ function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer
 var
     i: integer;
 begin
+    VO_Dados:='';
     //Tag não encontrada no pacote
     Result := 29;
 
@@ -938,6 +1094,7 @@ end;
 function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
 begin
     Result := 0;
+    VO_Dados:='';
     if Length(fTags) > VP_Posicao then
     begin
         VO_Tag := fTags[VP_Posicao].Tag;
@@ -954,11 +1111,12 @@ begin
     end;
 end;
 
-function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: int64): Integer;
+function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: int64): integer;
 var
     i: integer;
 begin
     //Tag não encontrada no pacote
+
     Result := 29;
 
     //Verifica se existe o pacote
@@ -996,7 +1154,7 @@ end;
 
 function TMensagem.Comando: ansistring;
 begin
-    Result:='';
+    Result := '';
     if Length(fTags) > 0 then
     begin
         Result := fTags[0].Tag;
@@ -1006,7 +1164,7 @@ end;
 
 function TMensagem.ComandoDados: ansistring;
 begin
-    Result:='';
+    Result := '';
     if Length(fTags) > 0 then
     begin
         Result := fTags[0].Dados;
@@ -1085,7 +1243,7 @@ var
     end;
 
 begin
-     Result := 0;
+    Result := 0;
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
@@ -1128,7 +1286,6 @@ begin
     fTags[0].Qt := HexStr(length(IntToStr(Length(VP_Dados))), 1);
     fTags[0].Tamanho := Length(VP_Dados);
     fTags[0].Dados := VP_Dados;
-
 
 end;
 

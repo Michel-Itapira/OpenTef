@@ -36,6 +36,7 @@ type
         function ComandoDados(): ansistring;
         function TagsAsString: ansistring;
         function TagCount(): integer;
+        function TempoPassouMiliSegundos(VP_Agora:TDateTime):integer;
         function GetTagAsInteger(VP_Tag: ansistring): integer;
         function AddTag(VP_Tag, VP_Dados: ansistring): integer;
         function AddTag(VP_Tag: ansistring; VP_Dados: integer): integer;
@@ -456,7 +457,10 @@ begin
         fTEmporizadorTThread.Start;
         fTEmporizadorTThread.WaitFor;
         if Assigned(fTEmporizadorTThread) then
-            FreeAndNil(fTEmporizadorTThread);
+        begin
+//            fTEmporizadorTThread.free;
+            fTEmporizadorTThread:=nil;
+        end;
 
         if V_Executado then
             Result := agEvento
@@ -510,7 +514,7 @@ begin
     inherited Create(VP_Suspenso);
     TTemporizador(VP_Temporizador).fEvento := agEvento;
     fTemporizador := VP_Temporizador;
-    FreeOnTerminate := False;
+    FreeOnTerminate := True;
     f_parar := False;
 
 end;
@@ -1061,6 +1065,7 @@ function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer
 var
     i: integer;
 begin
+    VO_Dados:='';
     //Tag não encontrada no pacote
     Result := 29;
 
@@ -1090,6 +1095,7 @@ end;
 function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
 begin
     Result := 0;
+    VO_Dados:='';
     if Length(fTags) > VP_Posicao then
     begin
         VO_Tag := fTags[VP_Posicao].Tag;
@@ -1111,6 +1117,7 @@ var
     i: integer;
 begin
     //Tag não encontrada no pacote
+
     Result := 29;
 
     //Verifica se existe o pacote
@@ -1177,6 +1184,11 @@ begin
     Result := Length(fTags) - 1;
 end;
 
+function TempoPassouMiliSegundos(VP_Agora:TDateTime):integer;
+begin
+ Result:=  TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora)) ;
+end;
+
 function TMensagem.GetTagAsInteger(VP_Tag: ansistring): integer;
 var
     VL_String: ansistring;
@@ -1207,8 +1219,7 @@ begin
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
-        Result := 27;
-        Exit;
+        AddComando('0000','');
     end;
     //verifica se o parametro dados contem valor
     for i := 0 to length(fTags) - 1 do
@@ -1241,8 +1252,7 @@ begin
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
-        Result := 27;
-        Exit;
+        AddComando('0000','');
     end;
     //verifica se o parametro dados contem valor
     for i := 0 to length(fTags) - 1 do

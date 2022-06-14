@@ -382,8 +382,8 @@ begin
 
     except
         begin
-        Result := 83;
-        DesconectarCliente;
+            Result := 83;
+            DesconectarCliente;
         end;
     end;
 end;
@@ -587,6 +587,15 @@ begin
         V_ConexaoCliente := nil;
     end;
 
+    if Assigned(V_ThRecebeEscuta) then
+    begin
+        V_ThRecebeEscuta.parar;
+        V_ThRecebeEscuta.Terminate;
+        V_ThRecebeEscuta.WaitFor;
+        V_ThRecebeEscuta:=nil;
+    end;
+
+
     V_EventoSocketCliente.Free;
 
 end;
@@ -731,101 +740,20 @@ var
     VL_Temporizador: TTemporizador;
     VL_Evento: TAguardaEvento;
 begin
-    Result := 0;
-    VL_Dados := '';
-    VP_Mensagem.TagToStr(VL_Dados);
-
-
-    VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VP_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
-
-    VP_Mensagem.Limpar;
-    VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
-    VP_Mensagem.AddTag('00D2', VL_Dados);
-
-
-
-
-    if VP_AguardaRetorno then
-    begin
-        Result := 67;
-
-        VL_Temporizador := TTemporizador.Create;
-        VL_Temporizador.V_Aguardando := True;
-        VL_Temporizador.V_Executado := False;
-
-        if VP_Transmissao_ID <> '' then
-            VL_Temporizador.V_ID := VP_Transmissao_ID;
-
-        VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
-
-
-        TTConexao(VP_AContext.Data).EventoSocket.add(VL_Temporizador);
-        VP_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
-        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, True, VL_Temporizador);
-        case VL_Evento of
-            agEvento:
-            begin
-                Result := VO_Mensagem.CarregaTags(VL_Temporizador.V_Dados);
-            end;
-
-            agTempo: Result := 67;
-            agAborta: Result := 69;
-        end;
-
-        if Assigned(TTConexao(VP_AContext.Data).EventoSocket) then
-            TTConexao(VP_AContext.Data).EventoSocket.remove(VL_Temporizador);
-        VL_Temporizador.Free;
-        if Assigned(VP_Procedimento) then
-            VP_Procedimento(Result, VP_Transmissao_ID, VL_Temporizador.V_Dados, VP_AContext);
-
-    end
-    else
-        VP_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
-end;
-
-function TDComunicador.ServidorTransmiteSolicitacaoID(VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-    VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_ID: integer): integer;
-var
-    VL_I: integer;
-    VL_Clientes: TIdContextList;
-    VL_Mensagem: TMensagem;
-    VL_Dados: ansistring;
-    VL_Temporizador: TTemporizador;
-    VL_Evento: TAguardaEvento;
-    VL_AContext: TIdContext;
-begin
-    Result := 53;
-    VL_Dados := '';
-    VP_Mensagem.TagToStr(VL_Dados);
-
-
     try
-        VL_Clientes := IdTCPServidor.Contexts.LockList;
+        Result := 0;
+        VL_Dados := '';
+        VP_Mensagem.TagToStr(VL_Dados);
 
-        for VL_I := 0 to VL_Clientes.Count - 1 do
-            if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_ID then
-            begin
-                VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
-                Result := 0;
-                Break;
-            end;
-    finally
-        IdTCPServidor.Contexts.UnlockList;
-    end;
-    if Result <> 0 then
-        Exit;
 
-    try
-        VL_Mensagem := TMensagem.Create;
-
-        VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
+        VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VP_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
 
         VP_Mensagem.Limpar;
         VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
         VP_Mensagem.AddTag('00D2', VL_Dados);
 
 
-        Result := 0;
+
 
         if VP_AguardaRetorno then
         begin
@@ -841,8 +769,8 @@ begin
             VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
 
 
-            TTConexao(VL_AContext.Data).EventoSocket.add(VL_Temporizador);
-            VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+            TTConexao(VP_AContext.Data).EventoSocket.add(VL_Temporizador);
+            VP_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
             VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, True, VL_Temporizador);
             case VL_Evento of
                 agEvento:
@@ -854,18 +782,119 @@ begin
                 agAborta: Result := 69;
             end;
 
-            if Assigned(TTConexao(VL_AContext.Data).EventoSocket) then
-                TTConexao(VL_AContext.Data).EventoSocket.remove(VL_Temporizador);
+            if Assigned(TTConexao(VP_AContext.Data).EventoSocket) then
+                TTConexao(VP_AContext.Data).EventoSocket.remove(VL_Temporizador);
             VL_Temporizador.Free;
             if Assigned(VP_Procedimento) then
-                VP_Procedimento(Result, VP_Transmissao_ID, VL_Temporizador.V_Dados, VL_AContext);
+                VP_Procedimento(Result, VP_Transmissao_ID, VL_Temporizador.V_Dados, VP_AContext);
 
         end
         else
-            VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+            VP_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
 
-    finally
-        VL_Mensagem.Free;
+    except
+        on e: EInOutError do
+        begin
+            Result := 1;
+            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090620221843', 'ServidorTransmiteSolicitacao' + e.ClassName + '/' + e.Message, '', 1);
+        end;
+
+    end;
+end;
+
+function TDComunicador.ServidorTransmiteSolicitacaoID(VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
+    VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_ID: integer): integer;
+var
+    VL_I: integer;
+    VL_Clientes: TIdContextList;
+    VL_Mensagem: TMensagem;
+    VL_Dados: ansistring;
+    VL_Temporizador: TTemporizador;
+    VL_Evento: TAguardaEvento;
+    VL_AContext: TIdContext;
+begin
+    try
+        Result := 53;
+        VL_Dados := '';
+        VP_Mensagem.TagToStr(VL_Dados);
+
+
+        try
+            VL_Clientes := IdTCPServidor.Contexts.LockList;
+
+            for VL_I := 0 to VL_Clientes.Count - 1 do
+                if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_ID then
+                begin
+                    VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
+                    Result := 0;
+                    Break;
+                end;
+        finally
+            IdTCPServidor.Contexts.UnlockList;
+        end;
+        if Result <> 0 then
+            Exit;
+
+        try
+            VL_Mensagem := TMensagem.Create;
+
+            VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
+
+            VP_Mensagem.Limpar;
+            VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
+            VP_Mensagem.AddTag('00D2', VL_Dados);
+
+
+            Result := 0;
+
+            if VP_AguardaRetorno then
+            begin
+                Result := 67;
+
+                VL_Temporizador := TTemporizador.Create;
+                VL_Temporizador.V_Aguardando := True;
+                VL_Temporizador.V_Executado := False;
+
+                if VP_Transmissao_ID <> '' then
+                    VL_Temporizador.V_ID := VP_Transmissao_ID;
+
+                VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
+
+
+                TTConexao(VL_AContext.Data).EventoSocket.add(VL_Temporizador);
+                VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+                VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, True, VL_Temporizador);
+                case VL_Evento of
+                    agEvento:
+                    begin
+                        Result := VO_Mensagem.CarregaTags(VL_Temporizador.V_Dados);
+                    end;
+
+                    agTempo: Result := 67;
+                    agAborta: Result := 69;
+                end;
+
+                if Assigned(TTConexao(VL_AContext.Data).EventoSocket) then
+                    TTConexao(VL_AContext.Data).EventoSocket.remove(VL_Temporizador);
+                VL_Temporizador.Free;
+                if Assigned(VP_Procedimento) then
+                    VP_Procedimento(Result, VP_Transmissao_ID, VL_Temporizador.V_Dados, VL_AContext);
+
+            end
+            else
+                VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+
+        finally
+            VL_Mensagem.Free;
+        end;
+
+    except
+        on e: EInOutError do
+        begin
+            Result := 1;
+            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090620221846', 'ServidorTransmiteSolicitacaoID' + e.ClassName + '/' + e.Message, '', 1);
+        end;
+
     end;
 
 end;
@@ -1133,11 +1162,12 @@ begin
     Result := 0;
     VL_Dados := '';
     try
-        VL_Mensagem := TMensagem.Create;
-        VL_Mensagem.CarregaTags(VO_Dados.TagsAsString);
-        VO_Dados.Limpar;
-        VO_Retorno.Limpar;
         try
+            VL_Mensagem := TMensagem.Create;
+            VL_Mensagem.CarregaTags(VO_Dados.TagsAsString);
+            VO_Dados.Limpar;
+            VO_Retorno.Limpar;
+
             if (V_ConexaoCliente.Status <> csChaveado) and (V_ConexaoCliente.Status <> csLogado) then
             begin
                 Result := ConectarCliente;

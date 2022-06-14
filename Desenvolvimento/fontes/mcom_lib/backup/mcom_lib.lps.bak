@@ -9,7 +9,8 @@
         <Filename Value="mcom_lib.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
-        <CursorPos Y="37"/>
+        <TopLine Value="2"/>
+        <CursorPos X="85" Y="23"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -19,9 +20,10 @@
         <ComponentName Value="DMCom"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="107"/>
-        <CursorPos X="39" Y="135"/>
+        <TopLine Value="114"/>
+        <CursorPos X="92" Y="143"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -43,10 +45,9 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="747"/>
-        <CursorPos X="86" Y="769"/>
+        <TopLine Value="725"/>
+        <CursorPos X="112" Y="784"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -76,7 +77,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="191"/>
         <CursorPos X="30" Y="203"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
@@ -86,57 +87,13 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="246"/>
         <CursorPos X="30" Y="281"/>
-        <UsageCount Value="55"/>
+        <UsageCount Value="54"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="CLIENTE"/>
     </OtherDefines>
     <JumpHistory HistoryIndex="28">
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="51" Column="53" TopLine="38"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="184" Column="38" TopLine="165"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="185" Column="34" TopLine="165"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="122" Column="10" TopLine="103"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="17" Column="58"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="185" Column="50" TopLine="167"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="164" Column="44" TopLine="141"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="65" Column="42" TopLine="65"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="203" Column="29" TopLine="200"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="39" Column="57" TopLine="20"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="264" Column="55" TopLine="234"/>
-      </Position>
       <Position>
         <Filename Value="mcom.pas"/>
         <Caret Line="166" Column="42" TopLine="143"/>
@@ -209,6 +166,50 @@
         <Filename Value="..\libs\func\funcoes.pas"/>
         <Caret Line="23" Column="61"/>
       </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="159" Column="11" TopLine="147"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="65" Column="23" TopLine="47"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="159" Column="23" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="161" Column="29" TopLine="132"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="50" Column="18" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="125" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="122" Column="90" TopLine="104"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom_lib.pas"/>
+        <Caret Line="29" Column="119" TopLine="2"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="178" Column="22" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="38" Column="19" TopLine="20"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="226" Column="5" TopLine="208"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -220,15 +221,4 @@
       </List>
     </HistoryLists>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="mcom.pas"/>
-        <Line Value="182"/>
-      </Item>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

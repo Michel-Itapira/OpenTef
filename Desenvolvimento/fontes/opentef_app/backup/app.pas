@@ -55,11 +55,11 @@ var
     VL_I:Integer;
     VL_Menu:TRecMenu;
 begin
-    MMenu.Lines.Clear;
+    MMenuOperacional.Lines.Clear;
     for VL_I:=0 to DNucleo.VF_MenuOperacional.Count -1 do
     begin
       VL_Menu:=DNucleo.VF_MenuOperacional.Get(VL_I);
-      MMenu.Lines.Add('Menu TAG:'+VL_Menu.Tag+' Menu Botao:'+VL_Menu.TextoBotao+' ModuloConf_ID:'+IntToStr(VL_Menu.ModuloConfID));
+      MMenuOperacional.Lines.Add('Menu TAG:'+VL_Menu.Tag+' Menu Botao:'+VL_Menu.TextoBotao+' ModuloConf_ID:'+IntToStr(VL_Menu.ModuloConfID));
     end;
 
 

@@ -5,11 +5,11 @@ library pinpad_lib;
 uses
     Interfaces, Classes, pinpad, indylaz, rxnew, funcoes, def;
 exports
-    PinPadCarrega,
-    PinPadDescarrega,
-    PinPadConectar,
-    PinPadDesconectar,
-    PinPadComando;
+    pinpadcarrega,
+    pinpaddescarrega,
+    pinpadconectar,
+    pinpaddesconectar,
+    pinpadcomando;
 
 begin
 end.

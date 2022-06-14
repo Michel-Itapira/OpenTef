@@ -347,6 +347,7 @@ begin
             VL_Mensagem.GetTag('0022', VL_ChaveComunicacaoIDX);
             VL_Mensagem.GetTag('0023', VL_OK);
 
+
             V_ConexaoCliente.setExpoentePublico(VL_ExpoentePublico);
             V_ConexaoCliente.setModuloPublico(VL_ModuloPublico);
             VL_ChaveComunicacao := V_ConexaoCliente.Rsa.DecryptString(VL_ChaveComunicacao);
@@ -586,6 +587,15 @@ begin
         V_ConexaoCliente.Free;
         V_ConexaoCliente := nil;
     end;
+
+    if Assigned(V_ThRecebeEscuta) then
+    begin
+        V_ThRecebeEscuta.parar;
+        V_ThRecebeEscuta.Terminate;
+        V_ThRecebeEscuta.WaitFor;
+        V_ThRecebeEscuta:=nil;
+    end;
+
 
     V_EventoSocketCliente.Free;
 

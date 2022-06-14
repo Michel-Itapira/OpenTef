@@ -92,7 +92,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="861"/>
+        <TopLine Value="860"/>
         <CursorPos X="59" Y="881"/>
         <UsageCount Value="204"/>
         <Loaded Value="True"/>
@@ -102,7 +102,7 @@
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="34" Y="11"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -132,14 +132,6 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="3"/>
         <UsageCount Value="9"/>
-      </Unit>
-      <Unit>
-        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\rtl-objpas\src\inc\strutils.pp"/>
-        <UnitName Value="StrUtils"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="201"/>
-        <CursorPos X="10" Y="219"/>
-        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdComponent.pas"/>

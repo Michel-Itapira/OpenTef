@@ -32,7 +32,7 @@ object DComunicador: TDComunicador
     DefaultPort = 0
     OnConnect = IdTCPServidorConnect
     OnDisconnect = IdTCPServidorDisconnect
-    TerminateWaitTime = 0
+    TerminateWaitTime = 100
     OnExecute = IdTCPServidorExecute
     Left = 48
     Top = 152

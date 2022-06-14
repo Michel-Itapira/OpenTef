@@ -4,4 +4,10 @@ object DTef: TDTef
   HorizontalOffset = 714
   VerticalOffset = 284
   Width = 291
+  object CriptoRsa: TLbRSA
+    PrimeTestIterations = 20
+    KeySize = aks128
+    Left = 24
+    Top = 16
+  end
 end

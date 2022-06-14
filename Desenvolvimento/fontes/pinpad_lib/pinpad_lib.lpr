@@ -9,7 +9,8 @@ exports
     pinpaddescarrega,
     pinpadconectar,
     pinpaddesconectar,
-    pinpadcomando;
+    pinpadcomando,
+    pinpadmensagem;
 
 begin
 end.

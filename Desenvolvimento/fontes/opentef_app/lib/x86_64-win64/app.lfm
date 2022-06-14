@@ -1,7 +1,7 @@
 object FApp: TFApp
-  Left = 769
+  Left = 372
   Height = 374
-  Top = 288
+  Top = 285
   Width = 1248
   Caption = 'Open Tef'
   ClientHeight = 374
