@@ -6,7 +6,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, DBGrids,
-    ExtCtrls, DateTimePicker, def;
+    ExtCtrls, DateTimePicker,StrUtils ,def;
 
 type
     { TF_Principal }
@@ -35,7 +35,8 @@ type
 
     end;
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado);
-    TransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro, tsAbortada,tsAguardandoDadosPDV);
+    TransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada,
+        tsComErro, tsAbortada, tsAguardandoDadosPDV);
 
     PResposta = ^TResposta;
 
@@ -116,8 +117,8 @@ type
     end;
 
     TTefInicializar = function(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
-        VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao:TSolicitaDadosTransacao;VP_SolicitaDadosPDV: TSolicitaDadosPDV; VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu;
-        VP_MensagemOperador: TMensagemOperador): integer; stdcall;
+        VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
+        VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador): integer; stdcall;
     TTLogin = function(VP_Host: PChar; VP_Porta: integer; VP_Chave: PChar; VP_Versao_Comunicacao: integer): integer; stdcall;
 
     TTSolicitacao = function(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; stdcall;
@@ -245,10 +246,78 @@ var
     VL_Tag: PChar;
     VL_Dados: PChar;
     VL_MenuVenda: TF_MenuVenda;
+    VL_Imagem:String;
+
+
+procedure StrToImagem(Dados: string; var Imagem: Timage);
+var
+    JP: TJPEGImage;
+    PNG: TPortableNetworkGraphic;
+    BPM: TBitmap;
+    Sm: TStringStream;
+    i: integer;
+    Tipo_Imagem,S, L: string;
 
 begin
+    s := '';
+    L := '';
+    Tipo_Imagem:='TI_JPG';
+    if Dados = '' then
+    begin
+        Imagem.Picture.Graphic := nil;
+        exit;
+    end;
+
+    for i := 0 to Length(Dados) div 2 - 1 do
+    begin
+        L := copy(Dados, ((1 + i) * 2) - 1, 2);
+        s := s + char(Hex2Dec(L));
+    end;
 
 
+   Sm := TStringStream.Create(s);
+
+
+    if Length(s) > 5 then
+    begin
+        if ((char(s[2]) = 'P') and (char(s[3]) = 'N') and (char(s[4]) = 'G')) then
+            Tipo_Imagem := 'TI_Png';
+        if ((char(s[1]) = 'B') and (char(s[2]) = 'M')) then
+            Tipo_Imagem := 'TI_BMP';
+    end;
+
+
+    if Tipo_Imagem = 'TI_JPG' then
+    begin
+        JP := TJPEGImage.Create;
+        JP.LoadFromStream(Sm);
+        Imagem.Picture.Assign(JP);
+        JP.Free;
+        Sm.Free;
+    end
+    else
+    if Tipo_Imagem = 'TI_Png' then
+    begin
+        PNG := TPortableNetworkGraphic.Create;
+        PNG.LoadFromStream(Sm);
+        Imagem.Picture.Assign(PNG);
+        PNG.Free;
+        Sm.Free;
+    end
+    else
+    if Tipo_Imagem = 'TI_BMP' then
+    begin
+        BPM := TBitmap.Create;
+        BPM.LoadFromStream(Sm);
+        Imagem.Picture.Assign(BPM);
+        BPM.Free;
+        Sm.Free;
+    end;
+
+end;
+
+
+begin
 
     Result := 0;
     VL_Tag := '';
@@ -258,23 +327,48 @@ begin
 
     VL_MenuVenda := TF_MenuVenda.Create(F_Principal);
 
-    F_MensagemGetTag(F_Mensagem, '00DA', VL_Dados);
-    VL_MenuVenda.GDados.Caption := VL_Dados;
+    VL_MenuVenda.Height:=100;
 
-    F_MensagemGetTag(F_Mensagem, '0033', VL_Dados);
-    if VL_Dados = 'M' then
-        VL_MenuVenda.EDados.PasswordChar := '*';
+    F_MensagemGetTag(F_Mensagem, '00DA', VL_Dados);   // verifica se veio mensagem a ser mostrada
+    if VL_Dados <> '' then
+    begin
+        VL_MenuVenda.PMensagem.Visible := True;
+        VL_MenuVenda.LMensagem.Caption := VL_Dados;
+        VL_MenuVenda.Height:=VL_MenuVenda.Height+100;
+    end;
+
+    VL_Dados := '';
+    VL_I := F_MensagemGetTag(F_Mensagem, '0033', VL_Dados);  // VERIFICA SE É PARA CAPTURAR
+    if VL_I = 0 then
+    begin
+        if VL_Dados = 'M' then
+            VL_MenuVenda.EDados.PasswordChar := '*';
+        VL_MenuVenda.PDados.Visible := True;
+        VL_MenuVenda.Height:=VL_MenuVenda.Height+80;
+    end;
+
+    VL_Dados := '';
+    VL_I := F_MensagemGetTag(F_Mensagem, '002E', VL_Dados);  // VERIFICA SE VEIO IMAGEM A SER MOSTRADA
+    if VL_I = 0 then
+    begin
+        VL_Imagem:=VL_Dados;
+        StrToImagem(VL_Imagem,VL_MenuVenda.Imagem);
+        VL_MenuVenda.PImagem.Visible := True;
+        VL_MenuVenda.Height:=VL_MenuVenda.Height+300;
+    end;
+
+
 
     F_MensagemGetTag(F_Mensagem, '00DD', VL_Dados);
     F_MensagemCarregaTags(F_Mensagem, VL_Dados);
 
-    VL_btn := TMButton.Create(VL_MenuVenda.Painel);
+    VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
     VL_btn.V_tag := '0030';
     VL_btn.Caption := 'Cancela';
     VL_btn.Align := alTop;
     VL_btn.Height := 20;
     VL_btn.BorderSpacing.Around := 20;
-    VL_btn.Parent := VL_MenuVenda.Painel;
+    VL_btn.Parent := VL_MenuVenda.PBotao;
     VL_btn.TabOrder := 0;
     VL_btn.OnClick := @F_Principal.CliqueDoBotao;
 
@@ -283,14 +377,14 @@ begin
         F_MensagemGetTagIdx(F_Mensagem, VL_i, VL_Tag, VL_Dados);
         if VL_Tag <> '0030' then
         begin
-            VL_btn := TMButton.Create(VL_MenuVenda.Painel);
+            VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
             F_MensagemGetTagIdx(F_Mensagem, VL_i, VL_Tag, VL_Dados);
             VL_btn.V_tag := VL_tag;
             VL_btn.Caption := VL_Dados;
             VL_btn.Align := alTop;
             VL_btn.Height := 20;
             VL_btn.BorderSpacing.Around := 20;
-            VL_btn.Parent := VL_MenuVenda.Painel;
+            VL_btn.Parent := VL_MenuVenda.PBotao;
             VL_btn.TabOrder := 0;
             VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
             VL_btn.OnClick := @F_Principal.CliqueDoBotao;
@@ -298,12 +392,10 @@ begin
     end;
     VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
     F_Principal.MStatus.Lines.Add('TransacaoID:' + F_MensagemComandoDados(F_Mensagem));
-    VL_MenuVenda.GDados.Visible := True;
     VL_MenuVenda.ShowModal;
 
     VO_Dados := StrAlloc(Length(VL_MenuVenda.EDados.Text) + 1);
     StrPCopy(VO_Dados, VL_MenuVenda.EDados.Text);
-
 
     VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
     StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
@@ -313,38 +405,35 @@ end;
 
 function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; stdcall;
 
-    var
-        VL_I: integer;
-        VL_Tag: PChar;
-        VL_Dados: PChar;
-        VL_String:String;
-        VL_Resposta:Pointer;
+var
+    VL_I: integer;
+    VL_Tag: PChar;
+    VL_Dados: PChar;
+    VL_String: string;
+    VL_Resposta: Pointer;
 
+begin
+
+    Result := 0;
+    VL_Tag := '';
+    VL_Dados := '';
+    VL_String := '';
+    VL_Resposta := nil;
+    F_MensagemCreate(VL_Resposta);
+    F_MensagemAddComando(VL_Resposta, '00E1', 'R');
+    F_MensagemCarregaTags(F_Mensagem, VP_Mensagem);
+
+    for vl_i := 1 to F_MensagemTagCount(F_Mensagem) do
     begin
+        F_MensagemGetTagIdx(F_Mensagem, VL_I, VL_Tag, VL_Dados);
+        if VL_Tag = '0013' then                                                         // valor total da operação
+            F_MensagemAddTag(VL_Resposta, '0013', PChar(F_Principal.EValorItens.Text));
+    end;
+    VL_String := F_MensagemTagAsString(VL_Resposta);
+    F_MensagemFree(VL_Resposta);
 
-
-
-        Result := 0;
-        VL_Tag := '';
-        VL_Dados := '';
-        VL_String:='';
-        VL_Resposta:=NIL;
-        F_MensagemCreate(VL_Resposta);
-        F_MensagemAddComando(VL_Resposta,'00E1','R');
-        F_MensagemCarregaTags(F_Mensagem, VP_Mensagem);
-
-        for vl_i:=1 to F_MensagemTagCount(F_Mensagem) do
-        begin
-            F_MensagemGetTagIdx(F_Mensagem,VL_I,VL_Tag,VL_Dados);
-            if VL_Tag='0013' then
-            F_MensagemAddTag(VL_Resposta,'0013',Pchar(F_Principal.EValorItens.Text));
-        end;
-        VL_String:=F_MensagemTagAsString(VL_Resposta);
-        F_MensagemFree(VL_Resposta);
-
-        VO_Dados := StrAlloc(Length(VL_String) + 1);
-        StrPCopy(VO_Dados, VL_String);
-
+    VO_Dados := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_Dados, VL_String);
 
 end;
 
@@ -368,13 +457,14 @@ begin
     VL_Dados := '';
     F_MensagemCarregaTags(F_Mensagem, VP_Menu);
     VL_MenuVenda := TF_MenuVenda.Create(F_Principal);
-    VL_btn := TMButton.Create(VL_MenuVenda.Painel);
+    VL_MenuVenda.Height:=170;
+    VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
     VL_btn.V_tag := '0030';
     VL_btn.Caption := 'Cancela';
     VL_btn.Align := alTop;
     VL_btn.Height := 20;
     VL_btn.BorderSpacing.Around := 20;
-    VL_btn.Parent := VL_MenuVenda.Painel;
+    VL_btn.Parent := VL_MenuVenda.PBotao;
     VL_btn.TabOrder := 0;
     VL_btn.OnClick := @F_Principal.CliqueDoBotao;
 
@@ -383,14 +473,14 @@ begin
         F_MensagemGetTagIdx(F_Mensagem, VL_i, VL_Tag, VL_Dados);
         if VL_Tag <> '0030' then
         begin
-            VL_btn := TMButton.Create(VL_MenuVenda.Painel);
+            VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
             F_MensagemGetTagIdx(F_Mensagem, VL_i, VL_Tag, VL_Dados);
             VL_btn.V_tag := VL_tag;
             VL_btn.Caption := VL_Dados;
             VL_btn.Align := alTop;
             VL_btn.Height := 20;
             VL_btn.BorderSpacing.Around := 20;
-            VL_btn.Parent := VL_MenuVenda.Painel;
+            VL_btn.Parent := VL_MenuVenda.PBotao;
             VL_btn.TabOrder := 0;
             VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
             VL_btn.OnClick := @F_Principal.CliqueDoBotao;
@@ -467,13 +557,13 @@ begin
     VL_Dados := '';
     F_MenuVenda := TF_MenuVenda.Create(F_Principal);
     F_MenuVenda.V_Mensagem := VP_Mensagem;
-    VL_btn := TMButton.Create(F_MenuVenda.Painel);
+    VL_btn := TMButton.Create(F_MenuVenda.PBotao);
     VL_btn.V_tag := '0030';
     VL_btn.Caption := 'Cancela';
     VL_btn.Align := alTop;
     VL_btn.Height := 20;
     VL_btn.BorderSpacing.Around := 20;
-    VL_btn.Parent := F_MenuVenda.Painel;
+    VL_btn.Parent := F_MenuVenda.PBotao;
     VL_btn.TabOrder := 0;
     VL_btn.OnClick := @CliqueDoBotao;
 
@@ -482,14 +572,14 @@ begin
         F_MensagemGetTagIdx(VP_Mensagem, VL_i, VL_Tag, VL_Dados);
         if VL_Tag <> '0030' then
         begin
-            VL_btn := TMButton.Create(F_MenuVenda.Painel);
+            VL_btn := TMButton.Create(F_MenuVenda.PBotao);
             F_MensagemGetTagIdx(VP_Mensagem, VL_i, VL_Tag, VL_Dados);
             VL_btn.V_tag := VL_tag;
             VL_btn.Caption := VL_Dados;
             VL_btn.Align := alTop;
             VL_btn.Height := 20;
             VL_btn.BorderSpacing.Around := 20;
-            VL_btn.Parent := F_MenuVenda.Painel;
+            VL_btn.Parent := F_MenuVenda.PBotao;
             VL_btn.TabOrder := 0;
             VL_btn.OnClick := @CliqueDoBotao;
             F_MenuVenda.Height := F_MenuVenda.Height + 40;
@@ -524,7 +614,6 @@ end;
 
 
 
-
 procedure TF_Principal.BInicializarClick(Sender: TObject);
 var
     VL_Codigo: integer;
@@ -556,8 +645,8 @@ begin
 
 
     VL_Codigo := F_TefInicializar(StrToPinPadModelo(EPinPadModelo.Text), PChar(ExtractFilePath(ParamStr(0)) +
-        EPinPadModeloLib.Text), PChar(EPinPadModeloPorta.Text), PChar(ExtractFilePath(ParamStr(0)) + EPinPadLib.Text), PChar(F_ArquivoLog),
-        @P_Retorno, @solicitadadostransacao, @solicitadadospdv, @imprime, @mostramenu, @mensagemoperador);
+        EPinPadModeloLib.Text), PChar(EPinPadModeloPorta.Text), PChar(ExtractFilePath(ParamStr(0)) + EPinPadLib.Text),
+        PChar(F_ArquivoLog), @P_Retorno, @solicitadadostransacao, @solicitadadospdv, @imprime, @mostramenu, @mensagemoperador);
 
     if VL_Codigo <> 0 then
     begin

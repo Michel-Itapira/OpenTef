@@ -138,7 +138,7 @@ var
     VL_ChaveTamanho: integer;
     VL_ChaveExpoente: string;
     VL_ChaveModulo: string;
-    VL_TempoSenha:TDateTime;
+    VL_TempoSenha: TDateTime;
 
     //function tmkEY(VP_Tamanho: Integer): TLbAsymKeySize;
     //begin
@@ -155,7 +155,7 @@ var
 
 begin
     try
-        VL_TempoSenha:=now;
+        VL_TempoSenha := now;
         VL_ChaveExpoente := '';
         VL_ChaveModulo := '';
         VL_ChaveTamanho := 0;
@@ -265,9 +265,15 @@ begin
                 begin
 
                     if VL_Criptografa then
-                        VL_MensagemCriptografada.AddTag('0033', VL_Botao)
+                    begin
+                        VL_MensagemCriptografada.AddTag('00D5',VL_Botao);
+                        VL_MensagemCriptografada.AddTag('0033', VL_Dados);
+                    end
                     else
+                    begin
+                        ftransacao.fMensagem.AddTag('00D5',VL_Botao);
                         ftransacao.fMensagem.AddTag('0033', VL_Dados);
+                    end;
 
                 end;
             end
@@ -396,12 +402,12 @@ begin
                     VL_PinPadCarregado := True;
                 end;
 
-//                F_PinPadMensagem('Aguarde...');
+                //                F_PinPadMensagem('Aguarde...');
 
-//                while TempoPassouMiliSegundos(VL_TempoSenha)<20000 do
-//                Sleep(100);
+                //                while TempoPassouMiliSegundos(VL_TempoSenha)<20000 do
+                //                Sleep(100);
 
-                VL_TempoSenha:=now;
+                VL_TempoSenha := now;
 
                 VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
                 if VL_Erro <> 0 then

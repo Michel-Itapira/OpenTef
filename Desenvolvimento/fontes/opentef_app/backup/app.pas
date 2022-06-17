@@ -5,7 +5,7 @@ unit app;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, opentefnucleo, funcoes;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, opentefnucleo, funcoes;
 
 type
 
@@ -17,6 +17,9 @@ type
         BParar: TButton;
         BMenu: TButton;
         BBin: TButton;
+        Button1: TButton;
+        Image1: TImage;
+        Image2: TImage;
         MMenu: TMemo;
         MBIN: TMemo;
         MMenuOperacional: TMemo;
@@ -25,6 +28,7 @@ type
         procedure BPararClick(Sender: TObject);
         procedure BMenuClick(Sender: TObject);
         procedure BBinClick(Sender: TObject);
+        procedure Button1Click(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 
     private
@@ -98,6 +102,14 @@ begin
       MBIN.Lines.Add('BIN:'+VL_RecBin.IIN+' ModuloConf_ID:'+IntToStr(VL_RecBin.ModuloConfID));
     end;
 
+end;
+
+procedure TFApp.Button1Click(Sender: TObject);
+var
+    s:string;
+begin
+    ImagemToStr(s,Image1);
+    StrToImagem(s,Image2);
 end;
 
 

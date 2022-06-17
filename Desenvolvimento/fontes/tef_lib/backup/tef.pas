@@ -265,9 +265,14 @@ begin
                 begin
 
                     if VL_Criptografa then
-                        VL_MensagemCriptografada.AddTag('0033', VL_Botao)
+                    begin
+                        VL_MensagemCriptografada.AddTag( VL_Botao,'') ;
+                        vl-ftransacao.fMensagem.AddTag('0033', VL_Dados);
+                    end
                     else
+                    begin
                         ftransacao.fMensagem.AddTag('0033', VL_Dados);
+                    end;
 
                 end;
             end
@@ -396,10 +401,10 @@ begin
                     VL_PinPadCarregado := True;
                 end;
 
-                F_PinPadMensagem('Aguarde...');
+//                F_PinPadMensagem('Aguarde...');
 
-                while TempoPassouMiliSegundos(VL_TempoSenha)<20000 do
-                Sleep(100);
+//                while TempoPassouMiliSegundos(VL_TempoSenha)<20000 do
+//                Sleep(100);
 
                 VL_TempoSenha:=now;
 

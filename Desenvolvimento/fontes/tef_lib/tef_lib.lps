@@ -8,7 +8,7 @@
       <Unit>
         <Filename Value="tef_lib.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="7"/>
         <CursorPos X="69" Y="30"/>
         <UsageCount Value="232"/>
@@ -21,9 +21,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="380"/>
-        <CursorPos X="3" Y="402"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="595"/>
+        <CursorPos X="10" Y="498"/>
         <UsageCount Value="232"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -35,8 +35,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="39"/>
-        <CursorPos X="5" Y="57"/>
+        <TopLine Value="151"/>
+        <CursorPos X="19" Y="168"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -56,7 +56,7 @@
       <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <CursorPos Y="14"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -64,7 +64,7 @@
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="28"/>
         <CursorPos X="14" Y="45"/>
         <UsageCount Value="100"/>
@@ -72,7 +72,7 @@
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="236"/>
         <CursorPos X="20" Y="256"/>
         <UsageCount Value="114"/>
@@ -94,7 +94,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="153"/>
         <CursorPos X="18" Y="169"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -103,7 +103,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="30"/>
         <CursorPos X="21" Y="47"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -113,27 +113,20 @@
         <CursorPos X="19" Y="1791"/>
         <UsageCount Value="9"/>
       </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\extctrls.pp"/>
+        <UnitName Value="ExtCtrls"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="557"/>
+        <CursorPos X="9" Y="575"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="CLIENTE"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="430" Column="5" TopLine="335"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="75" Column="21" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="255" Column="10" TopLine="237"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="267" Column="10" TopLine="238"/>
-      </Position>
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="tef.pas"/>
         <Caret Line="295" Column="14" TopLine="267"/>
@@ -159,10 +152,6 @@
         <Caret Line="159" Column="29" TopLine="143"/>
       </Position>
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1119" TopLine="1127"/>
-      </Position>
-      <Position>
         <Filename Value="tef.pas"/>
         <Caret Line="393" Column="36" TopLine="381"/>
       </Position>
@@ -176,31 +165,11 @@
       </Position>
       <Position>
         <Filename Value="tef.pas"/>
-        <Caret Line="25" Column="5" TopLine="82"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="58" Column="16" TopLine="293"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
         <Caret Line="136" Column="23" TopLine="118"/>
       </Position>
       <Position>
         <Filename Value="tef.pas"/>
-        <Caret Line="400" Column="39" TopLine="430"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="136" Column="23" TopLine="313"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
         <Caret Line="371" Column="17" TopLine="364"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="158" Column="32" TopLine="180"/>
       </Position>
       <Position>
         <Filename Value="tef.pas"/>
@@ -237,6 +206,42 @@
       <Position>
         <Filename Value="tef.pas"/>
         <Caret Line="479" TopLine="460"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="402" Column="3" TopLine="380"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="166" Column="86" TopLine="144"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="8" Column="90"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="12" Column="5"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="200" Column="31" TopLine="182"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="169" Column="54" TopLine="151"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="168" Column="14" TopLine="151"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="199" Column="21" TopLine="199"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="169" Column="19" TopLine="168"/>
       </Position>
     </JumpHistory>
     <RunParams>

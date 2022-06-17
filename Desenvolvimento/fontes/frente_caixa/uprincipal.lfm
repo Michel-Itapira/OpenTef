@@ -1,11 +1,11 @@
 object F_Principal: TF_Principal
-  Left = 1393
+  Left = 1074
   Height = 599
   Top = 76
-  Width = 920
+  Width = 1239
   Caption = 'F_Principal'
   ClientHeight = 599
-  ClientWidth = 920
+  ClientWidth = 1239
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '2.2.0.4'
@@ -680,7 +680,7 @@ object F_Principal: TF_Principal
       Top = 87
       Width = 120
       TabOrder = 4
-      Text = 'COM9'
+      Text = 'COM6'
     end
     object Label23: TLabel
       Left = 8

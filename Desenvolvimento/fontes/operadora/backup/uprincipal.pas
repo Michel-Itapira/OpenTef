@@ -5,7 +5,7 @@ unit uprincipal;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, rxspin;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, rxspin;
 
 type
 
@@ -48,6 +48,7 @@ type
         EIPCaixa: TEdit;
         EChave: TEdit;
         EIPServico: TEdit;
+        Image1: TImage;
         Label1: TLabel;
         Label2: TLabel;
         Label3: TLabel;
@@ -151,6 +152,26 @@ var
     VL_TagDados: PChar;
     VL_Pan,VL_TK2: PChar;
     VL_String: string;
+    VL_Stream:TMemoryStream;
+
+  procedure ImagemToStr(var Dados: string; Imagem: TImage);
+  var
+      Sm: TStringStream;
+      I: integer;
+      S: string;
+  begin
+      Dados:='';
+      Sm := TStringStream.Create('');
+      Imagem.Picture.SaveToStream(Sm);
+      S := sm.DataString;
+
+      for i := 0 to Length(S) -1  do
+          Dados := Dados + HexStr(Ord(S[i+1]), 2);
+
+
+      Sm.Free;
+  end;
+
 
 begin
     try
@@ -256,7 +277,7 @@ begin
 
 
 
-            if VL_Senha = '' then
+   {         if VL_Senha = '' then
             begin
 //                F_MensagemLimpar(VL_Mensagem_Dados);
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('005A'), PChar('S'));   //solicita senha
@@ -272,14 +293,14 @@ begin
                 fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
                 Exit;
             end;
-
-           { if VL_TagDados = '' then         // exemplo de captura de dados
+               }
+            if VL_TagDados = '' then         // exemplo de captura de dados
             begin
                 F_MensagemLimpar(VL_Mensagem_Dados);
 
                 // INFORMA OS BOTOES DENTRO DA TAG DE COMANDO DO BOTAO 0018
 
-                F_MensagemAddComando(VL_Mensagem_Dados, '00DD', 'D');
+                F_MensagemAddComando(VL_Mensagem_Dados, '0000', 'S');
                 F_MensagemAddTag(VL_Mensagem_Dados, '002F', PChar('OK'));    //BOTAO OK
 
                 VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
@@ -289,13 +310,23 @@ begin
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('002A'), PChar('S'));   //solicita dados pdv
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar('INFORME O CPF'));    //MENSAGEM A SER MOSTRADA
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DD', PChar(VL_String));    //BOTOES A MOSTRAR
-                F_MensagemAddTag(VL_Mensagem_Dados, '0033', PChar(''));    //BOTOES A MOSTRAR
+                F_MensagemAddTag(VL_Mensagem_Dados, '0033', PChar('A'));    //campo para capturar sem mascara
+
+                ImagemToStr(VL_String,Form1.Image1);
+
+                F_MensagemAddTag(VL_Mensagem_Dados, '002E', PChar(VL_String));    //campo para capturar sem mascara
+
+
+
+
+
+
                 VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
                 fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
 
             end
 
-            else }
+            else
             begin
   //              F_MensagemLimpar(VL_Mensagem_Dados);
                 VL_String :='Cartão:'+VL_TK2+#13+ 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 + 'CPF:' + VL_TagDados+#13+'Valor dos itens:'+VL_Valor;

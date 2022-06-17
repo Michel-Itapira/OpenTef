@@ -250,9 +250,6 @@ begin
             begin
                 VO_Mensagem.AddTag('0046', Result);
                 VO_Mensagem.AddTag('004D', '6');
-                F_PinPad.PinPadMensagem('    Operacao       cancelada    ');
-                sleep(2000);
-                F_PinPad.PinPadMensagem('    OpenTef    ');
                 Exit;
             end;
             VO_Mensagem.AddTag('0046', Result);
@@ -328,8 +325,9 @@ begin
         while True do
         begin
             VL_Retorno := F_PinPad.PinPadLerSenha(VL_Dados, fMensagem.GetTagAsInteger('005B'), fMensagem.GetTagAsAstring(
-                '005F'), fMensagem.GetTagAsAstring('0062'), fMensagem.GetTagAsInteger('005D'), fMensagem.GetTagAsInteger('005E'),
-                fMensagem.GetTagAsAstring('005C'),VL_Mensagem);
+                '005F'), fMensagem.GetTagAsAstring('00D9'), fMensagem.GetTagAsInteger('005D'), fMensagem.GetTagAsInteger('005E'),
+                fMensagem.GetTagAsAstring('005C'),VL_Mensagem,fMensagem.GetTagAsInteger('0051'));
+
             if VL_Retorno <> 0 then
             begin
                 fMensagem.CarregaTags(VL_Mensagem.TagsAsString);
@@ -353,13 +351,15 @@ begin
 
     finally
     VL_Mensagem.Free;
+    fMensagem.Free;
     end;
 end;
 
 
 constructor TTPinPad.Create(VP_Processo_ID: integer; VP_CreateSuspended: boolean; VP_Mensagem: TMensagem; var VO_TRespostaPinPad: TRespostaPinPad);
 begin
-    fMensagem := VP_Mensagem;
+    fMensagem:=TMensagem.Create;
+    fMensagem.CarregaTags(VP_Mensagem.TagsAsString);
     fProcessoID := VP_Processo_ID;
     fRespostaPinPad := VO_TRespostaPinPad;
     FreeOnTerminate := True;

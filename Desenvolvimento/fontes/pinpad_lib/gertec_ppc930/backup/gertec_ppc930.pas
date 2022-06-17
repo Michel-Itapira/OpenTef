@@ -24,14 +24,14 @@ type
     TAbecsCmdGpnEntry_S = record
         min: uint8;
         max: uint8;
-        msg: array[0 .. 31] of ansichar;
+        msg: array[0 .. 31] of Pchar;
     end;
 
     TAbecsCmdGpn_S = record
-        method: integer;
+        method: Integer;
         keyIdx: uint8;
-        wkEnc: array[0 .. 32] of ansichar;
-        pan: array[0 .. 19] of ansichar;
+        wkEnc: array[0 .. 32] of Pchar;
+        pan: array[0 .. 19] of Pchar;
         entryCount: uint8;
         entries: array[0 .. 9] of TAbecsCmdGpnEntry_S;
     end;
@@ -42,18 +42,18 @@ type
     end;
 
     TAbecsNotification_S = record
-        msg:array of ansichar;
+        msg: array [0..256] of ansichar;
     end;
 
-    TGpinpad_exception_handler = procedure(errCode: int16; msg: pansichar); stdcall;
+    TGpinpad_exception_handler = procedure(errCode: int16; msg: PChar); stdcall;
     TPcl_exception_set_uncaught_handler = procedure(handler: TGpinpad_exception_handler); stdcall;
-    Tabecs_comm_open = function(portName: ansistring): Pointer; stdcall;
+    Tabecs_comm_open = function(portName: PChar): Pointer; stdcall;
     Tabecs_comm_close = procedure(pinpad: PPointer); stdcall;
 
     Tabecs_cmd_opn = function(pinpad: Pointer; secure: integer): integer; stdcall;
-    Tabecs_cmd_dsp = function(pinpad: Pointer; msg: ansistring): integer; stdcall;
-    Tabecs_cmd_clo = function(pinpad: Pointer; msg: ansistring): integer; stdcall;
-    Tabecs_cmd_cex = procedure(pinpad: Pointer; cexOp: ansistring; timeout: Pointer; panMask: Pointer) stdcall;
+    Tabecs_cmd_dsp = function(pinpad: Pointer; msg: PChar): integer; stdcall;
+    Tabecs_cmd_clo = function(pinpad: Pointer; msg: PChar): integer; stdcall;
+    Tabecs_cmd_cex = procedure(pinpad: Pointer; cexOp: PChar; timeout: Pointer; panMask: Pointer) stdcall;
     Tabecs_cmd_gpn = procedure(pinpad: Pointer; AbecsCmdGpn_S: Pointer) stdcall;
 
     Tabecs_cmd_cex_response = function(pinpad: Pointer; outmap: Pointer; outNotify: Pointer): integer; stdcall;
@@ -67,9 +67,9 @@ type
     //Tabecs_rsp_param_map_next = function(outinterator: Pointer): Pointer; stdcall;
 
     Tabecs_cmd_cex_response_get_event = function(map: Pointer): integer; stdcall;
-    Tabecs_cmd_cex_response_get_trk1inc = function(map: Pointer): pansichar; stdcall;
-    Tabecs_cmd_cex_response_get_trk2inc = function(map: Pointer): pansichar; stdcall;
-    Tabecs_cmd_cex_response_get_trk3inc = function(map: Pointer): pansichar; stdcall;
+    Tabecs_cmd_cex_response_get_trk1inc = function(map: Pointer): PChar; stdcall;
+    Tabecs_cmd_cex_response_get_trk2inc = function(map: Pointer): PChar; stdcall;
+    Tabecs_cmd_cex_response_get_trk3inc = function(map: Pointer): PChar; stdcall;
 
     TPcl_map_delete = procedure(map: Pointer); stdcall;
 
@@ -91,7 +91,7 @@ type
         function PinPadMensagem(VP_Mensagem: string): integer; override;
         function PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer; var VO_Mensagem: TMensagem): integer; override;
         function PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
-            VP_Mensagem: string; var VO_Mensagem: TMensagem;VP_TempoEspera: integer): integer; override;
+            VP_Mensagem: string; var VO_Mensagem: TMensagem; VP_TempoEspera: integer): integer; override;
 
 
     end;
@@ -252,22 +252,22 @@ function TGertec_ppc930.PinPadConecta(VO_Mensagem: TMensagem): integer;
 begin
     Result := 1;
     VF_PinpadExecption := False;
-    fPinPad := abecs_comm_open(fPorta);
+    fPinPad := abecs_comm_open(PChar(fPorta));
     if VF_PinpadExecption then
     begin
         VO_Mensagem.AddComando('0049', 'R');
         VO_Mensagem.AddTag('004D', VF_PinpadExecptionCodigo);
         VO_Mensagem.AddTag('004A', VF_PinpadExecptionMensgem);
-        Result:=VF_PinpadExecptionCodigo;
+        Result := VF_PinpadExecptionCodigo;
         Exit;
     end;
-    Result := abecs_cmd_opn(fPinPad, 1);
+    Result := abecs_cmd_opn(fPinPad, 0);
     if VF_PinpadExecption then
     begin
         VO_Mensagem.AddComando('0049', 'R');
         VO_Mensagem.AddTag('004D', VF_PinpadExecptionCodigo);
         VO_Mensagem.AddTag('004A', VF_PinpadExecptionMensgem);
-        Result:=VF_PinpadExecptionCodigo;
+        Result := VF_PinpadExecptionCodigo;
         Exit;
     end;
 
@@ -276,14 +276,14 @@ end;
 
 function TGertec_ppc930.PinPadDesconectar(VL_Mensagem: string): integer;
 begin
-    abecs_cmd_clo(fPinPad, ansistring(VL_Mensagem));
+    abecs_cmd_clo(fPinPad, PChar(VL_Mensagem));
     abecs_comm_close(@fPinPad);
     Result := 0;
 end;
 
 function TGertec_ppc930.PinPadMensagem(VP_Mensagem: string): integer;
 begin
-    abecs_cmd_dsp(fPinPad, VP_Mensagem);
+    abecs_cmd_dsp(fPinPad, PChar(VP_Mensagem));
     Result := 0;
 end;
 
@@ -293,19 +293,18 @@ var
     VL_Timeout: PInteger;
     VL_Map: Pointer;
     VL_Retorno: integer;
-    VL_Agora:TDateTime;
-    VL_Notificacao:^TAbecsNotification_S;
-    VL_Dados:String;
-    VL_I:Integer;
+    VL_Agora: TDateTime;
+    VL_Notificacao: ^TAbecsNotification_S;
+    VL_Dados: string;
+    VL_I: integer;
 
 begin
     try
-        VL_Agora:=now;
+        VL_Agora := now;
         VL_Retorno := -1;
         new(VL_Timeout);
         new(VL_Notificacao);
-        VL_Timeout^ := VP_TempoEspera;
-        VL_Dados:='';
+        VL_Dados := '';
 
         VL_PanMask.leftOpenDigits := 19;
         VL_PanMask.rightOpenDigits := 19;
@@ -313,23 +312,29 @@ begin
         VL_Map := abecs_rsp_param_map_new();
 
         VF_PinpadExecption := False;
+
+        VP_TempoEspera:=VP_TempoEspera div 1000;
+
+        if VP_TempoEspera = 0 then
+            VP_TempoEspera := 30;
+        VL_Timeout^ := VP_TempoEspera;
+
+        VP_TempoEspera:=VP_TempoEspera*1000;
+
         abecs_cmd_cex(fPinPad, '110000', VL_Timeout, @VL_PanMask);
 
-        if VP_TempoEspera=0 then
-        VP_TempoEspera:=30000;
-
-        while (VL_Retorno = -1) and  (VF_PinpadExecption = False) do
+        while (VL_Retorno = -1) and (VF_PinpadExecption = False) do
         begin
             sleep(10);
             VL_Retorno := abecs_cmd_cex_response(fPinPad, VL_Map, VL_Notificacao);
-            if TempoPassouMiliSegundos(VL_Agora)>VP_TempoEspera then
+            if TempoPassouMiliSegundos(VL_Agora) > VP_TempoEspera then
             begin
-                Result:=85;
+                Result := 85;
                 VO_Mensagem.AddComando('0049', 'R');
                 VO_Mensagem.AddTag('004D', 85);
 
-                for VL_I:=0 to Length(VL_Notificacao^.msg) -1 do
-                VL_Dados:=VL_Dados+VL_Notificacao^.msg[VL_I];
+                for VL_I := 0 to Length(VL_Notificacao^.msg) - 1 do
+                    VL_Dados := VL_Dados + VL_Notificacao^.msg[VL_I];
                 VO_Mensagem.AddTag('004A', VL_Dados);
                 pcl_map_delete(@VL_Map);
                 Exit;
@@ -357,107 +362,110 @@ begin
         Result := VL_Retorno;
 
     finally
-    Dispose(VL_Timeout);
-    Dispose(VL_Notificacao);
+        Dispose(VL_Timeout);
+        Dispose(VL_Notificacao);
     end;
-
 
 end;
 
 function TGertec_ppc930.PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
-    VP_Mensagem: string; var VO_Mensagem: TMensagem;VP_TempoEspera: integer): integer;
+    VP_Mensagem: string; var VO_Mensagem: TMensagem; VP_TempoEspera: integer): integer;
 var
-    VL_cmdData: ^TAbecsCmdGpn_S;
+    VL_cmdData: TAbecsCmdGpn_S;
     VL_Retorno: integer;
-    VL_rspDataOut: ^TAbecsCmdGpnResponse_S;
+    VL_rspDataOut: TAbecsCmdGpnResponse_S;
     VL_I: integer;
-    VL_Agora:TDateTime;
-    VL_Dados:string;
-    VL_Notificacao:^TAbecsNotification_S;
+    VL_Agora: TDateTime;
+    VL_Dados: string;
+    VL_Notificacao: TAbecsNotification_S;
 begin
-        VL_Agora:=now;
-        VL_Dados:='';
-        New(VL_cmdData);
-        New(VL_rspDataOut);
-        New(VL_Notificacao);
+    VL_Agora := now;
+    VL_Dados := '';
 
-        try
+    for VL_I := 0 to 255 do
+        VL_Notificacao.msg[VL_I] := #0;
 
-        for VL_I:=0 to 31 do
-        VL_cmdData^.entries[0].msg[VL_I]:=#0;
 
-        VL_cmdData^.method := 1;
-        VL_cmdData^.keyIdx := VP_KW_Index;
+    for VL_I := 0 to 16 do
+        VL_rspDataOut.pinBlk[VL_I] := #0;
 
-        for VL_I := 0 to 31 do
-            VL_cmdData^.wkEnc[VL_I] := VP_KW[VL_I + 1];
-        VL_cmdData^.wkEnc[32] := #0;
+    for VL_I := 0 to 20 do
+        VL_rspDataOut.ksn[VL_I] := #0;
 
-        for VL_I := 0 to 18 do
-            VL_cmdData^.pan[VL_I] := VP_Pan[VL_I + 1];
-        VL_cmdData^.pan[19] := #0;
 
-        VL_cmdData^.entryCount := 1;
-        VL_cmdData^.entries[0].min := VP_DigMin;
-        VL_cmdData^.entries[0].max := VP_DigMax;
+    for VL_I := 0 to 31 do
+        VL_cmdData.entries[0].msg[VL_I] := #0;
 
-        for VL_I := 0 to Length(VP_Mensagem) do
-            VL_cmdData^.entries[0].msg[VL_I] := VP_Mensagem[VL_I + 1];
+    VL_cmdData.method := 1;
+    VL_cmdData.keyIdx := VP_KW_Index;
 
-        VL_cmdData^.entries[0].msg[VL_I + 1] := #0;
+    for VL_I := 0 to 31 do
+       VL_cmdData.wkEnc[VL_I]^ := VP_KW[VL_I + 1];
+    VL_cmdData.wkEnc[32] := #0;
 
-        VL_Retorno := -1;
-        VF_PinpadExecption := False;
+    for VL_I := 0 to 18 do
+        VL_cmdData.pan[VL_I]^ := VP_Pan[VL_I + 1];
+    VL_cmdData.pan[19] := #0;
 
-        if VP_TempoEspera=0 then
-        VP_TempoEspera:=30000;
+    VL_cmdData.entryCount := 1;
+    VL_cmdData.entries[0].min := VP_DigMin;
+    VL_cmdData.entries[0].max := VP_DigMax;
 
-        abecs_cmd_gpn(fPinPad, VL_cmdData);
+    for VL_I := 0 to Length(VP_Mensagem) do
+        VL_cmdData.entries[0].msg[VL_I]^ := VP_Mensagem[VL_I + 1];
 
-        SetLength(VL_Notificacao^.msg,1);
-        VL_Notificacao^.msg[0]:=#0;
+    VL_cmdData.entries[0].msg[VL_I + 1] := #0;
 
-        while (VL_Retorno = -1) and (VF_PinpadExecption = False) and (VL_Notificacao^.msg[0]=#0) do
+    VL_Retorno := -1;
+    VF_PinpadExecption := False;
+
+    if VP_TempoEspera = 0 then
+        VP_TempoEspera := 30000;
+
+    //SetLength(VL_Notificacao.msg,);
+    //VL_Notificacao.msg[0]:=#0;
+
+    abecs_cmd_gpn(fPinPad, @VL_cmdData);
+    while (VL_Retorno = -1) and (VF_PinpadExecption = False) and (VL_Notificacao.msg[0] = #0) do
+    begin
+        sleep(10);
+        VL_Retorno := abecs_cmd_gpn_response(fPinPad, @VL_rspDataOut, @VL_Notificacao);
+        if TempoPassouMiliSegundos(VL_Agora) > VP_TempoEspera then
         begin
-            VL_Retorno := abecs_cmd_gpn_response(fPinPad, VL_rspDataOut, VL_Notificacao);
-            sleep(1000);
-
-
-            if TempoPassouMiliSegundos(VL_Agora)>VP_TempoEspera then
-            begin
-                Result:=85;
-                VO_Mensagem.AddComando('0049', 'R');
-                VO_Mensagem.AddTag('004D', 85);
-
-                for VL_I:=0 to Length(VL_Notificacao^.msg) -1 do
-                VL_Dados:=VL_Dados+VL_Notificacao^.msg[VL_I];
-                VO_Mensagem.AddTag('004A', VL_Dados);
-
-                Exit;
-            end;
-        end;
-
-        if VF_PinpadExecption then
-        begin
-            Result := VF_PinpadExecptionCodigo;
+            Result := 85;
             VO_Mensagem.AddComando('0049', 'R');
-            VO_Mensagem.AddTag('004D', VF_PinpadExecptionCodigo);
-            VO_Mensagem.AddTag('004A', VF_PinpadExecptionMensgem);
+            VO_Mensagem.AddTag('004D', 85);
+
+            for VL_I := 0 to Length(VL_Notificacao.msg) - 1 do
+                VL_Dados := VL_Dados + VL_Notificacao.msg[VL_I];
+            VO_Mensagem.AddTag('004A', VL_Dados);
+
             Exit;
         end;
+    end;
 
+    if VF_PinpadExecption then
+    begin
+        Result := VF_PinpadExecptionCodigo;
+        VO_Mensagem.AddComando('0049', 'R');
+        VO_Mensagem.AddTag('004D', VF_PinpadExecptionCodigo);
+        VO_Mensagem.AddTag('004A', VF_PinpadExecptionMensgem);
+        Exit;
+    end;
 
-        Result := VL_Retorno;
-        if VL_Retorno = 0 then
-            VO_Senha := VL_rspDataOut^.pinBlk;
+    if VL_Notificacao.msg[0]<>#0 then
+    begin
+        VO_Mensagem.AddComando('0049', 'R');
+        VO_Mensagem.AddTag('004D', 1);
+        VO_Mensagem.AddTag('004A', VL_Notificacao.msg);
+        Exit;
 
+    end;
 
+    Result := VL_Retorno;
+    if VL_Retorno = 0 then
+        VO_Senha := VL_rspDataOut.pinBlk;
 
-        finally
-        Dispose(VL_rspDataOut);
-        Dispose(VL_cmdData);
-        Dispose(VL_Notificacao);
-        end;
 end;
 
 

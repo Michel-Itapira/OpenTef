@@ -19,8 +19,12 @@ type
 
   TF_MenuVenda = class(TForm)
     EDados: TEdit;
-    GDados: TGroupBox;
-    Painel: TPanel;
+    PDados: TGroupBox;
+    Imagem: TImage;
+    LMensagem: TLabel;
+    PBotao: TPanel;
+    PMensagem: TPanel;
+    PImagem: TPanel;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
   private
 

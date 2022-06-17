@@ -5,9 +5,11 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, ZDataset, DB, rxmemds, IdContext, syncobjs, def;
+    Classes, SysUtils, StrUtils, ZDataset, DB, rxmemds, IdContext, syncobjs, def, ExtCtrls, Graphics;
 
 type
+
+    TImagem = (TI_Jpg, TI_Png, TI_BMP, TI_GIF);
 
     TTag = record
         Tag: ansistring;
@@ -50,7 +52,7 @@ type
     private
 
     public
-        function TrataErro(VP_CodigoErro: Variant; var VO_RespostaMensagem: string): integer;
+        function TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
     end;
 
     TPinPadModelo = (pNDF, pGERTEC_PPC930);
@@ -162,7 +164,9 @@ function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
 function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
 function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
 function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
-function TempoPassouMiliSegundos(VP_Agora:TDateTime):integer;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
+procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
+procedure ImagemToStr(var Dados: string; Imagem: TImage);
 
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
@@ -189,6 +193,92 @@ var
 
 
 implementation
+
+
+procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
+var
+    JP: TJPEGImage;
+    PNG: TPortableNetworkGraphic;
+    BPM: TBitmap;
+    Sm: TStringStream;
+    i: integer;
+    S, L: string;
+begin
+    s := '';
+    L := '';
+    if Dados = '' then
+    begin
+        Imagem.Picture.Graphic := nil;
+        exit;
+    end;
+
+    for i := 0 to Length(Dados) div 2 - 1 do
+    begin
+        L := copy(Dados, ((1 + i) * 2) - 1, 2);
+        s := s + char(Hex2Dec(L));
+    end;
+
+
+   Sm := TStringStream.Create(s);
+
+
+    if Length(s) > 5 then
+    begin
+        if ((char(s[2]) = 'P') and (char(s[3]) = 'N') and (char(s[4]) = 'G')) then
+            Tipo_Imagem := TI_Png;
+        if ((char(s[1]) = 'B') and (char(s[2]) = 'M')) then
+            Tipo_Imagem := TI_BMP;
+    end;
+
+
+    if Tipo_Imagem = TI_JPG then
+    begin
+        JP := TJPEGImage.Create;
+        JP.LoadFromStream(Sm);
+        Imagem.Picture.Assign(JP);
+        JP.Free;
+        Sm.Free;
+    end
+    else
+    if Tipo_Imagem = TI_Png then
+    begin
+        PNG := TPortableNetworkGraphic.Create;
+        PNG.LoadFromStream(Sm);
+        Imagem.Picture.Assign(PNG);
+        PNG.Free;
+        Sm.Free;
+    end
+    else
+    if Tipo_Imagem = TI_BMP then
+    begin
+        BPM := TBitmap.Create;
+        BPM.LoadFromStream(Sm);
+        Imagem.Picture.Assign(BPM);
+        BPM.Free;
+        Sm.Free;
+    end;
+
+end;
+
+
+procedure ImagemToStr(var Dados: string; Imagem: TImage);
+var
+    Sm: TStringStream;
+    I: integer;
+    S: string;
+begin
+    Dados:='';
+    Sm := TStringStream.Create('');
+    Imagem.Picture.SaveToStream(Sm);
+    S := sm.DataString;
+
+    for i := 0 to Length(S) -1  do
+        Dados := Dados + HexStr(Ord(S[i+1]), 2);
+
+
+    Sm.Free;
+end;
+
 
 function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
 begin
@@ -292,7 +382,7 @@ begin
     VO_RespostaMensagem := '';
     Result := 0;
 
-    if StrToIntDef(VP_CodigoErro,0)=0 then
+    if StrToIntDef(VP_CodigoErro, 0) = 0 then
         VP_CodigoErro := 0;
 
     if VP_CodigoErro = 0 then
@@ -458,8 +548,8 @@ begin
         fTEmporizadorTThread.WaitFor;
         if Assigned(fTEmporizadorTThread) then
         begin
-//            fTEmporizadorTThread.free;
-            fTEmporizadorTThread:=nil;
+            //            fTEmporizadorTThread.free;
+            fTEmporizadorTThread := nil;
         end;
 
         if V_Executado then
@@ -705,9 +795,9 @@ begin
     for I := 0 to 50 do
     begin
         if Length(VL_Chave) < 50 then
-            VL_Chave := VL_Chave + IntToStr(Random(99))+IntToStr(Random(999));
+            VL_Chave := VL_Chave + IntToStr(Random(99)) + IntToStr(Random(999));
     end;
-    VO_Chave := Copy(VL_Chave,1 , 50);
+    VO_Chave := Copy(VL_Chave, 1, 50);
 end;
 
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
@@ -1065,7 +1155,7 @@ function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer
 var
     i: integer;
 begin
-    VO_Dados:='';
+    VO_Dados := '';
     //Tag não encontrada no pacote
     Result := 29;
 
@@ -1095,7 +1185,7 @@ end;
 function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
 begin
     Result := 0;
-    VO_Dados:='';
+    VO_Dados := '';
     if Length(fTags) > VP_Posicao then
     begin
         VO_Tag := fTags[VP_Posicao].Tag;
@@ -1184,9 +1274,9 @@ begin
     Result := Length(fTags) - 1;
 end;
 
-function TempoPassouMiliSegundos(VP_Agora:TDateTime):integer;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
 begin
- Result:=  TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora)) ;
+    Result := TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
 end;
 
 function TMensagem.GetTagAsInteger(VP_Tag: ansistring): integer;
@@ -1219,7 +1309,7 @@ begin
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
-        AddComando('0000','');
+        AddComando('0000', '');
     end;
     //verifica se o parametro dados contem valor
     for i := 0 to length(fTags) - 1 do
@@ -1252,7 +1342,7 @@ begin
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
-        AddComando('0000','');
+        AddComando('0000', '');
     end;
     //verifica se o parametro dados contem valor
     for i := 0 to length(fTags) - 1 do
