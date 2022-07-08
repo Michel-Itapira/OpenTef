@@ -1,7 +1,0 @@
-object DServico: TDServico
-  OldCreateOrder = False
-  Height = 150
-  HorizontalOffset = 620
-  VerticalOffset = 267
-  Width = 266
-end

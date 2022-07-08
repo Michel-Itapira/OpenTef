@@ -1,7 +1,0 @@
-object DModulo: TDModulo
-  OldCreateOrder = False
-  Height = 150
-  HorizontalOffset = 817
-  VerticalOffset = 272
-  Width = 331
-end
