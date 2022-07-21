@@ -1,0 +1,7 @@
+object DCom: TDCom
+  OldCreateOrder = False
+  Height = 267
+  HorizontalOffset = 769
+  VerticalOffset = 578
+  Width = 357
+end

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="modulo_padrao.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="5"/>
+        <CursorPos Y="17"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="modulo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DModulo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="134"/>
+        <CursorPos Y="147"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DComunicador"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="567"/>
+        <CursorPos X="27" Y="580"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="5" Y="14"/>
+        <UsageCount Value="207"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="28"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\tef_lib\tef.pas"/>
+        <ComponentName Value="DTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="175"/>
+        <CursorPos X="3" Y="186"/>
+        <UsageCount Value="131"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\com_lib\com.pas"/>
+        <ComponentName Value="DCom"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="24" Y="88"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\core\ZFunctionsStrings.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="639"/>
+        <CursorPos X="40" Y="656"/>
+        <UsageCount Value="100"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="122" Column="86" TopLine="103"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="100" Column="13" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="131" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="121" Column="69" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="99" Column="54" TopLine="99"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="54" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="46" Column="10" TopLine="27"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="248" Column="8" TopLine="247"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="46" Column="111" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="247" Column="4" TopLine="247"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="248" Column="14" TopLine="228"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="42" Column="17" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="109" Column="5" TopLine="101"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="51" Column="18" TopLine="20"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="42" Column="13" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="104" Column="2" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="50" Column="15" TopLine="16"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="129" Column="24" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="377" Column="6" TopLine="372"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="130" Column="18" TopLine="112"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="132" Column="21" TopLine="114"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="1133" Column="5" TopLine="1129"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="132" Column="18" TopLine="115"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="1141" TopLine="1123"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="135" Column="19" TopLine="117"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="61" Column="60" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="44" Column="13" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="888" Column="9" TopLine="888"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="150" Column="7" TopLine="134"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="147" TopLine="134"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\tef_lib\tef.pas"/>
+        <Line Value="174"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>

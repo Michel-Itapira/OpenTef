@@ -1,0 +1,31 @@
+object DNucleo: TDNucleo
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
+  OldCreateOrder = False
+  Height = 242
+  HorizontalOffset = 1573
+  VerticalOffset = 283
+  Width = 416
+  object ZConexao: TZConnection
+    ControlsCodePage = cCP_UTF8
+    AutoEncodeStrings = True
+    ClientCodepage = 'ISO8859_1'
+    Properties.Strings = (
+      'codepage=ISO8859_1'
+      'RawStringEncoding=DB_CP'
+    )
+    AutoCommit = False
+    TransactIsolationLevel = tiReadCommitted
+    Port = 0
+    User = 'SYSDBA'
+    Protocol = 'firebird'
+    Left = 40
+    Top = 16
+  end
+  object ZConsulta: TZQuery
+    Connection = ZConexao
+    Params = <>
+    Left = 128
+    Top = 16
+  end
+end
