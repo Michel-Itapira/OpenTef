@@ -110,7 +110,7 @@ var
    s:string;
 
 begin
-
+    s:='';
 
     BarcodeToStr(s,BarcodeQR1);
     StrToImagem(s,Image2);

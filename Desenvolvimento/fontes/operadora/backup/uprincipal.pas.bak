@@ -5,7 +5,7 @@ unit uprincipal;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, rxspin;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, rxspin;
 
 type
 
@@ -48,6 +48,7 @@ type
         EIPCaixa: TEdit;
         EChave: TEdit;
         EIPServico: TEdit;
+        Image1: TImage;
         Label1: TLabel;
         Label2: TLabel;
         Label3: TLabel;
@@ -144,27 +145,46 @@ procedure ThProcessaSolicitacoes.Execute;
 var
     VL_Erro: integer;
     VL_Senha: PChar;
-    VL_Valor:PChar;
+    VL_Valor: PChar;
     VL_Mensagem: Pointer;
     VL_Mensagem_Dados: Pointer;
     VL_Mensagem_Dados_Protegidos: Pointer;
     VL_TagDados: PChar;
-    VL_Pan,VL_TK2: PChar;
+    VL_Pan, VL_TK2: PChar;
     VL_String: string;
+    VL_Stream: TMemoryStream;
+
+    procedure ImagemToStr(var Dados: string; Imagem: TImage);
+    var
+        Sm: TStringStream;
+        I: integer;
+        S: string;
+    begin
+        Dados := '';
+        Sm := TStringStream.Create('');
+        Imagem.Picture.SaveToStream(Sm);
+        S := sm.DataString;
+
+        for i := 0 to Length(S) - 1 do
+            Dados := Dados + HexStr(Ord(S[i + 1]), 2);
+
+
+        Sm.Free;
+    end;
 
 begin
     try
         VL_Mensagem := nil;
         VL_Mensagem_Dados := nil;
-        VL_Mensagem_Dados_Protegidos:=nil;
+        VL_Mensagem_Dados_Protegidos := nil;
         F_MensagemCreate(VL_Mensagem);
         F_MensagemCreate(VL_Mensagem_Dados);
         F_MensagemCreate(VL_Mensagem_Dados_Protegidos);
         VL_Senha := '';
         VL_TagDados := '';
         VL_String := '';
-        VL_Valor:='';
-        VL_TK2:='';
+        VL_Valor := '';
+        VL_TK2 := '';
 
 
         vl_erro := F_MensagemCarregaTags(VL_Mensagem, PChar(fVP_DadosRecebidos));
@@ -219,15 +239,15 @@ begin
 
         if ((F_MensagemComando(VL_Mensagem) = '000A') and (F_MensagemComandoDados(VL_Mensagem) = 'S')) then        // APROVACAO DA TRANSACAO
         begin
-            VL_TagDados:='';
+            VL_TagDados := '';
             F_MensagemGetTag(VL_Mensagem, '007D', VL_TagDados);
-            if VL_TagDados<>'' then
-            F_MensagemCarregaTags(VL_Mensagem_Dados, VL_TagDados);
+            if VL_TagDados <> '' then
+                F_MensagemCarregaTags(VL_Mensagem_Dados, VL_TagDados);
 
-            VL_TagDados:='';
+            VL_TagDados := '';
             F_MensagemGetTag(VL_Mensagem, '00E3', VL_TagDados);
-            if VL_TagDados<>'' then
-            F_MensagemCarregaTags(VL_Mensagem_Dados_Protegidos, VL_TagDados);
+            if VL_TagDados <> '' then
+                F_MensagemCarregaTags(VL_Mensagem_Dados_Protegidos, VL_TagDados);
 
             F_MensagemLimpar(VL_Mensagem_Dados);
             F_MensagemAddTag(VL_Mensagem_Dados, PChar('00E3'), PChar(''));  // solicita dados protegidos
@@ -237,8 +257,13 @@ begin
             VL_Pan := '6298671234567890123';
 
             F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0060'), VL_Senha);            // senha criptografada
+
+            if VL_Senha='' then
+
+            F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0033'), VL_Senha);            // senha digitada
+
             F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('004F'), VL_TK2);            // tk2
-           // F_MensagemGetTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);                 // pan nao enviado de proposito
+            // F_MensagemGetTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);                 // pan nao enviado de proposito
             F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0033'), VL_TagDados);            // dados capturados
             F_MensagemGetTag(VL_Mensagem_Dados_Protegidos, PChar('0013'), VL_Valor);            // valordados capturados
 
@@ -254,32 +279,52 @@ begin
                 Exit;
             end;
 
-
-
             if VL_Senha = '' then
-            begin
-//                F_MensagemLimpar(VL_Mensagem_Dados);
-                F_MensagemAddComando(VL_Mensagem_Dados, PChar('005A'), PChar('S'));   //solicita senha
-
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005B'), PChar(IntToStr(F_Imk())));
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005C'), PChar(' DIGITE A SENHA'));
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005D'), PChar('4'));
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005E'), PChar('8'));
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005F'), PChar(F_Wk()));
-                F_MensagemAddTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);  // pan ficticio não precisa ser o cartão
-
-                VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
-                fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
-                Exit;
-            end;
-
-           { if VL_TagDados = '' then         // exemplo de captura de dados
             begin
                 F_MensagemLimpar(VL_Mensagem_Dados);
 
                 // INFORMA OS BOTOES DENTRO DA TAG DE COMANDO DO BOTAO 0018
 
-                F_MensagemAddComando(VL_Mensagem_Dados, '00DD', 'D');
+                F_MensagemAddComando(VL_Mensagem_Dados, '0000', 'S');
+                F_MensagemAddTag(VL_Mensagem_Dados, '00E8', PChar('OK'));    //BOTAO OK
+
+                VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
+
+                F_MensagemLimpar(VL_Mensagem_Dados);
+
+                F_MensagemAddComando(VL_Mensagem_Dados, PChar('002A'), PChar('S'));   //solicita dados pdv
+                F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar('digite a senha'));    //MENSAGEM A SER MOSTRADA
+                F_MensagemAddTag(VL_Mensagem_Dados, '00DD', PChar(VL_String));    //BOTOES A MOSTRAR
+                F_MensagemAddTag(VL_Mensagem_Dados, '0033', PChar('M'));    //campo para capturar sem mascara
+
+
+                VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
+                fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
+
+
+
+                ////              F_MensagemLimpar(VL_Mensagem_Dados);
+                //                F_MensagemAddComando(VL_Mensagem_Dados, PChar('005A'), PChar('S'));   //solicita senha
+
+                //                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005B'), PChar(IntToStr(F_Imk())));
+                //                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005C'), PChar(' DIGITE A SENHA'));
+                //                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005D'), PChar('4'));
+                //                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005E'), PChar('8'));
+                //                F_MensagemAddTag(VL_Mensagem_Dados, PChar('005F'), PChar(F_Wk()));
+                //                F_MensagemAddTag(VL_Mensagem_Dados, PChar('00D9'), VL_Pan);  // pan ficticio não precisa ser o cartão
+
+                //                VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
+                //                fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
+                Exit;
+            end;
+
+            if VL_TagDados = '' then         // exemplo de captura de dados
+            begin
+                F_MensagemLimpar(VL_Mensagem_Dados);
+
+                // INFORMA OS BOTOES DENTRO DA TAG DE COMANDO DO BOTAO 0018
+
+                F_MensagemAddComando(VL_Mensagem_Dados, '0000', 'S');
                 F_MensagemAddTag(VL_Mensagem_Dados, '002F', PChar('OK'));    //BOTAO OK
 
                 VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
@@ -289,16 +334,25 @@ begin
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('002A'), PChar('S'));   //solicita dados pdv
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar('INFORME O CPF'));    //MENSAGEM A SER MOSTRADA
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DD', PChar(VL_String));    //BOTOES A MOSTRAR
-                F_MensagemAddTag(VL_Mensagem_Dados, '0033', PChar(''));    //BOTOES A MOSTRAR
+                F_MensagemAddTag(VL_Mensagem_Dados, '0033', PChar('A'));    //campo para capturar sem mascara
+
+                ImagemToStr(VL_String, Form1.Image1);
+
+                F_MensagemAddTag(VL_Mensagem_Dados, '002E', PChar(VL_String));    //campo enviar imagem
+
+
+
+
                 VL_String := F_MensagemTagAsString(VL_Mensagem_Dados);     //converte em string a mensagem
                 fVP_Retorno(PChar(fVP_Transmissao_ID), PChar(VL_String), fVP_ID); // envia de volta o comando
 
             end
 
-            else }
+            else
             begin
-  //              F_MensagemLimpar(VL_Mensagem_Dados);
-                VL_String :='Cartão:'+VL_TK2+#13+ 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 + 'CPF:' + VL_TagDados+#13+'Valor dos itens:'+VL_Valor;
+                //              F_MensagemLimpar(VL_Mensagem_Dados);
+                VL_String := 'Cartão:' + VL_TK2 + #13 + 'Senha do cartão:' + F_DescriptaSenha3Des('', VL_Pan, VL_Senha) + #13 +
+                    'CPF:' + VL_TagDados + #13 + 'Valor dos itens:' + VL_Valor;
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar(VL_String));
                 F_MensagemAddTag(VL_Mensagem_Dados, '004A', PChar(IntToStr(Ord(tsAbortada))));  // transacao obortada

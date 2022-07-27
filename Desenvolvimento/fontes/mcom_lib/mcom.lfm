@@ -1,7 +1,13 @@
 object DMCom: TDMCom
   OldCreateOrder = False
   Height = 220
-  HorizontalOffset = 709
-  VerticalOffset = 270
+  HorizontalOffset = 1411
+  VerticalOffset = 240
   Width = 291
+  object CriptoRsa: TLbRSA
+    PrimeTestIterations = 20
+    KeySize = aks128
+    Left = 32
+    Top = 16
+  end
 end

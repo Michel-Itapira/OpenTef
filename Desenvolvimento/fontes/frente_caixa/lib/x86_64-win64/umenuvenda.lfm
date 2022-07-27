@@ -1,13 +1,44 @@
 object F_MenuVenda: TF_MenuVenda
-  Left = 717
+  Left = 507
   Height = 451
-  Top = 284
+  Top = 248
   Width = 485
   Caption = 'OpenTef'
   ClientHeight = 451
   ClientWidth = 485
   OnClose = FormClose
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.2.0'
+  object PMensagem: TPanel
+    Left = 50
+    Height = 50
+    Top = 251
+    Width = 385
+    Align = alBottom
+    BorderSpacing.Left = 50
+    BorderSpacing.Right = 50
+    BorderSpacing.Bottom = 20
+    ClientHeight = 50
+    ClientWidth = 385
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -16
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 2
+    Visible = False
+    object LMensagem: TLabel
+      Left = 1
+      Height = 38
+      Top = 11
+      Width = 383
+      Align = alClient
+      Alignment = taCenter
+      BorderSpacing.Top = 10
+      ParentColor = False
+      WordWrap = True
+    end
+  end
   object PBotao: TPanel
     Left = 50
     Height = 0
@@ -47,35 +78,6 @@ object F_MenuVenda: TF_MenuVenda
       TabOrder = 0
     end
   end
-  object PMensagem: TPanel
-    Left = 50
-    Height = 50
-    Top = 251
-    Width = 385
-    Align = alBottom
-    BorderSpacing.Left = 50
-    BorderSpacing.Right = 50
-    BorderSpacing.Bottom = 20
-    ClientHeight = 50
-    ClientWidth = 385
-    Font.CharSet = ANSI_CHARSET
-    Font.Height = -16
-    Font.Pitch = fpVariable
-    Font.Quality = fqDraft
-    Font.Style = [fsBold]
-    ParentFont = False
-    TabOrder = 2
-    Visible = False
-    object LMensagem: TLabel
-      Left = 1
-      Height = 48
-      Top = 1
-      Width = 383
-      Align = alClient
-      Alignment = taCenter
-      WordWrap = True
-    end
-  end
   object PImagem: TPanel
     Left = 100
     Height = 200
@@ -97,6 +99,7 @@ object F_MenuVenda: TF_MenuVenda
       Width = 283
       Align = alClient
       Center = True
+      OnClick = ImagemClick
       Proportional = True
     end
   end

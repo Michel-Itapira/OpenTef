@@ -5,7 +5,7 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, ZDataset, DB, rxmemds, IdContext, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
+    Classes, SysUtils, StrUtils, ZDataset, ZConnection, DB, rxmemds, IdContext, IdSSLOpenSSL, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
 
 type
 
@@ -1465,6 +1465,7 @@ end;
 constructor TMensagem.Create;
 begin
     inherited Create;
+    AddComando('0000','');
 end;
 
 function TMensagem.AddComando(VP_Tag, VP_Dados: ansistring): integer;

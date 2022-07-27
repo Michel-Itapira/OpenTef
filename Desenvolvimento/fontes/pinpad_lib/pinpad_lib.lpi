@@ -78,6 +78,12 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="lazbarcodes_runtimeonly"/>
+      </Item>
+      <Item>
+        <PackageName Value="lazbarcodes"/>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
       </Item>
       <Item>

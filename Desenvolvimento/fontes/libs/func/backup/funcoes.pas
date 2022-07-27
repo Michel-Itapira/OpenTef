@@ -5,7 +5,7 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, ZDataset, DB, rxmemds, IdContext, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
+    Classes, SysUtils, StrUtils, ZDataset, ZConnection, DB, rxmemds, IdContext, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
 
 type
 
@@ -236,7 +236,7 @@ var
 AdapterList: TLANA_ENUM;
 NCB: _NCB;
 begin
-ncb := Default(_NCB);// FillChar(NCB, SizeOf(NCB), 0);
+FillChar(NCB, SizeOf(NCB), 0);
 NCB.ncb_command := byte(NCBENUM);
 NCB.ncb_buffer := @AdapterList;
 NCB.ncb_length := SizeOf(AdapterList);
@@ -1465,6 +1465,7 @@ end;
 constructor TMensagem.Create;
 begin
     inherited Create;
+    AddComando('0000','');
 end;
 
 function TMensagem.AddComando(VP_Tag, VP_Dados: ansistring): integer;

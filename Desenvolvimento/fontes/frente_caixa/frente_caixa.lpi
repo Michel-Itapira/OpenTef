@@ -110,19 +110,7 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="indylaz"/>
-      </Item>
-      <Item>
-        <PackageName Value="rxnew"/>
-      </Item>
-      <Item>
-        <PackageName Value="LR_ZeosDB"/>
-      </Item>
-      <Item>
         <PackageName Value="FCL"/>
-      </Item>
-      <Item>
-        <PackageName Value="dcpcrypt"/>
       </Item>
       <Item>
         <PackageName Value="DateTimeCtrls"/>
@@ -154,6 +142,12 @@
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="uimpressao.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FImpressao"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -166,9 +160,6 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <CodeGeneration>
-      <TargetCPU Value="x86_64"/>
-    </CodeGeneration>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf2"/>

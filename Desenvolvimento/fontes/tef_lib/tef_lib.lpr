@@ -36,6 +36,7 @@ exports
     transacaocreate,
     transacaofree,
     transacaostatus,
+    transacaostatusdescricao,
     transacaocancela;
 
 begin

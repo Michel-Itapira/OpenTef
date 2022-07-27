@@ -1,0 +1,25 @@
+object FImpressao: TFImpressao
+  Left = 948
+  Height = 402
+  Top = 282
+  Width = 460
+  Caption = 'Impressão'
+  ClientHeight = 402
+  ClientWidth = 460
+  LCLVersion = '2.2.0.4'
+  object MImpressao: TMemo
+    Left = 0
+    Height = 402
+    Top = 0
+    Width = 460
+    Align = alClient
+    Alignment = taCenter
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -21
+    Font.Name = 'Courier New'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
+    ParentFont = False
+    TabOrder = 0
+  end
+end

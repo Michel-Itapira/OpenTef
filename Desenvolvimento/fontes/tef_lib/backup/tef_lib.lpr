@@ -33,7 +33,8 @@ exports
     mensagemgettagidx,
     mensagemtagtostr,
 
-    transacaoinicio,
+    transacaocreate,
+    transacaofree,
     transacaostatus,
     transacaocancela;
 

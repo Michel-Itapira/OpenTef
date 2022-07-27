@@ -1,5 +1,5 @@
 object F_Principal: TF_Principal
-  Left = 1347
+  Left = 1523
   Height = 599
   Top = 138
   Width = 939
@@ -88,11 +88,11 @@ object F_Principal: TF_Principal
   end
   object GroupBox2: TGroupBox
     Left = 432
-    Height = 323
+    Height = 339
     Top = 0
     Width = 464
     Caption = 'Venda'
-    ClientHeight = 303
+    ClientHeight = 319
     ClientWidth = 460
     TabOrder = 1
     object Label3: TLabel
@@ -108,14 +108,14 @@ object F_Principal: TF_Principal
       Left = 104
       Height = 23
       Top = 15
-      Width = 350
+      Width = 138
       TabOrder = 0
       Text = '000000123456'
     end
     object Label1: TLabel
       Left = 13
       Height = 15
-      Top = 64
+      Top = 83
       Width = 87
       Caption = '*Data da Venda:'
       Font.Color = clRed
@@ -125,17 +125,17 @@ object F_Principal: TF_Principal
     object Label2: TLabel
       Left = 5
       Height = 15
-      Top = 99
+      Top = 118
       Width = 95
       Caption = '*Valor da Parcela:'
       Font.Color = clRed
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object EValor: TEdit
+    object EValorParcela: TEdit
       Left = 104
       Height = 23
-      Top = 96
+      Top = 115
       Width = 158
       TabOrder = 1
       Text = '10.86'
@@ -143,7 +143,7 @@ object F_Principal: TF_Principal
     object EDataHora: TDateTimePicker
       Left = 104
       Height = 23
-      Top = 61
+      Top = 80
       Width = 137
       CenturyFrom = 1941
       MaxDate = 2958465
@@ -165,7 +165,7 @@ object F_Principal: TF_Principal
     object Label8: TLabel
       Left = 265
       Height = 15
-      Top = 99
+      Top = 118
       Width = 115
       Caption = '*Nunero de Parcelas:'
       Font.Color = clRed
@@ -175,7 +175,7 @@ object F_Principal: TF_Principal
     object EParcela: TEdit
       Left = 384
       Height = 23
-      Top = 96
+      Top = 115
       Width = 70
       TabOrder = 3
       Text = '1'
@@ -183,7 +183,7 @@ object F_Principal: TF_Principal
     object Label9: TLabel
       Left = 250
       Height = 15
-      Top = 64
+      Top = 83
       Width = 33
       Caption = '*NSU:'
       Font.Color = clRed
@@ -193,7 +193,7 @@ object F_Principal: TF_Principal
     object ENSU: TEdit
       Left = 285
       Height = 23
-      Top = 61
+      Top = 80
       Width = 169
       TabOrder = 4
       Text = '123654'
@@ -201,7 +201,7 @@ object F_Principal: TF_Principal
     object Label10: TLabel
       Left = 21
       Height = 15
-      Top = 141
+      Top = 160
       Width = 74
       Caption = 'Cupom Fiscal:'
       Font.Style = [fsBold]
@@ -210,7 +210,7 @@ object F_Principal: TF_Principal
     object ECupomFiscal: TEdit
       Left = 104
       Height = 23
-      Top = 136
+      Top = 155
       Width = 350
       TabOrder = 5
       Text = '5556669'
@@ -218,7 +218,7 @@ object F_Principal: TF_Principal
     object Label11: TLabel
       Left = 50
       Height = 15
-      Top = 172
+      Top = 191
       Width = 47
       Caption = 'Caixa nº:'
       Font.Style = [fsBold]
@@ -227,7 +227,7 @@ object F_Principal: TF_Principal
     object ECaixa: TEdit
       Left = 104
       Height = 23
-      Top = 168
+      Top = 187
       Width = 54
       TabOrder = 6
       Text = '10'
@@ -235,7 +235,7 @@ object F_Principal: TF_Principal
     object Label12: TLabel
       Left = 168
       Height = 15
-      Top = 172
+      Top = 191
       Width = 56
       Caption = 'Operador:'
       Font.Style = [fsBold]
@@ -244,15 +244,15 @@ object F_Principal: TF_Principal
     object EOperador: TEdit
       Left = 240
       Height = 23
-      Top = 168
-      Width = 214
+      Top = 187
+      Width = 212
       TabOrder = 7
       Text = '00012'
     end
     object GroupBox3: TGroupBox
       Left = 5
       Height = 80
-      Top = 208
+      Top = 232
       Width = 449
       Caption = 'Valor Total de Itens por Tipo'
       ClientHeight = 60
@@ -325,6 +325,40 @@ object F_Principal: TF_Principal
         Text = '10.86'
       end
     end
+    object Label25: TLabel
+      Left = 256
+      Height = 15
+      Top = 17
+      Width = 56
+      Caption = 'Desconto:'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object EDesconto: TEdit
+      Left = 314
+      Height = 23
+      Top = 15
+      Width = 138
+      TabOrder = 9
+      Text = 'R$ 10,00'
+    end
+    object Label26: TLabel
+      Left = 9
+      Height = 15
+      Top = 46
+      Width = 90
+      Caption = 'Obs/Informação'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object EObservacao: TEdit
+      Left = 105
+      Height = 23
+      Top = 44
+      Width = 347
+      TabOrder = 10
+      Text = 'Compra feita pelo Filho / Desconto referente a devolução'
+    end
   end
   object MStatus: TMemo
     Left = 24
@@ -359,9 +393,9 @@ object F_Principal: TF_Principal
     ParentFont = False
   end
   object BVenda: TButton
-    Left = 440
+    Left = 432
     Height = 32
-    Top = 323
+    Top = 344
     Width = 176
     Caption = 'Realizar Venda Open TEF'
     Font.Style = [fsBold]
@@ -381,7 +415,7 @@ object F_Principal: TF_Principal
   end
   object EXml: TMemo
     Left = 432
-    Height = 154
+    Height = 130
     Top = 419
     Width = 470
     Lines.Strings = (
@@ -602,10 +636,10 @@ object F_Principal: TF_Principal
     ClientWidth = 380
     TabOrder = 5
     object BInicializar: TButton
-      Left = 80
+      Left = 8
       Height = 25
-      Top = 119
-      Width = 288
+      Top = 120
+      Width = 194
       Caption = 'Inicializar Libs'
       OnClick = BInicializarClick
       TabOrder = 0
@@ -700,11 +734,20 @@ object F_Principal: TF_Principal
       TabOrder = 5
       Text = '..\pinpad_lib\win64\'
     end
+    object cbxAmbienteTeste: TCheckBox
+      Left = 248
+      Height = 19
+      Top = 123
+      Width = 116
+      Caption = 'Ambiente de teste'
+      OnChange = cbxAmbienteTesteChange
+      TabOrder = 6
+    end
   end
   object Label19: TLabel
-    Left = 648
+    Left = 624
     Height = 15
-    Top = 327
+    Top = 352
     Width = 184
     Caption = 'Tempo em ms Aguarda Transação'
     Font.Style = [fsBold]
@@ -713,9 +756,26 @@ object F_Principal: TF_Principal
   object ETempo: TEdit
     Left = 840
     Height = 23
-    Top = 323
+    Top = 342
     Width = 54
     TabOrder = 6
     Text = '300000'
+  end
+  object Label24: TLabel
+    Left = 432
+    Height = 15
+    Top = 562
+    Width = 53
+    Caption = 'Link Nota'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ELink: TEdit
+    Left = 496
+    Height = 23
+    Top = 560
+    Width = 406
+    TabOrder = 7
+    Text = 'https://www.validador.com.br/?nota=1234567'
   end
 end

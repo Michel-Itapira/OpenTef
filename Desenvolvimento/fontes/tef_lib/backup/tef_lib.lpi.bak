@@ -108,6 +108,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="lazbarcodes"/>
+      </Item>
+      <Item>
         <PackageName Value="zcomponent"/>
       </Item>
       <Item>

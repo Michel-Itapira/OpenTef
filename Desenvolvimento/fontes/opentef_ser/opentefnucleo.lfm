@@ -8,7 +8,6 @@ object DNucleo: TDNucleo
   Width = 416
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
-    AutoEncodeStrings = True
     ClientCodepage = 'ISO8859_1'
     Properties.Strings = (
       'codepage=ISO8859_1'

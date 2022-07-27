@@ -5,7 +5,7 @@ unit mcom;
 interface
 
 uses
-    Classes, SysUtils, comunicador, Idcontext, funcoes;
+    Classes, SysUtils, comunicador, Idcontext, funcoes, LbRSA,LbAsym;
 
 type
 
@@ -28,11 +28,17 @@ type
     { TDMCom }
 
     TDMCom = class(TDataModule)
+      CriptoRsa: TLbRSA;
     private
 
     public
         VF_Chave, VF_IP_Caixa, VF_IP_Servico: string;
         VF_PortaCaixa, VF_PortaServico: integer;
+
+        ModuloPublico: ansistring;
+        ExpoentePublico: ansistring;
+        TamanhoPublico: integer;
+
 
         function iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string; VP_PortaCaixa, VP_PortaServico: integer): integer;
         function RecebeComandoCaixa(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_AContext: TIdContext): integer;
@@ -75,7 +81,7 @@ function iniciarconexao(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PCh
     VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib): integer; stdcall;
 begin
     F_ArquivoLog := VP_ArquivoLog;
-    DMCom := TDMCom.CreateNew(nil);
+    DMCom := TDMCom.Create(nil);
     Result := DMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico, VP_PortaCaixa, VP_PortaServico);
     F_ServidorRecebimentoLibCaixa := VO_RetornoCaixa;
     F_ServidorRecebimentoLibServico := VO_RetornoServico;
@@ -112,48 +118,104 @@ function respondecaixa(VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): inte
 var
     VL_Mensagem: TMensagem;
     VL_TagDados: string;
+    VL_ModuloPublico: ansistring;
+    VL_ExpoentePublico: ansistring;
+    VL_TamanhoPublico: Int64;
+    VL_Rsa:TLbRSA;
+
 begin
     try
         VL_TagDados := '';
         VL_Mensagem := TMensagem.Create;
+        VL_Rsa:=TLbRSA.Create(NIL);
         Result := VL_Mensagem.CarregaTags(VP_Dados);
+        VL_ModuloPublico:='';
+        VL_ExpoentePublico:='';
+        VL_TamanhoPublico:=0;
+
+
         if VL_Mensagem.GetTag('00E3', VL_TagDados) = 0 then
         begin
-            VL_Mensagem.AddTag('00E4',Ord(F_ComunicadorCaixa.CriptoRsa.PublicKey.KeySize));        //tamanho chave
-            VL_Mensagem.AddTag('0027', F_ComunicadorCaixa.CriptoRsa.PublicKey.ExponentAsString);        //expoente
-            VL_Mensagem.AddTag('0008', F_ComunicadorCaixa.CriptoRsa.PublicKey.ModulusAsString);        //modulos
+
+            VL_Mensagem.GetTag('00E4',VL_TamanhoPublico);        //tamanho chave
+            VL_Mensagem.GetTag('0027', VL_ExpoentePublico);        //expoente
+            VL_Mensagem.GetTag('0008',VL_ModuloPublico);        //modulos
+
+
+            VL_Mensagem.AddTag('00E4',DMCom.TamanhoPublico);        //tamanho chave
+            VL_Mensagem.AddTag('0027', DMCom.ExpoentePublico);        //expoente
+            VL_Mensagem.AddTag('0008', DMCom.ModuloPublico);        //modulos
+
+
+            VL_Rsa.PublicKey.KeySize:=TLbAsymKeySize(VL_TamanhoPublico);
+            VL_Rsa.PublicKey.ExponentAsString:=VL_ExpoentePublico;
+            VL_Rsa.PublicKey.ModulusAsString:=VL_ModuloPublico;
+
+            if VL_TagDados<>'' then
+            VL_TagDados:=VL_Rsa.EncryptString(VL_TagDados);
+            VL_Mensagem.AddTag('00E3', VL_TagDados);        //modulos
+
+
         end;
         if Result <> 0 then
             Exit;
         Result := F_ComunicadorCaixa.ServidorTransmiteSolicitacaoID(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_ID);
     finally
         VL_Mensagem.Free;
+        VL_Rsa.Free;
     end;
 end;
 
 function respondeservico(VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; stdcall;
 var
     VL_Mensagem: TMensagem;
-    VL_TagDados:String;
+    VL_TagDados: string;
+    VL_ModuloPublico: ansistring;
+    VL_ExpoentePublico: ansistring;
+    VL_TamanhoPublico: Int64;
+    VL_Rsa:TLbRSA;
+
 begin
     try
-        VL_TagDados:='';
+        VL_TagDados := '';
         VL_Mensagem := TMensagem.Create;
+        VL_Rsa:=TLbRSA.Create(NIL);
         Result := VL_Mensagem.CarregaTags(VP_Dados);
+        VL_ModuloPublico:='';
+        VL_ExpoentePublico:='';
+        VL_TamanhoPublico:=0;
+
+
+
         if VL_Mensagem.GetTag('00E3', VL_TagDados) = 0 then
         begin
-            VL_Mensagem.AddTag('00E4',Ord(F_ComunicadorServico.CriptoRsa.PublicKey.KeySize));        //tamanho chave
-            VL_Mensagem.AddTag('0027', F_ComunicadorServico.CriptoRsa.PublicKey.ExponentAsString);        //expoente
-            VL_Mensagem.AddTag('0008', F_ComunicadorServico.CriptoRsa.PublicKey.ModulusAsString);        //modulos
+
+            VL_Mensagem.GetTag('00E4',VL_TamanhoPublico);        //tamanho chave
+            VL_Mensagem.GetTag('0027', VL_ExpoentePublico);        //expoente
+            VL_Mensagem.GetTag('0008',VL_ModuloPublico);        //modulos
+
+
+            VL_Mensagem.AddTag('00E4',DMCom.TamanhoPublico);        //tamanho chave
+            VL_Mensagem.AddTag('0027', DMCom.ExpoentePublico);        //expoente
+            VL_Mensagem.AddTag('0008', DMCom.ModuloPublico);        //modulos
+
+
+            VL_Rsa.PublicKey.KeySize:=TLbAsymKeySize(VL_TamanhoPublico);
+            VL_Rsa.PublicKey.ExponentAsString:=VL_ExpoentePublico;
+            VL_Rsa.PublicKey.ModulusAsString:=VL_ModuloPublico;
+
+
+            VL_TagDados:=VL_Rsa.EncryptString(VL_TagDados);
+            VL_Mensagem.AddTag('00E3', VL_TagDados);        //modulos
+
+
         end;
-
-
-
         if Result <> 0 then
             Exit;
         Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_ID);
     finally
         VL_Mensagem.Free;
+        VL_Rsa.Free;
     end;
 end;
 
@@ -201,6 +263,17 @@ begin
     F_ComunicadorCaixa := TDComunicador.Create(Self);
     F_ComunicadorServico := TDComunicador.Create(Self);
 
+    self.CriptoRsa.KeySize:=F_ComunicadorCaixa.CriptoRsa.KeySize;
+    self.CriptoRsa.GenerateKeyPair;
+
+
+    self.ModuloPublico := self.CriptoRsa.PublicKey.ModulusAsString;
+    self.ExpoentePublico := self.CriptoRsa.PublicKey.ExponentAsString;
+    self.TamanhoPublico := Ord(self.CriptoRsa.PublicKey.KeySize);
+
+
+
+
     F_ComunicadorCaixa.V_ServidorRecebimento := @ComandoCaixa;
     F_ComunicadorCaixa.V_ArquivoLog := F_ArquivoLog;
     F_ComunicadorServico.V_ServidorRecebimento := @ComandoServico;
@@ -245,8 +318,8 @@ begin
     VL_DadosCriptografados := VL_Mensagem.GetTagAsAstring('00E3');
     if VL_DadosCriptografados <> '' then
     begin
-        VL_DadosCriptografados := F_ComunicadorCaixa.CriptoRsa.DecryptString(VL_DadosCriptografados);
-        VL_Mensagem.AddTag('00E3', VL_DadosCriptografados);
+        VL_DadosCriptografados := CriptoRsa.DecryptString(VL_DadosCriptografados);
+        VL_Mensagem.AddTag('007D', VL_DadosCriptografados);
         VP_DadosRecebidos := VL_Mensagem.TagsAsString;
     end;
 
@@ -289,8 +362,8 @@ begin
     VL_DadosCriptografados := VL_Mensagem.GetTagAsAstring('00E3');
     if VL_DadosCriptografados <> '' then
     begin
-        VL_DadosCriptografados := F_ComunicadorServico.CriptoRsa.DecryptString(VL_DadosCriptografados);
-        VL_Mensagem.AddTag('00E3', VL_DadosCriptografados);
+        VL_DadosCriptografados := CriptoRsa.DecryptString(VL_DadosCriptografados);
+        VL_Mensagem.AddTag('007D', VL_DadosCriptografados);
         VP_DadosRecebidos := VL_Mensagem.TagsAsString;
     end;
 

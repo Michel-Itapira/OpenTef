@@ -26,6 +26,7 @@ type
     PMensagem: TPanel;
     PImagem: TPanel;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure ImagemClick(Sender: TObject);
   private
 
   public
@@ -45,6 +46,11 @@ implementation
 
 
 procedure TF_MenuVenda.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+
+end;
+
+procedure TF_MenuVenda.ImagemClick(Sender: TObject);
 begin
 
 end;
