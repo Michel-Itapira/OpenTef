@@ -32,6 +32,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="44"/>
         <CursorPos X="25" Y="54"/>
+        <ComponentState Value="1"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -46,7 +47,6 @@
         <CursorPos Y="113"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="opentefnucleo.pas"/>
@@ -55,8 +55,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="94"/>
+        <TopLine Value="93"/>
         <CursorPos X="86" Y="55"/>
+        <ComponentState Value="1"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -71,11 +72,23 @@
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="548"/>
-        <CursorPos X="102" Y="479"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="425"/>
+        <CursorPos X="27" Y="484"/>
+        <ComponentState Value="1"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\win64\classes.pp"/>
+        <UnitName Value="Classes"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>

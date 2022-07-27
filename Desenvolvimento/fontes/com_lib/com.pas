@@ -138,8 +138,10 @@ var
     VL_Mensagem: TMensagem;
     VL_S: string;
     VL_Erro: string;
+    VL_Transmissao_id:String;
 begin
     VL_S := '';
+    VL_Transmissao_id:='';
     VL_Mensagem := TMensagem.Create;
     try
         if Length(VP_host) = 0 then
@@ -201,7 +203,7 @@ begin
             VL_Mensagem.AddTag('0035', VP_Senha);
             VL_Mensagem.AddTag('0037', VP_Tipo);
             //envia ao cliente
-            Result := DComunicador.ClienteTransmiteSolicitacao('',VL_Mensagem, VL_Mensagem, nil, 10000,True);
+            Result := DComunicador.ClienteTransmiteSolicitacao(VL_Transmissao_id,VL_Mensagem, VL_Mensagem, nil, 10000,True);
             if Result <> 0 then
                 Exit;
             VL_Mensagem.TagToStr(VL_S);
@@ -235,15 +237,16 @@ end;
 
 function solicitacaoblocante(VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer;stdcall;
 var
-    VL_String: string;
+    VL_String,VL_Transamissao_ID: string;
     VL_Mensagens: TMensagem;
 begin
     VL_String := '';
+    VL_Transamissao_ID:='';
     try
         VL_String := VP_Dados;
         VL_Mensagens := TMensagem.Create;
         VL_Mensagens.CarregaTags(VL_String);
-        Result := DComunicador.ClienteTransmiteSolicitacao('',VL_Mensagens, VL_Mensagens, nil, VP_TempoAguarda,True);
+        Result := DComunicador.ClienteTransmiteSolicitacao(VL_Transamissao_ID,VL_Mensagens, VL_Mensagens, nil, VP_TempoAguarda,True);
         VL_Mensagens.TagToStr(VL_String);
 
         VO_Retorno := StrAlloc(Length(VL_String) + 1);

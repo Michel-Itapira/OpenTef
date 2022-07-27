@@ -146,9 +146,9 @@ type
     TTMensagemTagToStr = function(VO_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 
     TTransacaocreate = function(VP_IdentificadorCaixa: PChar; var VO_TransacaID: PChar; VP_TempoAguarda: integer): integer; stdcall;
-    TTransacaostatus = function(var VO_Status: integer; VP_TransacaoID: PChar): integer; stdcall;
+    TTransacaostatus = function(var VO_Status: integer;var VO_TransacaoChave:PChar; VP_TransacaoID: PChar): integer; stdcall;
     TTransacaostatusdescricao = function(var VO_Status: PChar; VP_TransacaoID: PChar): integer; stdcall;
-    TTransacaocancela = function(var VO_Resposta: integer; VP_TransacaoID: PChar): integer; stdcall;
+    TTransacaocancela = function(var VO_Resposta: integer;VP_TransacaoChave, VP_TransacaoID: PChar): integer; stdcall;
     TTransacaofree = procedure(VP_TransacaoID: PChar); stdcall;
 
 
@@ -721,10 +721,12 @@ var
     VL_Status: integer;
     VL_TransacaoStatus: integer; //  numerador  (tsEfetivada,tsNegada,tsCancelada,tsProcessando,tsNaoLocalizada,tsInicializada);
     VL_TransacaoID: PChar;
+    VL_TransacaoChave: PChar;
     VL_Data: TDateTime;
     VL_StatusDescricao: PChar;
 begin
     VL_TransacaoID := '';
+    VL_TransacaoChave := '';
     VL_StatusDescricao:='';
     VL_TransacaoStatus := Ord(tsInicializada);
     VL_Status := 0;
@@ -762,7 +764,7 @@ begin
 
     while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < StrToInt(ETempo.Text)) do
     begin
-        VL_Erro := F_TransacaoStatus(VL_TransacaoStatus, VL_TransacaoID);
+        VL_Erro := F_TransacaoStatus(VL_TransacaoStatus,VL_TransacaoChave, VL_TransacaoID);
 
         if VL_Erro <> 0 then
         begin

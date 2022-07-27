@@ -1624,6 +1624,7 @@ begin
         '00DE': Result := comando00DE(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // INCLUIR ADQUIRENTE
         '00DF': Result := comando00DF(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // ALTERAR ADQUIRENTE
         '00E0': Result := comando00E0(VP_Transmissao_ID, VL_Mensagem, VP_AContext);   // EXCLUIR ADQUIRENTE
+
         else
             VP_AContext.Connection.Disconnect(True);
     end;
@@ -1867,7 +1868,7 @@ begin
     VL_Transacao.Start;
 end;
 
-function TDNucleo.comando000A(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer;
+function TDNucleo.comando000A(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; // SOLICITA APROVACAO DA TRANSACAO
 var
     VL_Transacao: TMensagem;
     VL_Consulta: TZQuery;
@@ -1942,6 +1943,19 @@ begin
                 Exit;
             end
             else
+            if VL_Transacao.GetTagAsAstring('00D5') = '00F0' then  // OPCAO DE CONSULTAR SALDO
+            begin
+                VP_Mensagem.Limpar;
+                VP_Mensagem.AddComando('008C', 'S'); // solicita atualizacao da tag
+
+                VP_Mensagem.AddTag('00D9', VL_Transacao.GetTagAsAstring('0033'));                    // pan
+                VP_Mensagem.AddTag('0062', '0000' + Copy(VL_Transacao.GetTagAsAstring('0033'), 7, 12));  // pan mascarado
+                VP_Mensagem.AddTag('00CE', Copy(VL_Transacao.GetTagAsAstring('0033'), 1, 6));       //bin
+
+                DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
+                Exit;
+            end
+            else
             if VL_Transacao.GetTagAsAstring('00D5') = '0019' then  // OPCAO DE CARTAO DIGITADO
             begin
                 VP_Mensagem.Limpar;
@@ -1963,7 +1977,7 @@ begin
             if VL_Transacao.GetTagAsAstring('00D5') = '00E7' then  // RETONRO OPCAO DE CARTAO DIGITADO
             begin
                 VP_Mensagem.Limpar;
-                VP_Mensagem.AddComando('008C', 'S');
+                VP_Mensagem.AddComando('008C', 'S');  // solicita atualizacao da tag
                 VP_Mensagem.AddTag('00D9', VL_Transacao.GetTagAsAstring('0033'));                    // pan
                 VP_Mensagem.AddTag('0062', '0000' + Copy(VL_Transacao.GetTagAsAstring('0033'), 7, 12));  //pan mascarado
                 VP_Mensagem.AddTag('00CE', Copy(VL_Transacao.GetTagAsAstring('0033'), 1, 6));       //bin

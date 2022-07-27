@@ -5,7 +5,7 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, ZDataset, ZConnection, DB, rxmemds, IdContext, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
+    Classes, SysUtils, StrUtils, ZDataset, ZConnection, DB, rxmemds, IdContext, IdSSLOpenSSL, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
 
 type
 
@@ -127,6 +127,8 @@ type
         procedure SetErroDescricao(VP_Descricao: string);
         procedure SetStatus(VP_Status: TTransacaoStatus);
         function GetID: ansistring;
+        function GetChaveTransacao: ansistring;
+
 
     public
         constructor Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
@@ -136,6 +138,7 @@ type
         property erro: integer read GetErro write SetErro;
         property erroDescricao: string read GetErroDescricao write SetErroDescricao;
         property ID: ansistring read GetID;
+        property chaveTransacao: ansistring read GetChaveTransacao;
         property STATUS: TTransacaoStatus read GetSTATUS write SetStatus;
     end;
 
@@ -726,6 +729,11 @@ begin
     Result := fMensagem.GetTagAsAstring('0034');
 end;
 
+function TTransacao.GetChaveTransacao: ansistring;
+begin
+   Result := fMensagem.GetTagAsAstring('00F0');
+end;
+
 
 constructor TTransacao.Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
 begin
@@ -747,8 +755,7 @@ begin
     fMensagem.AddTag('00A2', VP_Terminal_Tipo);
     fMensagem.AddTag('007C', FloatToStr(Now));
     fMensagem.AddTag('00A4', TransacaoStatusToInt(tsAguardandoComando));
-    fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' +
-        FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now));
+    fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' + FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now));
 
 end;
 

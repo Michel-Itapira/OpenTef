@@ -8,7 +8,7 @@
       <Unit>
         <Filename Value="modulo_padrao.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <CursorPos Y="17"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -19,9 +19,8 @@
         <ComponentName Value="DModulo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="134"/>
-        <CursorPos Y="147"/>
+        <TopLine Value="268"/>
+        <CursorPos X="7" Y="141"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -42,7 +41,8 @@
       <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
         <CursorPos X="5" Y="14"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
@@ -52,11 +52,9 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="28"/>
         <UsageCount Value="100"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\tef_lib\tef.pas"/>
@@ -87,7 +85,7 @@
         <UsageCount Value="100"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="modulo.pas"/>
         <Caret Line="122" Column="86" TopLine="103"/>
@@ -187,10 +185,6 @@
       <Position>
         <Filename Value="..\..\libs\func\comunicador.pas"/>
         <Caret Line="135" Column="19" TopLine="117"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="61" Column="60" TopLine="35"/>
       </Position>
       <Position>
         <Filename Value="modulo.pas"/>

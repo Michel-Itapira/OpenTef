@@ -20,8 +20,10 @@
         <HasResources Value="True"/>
         <EditorIndex Value="1"/>
         <CursorPos X="74" Y="16"/>
+        <ComponentState Value="1"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="servico.pas"/>
@@ -32,7 +34,6 @@
         <EditorIndex Value="4"/>
         <TopLine Value="44"/>
         <CursorPos X="25" Y="54"/>
-        <ComponentState Value="1"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -43,10 +44,12 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="69"/>
         <CursorPos Y="113"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="opentefnucleo.pas"/>
@@ -55,9 +58,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="93"/>
+        <TopLine Value="92"/>
         <CursorPos X="86" Y="55"/>
-        <ComponentState Value="1"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -75,11 +77,9 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="425"/>
+        <TopLine Value="462"/>
         <CursorPos X="27" Y="484"/>
-        <ComponentState Value="1"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>

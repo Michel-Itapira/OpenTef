@@ -146,6 +146,7 @@
         <Filename Value="uimpressao.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FImpressao"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

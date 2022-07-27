@@ -8,7 +8,6 @@
       <Unit>
         <Filename Value="modulo_padrao.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <CursorPos Y="17"/>
         <UsageCount Value="200"/>
@@ -20,6 +19,7 @@
         <ComponentName Value="DModulo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="134"/>
         <CursorPos Y="147"/>
         <UsageCount Value="200"/>
