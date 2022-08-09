@@ -161,11 +161,6 @@
       <OtherUnitFiles Value="..\libs\func;..\opentef_ser"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <CodeGeneration>
-      <Optimizations>
-        <OptimizationLevel Value="2"/>
-      </Optimizations>
-    </CodeGeneration>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf2"/>
@@ -180,7 +175,14 @@
     <Other>
       <CustomOptions Value="-dOPEN_TEF
 -dWIN
--dDEBUG"/>
+-dDEBUG
+-dCOMUNICADOR"/>
+      <OtherDefines Count="4">
+        <Define0 Value="OPEN_TEF"/>
+        <Define1 Value="WIN"/>
+        <Define2 Value="DEBUG"/>
+        <Define3 Value="COMUNICADOR"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -199,6 +201,9 @@
       </Item>
       <Item>
         <Name Value="EIdNotConnected"/>
+      </Item>
+      <Item>
+        <Name Value="EIdCouldNotBindSocket"/>
       </Item>
     </Exceptions>
   </Debugging>

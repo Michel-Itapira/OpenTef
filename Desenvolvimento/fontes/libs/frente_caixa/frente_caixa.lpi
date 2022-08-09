@@ -155,7 +155,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\binarios\frente_caixa\frente_caixa"/>
+      <Filename Value="..\..\..\binarios\frente_caixa\frente_caixa"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -179,7 +179,11 @@
 -CX
 -Xe
 -XD
--Xi"/>
+-Xi
+-dFRENTE_CAIXA"/>
+      <OtherDefines Count="1">
+        <Define0 Value="FRENTE_CAIXA"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

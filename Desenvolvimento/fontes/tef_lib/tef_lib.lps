@@ -9,8 +9,7 @@
         <Filename Value="tef_lib.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="8"/>
-        <CursorPos X="29" Y="39"/>
+        <CursorPos X="21" Y="41"/>
         <UsageCount Value="232"/>
         <Loaded Value="True"/>
       </Unit>
@@ -21,8 +20,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="77"/>
-        <CursorPos X="55" Y="77"/>
+        <TopLine Value="590"/>
+        <CursorPos X="73" Y="628"/>
         <UsageCount Value="232"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -34,8 +33,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="723"/>
-        <CursorPos X="45" Y="734"/>
+        <TopLine Value="196"/>
+        <CursorPos X="22" Y="219"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -47,7 +46,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="340"/>
         <CursorPos X="70" Y="353"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -66,14 +64,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="28"/>
         <CursorPos X="14" Y="45"/>
-        <UsageCount Value="96"/>
+        <UsageCount Value="93"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\objpash.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="236"/>
         <CursorPos X="20" Y="256"/>
-        <UsageCount Value="110"/>
+        <UsageCount Value="107"/>
       </Unit>
       <Unit>
         <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
@@ -83,7 +81,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1481"/>
         <CursorPos X="6" Y="1483"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbrsa.pas"/>
@@ -91,7 +89,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="153"/>
         <CursorPos X="18" Y="169"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="12"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbasym.pas"/>
@@ -99,14 +97,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="30"/>
         <CursorPos X="21" Y="47"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="12"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1774"/>
         <CursorPos X="19" Y="1791"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\extctrls.pp"/>
@@ -114,132 +112,128 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="557"/>
         <CursorPos X="9" Y="575"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="CLIENTE"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="28">
       <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="74" Column="18" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="558" Column="38" TopLine="543"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="529" Column="16" TopLine="492"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="139" Column="21" TopLine="117"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="559" Column="26" TopLine="543"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="562" Column="67" TopLine="539"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="257" Column="78" TopLine="247"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="93" Column="17" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="257" Column="40" TopLine="226"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="668" Column="17" TopLine="636"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="93" Column="17" TopLine="74"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="72" Column="20" TopLine="43"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="66" Column="13" TopLine="55"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="646" Column="3" TopLine="648"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="643" Column="9" TopLine="633"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="663" Column="59" TopLine="640"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="831" Column="73" TopLine="799"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="836" Column="83" TopLine="804"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="74" Column="18" TopLine="45"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="886" Column="5" TopLine="878"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="74" Column="11" TopLine="55"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="930" Column="43" TopLine="903"/>
+        <Caret Line="532" Column="23" TopLine="495"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="132" Column="25" TopLine="100"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="75" Column="16" TopLine="55"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="957" Column="67" TopLine="944"/>
-      </Position>
-      <Position>
-        <Filename Value="tef.pas"/>
-        <Caret Line="955" Column="5" TopLine="944"/>
+        <Caret Line="69" Column="20" TopLine="47"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="141" Column="83" TopLine="129"/>
+        <Caret Line="71" Column="18" TopLine="47"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="131" Column="22" TopLine="115"/>
+        <Caret Line="529" Column="16" TopLine="492"/>
       </Position>
       <Position>
         <Filename Value="tef.pas"/>
-        <Caret Line="953" Column="119" TopLine="944"/>
+        <Caret Line="46" Column="27" TopLine="38"/>
       </Position>
       <Position>
         <Filename Value="tef.pas"/>
-        <Caret Line="77" Column="23" TopLine="63"/>
+        <Caret Line="1068" Column="36" TopLine="1031"/>
       </Position>
       <Position>
         <Filename Value="tef.pas"/>
-        <Caret Line="1014" Column="55" TopLine="995"/>
+        <Caret Line="28" Column="79" TopLine="4"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="43" Column="54" TopLine="27"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="42" Column="26" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1101" Column="17" TopLine="1078"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1097" Column="33" TopLine="1073"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1103" Column="8" TopLine="1081"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1109" Column="13" TopLine="1081"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1102" Column="14" TopLine="1078"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1093" Column="21" TopLine="1083"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1085" Column="5" TopLine="83"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="219" Column="22" TopLine="184"/>
+      </Position>
+      <Position>
+        <Filename Value="tef_lib.lpr"/>
+        <Caret Line="41" Column="21"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="531" Column="97" TopLine="515"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="219" Column="97" TopLine="218"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="73" TopLine="51"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1043" TopLine="1039"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1051" Column="58" TopLine="1034"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="81" Column="23" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="87" Column="99" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="tef.pas"/>
+        <Caret Line="1062" Column="33" TopLine="1024"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="216" Column="19" TopLine="183"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="219" Column="22" TopLine="183"/>
       </Position>
     </JumpHistory>
     <RunParams>

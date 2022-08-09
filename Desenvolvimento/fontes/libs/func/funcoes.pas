@@ -5,7 +5,25 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, ZDataset, ZConnection, DB, rxmemds, IdContext, IdSSLOpenSSL, syncobjs, def, ExtCtrls, Graphics,ubarcodes,nb30;
+    Classes,
+    SysUtils,
+    StrUtils,
+    ZDataset,
+    ZConnection,
+    DB,
+    rxmemds,
+    IdContext,
+    IdSSLOpenSSL,
+    {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
+    def,
+    {$ENDIF}
+    IdTime,
+    syncobjs,
+    ExtCtrls,
+    Graphics,
+    ubarcodes,
+    Math,
+    nb30;
 
 type
 
@@ -52,7 +70,7 @@ type
     private
 
     public
-        function TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
+
     end;
 
     TPinPadModelo = (pNDF, pGERTEC_PPC930);
@@ -78,7 +96,9 @@ type
 
     TTipoDocumento = (tdCNPJ, tdCPF); // tipo do documento prar formatação
 
-    TTipoChave = (tcC50,tcPDV,tcConfigurador,tcModuloConfig); // tipo de chaves de validação
+    TTipoChave = (tcC50, tcPDV, tcConfigurador, tcModuloConfig); // tipo de chaves de validação
+
+    TTipoTag = (ttNDF, ttCOMANDO, ttDADOS, ttMENU_PDV, ttMENU_OPERACIONAL, ttPINPAD_FUNC, ttMODULO); //tipo de tag cadastrado no banco de dados
 
     { TTEmporizadorEvento }
 
@@ -118,6 +138,7 @@ type
 
     TTransacao = class
         fMensagem: TMensagem;
+        fcomando: string;
         fTemporizador: TTemporizador;
     private
         function GetErro: integer;
@@ -131,7 +152,7 @@ type
 
 
     public
-        constructor Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+        constructor Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
         destructor Destroy; override;
         function AsString: ansistring;
         function TempoAguarda: integer;
@@ -153,10 +174,15 @@ type
 procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
 function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
-procedure CriarChaveTerminal(VP_TipoChave : TTipoChave;VP_ValorChave : string; var VO_Chave: ansistring);
+procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+{$ENDIF }
+function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
 function StrToPermissao(VP_Permissao: ansistring): TPermissao;
+function TipoTagToStr(VP_TipoTag: integer): ansistring;
+function StrToTipoTag(VP_TipoTag: ansistring): integer;
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
 function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
 function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
@@ -172,84 +198,113 @@ function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
 function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
-procedure BarcodeToStr(var Dados:String;Barcode: TBarcodeQR);
+procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
 
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
 
 function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
 function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; stdcall;
-function mensagemcomando(VP_Mensagem: Pointer): PChar; stdcall;
-function mensagemcomandodados(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
 function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
 function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
-function mensagemtagasstring(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
 function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
 function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
+function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; stdcall;
+
+
 
 var
     VF_Sequencia: longint;
     VF_CriticoLog: TRTLCriticalSection;
 
+const
+    Letra: array [0..35] of string = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Z', 'W',
+        'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
 
 implementation
 
-function GetAdapterInfo(Lana: Char): string;
+function CalculaDigito(Texto: string): string;
 var
-Adapter: TADAPTER_STATUS;
-NCB: _NCB;
+    i, k, Soma, Digito: integer;
 begin
-FillChar(NCB, SizeOf(NCB), 0);
-NCB.ncb_command := byte(NCBRESET);
-NCB.ncb_lana_num := byte(Lana);
-if Netbios(@NCB) <> byte(NRC_GOODRET) then
-begin
-Result := 'Address not known';
-Exit;
+    Result := '00';
+    Soma := 990;
+    k := 23;
+    for i := Length(Texto) downto 1 do
+    begin
+        Soma := Soma + (Ord(Texto[i]) - Ord('0')) * k;
+        Inc(k);
+        if (k > 9) then
+            k := 2;
+    end;
+    Digito := Soma mod 101;
+    if Digito >= 100 then
+        Digito := 0;
+    Result := IntToStr(Digito);
+    if Length(Result) < 2 then
+        Result := '0' + Result;
 end;
 
-FillChar(NCB, SizeOf(NCB), 0);
-NCB.ncb_command := byte(NCBASTAT);
-NCB.ncb_lana_num := byte(Lana);
-NCB.ncb_callname[0] := byte('*');
-
-FillChar(Adapter, SizeOf(Adapter), 0);
-NCB.ncb_buffer := @Adapter;
-NCB.ncb_length := SizeOf(Adapter);
-if Netbios(@NCB) <> byte(NRC_GOODRET) then
+{function GetAdapterInfo(Lana: char): string;
+var
+    Adapter: TADAPTER_STATUS;
+    NCB: _NCB;
 begin
-Result := 'Address not known';
-Exit;
-end;
-Result :=
-IntToHex(byte(Adapter.adapter_address[0]), 2) + '-' +
-IntToHex(byte(Adapter.adapter_address[1]), 2) + '-' +
-IntToHex(byte(Adapter.adapter_address[2]), 2) + '-' +
-IntToHex(byte(Adapter.adapter_address[3]), 2) + '-' +
-IntToHex(byte(Adapter.adapter_address[4]), 2) + '-' +
-IntToHex(Byte(Adapter.adapter_address[5]), 2);
+    FillChar(NCB, SizeOf(NCB), 0);
+    NCB.ncb_command := byte(NCBRESET);
+    NCB.ncb_lana_num := byte(Lana);
+    if Netbios(@NCB) <> byte(NRC_GOODRET) then
+    begin
+        Result := 'Address not known';
+        Exit;
+    end;
+
+    FillChar(NCB, SizeOf(NCB), 0);
+    NCB.ncb_command := byte(NCBASTAT);
+    NCB.ncb_lana_num := byte(Lana);
+    NCB.ncb_callname[0] := byte('*');
+
+    FillChar(Adapter, SizeOf(Adapter), 0);
+    NCB.ncb_buffer := @Adapter;
+    NCB.ncb_length := SizeOf(Adapter);
+    if Netbios(@NCB) <> byte(NRC_GOODRET) then
+    begin
+        Result := 'Address not known';
+        Exit;
+    end;
+    Result :=
+        IntToHex(byte(Adapter.adapter_address[0]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[1]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[2]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[3]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[4]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[5]), 2);
 end;
 
 function GetMACAddress: string;
 var
-AdapterList: TLANA_ENUM;
-NCB: _NCB;
+    AdapterList: TLANA_ENUM;
+    NCB: _NCB;
 begin
-FillChar(NCB, SizeOf(NCB), 0);
-NCB.ncb_command := byte(NCBENUM);
-NCB.ncb_buffer := @AdapterList;
-NCB.ncb_length := SizeOf(AdapterList);
-Netbios(@NCB);
-if Byte(AdapterList.length) > 0 then
-Result := GetAdapterInfo(char(AdapterList.lana[0]))
-else
-Result := 'Address not known';
+    FillChar(NCB, SizeOf(NCB), 0);
+    NCB.ncb_command := byte(NCBENUM);
+    NCB.ncb_buffer := @AdapterList;
+    NCB.ncb_length := SizeOf(AdapterList);
+    Netbios(@NCB);
+    if byte(AdapterList.length) > 0 then
+        Result := GetAdapterInfo(char(AdapterList.lana[0]))
+    else
+        Result := 'Address not known';
 end;
-
+ }
 
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 var
@@ -275,7 +330,7 @@ begin
     end;
 
 
-   Sm := TStringStream.Create(s);
+    Sm := TStringStream.Create(s);
 
 
     if Length(s) > 5 then
@@ -322,40 +377,40 @@ var
     I: integer;
     S: string;
 begin
-    Dados:='';
+    Dados := '';
     Sm := TStringStream.Create('');
     Imagem.Picture.SaveToStream(Sm);
     S := sm.DataString;
 
-    for i := 0 to Length(S) -1  do
-        Dados := Dados + HexStr(Ord(S[i+1]), 2);
+    for i := 0 to Length(S) - 1 do
+        Dados := Dados + HexStr(Ord(S[i + 1]), 2);
 
 
     Sm.Free;
 end;
 
-procedure BarcodeToStr(var Dados:String;Barcode: TBarcodeQR);
-  var
-  bmp: TFPImageBitmap;
-  img:TImage;
+procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
+var
+    bmp: TFPImageBitmap;
+    img: TImage;
 begin
     bmp := TBitmap.Create;
-    img:=TImage.Create(nil);
-  try
-    bmp.SetSize(Barcode.Width,Barcode.Height);
-    bmp.Canvas.Brush.Color := clWhite;
-    bmp.Canvas.FillRect(0, 0, bmp.Width, bmp.Height);
-    Barcode.PaintOnCanvas(bmp.Canvas, Rect(0, 0, bmp.Width, bmp.Height));
+    img := TImage.Create(nil);
+    try
+        bmp.SetSize(Barcode.Width, Barcode.Height);
+        bmp.Canvas.Brush.Color := clWhite;
+        bmp.Canvas.FillRect(0, 0, bmp.Width, bmp.Height);
+        Barcode.PaintOnCanvas(bmp.Canvas, Rect(0, 0, bmp.Width, bmp.Height));
 
-    img.Picture.Assign(bmp);
+        img.Picture.Assign(bmp);
 
-    ImagemToStr(Dados,img);
+        ImagemToStr(Dados, img);
 
 
-  finally
-    bmp.Free;
-    img.Free;
-  end;
+    finally
+        bmp.Free;
+        img.Free;
+    end;
 
 end;
 
@@ -372,14 +427,25 @@ begin
     Result := TMensagem(VP_Mensagem).CarregaTags(VP_Dados);
 end;
 
-function mensagemcomando(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_Dados: ansistring;
+
 begin
-    Result := PChar(TMensagem(VP_Mensagem).Comando());
+    Result := 0;
+    VL_Dados := TMensagem(VP_Mensagem).Comando();
+    VO_Dados := StrAlloc(Length(VL_Dados) + 1);
+    StrPCopy(VO_Dados, VL_Dados);
 end;
 
-function mensagemcomandodados(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_String: string;
 begin
-    Result := PChar(TMensagem(VP_Mensagem).ComandoDados());
+    Result := 0;
+    VL_String := TMensagem(VP_Mensagem).ComandoDados();
+    VO_Dados := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_Dados, VL_String);
 end;
 
 procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
@@ -398,9 +464,14 @@ begin
     Result := TMensagem(VP_Mensagem).AddComando(VP_Tag, VP_Dados);
 end;
 
-function mensagemtagasstring(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_String: string;
 begin
-    Result := PChar(TMensagem(VP_Mensagem).TagsAsString());
+    Result := 0;
+    VL_String := TMensagem(VP_Mensagem).TagsAsString;
+    VO_Dados := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_Dados, VL_String);
 end;
 
 function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
@@ -456,115 +527,121 @@ end;
 
 { TErroMensagem }
 
-function TErroMensagem.TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
 
+function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; stdcall;
+var
+    VL_String:String;
 begin
-    VO_RespostaMensagem := '';
+
+    VO_RespostaMensagem := StrAlloc(2);
+    StrPCopy(VO_RespostaMensagem, '');
+
     Result := 0;
 
-    if StrToIntDef(VP_CodigoErro, 0) = 0 then
-        VP_CodigoErro := 0;
-
     if VP_CodigoErro = 0 then
-    begin
-        Result := 0;
-        exit;
-    end
+        exit
     else
     begin
         case VP_CodigoErro of
-            2: VO_RespostaMensagem := 'PORTA PINPAD NÃO INFORMADA';
-            3: VO_RespostaMensagem := 'MODELO PINPAD NÃO INFORMADO';
-            4: VO_RespostaMensagem := 'MODELO PINPAD NÃO SUPORTADO';
-            5: VO_RespostaMensagem := 'FALHA NA CONEXÃO COM PINPAD';
-            6: VO_RespostaMensagem := 'PINPAD RETORNOU FALHA(CONSULTA Nº DA FALHA NO RETORNO AUXILIAR)';
-            7: VO_RespostaMensagem := 'DLL OU S.O DO PINPAD NÃO ENCONTRADA';
-            8: VO_RespostaMensagem := 'DLL OU S.O DO PINPAD NÃO COMPATÍVEL(VERIFIQUE 32 OU 64 BITS)';
-            9: VO_RespostaMensagem := 'HOST  NÃO INFORMADO PARA O TEF';
-            10: VO_RespostaMensagem := 'HOST NÃO COMPATÍVEL PARA O TEF';
-            11: VO_RespostaMensagem := 'PORTA NÃO INFORMADA PARA O TEF';
-            12: VO_RespostaMensagem := 'PORTA NÃO COMPATÍVEL  PARA O TEF';
-            13: VO_RespostaMensagem := 'VERSÃO_COMUNICAÇÃO NÃO INFORMADA PARA O TEF';
-            14: VO_RespostaMensagem := 'VERSÃO_COMUNICAÇÃO NÃO COMPATÍVEL PARA O TEF';
-            15: VO_RespostaMensagem := 'CHAVE NÃO INFORMADA PARA O TEF';
-            16: VO_RespostaMensagem := 'CHAVE NÃO COMPATÍVEL PARA O TEF';
-            17: VO_RespostaMensagem := 'VERSÃO DLL DO TEF NÃO COMPATÍVEL (SUGERE ATUALIZAÇÃO)';
-            18: VO_RespostaMensagem := 'PACOTE COM A PRIMEIRA TAG DIFERENTE DE ‘0000’';
-            19: VO_RespostaMensagem := 'ERRO O TAMANHO DO PACOTE NÃO PODE SER ZERO';
-            20: VO_RespostaMensagem := 'ERRO O TAMANHO DO PACOTE DIFERENTE DO TAMANHO DA MENSAGEM';
-            21: VO_RespostaMensagem := 'ERRO OS DADOS DO PACOTE MAIOR QUE OS DADOS DA MENSAGEM';
-            22: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO GET DA TAG';
-            23: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO “TAGTOSTR”';
-            24: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL ENVIAR MENSAGEM';
-            25: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR PARA ESCUTAR';
-            26: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR ABERTURA SOCKET';
-            27: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO ADD DA TAG';
-            28: VO_RespostaMensagem := 'ERRO, PARÂMETRO NULO OU DIFERENTE DA ESTRUTURA DA TAG';
-            29: VO_RespostaMensagem := 'ERRO TAG NÃO LOCALIZADA NO PACOTE DA FUNÇÃO GET DA TAG';
-            30: VO_RespostaMensagem := 'DADOS DO PACOTE MAL FORMATADO OU INCOMPATÍVEL, IMPOSSÍVEL DE LER';
-            31: VO_RespostaMensagem := 'CHAVE PUBLICA NÃO LOCALIZADA';
-            32: VO_RespostaMensagem := 'PROBLEMA NAS TROCAS DE CHAVES NO CONECTAR';
-            33: VO_RespostaMensagem := 'SOCKET DO SERVIDOR VINCULADO ESTA DESCONECTADO';
-            34: VO_RespostaMensagem := 'LOGIN RECUSADO';
-            35: VO_RespostaMensagem := 'SERVIDOR NÃO ESTA EM STATUS DE LOGADO';
-            36: VO_RespostaMensagem := 'CHAVE NÃO LOCALIZADA PARA OPENTEF';
-            37: VO_RespostaMensagem := 'SENHA DE ACESSO NÃO INFORMADO PARA O TEF';
-            38: VO_RespostaMensagem := 'IP NÃO NÃO COMPATIVEL PARA O TERMINAL';
-            39: VO_RespostaMensagem := 'SENHA NÃO COMPATÍVEL PARA O TERMINAL';
-            40: VO_RespostaMensagem := 'ERRO VALIDAÇÃO DO TERMINAL';
-            41: VO_RespostaMensagem := 'CHAVE DO TERMINAL NÃO LOCALIZADA';
-            42: VO_RespostaMensagem := 'TIPO DE PERMISSÃO NÃO INFORMADA PARA O TEF';
-            43: VO_RespostaMensagem := 'REGISTRO EM DUPLICIDADE NO BANCO DE DADOS';
-            44: VO_RespostaMensagem := 'ERRO NA INCLUSÃO DO REGISTRO';
-            45: VO_RespostaMensagem := 'PERMISSÃO NÃO AUTORIZADO PARA ESTE PROCEDIMENTO';
-            46: VO_RespostaMensagem := 'ERRO NA ALTERAÇÃO DO REGISTRO';
-            47: VO_RespostaMensagem := 'DADOS INFORMADO NÃO PODE SER ZERO';
-            48: VO_RespostaMensagem := 'TABELA SEM REGISTRO NO BANCO DE DADOS';
-            49: VO_RespostaMensagem := 'DADOS CHAVES PARA O CADASTRO NÃO PODEM SOFRER ALTERAÇÃO';
-            50: VO_RespostaMensagem := 'BIBLIOTECA DO PINPAD NÃO FOI POSSIVEL CARREGAR';
-            51: VO_RespostaMensagem := 'TIPO DE LEITURA DE CARTÃO NÃO SUPORTADO';
-            52: VO_RespostaMensagem := 'CAMPO OBRIGATÓRIO NÃO PODE SER NULO';
-            53: VO_RespostaMensagem := 'NÃO FOI POSSIVEL ENVIAR A MENSAGEM DE RETORNO PARA O ID INFORMADO';
-            54: VO_RespostaMensagem := 'NÃO FOI POSSIVEL INICIALIZAR O MODULO';
-            55: VO_RespostaMensagem := 'ERRO NA PESQUISA DA TABELA';
-            56: VO_RespostaMensagem := 'NÃO FOI ENCONTRADO NENHUMA CONFIGURAÇÃO DE MENU DE CAIXA';
-            57: VO_RespostaMensagem := 'ERRO NO FLUXO DAS TRANSAÇÕES DA TAG 0018';
-            58: VO_RespostaMensagem := 'ERRO AO CRIAR A TRANSACAO';
-            59: VO_RespostaMensagem := 'ERRO AO PEGAR O STATUS DA TRANSACAO';
-            60: VO_RespostaMensagem := 'ERRO AO EXCLUIR UMA TRANSACAO NO TEF_LIB';
-            61: VO_RespostaMensagem := 'ERRO AO RECEBER A FUNCAO TRANSACAO CREATE DO OPENTEF';
-            62: VO_RespostaMensagem := 'ERRO NO PEDIDO DE CRIAÇÃO DE TRANSAÇÃO';
-            63: VO_RespostaMensagem := 'BIN JA ESTAVA CADASTRADO PARA OUTRO MODULO';
-            64: VO_RespostaMensagem := 'REGISTRO DE MODULO NÃO CARREGADO OU NÃO LOCALIZADO';
-            65: VO_RespostaMensagem := 'NÃO FOI POSSIVE ATUALIZAR A TABELA DE BINS';
-            66: VO_RespostaMensagem := 'CONEXAO DO TEMPORIZADOR NAO ENCONTRADA';
-            67: VO_RespostaMensagem := 'A TRANSMISSAO NAO REPONDIDA EM TEMPO HABIL';
-            68: VO_RespostaMensagem := 'DADOS DA TRANSMISSÃO NÃO TEM COMANDO 00D1';
-            69: VO_RespostaMensagem := 'A COMUNICACAO FOI ABORTADA';
-            70: VO_RespostaMensagem := 'Modulo config não carregado para incluir solicitação';
-            71: VO_RespostaMensagem := 'NAO FOI POSSIVEL ATUALIZAR A TABELA DE MENUS';
-            72: VO_RespostaMensagem := 'MENU JA ESTAVA CADASTRADO PARA OUTRO MODULO';
-            73: VO_RespostaMensagem := 'MENU NÃO ESTA NA LISTA DE MENUS OFICIAIS HABILITADOS USE TAG INICIO “FF”';
-            74: VO_RespostaMensagem := 'BIN inválido';
-            75: VO_RespostaMensagem := 'Tag do botao do menu inválido';
-            76: VO_RespostaMensagem := 'Texto do botao do menu inválido';
-            77: VO_RespostaMensagem := 'pinpad_lib  NÃO CARREGADO';
-            78: VO_RespostaMensagem := 'COMANDO NAO IMPLEMENTADO PELO PINPD';
-            79: VO_RespostaMensagem := 'Não foi possível achar uma operadora para processar o cartão';
-            80: VO_RespostaMensagem := 'Essa solicitação de aprovação não esta em conformidade';
-            81: VO_RespostaMensagem := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
-            82: VO_RespostaMensagem := 'ERRO NA EXCLUSÃO DO REGISTRO';
-            83: VO_RespostaMensagem := 'A CONEXÃO FOI DESCONECTA INESPERADAMENTE';
-            84: VO_RespostaMensagem := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAIS NÃO ENVIOU AS CHAVES';
-            85: VO_RespostaMensagem := 'Erro de tempo em capturar a senha no pinpad';
+            2: VL_String := 'PORTA PINPAD NÃO INFORMADA';
+            3: VL_String := 'MODELO PINPAD NÃO INFORMADO';
+            4: VL_String := 'MODELO PINPAD NÃO SUPORTADO';
+            5: VL_String := 'FALHA NA CONEXÃO COM PINPAD';
+            6: VL_String := 'PINPAD RETORNOU FALHA(CONSULTA Nº DA FALHA NO RETORNO AUXILIAR)';
+            7: VL_String := 'DLL OU S.O DO PINPAD NÃO ENCONTRADA';
+            8: VL_String := 'DLL OU S.O DO PINPAD NÃO COMPATÍVEL(VERIFIQUE 32 OU 64 BITS)';
+            9: VL_String := 'HOST  NÃO INFORMADO PARA O TEF';
+            10: VL_String := 'HOST NÃO COMPATÍVEL PARA O TEF';
+            11: VL_String := 'PORTA NÃO INFORMADA PARA O TEF';
+            12: VL_String := 'PORTA NÃO COMPATÍVEL  PARA O TEF';
+            13: VL_String := 'VERSÃO_COMUNICAÇÃO NÃO INFORMADA PARA O TEF';
+            14: VL_String := 'VERSÃO_COMUNICAÇÃO NÃO COMPATÍVEL PARA O TEF';
+            15: VL_String := 'CHAVE NÃO INFORMADA PARA O TEF';
+            16: VL_String := 'CHAVE NÃO COMPATÍVEL PARA O TEF';
+            17: VL_String := 'VERSÃO DLL DO TEF NÃO COMPATÍVEL (SUGERE ATUALIZAÇÃO)';
+            18: VL_String := 'PACOTE COM A PRIMEIRA TAG DIFERENTE DE ‘0000’';
+            19: VL_String := 'ERRO O TAMANHO DO PACOTE NÃO PODE SER ZERO';
+            20: VL_String := 'ERRO O TAMANHO DO PACOTE DIFERENTE DO TAMANHO DA MENSAGEM';
+            21: VL_String := 'ERRO OS DADOS DO PACOTE MAIOR QUE OS DADOS DA MENSAGEM';
+            22: VL_String := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO GET DA TAG';
+            23: VL_String := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO “TAGTOSTR”';
+            24: VL_String := 'NÃO FOI POSSÍVEL ENVIAR MENSAGEM';
+            25: VL_String := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR PARA ESCUTAR';
+            26: VL_String := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR ABERTURA SOCKET';
+            27: VL_String := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO ADD DA TAG';
+            28: VL_String := 'ERRO, PARÂMETRO NULO OU DIFERENTE DA ESTRUTURA DA TAG';
+            29: VL_String := 'ERRO TAG NÃO LOCALIZADA NO PACOTE DA FUNÇÃO GET DA TAG';
+            30: VL_String := 'DADOS DO PACOTE MAL FORMATADO OU INCOMPATÍVEL, IMPOSSÍVEL DE LER';
+            31: VL_String := 'CHAVE PUBLICA NÃO LOCALIZADA';
+            32: VL_String := 'PROBLEMA NAS TROCAS DE CHAVES NO CONECTAR';
+            33: VL_String := 'SOCKET DO SERVIDOR VINCULADO ESTA DESCONECTADO';
+            34: VL_String := 'LOGIN RECUSADO';
+            35: VL_String := 'SERVIDOR NÃO ESTA EM STATUS DE LOGADO';
+            36: VL_String := 'CHAVE NÃO LOCALIZADA PARA OPENTEF';
+            37: VL_String := 'SENHA DE ACESSO NÃO INFORMADO PARA O TEF';
+            38: VL_String := 'IP NÃO NÃO COMPATIVEL PARA O TERMINAL';
+            39: VL_String := 'SENHA NÃO COMPATÍVEL PARA O TERMINAL';
+            40: VL_String := 'ERRO VALIDAÇÃO DO TERMINAL';
+            41: VL_String := 'CHAVE DO TERMINAL NÃO LOCALIZADA';
+            42: VL_String := 'TIPO DE PERMISSÃO NÃO INFORMADA PARA O TEF';
+            43: VL_String := 'REGISTRO EM DUPLICIDADE NO BANCO DE DADOS';
+            44: VL_String := 'ERRO NA INCLUSÃO DO REGISTRO';
+            45: VL_String := 'PERMISSÃO NÃO AUTORIZADO PARA ESTE PROCEDIMENTO';
+            46: VL_String := 'ERRO NA ALTERAÇÃO DO REGISTRO';
+            47: VL_String := 'DADOS INFORMADO NÃO PODE SER ZERO';
+            48: VL_String := 'TABELA SEM REGISTRO NO BANCO DE DADOS';
+            49: VL_String := 'DADOS CHAVES PARA O CADASTRO NÃO PODEM SOFRER ALTERAÇÃO';
+            50: VL_String := 'BIBLIOTECA DO PINPAD NÃO FOI POSSIVEL CARREGAR';
+            51: VL_String := 'TIPO DE LEITURA DE CARTÃO NÃO SUPORTADO';
+            52: VL_String := 'CAMPO OBRIGATÓRIO NÃO PODE SER NULO';
+            53: VL_String := 'NÃO FOI POSSIVEL ENVIAR A MENSAGEM DE RETORNO PARA O ID INFORMADO';
+            54: VL_String := 'NÃO FOI POSSIVEL INICIALIZAR O MODULO';
+            55: VL_String := 'ERRO NA PESQUISA DA TABELA';
+            56: VL_String := 'NÃO FOI ENCONTRADO NENHUMA CONFIGURAÇÃO DE MENU DE CAIXA';
+            57: VL_String := 'ERRO NO FLUXO DAS TRANSAÇÕES DA TAG 0018';
+            58: VL_String := 'ERRO AO CRIAR A TRANSACAO';
+            59: VL_String := 'ERRO AO PEGAR O STATUS DA TRANSACAO';
+            60: VL_String := 'ERRO AO EXCLUIR UMA TRANSACAO NO TEF_LIB';
+            61: VL_String := 'ERRO AO RECEBER A FUNCAO TRANSACAO CREATE DO OPENTEF';
+            62: VL_String := 'ERRO NO PEDIDO DE CRIAÇÃO DE TRANSAÇÃO';
+            63: VL_String := 'BIN JA ESTAVA CADASTRADO PARA OUTRO MODULO';
+            64: VL_String := 'REGISTRO DE MODULO NÃO CARREGADO OU NÃO LOCALIZADO';
+            65: VL_String := 'NÃO FOI POSSIVE ATUALIZAR A TABELA DE BINS';
+            66: VL_String := 'CONEXAO DO TEMPORIZADOR NAO ENCONTRADA';
+            67: VL_String := 'A TRANSMISSAO NAO REPONDIDA EM TEMPO HABIL';
+            68: VL_String := 'DADOS DA TRANSMISSÃO NÃO TEM COMANDO 00D1';
+            69: VL_String := 'A COMUNICACAO FOI ABORTADA';
+            70: VL_String := 'Modulo config não carregado para incluir solicitação';
+            71: VL_String := 'NAO FOI POSSIVEL ATUALIZAR A TABELA DE MENUS';
+            72: VL_String := 'MENU JA ESTAVA CADASTRADO PARA OUTRO MODULO';
+            73: VL_String := 'MENU NÃO ESTA NA LISTA DE MENUS OFICIAIS HABILITADOS USE TAG INICIO “FF”';
+            74: VL_String := 'BIN inválido';
+            75: VL_String := 'Tag do botao do menu inválido';
+            76: VL_String := 'Texto do botao do menu inválido';
+            77: VL_String := 'pinpad_lib  NÃO CARREGADO';
+            78: VL_String := 'COMANDO NAO IMPLEMENTADO PELO PINPD';
+            79: VL_String := 'Não foi possível achar uma operadora para processar o cartão';
+            80: VL_String := 'Essa solicitação de aprovação não esta em conformidade';
+            81: VL_String := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
+            82: VL_String := 'ERRO NA EXCLUSÃO DO REGISTRO';
+            83: VL_String := 'A CONEXÃO FOI DESCONECTA INESPERADAMENTE';
+            84: VL_String := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAIS NÃO ENVIOU AS CHAVES';
+            85: VL_String := 'Erro de tempo em capturar a senha no pinpad';
+            86: VL_String := 'Erro ao cancelar uma transação';
+            87: VL_String := 'Erro na exclusão, TAG oficial não pode ser excluida';
+            88: VL_String := 'TAG não é um valor Hexadecimal';
+            89: VL_String := 'Chave da transação não localizada';
+            90: VL_String := 'Autorização da venda não localizada';
+
             else
             begin
                 Result := 1;
-                VO_RespostaMensagem := 'Erro Desconhecido ou não catalogado';
-                exit;
+                VL_String := 'Erro Desconhecido ou não catalogado';
             end;
         end;
-        Result := VP_CodigoErro;
+
+            VO_RespostaMensagem := StrAlloc(Length(VL_String)+1);
+            StrPCopy(VO_RespostaMensagem, VL_String);
     end;
 end;
 
@@ -731,14 +808,14 @@ end;
 
 function TTransacao.GetChaveTransacao: ansistring;
 begin
-   Result := fMensagem.GetTagAsAstring('00F1');
+    Result := fMensagem.GetTagAsAstring('00F1');
 end;
 
 
-constructor TTransacao.Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+constructor TTransacao.Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
 begin
     inherited Create;
-
+    fcomando := VP_Comando;
     fMensagem := TMensagem.Create;
 
     if VP_TransacaoString <> '' then
@@ -753,9 +830,11 @@ begin
     fMensagem.AddTag('00A3', VP_Terminal_ID);
     fMensagem.AddTag('0051', 20000);
     fMensagem.AddTag('00A2', VP_Terminal_Tipo);
+    fMensagem.AddTag('0091', VP_Doc);
     fMensagem.AddTag('007C', FloatToStr(Now));
     fMensagem.AddTag('00A4', TransacaoStatusToInt(tsAguardandoComando));
-    fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' + FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now));
+    fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' +
+        FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now));
 
 end;
 
@@ -872,40 +951,76 @@ begin
 end;
 
 
-procedure CriarChaveTerminal(VP_TipoChave : TTipoChave;VP_ValorChave : string; var VO_Chave: ansistring);
+procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
 var
     VL_Chave: ansistring;
-    I: integer;
+    I, II: integer;
+    Intervalo: int64;
+    VL_String: string;
 begin
     VL_Chave := '';
-    VO_Chave:='';
+    VO_Chave := '';
     Randomize;
     case VP_TipoChave of
-       tcC50 :
-         begin
-             for I := 0 to 50 do
-             begin
-                 if Length(VL_Chave) < 50 then
-                     VL_Chave := VL_Chave + IntToStr(Random(99)) + IntToStr(Random(999));
-             end;
-             VO_Chave := Copy(VL_Chave, 1, 50);
-         end;
-       tcPDV :
-       begin
-            VL_Chave:='';
-            if length(VP_ValorChave)=0 then
-               exit;
+        tcC50:
+        begin
+            for I := 0 to 50 do
+            begin
+                if Length(VL_Chave) < 50 then
+                    VL_Chave := VL_Chave + IntToStr(Random(99)) + IntToStr(Random(999));
+            end;
+            VO_Chave := Copy(VL_Chave, 1, 50);
+        end;
+        tcPDV:
+        begin
+            VL_Chave := '';
+            VL_String := '';
+            if length(VP_ValorChave) = 0 then
+                exit;
+            VL_String := IntToStr(RandomRange(10000000, 99999999));
+            VL_String := Copy(VL_String, Length(VL_String) - 8, 8);
 
-            //gera o mac
-                   // não feito
-            VL_Chave := GetMACAddress;
+            for I := 0 to Length(VP_ValorChave) - 1 do
+            begin
+                for II := 0 to 10 - 1 do
+                begin
+                    VL_String := floattostr(trunc((strtofloat(VL_String) * 0.9)));
+                    Intervalo := StrToInt(Copy(VL_String, Length(VL_String) - 2, 2));
+                    if Intervalo > 35 then
+                        Intervalo := Intervalo div 3;
+                    VL_Chave := VL_Chave + Letra[Intervalo];
+                end;
+                VL_Chave := VL_Chave + COPY(VP_ValorChave, I, 1);
+            end;
+            VO_Chave := COPY(VL_Chave, 1, 50);
+        end;
+        else
+        begin
+            VL_Chave := '';
+            VL_String := '';
+            if length(VP_ValorChave) = 0 then
+                exit;
+            VL_String := IntToStr(RandomRange(10000000, 99999999));
+            VL_String := Copy(VL_String, Length(VL_String) - 8, 8);
 
-            VL_Chave:= VP_ValorChave+VL_Chave;
-            VO_Chave:=VL_Chave;
-       end;
+            for I := 0 to Length(VP_ValorChave) - 1 do
+            begin
+                for II := 0 to 10 - 1 do
+                begin
+                    VL_String := floattostr(trunc((strtofloat(VL_String) * 0.9)));
+                    Intervalo := StrToInt(Copy(VL_String, Length(VL_String) - 2, 2));
+                    if Intervalo > 35 then
+                        Intervalo := Intervalo div 3;
+                    VL_Chave := VL_Chave + Letra[Intervalo];
+                end;
+                VL_Chave := VL_Chave + COPY(VP_ValorChave, I, 1);
+            end;
+            VO_Chave := COPY(VL_Chave, 1, 50);
+        end;
     end;
 end;
 
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
 var
     VL_Arquivo: TextFile;
@@ -936,6 +1051,8 @@ begin
 
 end;
 
+{$ENDIF}
+
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
 begin
     case VP_Permissao of
@@ -959,6 +1076,38 @@ begin
             raise Exception.Create('Esse valor:"' + VP_Permissao + '" não é uma permissao');
     end;
 
+end;
+
+function TipoTagToStr(VP_TipoTag: integer): ansistring;
+begin
+    case VP_TipoTag of
+        ord(ttNDF): Result := 'NDF';
+        ord(ttCOMANDO): Result := 'COMANDO';
+        ord(ttDADOS): Result := 'DADOS';
+        ord(ttMENU_PDV): Result := 'MENU_PDV';
+        ord(ttMENU_OPERACIONAL): Result := 'MENU_OPERACIONAL';
+        ord(ttPINPAD_FUNC): Result := 'PINPAD_FUNC';
+        ord(ttMODULO): Result := 'MODULO';
+        else
+            Result := '';
+
+    end;
+end;
+
+function StrToTipoTag(VP_TipoTag: ansistring): integer;
+begin
+
+    case VP_TipoTag of
+        'NDF': Result := ord(ttNDF);
+        'COMANDO': Result := ord(ttCOMANDO);
+        'DADOS': Result := ord(ttDADOS);
+        'MENU_PDV': Result := ord(ttMENU_PDV);
+        'MENU_OPERACIONAL': Result := ord(ttMENU_OPERACIONAL);
+        'PINPAD_FUNC': Result := ord(ttPINPAD_FUNC);
+        'MODULO': Result := ord(ttMODULO);
+        else
+            raise Exception.Create('Esse valor:"' +  VP_TipoTag + '" não é um Tipo de Tag Válido');
+    end;
 end;
 
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
@@ -1472,7 +1621,7 @@ end;
 constructor TMensagem.Create;
 begin
     inherited Create;
-    AddComando('0000','');
+    AddComando('0000', '');
 end;
 
 function TMensagem.AddComando(VP_Tag, VP_Dados: ansistring): integer;

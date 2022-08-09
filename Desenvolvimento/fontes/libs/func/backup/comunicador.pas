@@ -575,9 +575,9 @@ begin
     for VL_I := 0 to V_EventoSocketCliente.fTemporizadores.Count - 1 do
         V_EventoSocketCliente.abortar(TTemporizador(V_EventoSocketCliente.fTemporizadores[VL_I]).V_ID);
 
-    VL_Temporizador := TTemporizador.Create;
+  {  VL_Temporizador := TTemporizador.Create;
     VL_Temporizador.aguarda(2000, True, VL_Temporizador);
-    VL_Temporizador.Free;
+    VL_Temporizador.Free;}
 
 
     V_ChavesDasConexoes.Free;

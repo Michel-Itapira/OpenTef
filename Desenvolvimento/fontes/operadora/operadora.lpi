@@ -29,7 +29,6 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\libs\func"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -70,7 +69,6 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\libs\func"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -130,13 +128,6 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DFuncoes"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
-      </Unit>
-      <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -150,7 +141,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\libs\func"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

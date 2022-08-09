@@ -5,7 +5,27 @@ unit funcoes;
 interface
 
 uses
-    Classes, SysUtils, StrUtils, ZDataset, DB, rxmemds, IdContext, syncobjs, def, ExtCtrls, Graphics,ubarcodes;
+    Classes,
+    SysUtils,
+    StrUtils,
+    {$IF NOT DEFINED(FRENTE_CAIXA)}
+    ZDataset,
+    ZConnection,
+    DB,
+    {$ENDIF}
+    rxmemds,
+    IdContext,
+    IdSSLOpenSSL,
+    {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
+    def,
+    {$ENDIF}
+    IdTime,
+    syncobjs,
+    ExtCtrls,
+    Graphics,
+    ubarcodes,
+    Math,
+    nb30;
 
 type
 
@@ -78,6 +98,10 @@ type
 
     TTipoDocumento = (tdCNPJ, tdCPF); // tipo do documento prar formatação
 
+    TTipoChave = (tcC50, tcPDV, tcConfigurador, tcModuloConfig); // tipo de chaves de validação
+
+    TTipoTag = (ttNDF, ttCOMANDO, ttDADOS, ttMENU_PDV, ttMENU_OPERACIONAL, ttPINPAD_FUNC, ttMODULO); //tipo de tag cadastrado no banco de dados
+
     { TTEmporizadorEvento }
 
     TTEmporizadorTThread = class(TThread)
@@ -116,6 +140,7 @@ type
 
     TTransacao = class
         fMensagem: TMensagem;
+        fcomando: string;
         fTemporizador: TTemporizador;
     private
         function GetErro: integer;
@@ -125,15 +150,18 @@ type
         procedure SetErroDescricao(VP_Descricao: string);
         procedure SetStatus(VP_Status: TTransacaoStatus);
         function GetID: ansistring;
+        function GetChaveTransacao: ansistring;
+
 
     public
-        constructor Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+        constructor Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
         destructor Destroy; override;
         function AsString: ansistring;
         function TempoAguarda: integer;
         property erro: integer read GetErro write SetErro;
         property erroDescricao: string read GetErroDescricao write SetErroDescricao;
         property ID: ansistring read GetID;
+        property chaveTransacao: ansistring read GetChaveTransacao;
         property STATUS: TTransacaoStatus read GetSTATUS write SetStatus;
     end;
 
@@ -148,10 +176,15 @@ type
 procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
 function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
-procedure CriarChaveTerminal(var VO_Chave: ansistring);
+procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+{$ENDIF }
+function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
 function StrToPermissao(VP_Permissao: ansistring): TPermissao;
+function TipoTagToStr(VP_TipoTag: integer): ansistring;
+function StrToTipoTag(VP_TipoTag: ansistring): integer;
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
 function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
 function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
@@ -167,34 +200,112 @@ function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
 function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
-procedure BarcodeToStr(var Dados:String;Barcode: TBarcodeQR);
+procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
 
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
 
-
-
 function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
 function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; stdcall;
-function mensagemcomando(VP_Mensagem: Pointer): PChar; stdcall;
-function mensagemcomandodados(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
 function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
 function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
-function mensagemtagasstring(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
 function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
 function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
 
+
+
 var
     VF_Sequencia: longint;
     VF_CriticoLog: TRTLCriticalSection;
 
+const
+    Letra: array [0..35] of string = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Z', 'W',
+        'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
 
 implementation
 
+function CalculaDigito(Texto: string): string;
+var
+    i, k, Soma, Digito: integer;
+begin
+    Result := '00';
+    Soma := 990;
+    k := 23;
+    for i := Length(Texto) downto 1 do
+    begin
+        Soma := Soma + (Ord(Texto[i]) - Ord('0')) * k;
+        Inc(k);
+        if (k > 9) then
+            k := 2;
+    end;
+    Digito := Soma mod 101;
+    if Digito >= 100 then
+        Digito := 0;
+    Result := IntToStr(Digito);
+    if Length(Result) < 2 then
+        Result := '0' + Result;
+end;
+
+{function GetAdapterInfo(Lana: char): string;
+var
+    Adapter: TADAPTER_STATUS;
+    NCB: _NCB;
+begin
+    FillChar(NCB, SizeOf(NCB), 0);
+    NCB.ncb_command := byte(NCBRESET);
+    NCB.ncb_lana_num := byte(Lana);
+    if Netbios(@NCB) <> byte(NRC_GOODRET) then
+    begin
+        Result := 'Address not known';
+        Exit;
+    end;
+
+    FillChar(NCB, SizeOf(NCB), 0);
+    NCB.ncb_command := byte(NCBASTAT);
+    NCB.ncb_lana_num := byte(Lana);
+    NCB.ncb_callname[0] := byte('*');
+
+    FillChar(Adapter, SizeOf(Adapter), 0);
+    NCB.ncb_buffer := @Adapter;
+    NCB.ncb_length := SizeOf(Adapter);
+    if Netbios(@NCB) <> byte(NRC_GOODRET) then
+    begin
+        Result := 'Address not known';
+        Exit;
+    end;
+    Result :=
+        IntToHex(byte(Adapter.adapter_address[0]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[1]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[2]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[3]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[4]), 2) + '-' +
+        IntToHex(byte(Adapter.adapter_address[5]), 2);
+end;
+
+function GetMACAddress: string;
+var
+    AdapterList: TLANA_ENUM;
+    NCB: _NCB;
+begin
+    FillChar(NCB, SizeOf(NCB), 0);
+    NCB.ncb_command := byte(NCBENUM);
+    NCB.ncb_buffer := @AdapterList;
+    NCB.ncb_length := SizeOf(AdapterList);
+    Netbios(@NCB);
+    if byte(AdapterList.length) > 0 then
+        Result := GetAdapterInfo(char(AdapterList.lana[0]))
+    else
+        Result := 'Address not known';
+end;
+ }
 
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 var
@@ -220,7 +331,7 @@ begin
     end;
 
 
-   Sm := TStringStream.Create(s);
+    Sm := TStringStream.Create(s);
 
 
     if Length(s) > 5 then
@@ -267,40 +378,40 @@ var
     I: integer;
     S: string;
 begin
-    Dados:='';
+    Dados := '';
     Sm := TStringStream.Create('');
     Imagem.Picture.SaveToStream(Sm);
     S := sm.DataString;
 
-    for i := 0 to Length(S) -1  do
-        Dados := Dados + HexStr(Ord(S[i+1]), 2);
+    for i := 0 to Length(S) - 1 do
+        Dados := Dados + HexStr(Ord(S[i + 1]), 2);
 
 
     Sm.Free;
 end;
 
-procedure BarcodeToStr(var Dados:String;Barcode: TBarcodeQR);
-  var
-  bmp: TFPImageBitmap;
-  img:TImage;
+procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
+var
+    bmp: TFPImageBitmap;
+    img: TImage;
 begin
     bmp := TBitmap.Create;
-    img:=TImage.Create(nil);
-  try
-    bmp.SetSize(Barcode.Width,Barcode.Height);
-    bmp.Canvas.Brush.Color := clWhite;
-    bmp.Canvas.FillRect(0, 0, bmp.Width, bmp.Height);
-    Barcode.PaintOnCanvas(bmp.Canvas, Rect(0, 0, bmp.Width, bmp.Height));
+    img := TImage.Create(nil);
+    try
+        bmp.SetSize(Barcode.Width, Barcode.Height);
+        bmp.Canvas.Brush.Color := clWhite;
+        bmp.Canvas.FillRect(0, 0, bmp.Width, bmp.Height);
+        Barcode.PaintOnCanvas(bmp.Canvas, Rect(0, 0, bmp.Width, bmp.Height));
 
-    img.Picture.Assign(bmp);
+        img.Picture.Assign(bmp);
 
-    ImagemToStr(Dados,img);
+        ImagemToStr(Dados, img);
 
 
-  finally
-    bmp.Free;
-    img.Free;
-  end;
+    finally
+        bmp.Free;
+        img.Free;
+    end;
 
 end;
 
@@ -317,14 +428,25 @@ begin
     Result := TMensagem(VP_Mensagem).CarregaTags(VP_Dados);
 end;
 
-function mensagemcomando(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_Dados: ansistring;
+
 begin
-    Result := PChar(TMensagem(VP_Mensagem).Comando());
+    Result := 0;
+    VL_Dados := TMensagem(VP_Mensagem).Comando();
+    VO_Dados := StrAlloc(Length(VL_Dados) + 1);
+    StrPCopy(VO_Dados, VL_Dados);
 end;
 
-function mensagemcomandodados(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_String: string;
 begin
-    Result := PChar(TMensagem(VP_Mensagem).ComandoDados());
+    Result := 0;
+    VL_String := TMensagem(VP_Mensagem).ComandoDados();
+    VO_Dados := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_Dados, VL_String);
 end;
 
 procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
@@ -343,9 +465,14 @@ begin
     Result := TMensagem(VP_Mensagem).AddComando(VP_Tag, VP_Dados);
 end;
 
-function mensagemtagasstring(VP_Mensagem: Pointer): PChar; stdcall;
+function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+var
+    VL_String: string;
 begin
-    Result := PChar(TMensagem(VP_Mensagem).TagsAsString());
+    Result := 0;
+    VL_String := TMensagem(VP_Mensagem).TagsAsString;
+    VO_Dados := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_Dados, VL_String);
 end;
 
 function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
@@ -400,6 +527,7 @@ end;
 {$R *.lfm}
 
 { TErroMensagem }
+
 
 function TErroMensagem.TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
 
@@ -499,6 +627,15 @@ begin
             80: VO_RespostaMensagem := 'Essa solicitação de aprovação não esta em conformidade';
             81: VO_RespostaMensagem := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
             82: VO_RespostaMensagem := 'ERRO NA EXCLUSÃO DO REGISTRO';
+            83: VO_RespostaMensagem := 'A CONEXÃO FOI DESCONECTA INESPERADAMENTE';
+            84: VO_RespostaMensagem := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAIS NÃO ENVIOU AS CHAVES';
+            85: VO_RespostaMensagem := 'Erro de tempo em capturar a senha no pinpad';
+            86: VO_RespostaMensagem := 'Erro ao cancelar uma transação';
+            87: VO_RespostaMensagem := 'Erro na exclusão, TAG oficial não pode ser excluida';
+            88: VO_RespostaMensagem := 'TAG não é um valor Hexadecimal';
+            89: VO_RespostaMensagem := 'Chave da transação não localizada';
+            90: VO_RespostaMensagem := 'Autorização da venda não localizada';
+
             else
             begin
                 Result := 1;
@@ -671,11 +808,16 @@ begin
     Result := fMensagem.GetTagAsAstring('0034');
 end;
 
+function TTransacao.GetChaveTransacao: ansistring;
+begin
+    Result := fMensagem.GetTagAsAstring('00F1');
+end;
 
-constructor TTransacao.Create(VP_Terminal_Tipo: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+
+constructor TTransacao.Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: ansistring; VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
 begin
     inherited Create;
-
+    fcomando := VP_Comando;
     fMensagem := TMensagem.Create;
 
     if VP_TransacaoString <> '' then
@@ -690,6 +832,7 @@ begin
     fMensagem.AddTag('00A3', VP_Terminal_ID);
     fMensagem.AddTag('0051', 20000);
     fMensagem.AddTag('00A2', VP_Terminal_Tipo);
+    fMensagem.AddTag('0091', VP_Doc);
     fMensagem.AddTag('007C', FloatToStr(Now));
     fMensagem.AddTag('00A4', TransacaoStatusToInt(tsAguardandoComando));
     fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' +
@@ -810,21 +953,76 @@ begin
 end;
 
 
-procedure CriarChaveTerminal(var VO_Chave: ansistring);
+procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
 var
     VL_Chave: ansistring;
-    I: integer;
+    I, II: integer;
+    Intervalo: int64;
+    VL_String: string;
 begin
     VL_Chave := '';
+    VO_Chave := '';
     Randomize;
-    for I := 0 to 50 do
-    begin
-        if Length(VL_Chave) < 50 then
-            VL_Chave := VL_Chave + IntToStr(Random(99)) + IntToStr(Random(999));
+    case VP_TipoChave of
+        tcC50:
+        begin
+            for I := 0 to 50 do
+            begin
+                if Length(VL_Chave) < 50 then
+                    VL_Chave := VL_Chave + IntToStr(Random(99)) + IntToStr(Random(999));
+            end;
+            VO_Chave := Copy(VL_Chave, 1, 50);
+        end;
+        tcPDV:
+        begin
+            VL_Chave := '';
+            VL_String := '';
+            if length(VP_ValorChave) = 0 then
+                exit;
+            VL_String := IntToStr(RandomRange(10000000, 99999999));
+            VL_String := Copy(VL_String, Length(VL_String) - 8, 8);
+
+            for I := 0 to Length(VP_ValorChave) - 1 do
+            begin
+                for II := 0 to 10 - 1 do
+                begin
+                    VL_String := floattostr(trunc((strtofloat(VL_String) * 0.9)));
+                    Intervalo := StrToInt(Copy(VL_String, Length(VL_String) - 2, 2));
+                    if Intervalo > 35 then
+                        Intervalo := Intervalo div 3;
+                    VL_Chave := VL_Chave + Letra[Intervalo];
+                end;
+                VL_Chave := VL_Chave + COPY(VP_ValorChave, I, 1);
+            end;
+            VO_Chave := COPY(VL_Chave, 1, 50);
+        end;
+        else
+        begin
+            VL_Chave := '';
+            VL_String := '';
+            if length(VP_ValorChave) = 0 then
+                exit;
+            VL_String := IntToStr(RandomRange(10000000, 99999999));
+            VL_String := Copy(VL_String, Length(VL_String) - 8, 8);
+
+            for I := 0 to Length(VP_ValorChave) - 1 do
+            begin
+                for II := 0 to 10 - 1 do
+                begin
+                    VL_String := floattostr(trunc((strtofloat(VL_String) * 0.9)));
+                    Intervalo := StrToInt(Copy(VL_String, Length(VL_String) - 2, 2));
+                    if Intervalo > 35 then
+                        Intervalo := Intervalo div 3;
+                    VL_Chave := VL_Chave + Letra[Intervalo];
+                end;
+                VL_Chave := VL_Chave + COPY(VP_ValorChave, I, 1);
+            end;
+            VO_Chave := COPY(VL_Chave, 1, 50);
+        end;
     end;
-    VO_Chave := Copy(VL_Chave, 1, 50);
 end;
 
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
 var
     VL_Arquivo: TextFile;
@@ -855,6 +1053,8 @@ begin
 
 end;
 
+{$ENDIF}
+
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
 begin
     case VP_Permissao of
@@ -878,6 +1078,38 @@ begin
             raise Exception.Create('Esse valor:"' + VP_Permissao + '" não é uma permissao');
     end;
 
+end;
+
+function TipoTagToStr(VP_TipoTag: integer): ansistring;
+begin
+    case VP_TipoTag of
+        ord(ttNDF): Result := 'NDF';
+        ord(ttCOMANDO): Result := 'COMANDO';
+        ord(ttDADOS): Result := 'DADOS';
+        ord(ttMENU_PDV): Result := 'MENU_PDV';
+        ord(ttMENU_OPERACIONAL): Result := 'MENU_OPERACIONAL';
+        ord(ttPINPAD_FUNC): Result := 'PINPAD_FUNC';
+        ord(ttMODULO): Result := 'MODULO';
+        else
+            Result := '';
+
+    end;
+end;
+
+function StrToTipoTag(VP_TipoTag: ansistring): integer;
+begin
+
+    case VP_TipoTag of
+        'NDF': Result := ord(ttNDF);
+        'COMANDO': Result := ord(ttCOMANDO);
+        'DADOS': Result := ord(ttDADOS);
+        'MENU_PDV': Result := ord(ttMENU_PDV);
+        'MENU_OPERACIONAL': Result := ord(ttMENU_OPERACIONAL);
+        'PINPAD_FUNC': Result := ord(ttPINPAD_FUNC);
+        'MODULO': Result := ord(ttMODULO);
+        else
+            raise Exception.Create('Esse valor:"' +  VP_TipoTag + '" não é um Tipo de Tag Válido');
+    end;
 end;
 
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
@@ -1391,6 +1623,7 @@ end;
 constructor TMensagem.Create;
 begin
     inherited Create;
+    AddComando('0000', '');
 end;
 
 function TMensagem.AddComando(VP_Tag, VP_Dados: ansistring): integer;

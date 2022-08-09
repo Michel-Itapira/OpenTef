@@ -222,6 +222,7 @@ object FTags: TFTags
           'MENU_PDV'
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
+          'MODULO'
         )
         TabOrder = 5
         Text = 'ETipoFuncao'

@@ -8,8 +8,7 @@
       <Unit>
         <Filename Value="config_app.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos Y="24"/>
+        <CursorPos Y="19"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -20,11 +19,21 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPrincipal"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="4602"/>
-        <CursorPos X="32" Y="4614"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="743"/>
+        <CursorPos X="58" Y="750"/>
+        <FoldState Value=" T460X TCi2G3 T7iJI#mXx"/>
+        <ExtraEditorCount Value="1"/>
+        <ExtraEditor1>
+          <EditorIndex Value="-1"/>
+          <WindowIndex Value="1"/>
+          <TopLine Value="2822"/>
+          <CursorPos X="44" Y="2690"/>
+        </ExtraEditor1>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisatags.pas"/>
@@ -34,8 +43,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisaTags"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="74"/>
-        <CursorPos Y="74"/>
+        <TopLine Value="73"/>
+        <CursorPos X="72" Y="96"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -75,8 +84,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="232"/>
-        <CursorPos Y="239"/>
+        <TopLine Value="1158"/>
+        <CursorPos X="5" Y="1163"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -85,31 +94,31 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="221"/>
-        <CursorPos Y="262"/>
-        <UsageCount Value="92"/>
+        <TopLine Value="232"/>
+        <CursorPos Y="265"/>
+        <UsageCount Value="98"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lclmessageglue.pas"/>
         <UnitName Value="LCLMessageGlue"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="94"/>
-        <CursorPos Y="116"/>
-        <UsageCount Value="16"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="3594"/>
-        <CursorPos Y="3612"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="2270"/>
+        <CursorPos Y="2288"/>
+        <UsageCount Value="13"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customedit.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="88"/>
         <CursorPos Y="109"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="17"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.pas"/>
@@ -119,21 +128,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="976"/>
         <CursorPos X="72" Y="1001"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="74"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\buttoncontrol.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="33"/>
-        <CursorPos Y="56"/>
-        <UsageCount Value="1"/>
+        <TopLine Value="3"/>
+        <CursorPos Y="22"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\font.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="906"/>
         <CursorPos Y="923"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\dbgrids.pas"/>
@@ -141,34 +150,34 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3287"/>
         <CursorPos Y="3305"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\fcl-db\src\memds\memds.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="138"/>
         <CursorPos X="14" Y="155"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32listsl.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="116"/>
         <CursorPos Y="140"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\fcl-db\src\base\db.pas"/>
         <UnitName Value="DB"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="83"/>
-        <CursorPos X="14" Y="107"/>
-        <UsageCount Value="2"/>
+        <TopLine Value="410"/>
+        <CursorPos X="70" Y="427"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\rxdb\rxmemds.pas"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="650"/>
+        <TopLine Value="649"/>
         <CursorPos Y="668"/>
         <UsageCount Value="67"/>
       </Unit>
@@ -179,91 +188,91 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="114" Y="39"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32memostrings.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="42"/>
         <CursorPos Y="62"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\rxdb\ex_rx_bin_datapacket.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="120"/>
         <CursorPos Y="146"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\application.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2173"/>
         <CursorPos Y="2192"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="414"/>
         <CursorPos X="3" Y="432"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\rxdb\rxdbgrid.pas"/>
         <UnitName Value="RxDBGrid"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="55"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3149"/>
         <CursorPos Y="3170"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\wincontrol.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="7874"/>
-        <CursorPos Y="7893"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="5409"/>
+        <CursorPos Y="5430"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1913"/>
         <CursorPos X="14" Y="1984"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\compon.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="140"/>
         <CursorPos X="3" Y="169"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\buttons.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="152"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\bitbtn.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="51"/>
-        <CursorPos X="64" Y="57"/>
-        <UsageCount Value="8"/>
+        <CursorPos Y="68"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdIOHandler.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="554"/>
         <CursorPos X="15" Y="570"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
@@ -271,7 +280,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="963"/>
         <CursorPos X="69" Y="974"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
@@ -279,7 +288,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="56"/>
         <CursorPos Y="75"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\comctrls.pp"/>
@@ -287,44 +296,190 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="538"/>
         <CursorPos X="14" Y="558"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customnotebook.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="539"/>
         <CursorPos Y="568"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\components\lazutils\lazutils.pas"/>
         <UnitName Value="LazUtils"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\components\lazutils\lazsysutils.pas"/>
         <UnitName Value="LazSysUtils"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="28"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\winunits-base\src\nb30.pp"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="264"/>
-        <CursorPos X="38" Y="295"/>
-        <UsageCount Value="17"/>
+        <TopLine Value="88"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\libenet\src\enet.pp"/>
         <UnitName Value="ENet"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="783"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="2"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\frente_caixa\uprincipal.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="400"/>
+        <CursorPos X="97" Y="470"/>
+        <UsageCount Value="4"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\custompage.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="135"/>
+        <CursorPos Y="157"/>
+        <UsageCount Value="13"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\winunits-base\src\winutils.pp"/>
+        <UnitName Value="WinUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="84"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\math.pp"/>
+        <UnitName Value="Math"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="298"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\fcl-base\src\maskutils.pp"/>
+        <UnitName Value="MaskUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="236"/>
+        <CursorPos X="33" Y="42"/>
+        <FoldState Value=" T8iU2LM"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\rxdb\rxlookup.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1752"/>
+        <CursorPos Y="1771"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32callback.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2753"/>
+        <CursorPos Y="2773"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32wsbuttons.pp"/>
+        <UnitName Value="Win32WSButtons"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="540"/>
+        <CursorPos Y="558"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32object.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="385"/>
+        <CursorPos X="90" Y="401"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="19">
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4575" TopLine="4556"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4576" TopLine="4556"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4577" TopLine="4556"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4581" TopLine="4556"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="720" Column="19" TopLine="714"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4616" TopLine="4588"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4543" Column="33" TopLine="4373"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4544" Column="33" TopLine="4507"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4545" Column="33" TopLine="4508"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4544" Column="33" TopLine="4507"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4543" Column="33" TopLine="4506"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4544" Column="33" TopLine="4507"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4545" Column="33" TopLine="4508"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4544" Column="33" TopLine="4507"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="4543" Column="33" TopLine="4506"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="61" Column="10" TopLine="745"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="751" Column="58" TopLine="745"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="752" Column="58" TopLine="747"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="751" Column="58" TopLine="745"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="750" Column="58" TopLine="743"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>

@@ -147,6 +147,12 @@
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dTEF_LIB"/>
+      <OtherDefines Count="1">
+        <Define0 Value="TEF_LIB"/>
+      </OtherDefines>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>

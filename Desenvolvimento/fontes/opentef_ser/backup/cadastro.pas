@@ -74,6 +74,10 @@ function comando00DE(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_ACont
 function comando00DF(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //alterar ADQUIRENTE
 function comando00E0(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_AContext: TIdContext): integer; //excluir ADQUIRENTE
 
+
+const
+      C_TempoAguarda=3000;
+
 implementation
 
 uses opentefnucleo;
@@ -143,7 +147,7 @@ begin
                 begin
                     //verifica se existe a loja ja cadastrada com o mesmo cnpj
                     VL_TLoja.Close;
-                    VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE CNPJ=''' + VL_Tabela.FieldByName('CNPJ').AsString + '''';
+                    VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE DOC=''' + VL_Tabela.FieldByName('DOC').AsString + '''';
                     VL_Erro := 55;
                     VL_Linha := '300520221119';
                     VL_TLoja.Open;
@@ -155,14 +159,14 @@ begin
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                         VL_Erro := 43;
                         VL_Linha := '040520221525';
-                        GravaLog(F_ArquivoLog, 0, '0039', 'cadastro', VL_Linha, 'registro em duplicidade na tabela Loja (cnpj:' +
-                            VL_Tabela.FieldByName('CNPJ').AsString + ' já cadastrado)', '', VL_Erro);
+                        GravaLog(F_ArquivoLog, 0, '0039', 'cadastro', VL_Linha, 'registro em duplicidade na tabela Loja (DOC:' +
+                            VL_Tabela.FieldByName('DOC').AsString + ' já cadastrado)', '', VL_Erro);
                         Exit;
                     end;
                     //COMEÇA A INCLUSÃO
                     VL_TLoja.Close;
-                    VL_TLoja.SQL.Text := 'INSERT INTO LOJA(CNPJ,RAZAO,FANTASIA,MULTILOJA_ID,HABILITADO)VALUES(''' + VL_Tabela.FieldByName(
-                        'CNPJ').AsString + ''',''' + VL_Tabela.FieldByName('RAZAO').AsString + ''',''' +
+                    VL_TLoja.SQL.Text := 'INSERT INTO LOJA(DOC,RAZAO,FANTASIA,MULTILOJA_ID,HABILITADO)VALUES(''' + VL_Tabela.FieldByName(
+                        'DOC').AsString + ''',''' + VL_Tabela.FieldByName('RAZAO').AsString + ''',''' +
                         VL_Tabela.FieldByName('FANTASIA').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('MULTILOJA_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''')';
@@ -171,7 +175,7 @@ begin
                     VL_TLoja.ExecSQL;
 
                     VL_TLoja.Close;
-                    VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE CNPJ=''' + VL_Tabela.FieldByName('CNPJ').AsString + '''';
+                    VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE DOC=''' + VL_Tabela.FieldByName('DOC').AsString + '''';
                     VL_Erro := 55;
                     VL_Linha := '020620221219';
                     VL_TLoja.Open;
@@ -309,8 +313,8 @@ begin
             if VL_Tabela.Locate('ID', VL_ID, []) then
             begin
                 if ((VL_Tabela.FieldByName('ID').AsInteger <> VL_Loja.FieldByName('ID').AsInteger) or
-                    ((VL_Tabela.FieldByName('CNPJ').AsString <> VL_Loja.FieldByName('CNPJ').AsString) and
-                    (VL_Loja.FieldByName('CNPJ').AsString <> ''))) then
+                    ((VL_Tabela.FieldByName('DOC').AsString <> VL_Loja.FieldByName('DOC').AsString) and
+                    (VL_Loja.FieldByName('DOC').AsString <> ''))) then
                 begin
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('003F', 'R');
@@ -319,12 +323,12 @@ begin
                     VL_Erro := 49;
                     VL_Linha := '050520221230';
                     GravaLog(F_ArquivoLog, 0, '003F', 'cadastro', VL_Linha,
-                        'dados chaves não podem sofer alteração(id/cnpj) na tabela loja não pode alterar',
+                        'dados chaves não podem sofer alteração(id/doc) na tabela loja não pode alterar',
                         '', VL_Erro);
                     Exit;
                 end;
                 VL_Loja.Close;
-                VL_Loja.SQL.Text := 'UPDATE LOJA SET ' + 'CNPJ=''' + VL_Tabela.FieldByName('CNPJ').AsString + ''',' +
+                VL_Loja.SQL.Text := 'UPDATE LOJA SET ' + 'DOC=''' + VL_Tabela.FieldByName('DOC').AsString + ''',' +
                     'RAZAO=''' + VL_Tabela.FieldByName('RAZAO').AsString + ''',' +
                     'MULTILOJA_ID=''' + IntToStr(VL_Tabela.FieldByName('MULTILOJA_ID').AsInteger) + ''',' + 'FANTASIA=''' +
                     VL_Tabela.FieldByName('FANTASIA').AsString + ''',' + 'HABILITADO=''' +
@@ -871,9 +875,9 @@ begin
                     except
                         VL_Mensagem.Limpar;
                         VL_Mensagem.AddComando('0052', 'R');
-                        VL_Mensagem.AddTag('004D', '28');//parametros nulo ou diferente da estrutura da tag
+                        VL_Mensagem.AddTag('004D', '88');//Tag não é um numero hexadecimal
                         DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
-                        VL_Erro := 28;
+                        VL_Erro := 88;
                         VL_Linha := '270520221703';
                         GravaLog(F_ArquivoLog, 0, '0052', 'CADASTRO', VL_Linha, 'Tag_numero não é um valor hexadecimal', '', VL_Erro);
                         Exit;
@@ -921,7 +925,26 @@ begin
                         VL_Linha := '270520221716';
                         VL_TTag.ExecSQL;
                     end;
+                    //carrega ID Tag
+                    VL_TTag.Close;
+                    VL_TTag.SQL.Text := 'SELECT * FROM TAG WHERE TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + '''';
+                    VL_Erro := 55;
+                    VL_Linha := '290720221657';
+                    VL_TTag.Open;
 
+                    if VL_TTag.RecordCount = 0 then
+                    begin
+                        VL_Mensagem.Limpar;
+                        VL_Mensagem.AddComando('0052', 'R');
+                        VL_Mensagem.AddTag('004D', '48'); //registro não localizado
+                        DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                        VL_Erro := 48;
+                        VL_Linha := '290720221700';
+                        GravaLog(F_ArquivoLog, 0, '0052', 'cadastro', VL_Linha, 'a Tag numero:' + VL_Tabela.FieldByName('TAG_NUMERO').AsString +
+                            ' informado não foi gravada na tabela tag',
+                            '', VL_Erro);
+                        Exit;
+                    end;
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('0052', 'R');
                     VL_Mensagem.AddTag('004D', '0');
@@ -2503,7 +2526,7 @@ begin
                 if VP_Mensagem.GetTag('0065', VL_Dados) = 0 then //pesquisa a mult-loja pelo MULT-LOJA_ID 0=todas
                 begin
                     VL_TTabela.Close;
-                    VL_TTabela.SQL.Text := 'SELECT M.*,L.CNPJ,L.RAZAO FROM MULTILOJA M ' +
+                    VL_TTabela.SQL.Text := 'SELECT M.*,L.DOC,L.RAZAO FROM MULTILOJA M ' +
                         ' LEFT OUTER JOIN LOJA L ON L.ID=M.LOJA_ID WHERE ((M.ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) +
                         ' is not null) and ' + '((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
                     VL_TTabela.Open;
@@ -2788,16 +2811,14 @@ var
     VL_Tag: ansistring;
     VL_Erro: integer;
     VL_Linha: string;
-    VL_ID: Int64;
 begin
     Result := 0;
     VL_Mensagem := TMensagem.Create;
     VL_TModuloConf := TZQuery.Create(DComunicador);
     VL_TModuloConf.Connection := DNucleo.ZConexao;
     VL_Tag := '';
-    VL_Linha:='';
-    VL_Erro:=0;
-    VL_ID:=0;
+    VL_Linha := '';
+    VL_Erro := 0;
     try
         try
             //verifica permissao
@@ -2809,12 +2830,13 @@ begin
                 DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
                 VL_Erro := 45;
                 VL_Linha := '070620220858';
-                GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'sem permissão para gerenciar a alteração da chave na tabela modulo_conf', '', VL_Erro);
+                GravaLog(F_ArquivoLog, 0, '0071', 'cadastro', VL_Linha, 'sem permissão para gerenciar a alteração da chave na tabela modulo_conf',
+                    '', VL_Erro);
                 Exit;
             end;
             //verifica parametros
-            VP_Mensagem.GetTag('0041', VL_ID); // chave do modulo_conf
-            if VL_ID < 1 then
+            VP_Mensagem.GetTag('0041', VL_Tag); // chave do modulo_conf
+            if length(VL_Tag) < 1 then
             begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('0071', 'R');
@@ -8753,6 +8775,20 @@ begin
             end
             else
             begin
+                //verifica se a Tag não é de uso exclusivo do open-tef tag oficiais (só exclui tag proprietarias)
+                if Hex2Dec64(VL_TTag.FieldByName('TAG_NUMERO').AsString) < 65280 then  //INTERVALO DE TAG PROPRIETARIA FF00(65280) A FFFF(65535)
+                begin
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('00DC', 'R');
+                    VL_Mensagem.Addtag('004D', '87');// erro na exclusao na tabela
+                    DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_AContext);
+                    VL_Erro := 87;
+                    VL_Linha := '290720221515';
+                    GravaLog(F_ArquivoLog, 0, '00DC', 'cadastro', VL_Linha, 'a Tag: ' + VL_TTag.FieldByName('TAG_NUMERO').AsString +
+                        ' é oficial de uso exclusivo do Open-Tef, não podera ser excluida.', '', VL_Erro);
+                    Exit;
+                end;
+
                 //exclui tag
                 VL_TTag.Close;
                 VL_TTag.SQL.Text := 'DELETE FROM TAG WHERE ' + 'ID=' + IntToStr(VL_ID);

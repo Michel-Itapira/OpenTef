@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   uprincipal, funcoes, // this includes the LCL widgetset
-  Forms, zcomponent, indylaz, Interfaces;
+  Forms, zcomponent, indylaz, Interfaces, def;
 
 {$R *.res}
 

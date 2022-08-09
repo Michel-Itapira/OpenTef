@@ -32,12 +32,15 @@ exports
     mensagemgettag,
     mensagemgettagidx,
     mensagemtagtostr,
+    mensagemerro,
 
     transacaocreate,
     transacaofree,
     transacaostatus,
     transacaostatusdescricao,
-    transacaocancela;
+    transacaocancela
+
+;
 
 begin
 end.

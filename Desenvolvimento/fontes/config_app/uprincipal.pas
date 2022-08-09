@@ -30,12 +30,13 @@ uses
     rxlookup,
     RxDBGridFooterTools,
     RxDBGridExportPdf,
-    RxDBGridPrintGrid, ubarcodes,
+    RxDBGridPrintGrid, rxtooledit,
+    ubarcodes,
     uPesquisaTags,
     uPesquisaadquirentes,
     Types,
     LbRSA,
-    Grids,
+    Grids, Menus, EditBtn,
     uPesquisamoduloconf;
 
 type
@@ -48,9 +49,11 @@ type
     end;
 
 
-    TPermissao = (pmS, pmC, pmA, pmU);
+    TPermissao = (pmC, pmA, pmU, pmS);
 
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado);
+
+    TTipoTag = (ttNDF, ttCOMANDO, ttDADOS, ttMENU_PDV, ttMENU_OPERACIONAL, ttPINPAD_FUNC, ttMODULO);
 
 
     PResposta = ^TResposta;
@@ -59,6 +62,8 @@ type
 
     Tfprincipal = class(TForm)
         BConectar: TBitBtn;
+        TabLojaCkPessoa: TCheckBox;
+        TabLojaLCnpj: TLabel;
         MDLojaFuncaoTAG_TIPO: TStringField;
         MDLojaModuloConfFuncaoTAG_TIPO: TStringField;
         MDModuloConfFuncaoTAG_TIPO: TStringField;
@@ -135,9 +140,8 @@ type
         TabLojaTabFuncaoDadosLFiltro: TLabel;
         TabLojaFuncaoLTitulo: TLabel;
         TabLojaTabFuncaoDadosLTitulo: TLabel;
-        TabLojaLCnpj: TLabel;
         TabLojaLFantasia: TLabel;
-        TabLojaLFantasia1: TLabel;
+        TabLojaLMultLoja: TLabel;
         TabLojaLID: TLabel;
         TabLojaLRazao: TLabel;
         TabLojaLTitulo1: TLabel;
@@ -533,32 +537,57 @@ type
         procedure MDAdquirenteAfterScroll(DataSet: TDataSet);
         procedure MDAdquirenteFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDBinAfterScroll(DataSet: TDataSet);
+        procedure MDConfiguradorFilterRecord(DataSet: TDataSet; var Accept: boolean);
+        procedure MDLojaAfterOpen(DataSet: TDataSet);
+        procedure MDLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDLojaFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDLojaFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDLojaModuloConfAfterScroll(DataSet: TDataSet);
+        procedure MDLojaModuloConfFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDLojaModuloConfFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDLojaPDVAfterScroll(DataSet: TDataSet);
+        procedure MDLojaPDVFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDModuloAfterScroll(DataSet: TDataSet);
+        procedure MDModuloConfFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDModuloConfigAfterScroll(DataSet: TDataSet);
         procedure MDModuloConfFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDModuloConfigFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDModuloFuncCalcFields(DataSet: TDataSet);
+        procedure MDModuloFuncFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDMultiLojaAfterOpen(DataSet: TDataSet);
         procedure MDMultiLojaAfterScroll(DataSet: TDataSet);
+        procedure MDMultiLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDMultiLojaFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDMultiLojaFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+        procedure MDMultiLojaLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDMultiLojaModuloConfAfterScroll(DataSet: TDataSet);
+        procedure MDMultiLojaModuloConfFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDMultiLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDMultiLojaModuloConfFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDPdvFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDPdvFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDPdvModuloAfterScroll(DataSet: TDataSet);
+        procedure MDPdvModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
+        procedure MDPesquisaModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
+        procedure MDPinPadFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDPinPadFuncaoCalcFields(DataSet: TDataSet);
+        procedure MDPinPadFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+        procedure MDPinPadPdvFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDTagsAfterScroll(DataSet: TDataSet);
         procedure MDTagsFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure TabAdquirenteBAdicionarClick(Sender: TObject);
         procedure TabAdquirenteBExcluirClick(Sender: TObject);
         procedure TabAdquirenteBModificarClick(Sender: TObject);
         procedure TabAdquirenteEFiltroChange(Sender: TObject);
+        procedure TabAdquirenteGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+        procedure TabCadastroShow(Sender: TObject);
+        procedure TabConfGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
         procedure TabConfiguracaoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: boolean);
         procedure TabFuncaoModuloConfShow(Sender: TObject);
         procedure TabFuncaoModuloETipoFiltroChange(Sender: TObject);
+        procedure TabLojaCkPessoaClick(Sender: TObject);
         procedure TabLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoEFiltroChange(Sender: TObject);
@@ -578,12 +607,14 @@ type
         procedure TabFuncaoModuloCKSelecionadaChange(Sender: TObject);
         procedure TabFuncaoModuloEFiltroChange(Sender: TObject);
         procedure TabFuncaoModuloGridCellClick(Column: TColumn);
+        procedure TabLojaGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
         procedure TabLojaModuloEFiltroChangeBounds(Sender: TObject);
         procedure TabLojaTabFuncaoDadosEFiltroChange(Sender: TObject);
         procedure TabLojaTabFuncaoDadosETipoFiltroChange(Sender: TObject);
         procedure TabLojaTabFuncaoDadosGridCellClick(Column: TColumn);
         procedure TabLojaTabFuncaoDadosShow(Sender: TObject);
         procedure TabLojaTabModuloDadosShow(Sender: TObject);
+        procedure TabLojaTabModuloShow(Sender: TObject);
         procedure TabModuloFuncaoShow(Sender: TObject);
         procedure TabLojaBExcluirClick(Sender: TObject);
         procedure TabLojaBModificarClick(Sender: TObject);
@@ -637,6 +668,7 @@ type
         procedure TabMultLojaFuncaoETipoFiltrarChange(Sender: TObject);
         procedure TabMultLojaFuncaoGridCellClick(Column: TColumn);
         procedure TabMultLojaGridFiltroCellClick(Column: TColumn);
+        procedure TabMultLojaGridFiltroEnter(Sender: TObject);
         procedure TabMultLojaModuloBAdicionarClick(Sender: TObject);
         procedure TabMultLojaModuloBExcluirClick(Sender: TObject);
         procedure TabMultLojaModuloBModificarClick(Sender: TObject);
@@ -680,6 +712,7 @@ type
         procedure TabTagEFiltroChange(Sender: TObject);
         procedure TabTagETipoFiltroChange(Sender: TObject);
         procedure TabTagGridCellClick(Column: TColumn);
+        procedure TabTagGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
         procedure TabTagShow(Sender: TObject);
     private
         procedure Conectar;
@@ -731,6 +764,7 @@ var
     F_Navegar: boolean;
     F_TipoConfigurador: TPermissao;
     F_Erro: TErroMensagem;
+    F_TipoTag: TTipoTag;
 
 const
     C_Versao_TefLib = '1.1.1';
@@ -784,6 +818,11 @@ begin
         TabModuloTabDadosFuncao.OnShow(self);
 
     CarregaCampos('MODULO');
+end;
+
+procedure Tfprincipal.MDModuloConfFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.BConectarClick(Sender: TObject);
@@ -880,7 +919,7 @@ begin
             TabMultLojaTabModuloDados.OnShow(SELF);
             Exit;
         end;
-        VL_TMensagem.GetTag('0036', VL_Tag);
+        VL_Tag := VL_TMensagem.ComandoDados;
 
         if VL_Tag <> '0' then
             ShowMessage(ErroLogin(StrToInt(vl_tag)));
@@ -923,6 +962,21 @@ begin
     CarregaCampos('BIN');
 end;
 
+procedure Tfprincipal.MDConfiguradorFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
+procedure Tfprincipal.MDLojaAfterOpen(DataSet: TDataSet);
+begin
+
+end;
+
+procedure Tfprincipal.MDLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDLojaFuncaoCalcFields(DataSet: TDataSet);
 begin
     if (F_Permissao) then
@@ -932,11 +986,21 @@ begin
     end;
 end;
 
+procedure Tfprincipal.MDLojaFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDLojaModuloConfAfterScroll(DataSet: TDataSet);
 begin
     if ((MDLojaModuloConf.Active = False) or (MDLojaModuloConf.RecordCount = 0) or (F_Navegar = False)) then
         exit;
     CarregaCampos('MULTILOJA');
+end;
+
+procedure Tfprincipal.MDLojaModuloConfFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.MDLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
@@ -946,6 +1010,11 @@ begin
         DataSet.FieldByName('VALIDADO_F').AsBoolean := DataSet.FieldByName('VALIDADO').AsBoolean;
         DataSet.FieldByName('HABILITADO_F').AsBoolean := DataSet.FieldByName('HABILITADO').AsBoolean;
     end;
+end;
+
+procedure Tfprincipal.MDLojaModuloConfFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.MDLojaPDVAfterScroll(DataSet: TDataSet);
@@ -972,6 +1041,11 @@ begin
     CarregaCampos('LOJAPDV');
 end;
 
+procedure Tfprincipal.MDLojaPDVFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDModuloConfigAfterScroll(DataSet: TDataSet);
 begin
     if ((MDModuloConfig.Active = False) or (MDModuloConfig.RecordCount = 0) or (F_Navegar = False)) then
@@ -996,6 +1070,11 @@ begin
     end;
 end;
 
+procedure Tfprincipal.MDModuloConfigFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
 begin
 
@@ -1008,6 +1087,11 @@ begin
         DataSet.FieldByName('VALIDADO_F').AsBoolean := DataSet.FieldByName('VALIDADO').AsBoolean;
         DataSet.FieldByName('HABILITADO_F').AsBoolean := DataSet.FieldByName('HABILITADO').AsBoolean;
     end;
+end;
+
+procedure Tfprincipal.MDModuloFuncFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.MDMultiLojaAfterOpen(DataSet: TDataSet);
@@ -1045,7 +1129,13 @@ begin
     else
         TabMultLojaTabFuncaoDados.OnShow(self);
 
+
     CarregaCampos('MULTILOJA');
+
+end;
+
+procedure Tfprincipal.MDMultiLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
 
 end;
 
@@ -1059,11 +1149,26 @@ begin
 
 end;
 
+procedure Tfprincipal.MDMultiLojaFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
+procedure Tfprincipal.MDMultiLojaLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDMultiLojaModuloConfAfterScroll(DataSet: TDataSet);
 begin
     if ((MDMultiLojaModuloConf.Active = False) or (MDMultiLojaModuloConf.RecordCount = 0) or (F_Navegar = False)) then
         exit;
     CarregaCampos('MULTILOJA');
+end;
+
+procedure Tfprincipal.MDMultiLojaModuloConfFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.MDMultiLojaModuloConfFuncaoCalcFields(DataSet: TDataSet);
@@ -1075,6 +1180,11 @@ begin
     end;
 end;
 
+procedure Tfprincipal.MDMultiLojaModuloConfFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDPdvFuncaoCalcFields(DataSet: TDataSet);
 begin
     if (F_Permissao) then
@@ -1084,11 +1194,31 @@ begin
     end;
 end;
 
+procedure Tfprincipal.MDPdvFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
 procedure Tfprincipal.MDPdvModuloAfterScroll(DataSet: TDataSet);
 begin
     if ((MDPdvModulo.Active = False) or (MDPdvModulo.RecordCount = 0) or (F_Navegar = False)) then
         exit;
     CarregaCampos('PDV');
+end;
+
+procedure Tfprincipal.MDPdvModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
+procedure Tfprincipal.MDPesquisaModuloFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
+procedure Tfprincipal.MDPinPadFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.MDPinPadFuncaoCalcFields(DataSet: TDataSet);
@@ -1098,6 +1228,16 @@ begin
         DataSet.FieldByName('VALIDADO_F').AsBoolean := DataSet.FieldByName('VALIDADO').AsBoolean;
         DataSet.FieldByName('HABILITADO_F').AsBoolean := DataSet.FieldByName('HABILITADO').AsBoolean;
     end;
+end;
+
+procedure Tfprincipal.MDPinPadFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
+end;
+
+procedure Tfprincipal.MDPinPadPdvFilterRecord(DataSet: TDataSet; var Accept: boolean);
+begin
+
 end;
 
 procedure Tfprincipal.MDTagsAfterScroll(DataSet: TDataSet);
@@ -1241,6 +1381,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1317,7 +1458,21 @@ begin
     MDAdquirente.Filter := FiltrarTabela(TabAdquirenteGrid, VL_Filtro, TabAdquirenteEFiltro);
     TabAdquirenteLFiltro.Caption := VL_Filtro;
     MDAdquirente.Filtered := True;
+end;
 
+procedure Tfprincipal.TabAdquirenteGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+begin
+    CarregaCampos('ADQUIRENTE');
+end;
+
+procedure Tfprincipal.TabCadastroShow(Sender: TObject);
+begin
+    PageCadastroLoja.TabIndex := 0;
+end;
+
+procedure Tfprincipal.TabConfGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+begin
+    CarregaCampos('CONFIGURADOR');
 end;
 
 procedure Tfprincipal.TabConfiguracaoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: boolean);
@@ -1342,6 +1497,24 @@ begin
     begin
         MDModuloFunc.Filter := 'TAG_TIPO=''' + TabFuncaoModuloETipoFiltro.Text + '''';
         MDModuloFunc.Filtered := True;
+    end;
+end;
+
+procedure Tfprincipal.TabLojaCkPessoaClick(Sender: TObject);
+begin
+    if TabLojaCkPessoa.Checked then
+    begin
+        TabLojaLCnpj.Caption := 'C.P.F:';
+        TabLojaLFantasia.Caption := 'Apelido (nome usado nos relatórios)';
+        TabLojaLRazao.Caption := 'Nome:';
+        TabLojaECnpj.EditMask := '999.999.999-99;0;_';
+    end
+    else
+    begin
+        TabLojaLCnpj.Caption := 'C.N.P.J:';
+        TabLojaLFantasia.Caption := 'Fantasia';
+        TabLojaLRazao.Caption := 'Razão:';
+        TabLojaECnpj.EditMask := '99.999.999/9999-99;0;_';
     end;
 end;
 
@@ -1437,8 +1610,19 @@ begin
             (TabLojaFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDLojaFuncaoID.AsInteger;
+            VL_Tag := MDLojaFuncaoTAG_NUMERO.AsString;
             VL_Validado := copy(BoolToStr(MDLojaFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
             VL_Habilitado := copy(BoolToStr(MDLojaFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
+            if MDLojaFuncao.Filtered then
+            begin
+                MDLojaFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDLojaFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDLojaFuncao.Locate('ID', VL_ID, []);
+            end;
+
             if (TabLojaFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDLojaFuncao.Edit;
@@ -1610,6 +1794,7 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDLojaFuncao.Filtered := True;
     end;
 end;
 
@@ -1659,6 +1844,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -2027,6 +2213,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -2075,7 +2262,7 @@ end;
 procedure Tfprincipal.TabConfiguracaoBGerarChaveClick(Sender: TObject);
 var
     VL_Mensagem: TMensagem;
-    VL_Chave: string;
+    VL_Chave, VL_ValorChave: string;
     VL_Tag: ansistring;
     VL_Codigo: integer;
     VL_Retorno: ansistring;
@@ -2084,7 +2271,19 @@ begin
     VL_Tag := '';
     VL_Codigo := 0;
     try
-        CriarChaveTerminal(tcC50,'',VL_Chave);
+        if MDModulo.Active then
+        begin
+            MDLoja.DisableControls;
+            MDLoja.Locate('ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
+            VL_ValorChave := MDLoja.FieldByName('DOC').AsString;
+            VL_ValorChave := VL_ValorChave + MDPdv.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.DisableControls;
+            MDLojaModuloConf.Locate('LOJA_ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
+            VL_ValorChave := VL_ValorChave + MDLojaModuloConf.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.EnableControls;
+            MDLoja.EnableControls;
+        end;
+        CriarChaveTerminal(tcModuloConfig, VL_ValorChave, VL_Chave);
         if Length(VL_Chave) = 0 then
         begin
             ShowMessage('Erro ao gerar chave');
@@ -2188,8 +2387,11 @@ end;
 procedure Tfprincipal.TabConfiguracaoShow(Sender: TObject);
 begin
     if ((F_Navegar) and (F_Permissao)) then
+    begin
         //carrega moduloconfig
         CarregarTabelas(False, '003A', '006C', MDModulo.FieldByName('ID').AsInteger);
+        TabModuloPageModuloFuncao.TabIndex := 0;
+    end;
 
 end;
 
@@ -2252,6 +2454,17 @@ begin
         if ((Column.FieldName = 'VALIDADO_F') or (Column.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDModuloFuncID.AsInteger;
+            VL_Tag := MDModuloFuncTAG_NUMERO.AsString;
+
+            if MDModuloFunc.Filtered then
+            begin
+                MDModuloFunc.Filtered := False;
+                if VL_ID = 0 then
+                    MDModuloFunc.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDModuloFunc.Locate('ID', VL_ID, []);
+            end;
+
             if (Column.FieldName = 'VALIDADO_F') then
             begin
                 MDModuloFunc.Edit;
@@ -2333,7 +2546,7 @@ begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00B9', 'S');
                 VL_Mensagem.AddTag('008B', VL_ID);
-                VL_Mensagem.AddTag('00C6', MDModuloConfFuncao.FieldByName('HABILITADO').AsString);
+                VL_Mensagem.AddTag('00C6', MDModuloFunc.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
@@ -2418,7 +2631,13 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDModuloFunc.Filtered := True;
     end;
+end;
+
+procedure Tfprincipal.TabLojaGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+begin
+    CarregaCampos('MULTILOJA');
 end;
 
 procedure Tfprincipal.TabLojaModuloEFiltroChangeBounds(Sender: TObject);
@@ -2444,13 +2663,13 @@ begin
     TabLojaConfFuncaoCKSelecionada.Checked := False;
     if TabLojaTabFuncaoDadosETipoFiltro.ItemIndex < 1 then
     begin
-        MDLojaFuncao.Filter := '';
-        MDLojaFuncao.Filtered := False;
+        MDLojaModuloConfFuncao.Filter := '';
+        MDLojaModuloConfFuncao.Filtered := False;
     end
     else
     begin
-        MDLojaFuncao.Filter := 'TAG_TIPO=''' + TabLojaFuncaoETipoFiltro.Text + '''';
-        MDLojaFuncao.Filtered := True;
+        MDLojaModuloConfFuncao.Filter := 'TAG_TIPO=''' + TabLojaTabFuncaoDadosETipoFiltro.Text + '''';
+        MDLojaModuloConfFuncao.Filtered := True;
     end;
 end;
 
@@ -2491,8 +2710,18 @@ begin
             (TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDLojaModuloConfFuncaoID.AsInteger;
+            VL_Tag := MDLojaModuloConfFuncaoTAG_NUMERO.AsString;
             VL_Validado := COPY(BoolToStr(MDLojaModuloConfFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
             VL_Habilitado := COPY(BoolToStr(MDLojaModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
+            if MDLojaModuloConfFuncao.Filtered then
+            begin
+                MDLojaModuloConfFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDLojaModuloConfFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDLojaModuloConfFuncao.Locate('ID', VL_ID, []);
+            end;
 
             if (TabLojaTabFuncaoDadosGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
@@ -2666,6 +2895,7 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDLojaModuloConfFuncao.Filtered := True;
     end;
 end;
 
@@ -2686,6 +2916,11 @@ procedure Tfprincipal.TabLojaTabModuloDadosShow(Sender: TObject);
 begin
     if ((F_Permissao) and (F_Navegar)) then
         CarregarTabelas(False, '00A7', '003C', MDLoja.FieldByName('ID').AsInteger);
+end;
+
+procedure Tfprincipal.TabLojaTabModuloShow(Sender: TObject);
+begin
+    PageLojaVizualizarConfModuloFuncao.TabIndex := 0;
 end;
 
 
@@ -2746,6 +2981,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -2808,12 +3044,12 @@ begin
     end;
     if TabLojaECnpj.Text = '' then
     begin
-        ShowMessage('CNPJ é um campo obrigatório');
+        ShowMessage(TabLojaLCnpj.Caption + ' é um campo obrigatório');
         exit;
     end;
     if TabLojaERazao.Text = '' then
     begin
-        ShowMessage('Razão é um campo obrigatório');
+        ShowMessage(TabLojaLRazao.Caption + ' é um campo obrigatório');
         exit;
     end;
 
@@ -2861,12 +3097,12 @@ begin
         end;
         if TabLojaECnpj.Text = '' then
         begin
-            ShowMessage('CNPJ é um campo obrigatório');
+            ShowMessage(TabLojaLCnpj.Caption + ' é um campo obrigatório');
             exit;
         end;
         if TabLojaERazao.Text = '' then
         begin
-            ShowMessage('Razão é um campo obrigatório');
+            ShowMessage(TabLojaLRazao.Caption + ' é um campo obrigatório');
             exit;
         end;
         if (TabLojaCMultLoja.Text = '') then
@@ -2959,8 +3195,6 @@ begin
     F_Inicializar(@Retorno, PChar(ExtractFilePath(ParamStr(0)) + 'config_app_com_lib.log'));
 
 
-
-
     MDModuloFunc.Open;
     MDMultiLojaFuncao.Open;
     MDLojaFuncao.Open;
@@ -3017,8 +3251,11 @@ begin
 end;
 
 procedure Tfprincipal.CarregaCampos(VP_TabelaCarregamento: string);
+var
+    VL_TipoDocumento: string;
 begin
     VP_TabelaCarregamento := UpperCase(VP_TabelaCarregamento);
+    VL_TipoDocumento := '';
     if F_Permissao = False then
         exit;
     //monta configurador
@@ -3037,11 +3274,22 @@ begin
         TabAdquirente.TabVisible := False;
     end;
     //TabMultLoja
+    if length(MDLoja.FieldByName('DOC').AsString) > 12 then
+    begin
+        VL_TipoDocumento := 'CNPJ: ' + FormataDoc(tdCNPJ, MDLoja.FieldByName('DOC').AsString);
+        TabLojaCkPessoa.Checked := False;
+    end
+    else
+    begin
+        VL_TipoDocumento := 'CPF: ' + FormataDoc(tdCPF, MDLoja.FieldByName('DOC').AsString);
+        TabLojaCkPessoa.Checked := True;
+    end;
+
     if ((MDMultiLoja.Active) and (MDLoja.Active) and (MDMultiLojaLoja.Active) and ((VP_TabelaCarregamento = 'MULTILOJA') or
         (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabMultLojaMDadosLoja.Clear;
-        TabMultLojaMDadosLoja.Lines.add('ID:' + MDLoja.FieldByName('ID').AsString + ' CNPJ:' + FormataDoc(tdCNPJ, MDLoja.FieldByName('CNPJ').AsString));
+        TabMultLojaMDadosLoja.Lines.add('ID:' + MDLoja.FieldByName('ID').AsString + VL_TipoDocumento);
         TabMultLojaMDadosLoja.Lines.add('');
         TabMultLojaMDadosLoja.Lines.add('Razão:' + MDLoja.FieldByName('RAZAO').AsString);
         TabMultLojaMDadosLoja.Lines.add('Fantasia:' + MDLoja.FieldByName('FANTASIA').AsString);
@@ -3084,7 +3332,7 @@ begin
         else
             TabLojaCkHabilitar.Checked := False;
         TabLojaEID.Text := MDLoja.FieldByName('ID').AsString;
-        TabLojaECnpj.Text := MDLoja.FieldByName('CNPJ').AsString;
+        TabLojaECnpj.Text := MDLoja.FieldByName('DOC').AsString;
         TabLojaERazao.Text := MDLoja.FieldByName('RAZAO').AsString;
         TabLojaEFantasia.Text := MDLoja.FieldByName('FANTASIA').AsString;
 
@@ -3114,10 +3362,16 @@ begin
 
     end;
     //TabLojaPdv
+    VL_TipoDocumento := '';
+    if length(MDLojaPDV.FieldByName('DOC').AsString) > 12 then
+        VL_TipoDocumento := 'CNPJ: ' + FormataDoc(tdCNPJ, MDLojaPDV.FieldByName('DOC').AsString)
+    else
+        VL_TipoDocumento := 'CPF: ' + FormataDoc(tdCPF, MDLojaPDV.FieldByName('DOC').AsString);
+
     if ((MDLojaPDV.Active) and ((VP_TabelaCarregamento = 'LOJAPDV') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         TabPdvMDadosLoja.Clear;
-        TabPdvMDadosLoja.Lines.Add('ID:  ' + MDLojaPDV.FieldByName('ID').AsString + ' CNPJ:  ' + FormataDoc(tdCNPJ, MDLojaPDV.FieldByName('CNPJ').AsString));
+        TabPdvMDadosLoja.Lines.Add('ID:  ' + MDLojaPDV.FieldByName('ID').AsString + VL_TipoDocumento);
         TabPdvMDadosLoja.Lines.Add('');
         TabPdvMDadosLoja.Lines.Add('Razão:  ' + MDLojaPDV.FieldByName('RAZAO').AsString);
         TabPdvMDadosLoja.Lines.Add('Fantasia:  ' + MDLojaPDV.FieldByName('FANTASIA').AsString);
@@ -3333,7 +3587,7 @@ begin
                 MDLoja.Edit;
 
             MDLoja.FieldByName('ID').AsInteger := VL_ID;
-            MDLoja.FieldByName('CNPJ').AsString := TabLojaECnpj.Text;
+            MDLoja.FieldByName('DOC').AsString := TabLojaECnpj.Text;
             MDLoja.FieldByName('RAZAO').AsString := TabLojaERazao.Text;
             MDLoja.FieldByName('FANTASIA').AsString := TabLojaEFantasia.Text;
             MDLoja.FieldByName('MULTILOJA_ID').AsString := MDMultiLojaLoja.FieldByName('ID').AsString;
@@ -3795,6 +4049,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -3912,6 +4167,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -4344,25 +4600,6 @@ procedure Tfprincipal.LimparTela;
 var
     i: integer;
 begin
-    with self do
-    begin
-        for i := 0 to ComponentCount - 1 do
-        begin
-            if Components[i] is TEdit then
-                TEdit(Components[i]).Text := '';
-            if Components[i] is TMaskEdit then
-                tmaskedit(Components[i]).Text := '';
-            if Components[i] is TComboBox then
-                TComboBox(Components[i]).ItemIndex := -1;
-            if Components[i] is TMemo then
-                TMemo(Components[i]).Clear;
-            if Components[i] is TRadioButton then
-                TRadioButton(Components[i]).Checked := False;
-            if Components[i] is TCheckBox then
-                TCheckBox(Components[i]).Checked := False;
-        end;
-    end;
-
     MDLoja.EmptyTable;
     MDLojaPdv.EmptyTable;
     MDPdv.EmptyTable;
@@ -4376,6 +4613,28 @@ begin
     MDMultiLojaModuloConfFuncao.EmptyTable;
     MDLojaModuloConf.EmptyTable;
     MDTags.EmptyTable;
+
+    with self do
+    begin
+        for i := 0 to ComponentCount - 1 do
+        begin
+            if Components[i] is TEdit then
+                TEdit(Components[i]).Text := '';
+            if Components[i] is TMaskEdit then
+                TMaskedit(Components[i]).Text := '';
+            if Components[i] is TComboBox then
+            begin
+                TComboBox(Components[i]).ItemIndex := -1;
+                TComboBox(Components[i]).Text := '';
+            end;
+            if Components[i] is TMemo then
+                TMemo(Components[i]).Clear;
+            if Components[i] is TRadioButton then
+                TRadioButton(Components[i]).Checked := False;
+            if Components[i] is TCheckBox then
+                TCheckBox(Components[i]).Checked := False;
+        end;
+    end;
 end;
 
 function Tfprincipal.FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
@@ -4415,7 +4674,13 @@ begin
     else
         VO_RotuloCaption := 'Filtrar por ' + VP_DBGrid.SelectedColumn.Title.Caption;
 
-    Result := VL_Filtro + ' = (''*' + VP_EditFiltrado.Text + '*'')';
+    if VL_Filtro = 'ID' then
+        if VP_EditFiltrado.Text = '' then
+            Result := ''
+        else
+            Result := VL_Filtro + ' = ' + VP_EditFiltrado.Text
+    else
+        Result := VL_Filtro + ' = (''*' + VP_EditFiltrado.Text + '*'')';
 
 end;
 
@@ -4606,12 +4871,25 @@ var
     VL_Tag: ansistring;
     VL_Codigo: integer;
     VL_Retorno: ansistring;
+    VL_ValorChave: string;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Tag := '';
     VL_Codigo := 0;
     try
-        CriarChaveTerminal(tcC50,'',VL_Chave);
+        if MDConfigurador.Active then
+        begin
+            MDLoja.DisableControls;
+            MDLoja.Locate('ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
+            VL_ValorChave := MDLoja.FieldByName('DOC').AsString;
+            VL_ValorChave := VL_ValorChave + MDPdv.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.DisableControls;
+            MDLojaModuloConf.Locate('LOJA_ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
+            VL_ValorChave := VL_ValorChave + MDLojaModuloConf.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.EnableControls;
+            MDLoja.EnableControls;
+        end;
+        CriarChaveTerminal(tcConfigurador, VL_ValorChave, VL_Chave);
         if Length(VL_Chave) = 0 then
         begin
             ShowMessage('Erro ao gerar chave');
@@ -4865,6 +5143,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -5115,6 +5394,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -5166,7 +5446,7 @@ var
 begin
     VL_FPesquisaTag := TFTags.Create(Self);
     VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-    VL_FPesquisaTag.F_TagTipo := 'M'; //TIPO MODULOS
+    VL_FPesquisaTag.F_TagTipo := TipoTagToStr(ord(ttMODULO));  //TIPO MODULOS
     VL_FPesquisaTag.ShowModal;
     if VL_FPesquisaTag.F_Carregado then
     begin
@@ -5271,7 +5551,7 @@ var
     VL_Mensagem: TMensagem;
     VL_Codigo: integer;
     VL_ID: int64;
-    VL_Retorno, VL_Tag: string;
+    VL_Retorno, VL_Tag, VL_Validado, VL_Habilitado: string;
 label
     sair;
 begin
@@ -5280,6 +5560,9 @@ begin
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+    VL_Validado := '';
+    VL_Habilitado := '';
+
     if TabModuloTabDadosFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabModuloTabDadosFuncaoLFiltro.Caption := 'Filtrar por ' + TabModuloTabDadosFuncaoGrid.SelectedColumn.Title.Caption;
     try
@@ -5296,23 +5579,38 @@ begin
             exit;
         F_Navegar := False;
 
-        if ((Column.FieldName = 'VALIDADO_F') or (Column.FieldName = 'HABILITADO_F')) then
+        if ((TabModuloTabDadosFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') or
+            (TabModuloTabDadosFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDModuloConfFuncaoID.AsInteger;
-            if (Column.FieldName = 'VALIDADO_F') then
+            VL_Tag := MDModuloConfFuncaoTAG_NUMERO.AsString;
+            VL_Validado := COPY(BoolToStr(MDModuloConfFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
+            VL_Habilitado := COPY(BoolToStr(MDModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
+            if MDModuloConfFuncao.Filtered then
             begin
-                MDModuloConfFuncao.Edit;
-                MDModuloConfFuncao.FieldByName('VALIDADO').AsBoolean := not MDModuloConfFuncao.FieldByName('VALIDADO').AsBoolean;
-                MDModuloConfFuncao.Post;
+                MDModuloConfFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDModuloConfFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDModuloConfFuncao.Locate('ID', VL_ID, []);
             end;
-            if (Column.FieldName = 'HABILITADO_F') then
+
+            if (TabModuloTabDadosFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDModuloConfFuncao.Edit;
-                MDModuloConfFuncao.FieldByName('HABILITADO').AsBoolean := not MDModuloConfFuncao.FieldByName('HABILITADO').AsBoolean;
+                MDModuloConfFuncao.FieldByName('VALIDADO').AsString := VL_Validado;
                 MDModuloConfFuncao.Post;
             end;
 
-            if ((MDModuloConfFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID < 1)) then
+            if (TabModuloTabDadosFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F') then
+            begin
+                MDModuloConfFuncao.Edit;
+                MDModuloConfFuncao.FieldByName('HABILITADO').AsString := VL_Habilitado;
+                MDModuloConfFuncao.Post;
+            end;
+
+            if ((MDModuloConfFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID < 1)) then
             begin
                 MDModuloConfFuncao.Edit;
                 MDModuloConfFuncao.FieldByName('MODULO_CONF_ID').AsString := MDModuloConfig.FieldByName('ID').AsString;
@@ -5375,7 +5673,7 @@ begin
                 end;
             end
             else
-            if ((MDModuloConfFuncao.FieldByName('VALIDADO').AsBoolean = True) and (VL_ID > 0)) then
+            if ((MDModuloConfFuncao.FieldByName('VALIDADO').AsString = 'T') and (VL_ID > 0)) then
             begin
                 //ALTERA MODULO_CONF_FUNCAO
                 VL_Mensagem.Limpar;
@@ -5465,6 +5763,7 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDModuloConfFuncao.Filtered := True;
     end;
 end;
 
@@ -5773,8 +6072,19 @@ begin
             (TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDMultiLojaModuloConfFuncaoID.AsInteger;
+            VL_Tag := MDMultiLojaModuloConfFuncaoTAG_NUMERO.AsString;
             VL_Validado := COPY(BoolToStr(MDMultiLojaModuloConfFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
             VL_Habilitado := COPY(BoolToStr(MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
+            if MDMultiLojaModuloConfFuncao.Filtered then
+            begin
+                MDMultiLojaModuloConfFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDMultiLojaModuloConfFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDMultiLojaModuloConfFuncao.Locate('ID', VL_ID, []);
+            end;
+
             if (TabMultLojaConfFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDMultiLojaModuloConfFuncao.Edit;
@@ -5954,6 +6264,7 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDMultiLojaModuloConfFuncao.Filtered := True
     end;
 end;
 
@@ -6048,8 +6359,19 @@ begin
             (TabMultLojaFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDMultiLojaFuncaoID.AsInteger;
+            VL_Tag := MDMultiLojaFuncaoTAG_NUMERO.AsString;
             VL_Validado := COPY(BoolToStr(MDMultiLojaFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
             VL_Habilitado := COPY(BoolToStr(MDMultiLojaFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
+            if MDMultiLojaFuncao.Filtered then
+            begin
+                MDMultiLojaFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDMultiLojaFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDMultiLojaFuncao.Locate('ID', VL_ID, []);
+            end;
+
             if (TabMultLojaFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDMultiLojaFuncao.Edit;
@@ -6221,12 +6543,18 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDMultiLojaFuncao.Filtered := True;
     end;
 end;
 
 procedure Tfprincipal.TabMultLojaGridFiltroCellClick(Column: TColumn);
 begin
     TabMultLojaLFiltro.Caption := 'Filtrar por ' + TabMultLojaGridFiltro.SelectedColumn.Title.Caption;
+end;
+
+procedure Tfprincipal.TabMultLojaGridFiltroEnter(Sender: TObject);
+begin
+
 end;
 
 procedure Tfprincipal.TabMultLojaModuloBAdicionarClick(Sender: TObject);
@@ -6272,8 +6600,7 @@ begin
             if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
             begin
                 ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
-                if MDMultiLojaModuloConf.Locate('ID', 0, []) then
-                    MDMultiLojaModuloConf.Delete;
+                Desconectar;
                 exit;
             end;
             VL_Mensagem.Limpar;
@@ -6366,6 +6693,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -6644,6 +6972,8 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
+            ;
             exit;
         end;
 
@@ -6698,27 +7028,27 @@ var
     VL_Tag: ansistring;
     VL_Codigo: integer;
     VL_Retorno: ansistring;
-    VL_ValorChave : string;
+    VL_ValorChave: string;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Tag := '';
     VL_Codigo := 0;
     VL_Chave := '';
-    VL_ValorChave:='';
+    VL_ValorChave := '';
     try
         if MDPdv.Active then
         begin
             MDLoja.DisableControls;
-            MDLoja.Locate('ID',MDPdv.FieldByName('LOJA_ID').ASINTEGER,[]);
-            VL_ValorChave:=MDLoja.FieldByName('CNPJ').AsString;
-            VL_ValorChave:= VL_ValorChave+MDPdv.FieldByName('CODIGO').AsString;
+            MDLoja.Locate('ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
+            VL_ValorChave := MDLoja.FieldByName('DOC').AsString;
+            VL_ValorChave := VL_ValorChave + MDPdv.FieldByName('CODIGO').AsString;
             MDLojaModuloConf.DisableControls;
-            MDLojaModuloConf.Locate('LOJA_ID',MDPdv.FieldByName('LOJA_ID').ASINTEGER,[]);
-            VL_ValorChave:= VL_ValorChave+MDLojaModuloConf.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.Locate('LOJA_ID', MDPdv.FieldByName('LOJA_ID').AsInteger, []);
+            VL_ValorChave := VL_ValorChave + MDLojaModuloConf.FieldByName('CODIGO').AsString;
             MDLojaModuloConf.EnableControls;
             MDLoja.EnableControls;
         end;
-        CriarChaveTerminal(tcPDV,VL_ValorChave,VL_Chave);
+        CriarChaveTerminal(tcPDV, VL_ValorChave, VL_Chave);
         if Length(VL_Chave) = 0 then
         begin
             ShowMessage('Erro ao gerar chave');
@@ -6863,6 +7193,7 @@ begin
     VL_ID := 0;
     VL_Retorno := '';
     VL_Tag := '';
+
     if TabPDVFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabPDVFuncaoLFiltro.Caption := 'Filtrar por ' + TabPDVFuncaoGrid.SelectedColumn.Title.Caption;
     try
@@ -6882,6 +7213,17 @@ begin
             (TabPDVFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDPdvFuncaoID.AsInteger;
+            VL_Tag := MDPdvFuncaoTAG_NUMERO.AsString;
+
+            if MDPdvFuncao.Filtered then
+            begin
+                MDPdvFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDPdvFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDPdvFuncao.Locate('ID', VL_ID, []);
+            end;
+
             if (TabPDVFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F') then
             begin
                 MDPdvFuncao.Edit;
@@ -7050,6 +7392,7 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDPdvFuncao.Filtered := True;
     end;
 end;
 
@@ -7181,6 +7524,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -7277,7 +7621,7 @@ begin
         exit;
     VL_FPesquisaTag := TFTags.Create(Self);
     VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-    VL_FPesquisaTag.F_TagTipo := '';
+    VL_FPesquisaTag.F_TagTipo := TipoTagToStr(ord(ttNDF));  //TIPO NENHUM
     VL_FPesquisaTag.ShowModal;
     if VL_FPesquisaTag.F_Carregado then
     begin
@@ -7302,7 +7646,7 @@ end;
 
 procedure Tfprincipal.TabPdvShow(Sender: TObject);
 begin
-    TabPdvTabDadosModulo.OnShow(self);
+    TabPdvPageModuloFuncao.TabIndex := 0;
 end;
 
 procedure Tfprincipal.TabPdvTabDadosFuncaoShow(Sender: TObject);
@@ -7454,6 +7798,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -7609,8 +7954,19 @@ begin
             (TabPinPadFuncaoGrid.SelectedColumn.FieldName = 'HABILITADO_F')) then
         begin
             VL_ID := MDPinPadFuncaoID.AsInteger;
+            VL_Tag := MDPinPadFuncaoTAG_NUMERO.AsString;
             VL_Validado := copy(BoolToStr(MDPINPADFuncao.FieldByName('VALIDADO_F').AsBoolean, True), 0, 1);
             VL_Habilitado := copy(BoolToStr(MDPINPADFuncao.FieldByName('HABILITADO_F').AsBoolean, True), 0, 1);
+
+            if MDPINPADFuncao.Filtered then
+            begin
+                MDPINPADFuncao.Filtered := False;
+                if VL_ID = 0 then
+                    MDPINPADFuncao.Locate('TAG_NUMERO', VL_Tag, [])
+                else
+                    MDPINPADFuncao.Locate('ID', VL_ID, []);
+            end;
+
             if TabPinPadFuncaoGrid.SelectedColumn.FieldName = 'VALIDADO_F' then
             begin
                 MDPinPadFuncao.Edit;
@@ -7783,6 +8139,7 @@ begin
     finally
         VL_Mensagem.Free;
         F_Navegar := True;
+        MDPinPadFuncao.Filtered := True;
     end;
 end;
 
@@ -7939,6 +8296,7 @@ begin
         if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            Desconectar;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -8036,6 +8394,11 @@ end;
 procedure Tfprincipal.TabTagGridCellClick(Column: TColumn);
 begin
     TabTagLFiltro.Caption := 'Filtrar por ' + TabTagGrid.SelectedColumn.Title.Caption;
+end;
+
+procedure Tfprincipal.TabTagGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+begin
+    CarregaCampos('TAG');
 end;
 
 procedure Tfprincipal.TabTagShow(Sender: TObject);

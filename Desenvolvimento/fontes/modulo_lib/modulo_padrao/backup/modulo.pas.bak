@@ -138,16 +138,15 @@ begin
     Result := 0;
     VL_ArquivoLog := TDModulo(VP_Modulo).V_ArquivoLog;
     try
-        if Assigned(TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta) then
-        begin
-            TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Parar;
-            TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Terminate;
-            TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.WaitFor;
-        end;
+        //if Assigned(TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta) then
+        //begin
+        //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Parar;
+        //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Terminate;
+        //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.WaitFor;
+        //end;
 
-        FreeAndNil(TDModulo(VP_Modulo).V_DComunicador);
-        FreeAndNil(TDModulo(VP_Modulo));
-
+        TDModulo(VP_Modulo).V_DComunicador.free;
+        TDModulo(VP_Modulo).free;
 
 
     except

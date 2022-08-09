@@ -58,6 +58,7 @@ type
         ServidorPorta: integer;
         Hora: TDateTime;
         ID: integer;
+        DOC:String;
         Terminal_Tipo: ansistring;
         Terminal_ID: integer;
         ChaveComunicacaoIDX: integer;
@@ -437,6 +438,7 @@ begin
     ClienteIp := '';
     ClientePorta := 0;
 
+    DOC:='';
     Terminal_Tipo := '';
     Terminal_ID := 0;
 

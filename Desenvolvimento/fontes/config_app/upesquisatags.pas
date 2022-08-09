@@ -21,6 +21,9 @@ uses
 
 type
 
+    TTipoTag = (ttNDF, ttCOMANDO, ttDADOS, ttMENU_PDV, ttMENU_OPERACIONAL, ttPINPAD_FUNC, ttMODULO);
+
+
     { TFTags }
 
     TFTags = class(TForm)
@@ -49,7 +52,7 @@ type
     public
         F_Tabela: string;
         F_Carregado: boolean;
-        F_TagTipo: string;
+        F_TagTipo: ansistring;
     end;
 
 
@@ -72,15 +75,16 @@ var
     VL_Filtro: string;
 begin
     case ETipoFuncao.ItemIndex of
-      1: F_TagTipo:='COMANDO';
-      2: F_TagTipo:='MENU_PDV';
-      3: F_TagTipo:='MENU_OPERACIONAL';
-      4: F_TagTipo:='PINPAD_FUNC';
-    ELSE
-      if F_TagTipo = '' then
-          VL_Filtro:='';
+        1: F_TagTipo := 'COMANDO';
+        2: F_TagTipo := 'MENU_PDV';
+        3: F_TagTipo := 'MENU_OPERACIONAL';
+        4: F_TagTipo := 'PINPAD_FUNC';
+        5: F_TagTipo := 'MODULO';
+        else
+            if F_TagTipo = '' then
+                VL_Filtro := '';
     end;
-    if F_TagTipo = '' then
+    if ((F_TagTipo = '') or (F_TagTipo = 'NDF')) then
         VL_Filtro := ''
     else
         VL_Filtro := 'TAG_TIPO=(''*' + F_TagTipo + '*'')';
@@ -111,9 +115,23 @@ begin
 end;
 
 procedure TFTags.FormShow(Sender: TObject);
+var
+    VL_Tipo: integer;
 begin
+    VL_TIPO := 0;
     LimpaTela;
     F_Carregado := False;
+    vl_tipo := StrToTipoTag(F_TagTipo);
+    case VL_TIPO of
+        Ord(ttNDF): ETipoFuncao.ItemIndex := 0;
+        Ord(ttCOMANDO): ETipoFuncao.ItemIndex := 1;
+        Ord(ttMENU_PDV): ETipoFuncao.ItemIndex := 2;
+        Ord(ttMENU_OPERACIONAL): ETipoFuncao.ItemIndex := 3;
+        Ord(ttPINPAD_FUNC): ETipoFuncao.ItemIndex := 4;
+        Ord(ttMODULO): ETipoFuncao.ItemIndex := 5;
+    ELSE
+        ETipoFuncao.ItemIndex := 0;
+    end;
 end;
 
 procedure TFTags.LimpaTela;

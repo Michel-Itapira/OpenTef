@@ -100,6 +100,15 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="lazbarcodes"/>
+      </Item>
+      <Item>
+        <PackageName Value="indylaz"/>
+      </Item>
+      <Item>
+        <PackageName Value="zcomponent"/>
+      </Item>
+      <Item>
         <PackageName Value="rxnew"/>
       </Item>
       <Item>
@@ -117,6 +126,10 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>

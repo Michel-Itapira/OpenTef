@@ -1,7 +1,7 @@
 object F_Principal: TF_Principal
-  Left = 1523
+  Left = 1364
   Height = 599
-  Top = 138
+  Top = 153
   Width = 939
   Caption = 'F_Principal'
   ClientHeight = 599
@@ -362,8 +362,8 @@ object F_Principal: TF_Principal
   end
   object MStatus: TMemo
     Left = 24
-    Height = 168
-    Top = 408
+    Height = 96
+    Top = 480
     Width = 384
     Lines.Strings = (
       'O data'
@@ -385,7 +385,7 @@ object F_Principal: TF_Principal
   object Label17: TLabel
     Left = 24
     Height = 15
-    Top = 384
+    Top = 456
     Width = 118
     Caption = '*Campos obrigatórios'
     Font.Color = clRed
@@ -414,9 +414,9 @@ object F_Principal: TF_Principal
     ParentFont = False
   end
   object EXml: TMemo
-    Left = 432
+    Left = 456
     Height = 130
-    Top = 419
+    Top = 416
     Width = 470
     Lines.Strings = (
       '<NFe xmlns="http://www.portalfiscal.inf.br/nfe">'
@@ -745,18 +745,18 @@ object F_Principal: TF_Principal
     end
   end
   object Label19: TLabel
-    Left = 624
+    Left = 744
     Height = 15
-    Top = 352
+    Top = 336
     Width = 184
     Caption = 'Tempo em ms Aguarda Transação'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object ETempo: TEdit
-    Left = 840
+    Left = 800
     Height = 23
-    Top = 342
+    Top = 360
     Width = 54
     TabOrder = 6
     Text = '300000'
@@ -777,5 +777,37 @@ object F_Principal: TF_Principal
     Width = 406
     TabOrder = 7
     Text = 'https://www.validador.com.br/?nota=1234567'
+  end
+  object BMenuOperacional: TButton
+    Left = 616
+    Height = 32
+    Top = 344
+    Width = 123
+    Caption = 'Menu Operacional'
+    Font.CharSet = ANSI_CHARSET
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    Font.Style = [fsBold]
+    OnClick = BMenuOperacionalClick
+    ParentFont = False
+    TabOrder = 8
+  end
+  object Label27: TLabel
+    Left = 24
+    Height = 15
+    Top = 376
+    Width = 107
+    Caption = 'Chave de transação'
+    Font.Color = clRed
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object MChave: TMemo
+    Left = 16
+    Height = 51
+    Top = 397
+    Width = 384
+    ScrollBars = ssAutoBoth
+    TabOrder = 9
   end
 end

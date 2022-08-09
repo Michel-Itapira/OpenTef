@@ -1,7 +1,7 @@
 object fprincipal: Tfprincipal
-  Left = 1055
+  Left = 610
   Height = 741
-  Top = 126
+  Top = 135
   Width = 1048
   Caption = 'Administrador OpenTef'
   ClientHeight = 741
@@ -87,7 +87,6 @@ object fprincipal: Tfprincipal
       Width = 168
       ItemHeight = 15
       Items.Strings = (
-        ''
         'CONFIGURADOR'
         'ADMINISTRADOR'
         'USUARIO'
@@ -207,15 +206,16 @@ object fprincipal: Tfprincipal
         Caption = 'Gerenciador das Lojas'
         ClientHeight = 631
         ClientWidth = 1038
+        OnShow = TabCadastroShow
         object PageCadastroLoja: TPageControl
           Left = 0
           Height = 621
           Top = 10
           Width = 1038
-          ActivePage = TabLoja
+          ActivePage = TabMultLoja
           Align = alClient
           BorderSpacing.Top = 10
-          TabIndex = 1
+          TabIndex = 0
           TabOrder = 0
           object TabMultLoja: TTabSheet
             Caption = 'Cadastro de Mult-Lojas'
@@ -236,7 +236,7 @@ object fprincipal: Tfprincipal
                 Left = 252
                 Height = 37
                 Top = 45
-                Width = 111
+                Width = 112
                 Caption = 'Adicionar Loja'
                 Font.Style = [fsBold]
                 Glyph.Data = {
@@ -362,12 +362,12 @@ object fprincipal: Tfprincipal
                   Color = clWindow
                   Columns = <                  
                     item
-                      Title.Caption = 'Cnpj'
+                      Title.Caption = 'Documento'
                       Width = 100
-                      FieldName = 'CNPJ'
+                      FieldName = 'DOC'
                     end                  
                     item
-                      Title.Caption = 'Razao'
+                      Title.Caption = 'Razao/Nome'
                       Width = 200
                       FieldName = 'RAZAO'
                     end>
@@ -375,6 +375,7 @@ object fprincipal: Tfprincipal
                   ReadOnly = True
                   TabOrder = 1
                   OnCellClick = TabMultLojaGridFiltroCellClick
+                  OnEnter = TabMultLojaGridFiltroEnter
                 end
               end
               object TabMultLojaGDados: TGroupBox
@@ -411,7 +412,7 @@ object fprincipal: Tfprincipal
                 Left = 252
                 Height = 37
                 Top = 117
-                Width = 111
+                Width = 112
                 Caption = 'Excluir Loja'
                 Font.Style = [fsBold]
                 Glyph.Data = {
@@ -541,12 +542,12 @@ object fprincipal: Tfprincipal
                       FieldName = 'ID'
                     end                  
                     item
-                      Title.Caption = 'CNPJ'
+                      Title.Caption = 'Documento'
                       Width = 150
-                      FieldName = 'CNPJ'
+                      FieldName = 'DOC'
                     end                  
                     item
-                      Title.Caption = 'Razão'
+                      Title.Caption = 'Razão/Nome'
                       Width = 360
                       FieldName = 'RAZAO'
                     end>
@@ -1407,6 +1408,7 @@ object fprincipal: Tfprincipal
                   Caption = 'Configuração da Loja'
                   ClientHeight = 314
                   ClientWidth = 643
+                  OnShow = TabLojaTabModuloShow
                   object PageLojaVizualizarConfModuloFuncao: TPageControl
                     Left = 5
                     Height = 304
@@ -1746,9 +1748,10 @@ object fprincipal: Tfprincipal
                         Height = 23
                         Top = 65
                         Width = 238
+                        CharCase = ecUppercase
                         OnChange = TabLojaTabFuncaoDadosEFiltroChange
                         TabOrder = 0
-                        Text = 'TabLojaTabFuncaoDadosEFiltro'
+                        Text = 'TABLOJATABFUNCAODADOSEFILTRO'
                       end
                       object TabLojaTabFuncaoDadosGrid: TRxDBGrid
                         Left = 4
@@ -1947,9 +1950,10 @@ object fprincipal: Tfprincipal
                     Height = 23
                     Top = 70
                     Width = 257
+                    CharCase = ecUppercase
                     OnChange = TabLojaFuncaoEFiltroChange
                     TabOrder = 0
-                    Text = 'TabLojaFuncaoEFiltro'
+                    Text = 'TABLOJAFUNCAOEFILTRO'
                   end
                   object TabLojaFuncaoCKSelecionada: TCheckBox
                     Left = 498
@@ -2140,17 +2144,17 @@ object fprincipal: Tfprincipal
               end
               object Panel2: TPanel
                 Left = 2
-                Height = 31
+                Height = 26
                 Top = 2
                 Width = 661
                 Align = alTop
                 BevelOuter = bvNone
-                ClientHeight = 31
+                ClientHeight = 26
                 ClientWidth = 661
                 TabOrder = 1
                 object TabLojaLTitulo1: TLabel
                   Left = 0
-                  Height = 26
+                  Height = 21
                   Top = 5
                   Width = 661
                   Align = alClient
@@ -2164,7 +2168,7 @@ object fprincipal: Tfprincipal
               object Panel3: TPanel
                 Left = 7
                 Height = 184
-                Top = 38
+                Top = 33
                 Width = 651
                 Align = alTop
                 BorderSpacing.Around = 5
@@ -2188,13 +2192,6 @@ object fprincipal: Tfprincipal
                   TabOrder = 0
                   Text = 'TabLojaEID'
                 end
-                object TabLojaLCnpj: TLabel
-                  Left = 120
-                  Height = 15
-                  Top = 8
-                  Width = 40
-                  Caption = 'C.N.P.J:'
-                end
                 object TabLojaECnpj: TMaskEdit
                   Left = 120
                   Height = 23
@@ -2208,7 +2205,7 @@ object fprincipal: Tfprincipal
                 object TabLojaCkHabilitar: TCheckBox
                   Left = 312
                   Height = 19
-                  Top = 24
+                  Top = 37
                   Width = 155
                   Caption = 'Habilitar Loja Cadastrada'
                   Font.Style = [fsBold]
@@ -2247,7 +2244,7 @@ object fprincipal: Tfprincipal
                   TabOrder = 4
                   Text = 'TABLOJAEFANTASIA'
                 end
-                object TabLojaLFantasia1: TLabel
+                object TabLojaLMultLoja: TLabel
                   Left = 16
                   Height = 15
                   Top = 131
@@ -2553,6 +2550,24 @@ object fprincipal: Tfprincipal
                   ParentFont = False
                   TabOrder = 8
                 end
+                object TabLojaLCnpj: TLabel
+                  Left = 120
+                  Height = 15
+                  Top = 8
+                  Width = 37
+                  Caption = 'C.N.P.J'
+                end
+                object TabLojaCkPessoa: TCheckBox
+                  Left = 312
+                  Height = 19
+                  Top = 14
+                  Width = 89
+                  Caption = 'Pessoa Física'
+                  Font.Style = [fsBold]
+                  OnClick = TabLojaCkPessoaClick
+                  ParentFont = False
+                  TabOrder = 9
+                end
               end
             end
             object TabLojaPnlFiltro: TPanel
@@ -2597,12 +2612,12 @@ object fprincipal: Tfprincipal
                 Color = clWindow
                 Columns = <                
                   item
-                    Title.Caption = 'Cnpj'
+                    Title.Caption = 'Documento'
                     Width = 110
-                    FieldName = 'CNPJ'
+                    FieldName = 'DOC'
                   end                
                   item
-                    Title.Caption = 'Razao'
+                    Title.Caption = 'Razao/Nome'
                     Width = 195
                     FieldName = 'RAZAO'
                   end>
@@ -2612,6 +2627,7 @@ object fprincipal: Tfprincipal
                 TabOrder = 1
                 OnCellClick = TabLojaGridCellClick
                 OnDrawColumnCell = TabLojaGridDrawColumnCell
+                OnMouseDown = TabLojaGridMouseDown
               end
             end
           end
@@ -3204,9 +3220,6 @@ object fprincipal: Tfprincipal
               ItemHeight = 15
               Items.Strings = (
                 'TODOS'
-                'COMANDO'
-                'MENU_PDV'
-                'MENU_OPERACIONAL'
                 'PINPAD_FUNC'
               )
               OnChange = TabPinPadFuncaoETipoFiltroChange
@@ -3287,8 +3300,8 @@ object fprincipal: Tfprincipal
           end
           object TabPdvBGeraChave: TSpeedButton
             Left = 537
-            Height = 40
-            Top = 157
+            Height = 27
+            Top = 162
             Width = 40
             Glyph.Data = {
               36040000424D3604000000000000360000002800000010000000100000000100
@@ -3328,16 +3341,15 @@ object fprincipal: Tfprincipal
             }
             Images = ListaImg
             ImageIndex = 5
-            ImageWidth = 22
+            ImageWidth = 16
             OnClick = TabPdvBGeraChaveClick
           end
           object TabPdvEChave: TMemo
             Left = 61
-            Height = 40
-            Top = 157
+            Height = 25
+            Top = 163
             Width = 471
             CharCase = ecUppercase
-            Font.Height = -16
             Lines.Strings = (
               'TABPDVECHAVE'
             )
@@ -4366,10 +4378,8 @@ object fprincipal: Tfprincipal
               ItemHeight = 15
               Items.Strings = (
                 'TODOS'
-                'COMANDO'
                 'MENU_PDV'
                 'MENU_OPERACIONAL'
-                'PINPAD_FUNC'
               )
               OnChange = TabPDVFuncaoETipoFiltroChange
               TabOrder = 3
@@ -4383,77 +4393,76 @@ object fprincipal: Tfprincipal
         ClientHeight = 631
         ClientWidth = 1038
         object TabConfPnlCadastro: TPanel
-          Left = 536
+          Left = 532
           Height = 274
           Top = 78
-          Width = 464
+          Width = 477
           BevelInner = bvLowered
           ClientHeight = 274
-          ClientWidth = 464
+          ClientWidth = 477
           TabOrder = 1
           object TabConfLID: TLabel
-            Left = 48
+            Left = 47
             Height = 15
             Top = 32
             Width = 14
             Caption = 'ID:'
           end
           object TabConfEID: TEdit
-            Left = 66
+            Left = 64
             Height = 23
             Top = 28
-            Width = 147
+            Width = 148
             CharCase = ecUppercase
             ReadOnly = True
             TabOrder = 0
             Text = 'EDIT1'
           end
           object TabConfEDescricao: TEdit
-            Left = 66
+            Left = 64
             Height = 23
             Top = 73
-            Width = 383
+            Width = 402
             CharCase = ecUppercase
             TabOrder = 2
             Text = 'EDIT2'
           end
           object TabConfLDescricao: TLabel
-            Left = 8
+            Left = 7
             Height = 15
             Top = 76
             Width = 54
             Caption = 'Descrição:'
           end
           object TabConfLIP: TLabel
-            Left = 227
+            Left = 232
             Height = 15
             Top = 32
             Width = 16
             Caption = 'I.P:'
           end
           object TabConfEIP: TEdit
-            Left = 250
+            Left = 257
             Height = 23
             Top = 28
-            Width = 200
+            Width = 209
             CharCase = ecUppercase
             TabOrder = 1
             Text = 'EDIT4'
           end
           object TabConfLChave: TLabel
-            Left = 26
+            Left = 25
             Height = 15
-            Top = 130
+            Top = 126
             Width = 36
             Caption = 'Chave:'
           end
           object TabConfEChave: TMemo
-            Left = 66
-            Height = 47
-            Top = 116
-            Width = 342
+            Left = 64
+            Height = 27
+            Top = 123
+            Width = 373
             CharCase = ecUppercase
-            Font.Height = -16
             Lines.Strings = (
               ''
             )
@@ -4461,10 +4470,10 @@ object fprincipal: Tfprincipal
             TabOrder = 3
           end
           object TabConfBGeraChave: TSpeedButton
-            Left = 410
-            Height = 49
-            Top = 115
-            Width = 40
+            Left = 439
+            Height = 29
+            Top = 122
+            Width = 27
             Glyph.Data = {
               36040000424D3604000000000000360000002800000010000000100000000100
               200000000000000400006400000064000000000000000000000000000000A466
@@ -4503,7 +4512,7 @@ object fprincipal: Tfprincipal
             }
             Images = ListaImg
             ImageIndex = 5
-            ImageWidth = 22
+            ImageWidth = 16
             OnClick = TabConfBGeraChaveClick
           end
           object TabTipoConfESenha: TEdit
@@ -4516,7 +4525,7 @@ object fprincipal: Tfprincipal
             Text = 'Edit3'
           end
           object TabTipoAdmESenha: TEdit
-            Left = 166
+            Left = 172
             Height = 25
             Top = 212
             Width = 130
@@ -4525,7 +4534,7 @@ object fprincipal: Tfprincipal
             Text = 'Edit3'
           end
           object TabTipoUsuESenha: TEdit
-            Left = 319
+            Left = 326
             Height = 25
             Top = 212
             Width = 130
@@ -4619,6 +4628,7 @@ object fprincipal: Tfprincipal
             ReadOnly = True
             TabOrder = 1
             OnCellClick = TabConfGridCellClick
+            OnMouseDown = TabConfGridMouseDown
           end
         end
         object TabConfBAdicionar: TBitBtn
@@ -5531,7 +5541,7 @@ object fprincipal: Tfprincipal
                 TabIndex = 0
                 TabOrder = 4
                 object TabModuloTabDadosModulo: TTabSheet
-                  Caption = 'Dados da Configuração'
+                  Caption = 'Dados da Configuração do Módulo'
                   ClientHeight = 260
                   ClientWidth = 773
                   object GroupBox1: TGroupBox
@@ -5728,19 +5738,19 @@ object fprincipal: Tfprincipal
                     Left = 8
                     Height = 45
                     Top = 206
-                    Width = 456
-                    Font.Height = -16
+                    Width = 465
+                    Font.Height = -15
                     Lines.Strings = (
-                      'TabConfiguracaoEChave'
+                      ''
                     )
                     ParentFont = False
                     TabOrder = 8
                   end
                   object TabConfiguracaoBGerarChave: TBitBtn
-                    Left = 468
-                    Height = 45
-                    Top = 206
-                    Width = 54
+                    Left = 475
+                    Height = 47
+                    Top = 205
+                    Width = 47
                     Font.Style = [fsBold]
                     Glyph.Data = {
                       36040000424D3604000000000000360000002800000010000000100000000100
@@ -5951,7 +5961,7 @@ object fprincipal: Tfprincipal
                   end
                 end
                 object TabModuloTabDadosFuncao: TTabSheet
-                  Caption = 'Funções da Configuração'
+                  Caption = 'Funções da Configuração do Módulo'
                   ClientHeight = 260
                   ClientWidth = 773
                   OnShow = TabModuloTabDadosFuncaoShow
@@ -6129,7 +6139,7 @@ object fprincipal: Tfprincipal
                     FocusColor = clRed
                     SelectedColor = clHighlight
                     DataSource = DSModuloConfFuncao
-                    Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                    Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
                     TabOrder = 2
                     OnCellClick = TabModuloTabDadosFuncaoGridCellClick
                   end
@@ -6550,6 +6560,7 @@ object fprincipal: Tfprincipal
             ReadOnly = True
             TabOrder = 1
             OnCellClick = TabTagGridCellClick
+            OnMouseDown = TabTagGridMouseDown
           end
           object TabTagLTipoFiltro: TLabel
             Left = 9
@@ -6573,6 +6584,7 @@ object fprincipal: Tfprincipal
               'MENU_OPERACIONAL'
               'PINPAD_FUNC'
               'DADOS'
+              'MODULO'
             )
             OnChange = TabTagETipoFiltroChange
             TabOrder = 2
@@ -6894,8 +6906,10 @@ object fprincipal: Tfprincipal
             Left = 326
             Height = 19
             Top = 14
-            Width = 165
+            Width = 170
             Caption = 'Tag Padrão para o OpenTef'
+            Font.Style = [fsBold]
+            ParentFont = False
             TabOrder = 6
           end
           object TabTagETagTipo: TComboBox
@@ -7339,6 +7353,7 @@ object fprincipal: Tfprincipal
             DataSource = DSAdquirente
             ReadOnly = True
             TabOrder = 1
+            OnMouseDown = TabAdquirenteGridMouseDown
           end
         end
         object TabAdquirentePnlCadastro: TPanel
@@ -7435,7 +7450,9 @@ object fprincipal: Tfprincipal
   object MDLoja: TRxMemoryData
     Filtered = True
     FieldDefs = <>
+    AfterOpen = MDLojaAfterOpen
     AfterScroll = MDLojaAfterScroll
+    OnFilterRecord = MDLojaFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 112
@@ -7453,6 +7470,7 @@ object fprincipal: Tfprincipal
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDPinPadAfterScroll
+    OnFilterRecord = MDPinPadFilterRecord
     PacketRecords = 0
     Left = 160
     Top = 112
@@ -7460,6 +7478,7 @@ object fprincipal: Tfprincipal
   object MDLojaPDV: TRxMemoryData
     FieldDefs = <>
     AfterScroll = MDLojaPDVAfterScroll
+    OnFilterRecord = MDLojaPDVFilterRecord
     PacketRecords = 0
     Left = 304
     Top = 168
@@ -7468,6 +7487,7 @@ object fprincipal: Tfprincipal
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDConfiguradorAfterScroll
+    OnFilterRecord = MDConfiguradorFilterRecord
     PacketRecords = 0
     Left = 416
     Top = 112
@@ -7477,6 +7497,7 @@ object fprincipal: Tfprincipal
     FieldDefs = <>
     AfterOpen = MDMultiLojaAfterOpen
     AfterScroll = MDMultiLojaAfterScroll
+    OnFilterRecord = MDMultiLojaFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 168
@@ -7488,6 +7509,7 @@ object fprincipal: Tfprincipal
   end
   object MDMultiLojaLoja: TRxMemoryData
     FieldDefs = <>
+    OnFilterRecord = MDMultiLojaLojaFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 224
@@ -7499,6 +7521,7 @@ object fprincipal: Tfprincipal
   end
   object MDPinPadPdv: TRxMemoryData
     FieldDefs = <>
+    OnFilterRecord = MDPinPadPdvFilterRecord
     PacketRecords = 0
     Left = 160
     Top = 280
@@ -7524,13 +7547,14 @@ object fprincipal: Tfprincipal
   end
   object DSModuloConfig: TDataSource
     DataSet = MDModuloConfig
-    Left = 589
-    Top = 240
+    Left = 592
+    Top = 232
   end
   object MDModuloConfig: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDModuloConfigAfterScroll
+    OnFilterRecord = MDModuloConfigFilterRecord
     PacketRecords = 0
     Left = 517
     Top = 240
@@ -8075,7 +8099,7 @@ object fprincipal: Tfprincipal
   end
   object DSModuloFunc: TDataSource
     DataSet = MDModuloFunc
-    Left = 589
+    Left = 592
     Top = 176
   end
   object MDModuloFunc: TRxMemoryData
@@ -8132,6 +8156,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDModuloFuncCalcFields
+    OnFilterRecord = MDModuloFuncFilterRecord
     PacketRecords = 0
     Left = 517
     Top = 176
@@ -8233,6 +8258,7 @@ object fprincipal: Tfprincipal
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDPdvModuloAfterScroll
+    OnFilterRecord = MDPdvModuloFilterRecord
     PacketRecords = 0
     Left = 304
     Top = 280
@@ -8241,6 +8267,7 @@ object fprincipal: Tfprincipal
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDMultiLojaModuloConfAfterScroll
+    OnFilterRecord = MDMultiLojaModuloConfFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 280
@@ -8252,6 +8279,7 @@ object fprincipal: Tfprincipal
   end
   object MDPesquisaModulo: TRxMemoryData
     FieldDefs = <>
+    OnFilterRecord = MDPesquisaModuloFilterRecord
     PacketRecords = 0
     Left = 517
     Top = 304
@@ -8315,6 +8343,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDMultiLojaFuncaoCalcFields
+    OnFilterRecord = MDMultiLojaFuncaoFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 392
@@ -8416,6 +8445,7 @@ object fprincipal: Tfprincipal
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDLojaModuloConfAfterScroll
+    OnFilterRecord = MDLojaModuloConfFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 336
@@ -8484,6 +8514,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDLojaFuncaoCalcFields
+    OnFilterRecord = MDLojaFuncaoFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 456
@@ -8635,6 +8666,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDPinPadFuncaoCalcFields
+    OnFilterRecord = MDPinPadFuncaoFilterRecord
     PacketRecords = 0
     Left = 160
     Top = 160
@@ -8786,6 +8818,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDPdvFuncaoCalcFields
+    OnFilterRecord = MDPdvFuncaoFilterRecord
     PacketRecords = 0
     Left = 304
     Top = 224
@@ -8880,8 +8913,8 @@ object fprincipal: Tfprincipal
   end
   object DSModuloConfFuncao: TDataSource
     DataSet = MDModuloConfFuncao
-    Left = 589
-    Top = 360
+    Left = 651
+    Top = 352
   end
   object MDModuloConfFuncao: TRxMemoryData
     Filtered = True
@@ -8937,6 +8970,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDModuloConfFuncaoCalcFields
+    OnFilterRecord = MDModuloConfFuncaoFilterRecord
     PacketRecords = 0
     Left = 517
     Top = 360
@@ -9088,6 +9122,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDLojaModuloConfFuncaoCalcFields
+    OnFilterRecord = MDLojaModuloConfFuncaoFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 568
@@ -9239,6 +9274,7 @@ object fprincipal: Tfprincipal
         Size = 50
       end>
     OnCalcFields = MDMultiLojaModuloConfFuncaoCalcFields
+    OnFilterRecord = MDMultiLojaModuloConfFuncaoFilterRecord
     PacketRecords = 0
     Left = 16
     Top = 504

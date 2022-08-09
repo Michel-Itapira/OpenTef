@@ -177,9 +177,6 @@
     </SearchPaths>
     <CodeGeneration>
       <RelocatableUnit Value="True"/>
-      <Optimizations>
-        <OptimizationLevel Value="0"/>
-      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -191,9 +188,12 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dMCOM"/>
-      <OtherDefines Count="1">
+      <CustomOptions Value="-dMCOM
+-dTEF_LIB"/>
+      <OtherDefines Count="3">
         <Define0 Value="CLIENTE"/>
+        <Define1 Value="MCOM"/>
+        <Define2 Value="TEF_LIB"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>

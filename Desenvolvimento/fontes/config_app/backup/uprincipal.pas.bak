@@ -30,7 +30,7 @@ uses
     rxlookup,
     RxDBGridFooterTools,
     RxDBGridExportPdf,
-    RxDBGridPrintGrid,
+    RxDBGridPrintGrid, ubarcodes,
     uPesquisaTags,
     uPesquisaadquirentes,
     Types,
@@ -52,12 +52,15 @@ type
 
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado);
 
+
     PResposta = ^TResposta;
 
     TPResposta = procedure(VP_Transmissao_ID: PChar; VP_Codigo: integer; VP_Dados: PChar); stdcall;
 
     Tfprincipal = class(TForm)
         BConectar: TBitBtn;
+        TabLojaCkPessoa: TCheckBox;
+        TabLojaLCnpj: TLabel;
         MDLojaFuncaoTAG_TIPO: TStringField;
         MDLojaModuloConfFuncaoTAG_TIPO: TStringField;
         MDModuloConfFuncaoTAG_TIPO: TStringField;
@@ -134,9 +137,8 @@ type
         TabLojaTabFuncaoDadosLFiltro: TLabel;
         TabLojaFuncaoLTitulo: TLabel;
         TabLojaTabFuncaoDadosLTitulo: TLabel;
-        TabLojaLCnpj: TLabel;
         TabLojaLFantasia: TLabel;
-        TabLojaLFantasia1: TLabel;
+        TabLojaLMultLoja: TLabel;
         TabLojaLID: TLabel;
         TabLojaLRazao: TLabel;
         TabLojaLTitulo1: TLabel;
@@ -558,6 +560,7 @@ type
         procedure TabConfiguracaoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: boolean);
         procedure TabFuncaoModuloConfShow(Sender: TObject);
         procedure TabFuncaoModuloETipoFiltroChange(Sender: TObject);
+        procedure TabLojaCkPessoaClick(Sender: TObject);
         procedure TabLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoEFiltroChange(Sender: TObject);
@@ -1344,6 +1347,24 @@ begin
     end;
 end;
 
+procedure Tfprincipal.TabLojaCkPessoaClick(Sender: TObject);
+begin
+  if TabLojaCkPessoa.Checked then
+  begin
+    TabLojaLCnpj.Caption:='C.P.F:';
+    TabLojaLFantasia.Caption:='Apelido (nome usado nos relatórios)';
+    TabLojaLRazao.Caption:='Nome:';
+    TabLojaECnpj.EditMask:='999.999.999-99;0;_';
+  end
+  else
+  begin
+    TabLojaLCnpj.Caption:='C.N.P.J:';
+    TabLojaLFantasia.Caption:='Fantasia';
+    TabLojaLRazao.Caption:='Razão:';
+    TabLojaECnpj.EditMask:='99.999.999/9999-99;0;_';
+  end;
+end;
+
 procedure Tfprincipal.TabLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
 begin
     if TabLojaConfFuncaoCKSelecionada.Checked then
@@ -2083,7 +2104,7 @@ begin
     VL_Tag := '';
     VL_Codigo := 0;
     try
-        CriarChaveTerminal(VL_Chave);
+        CriarChaveTerminal(tcC50,'',VL_Chave);
         if Length(VL_Chave) = 0 then
         begin
             ShowMessage('Erro ao gerar chave');
@@ -2187,8 +2208,11 @@ end;
 procedure Tfprincipal.TabConfiguracaoShow(Sender: TObject);
 begin
     if ((F_Navegar) and (F_Permissao)) then
+    begin
         //carrega moduloconfig
-        CarregarTabelas(False, '0091', '006C', MDModulo.FieldByName('ID').AsInteger);
+        CarregarTabelas(False, '003A', '006C', MDModulo.FieldByName('ID').AsInteger);
+        TabModuloPageModuloFuncao.TabIndex:=0;
+    end;
 
 end;
 
@@ -2332,7 +2356,7 @@ begin
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00B9', 'S');
                 VL_Mensagem.AddTag('008B', VL_ID);
-                VL_Mensagem.AddTag('00C6', MDModuloConfFuncao.FieldByName('HABILITADO').AsString);
+                VL_Mensagem.AddTag('00C6', MDModuloFunc.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
@@ -2807,12 +2831,12 @@ begin
     end;
     if TabLojaECnpj.Text = '' then
     begin
-        ShowMessage('CNPJ é um campo obrigatório');
+        ShowMessage(TabLojaLCnpj.Caption+' é um campo obrigatório');
         exit;
     end;
     if TabLojaERazao.Text = '' then
     begin
-        ShowMessage('Razão é um campo obrigatório');
+        ShowMessage(TabLojaLRazao.Caption+' é um campo obrigatório');
         exit;
     end;
 
@@ -2860,12 +2884,12 @@ begin
         end;
         if TabLojaECnpj.Text = '' then
         begin
-            ShowMessage('CNPJ é um campo obrigatório');
+            ShowMessage( TabLojaLCnpj.Caption+' é um campo obrigatório');
             exit;
         end;
         if TabLojaERazao.Text = '' then
         begin
-            ShowMessage('Razão é um campo obrigatório');
+            ShowMessage(TabLojaLRazao.Caption+' é um campo obrigatório');
             exit;
         end;
         if (TabLojaCMultLoja.Text = '') then
@@ -3332,7 +3356,7 @@ begin
                 MDLoja.Edit;
 
             MDLoja.FieldByName('ID').AsInteger := VL_ID;
-            MDLoja.FieldByName('CNPJ').AsString := TabLojaECnpj.Text;
+            MDLoja.FieldByName('DOC').AsString := TabLojaECnpj.Text;
             MDLoja.FieldByName('RAZAO').AsString := TabLojaERazao.Text;
             MDLoja.FieldByName('FANTASIA').AsString := TabLojaEFantasia.Text;
             MDLoja.FieldByName('MULTILOJA_ID').AsString := MDMultiLojaLoja.FieldByName('ID').AsString;
@@ -4078,9 +4102,9 @@ begin
                 end;
                 //MODULO_CONFIG
                 if ((VP_CarregaTodasTabelas) and (VP_TagTabelaEspecifica = '')) or
-                    ((VP_CarregaTodasTabelas = False) and (VP_TagTabelaEspecifica = '0091')) then
+                    ((VP_CarregaTodasTabelas = False) and (VP_TagTabelaEspecifica = '003A')) then
                 begin
-                    if VL_Mensagem.GetTag('0091', VL_Tag) = 0 then
+                    if VL_Mensagem.GetTag('003A', VL_Tag) = 0 then
                     begin
                         if MDModuloConfig.Active then
                             MDModuloConfig.EmptyTable;
@@ -4610,7 +4634,7 @@ begin
     VL_Tag := '';
     VL_Codigo := 0;
     try
-        CriarChaveTerminal(VL_Chave);
+        CriarChaveTerminal(tcC50,'',VL_Chave);
         if Length(VL_Chave) = 0 then
         begin
             ShowMessage('Erro ao gerar chave');
@@ -6697,13 +6721,27 @@ var
     VL_Tag: ansistring;
     VL_Codigo: integer;
     VL_Retorno: ansistring;
+    VL_ValorChave : string;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_Tag := '';
     VL_Codigo := 0;
     VL_Chave := '';
+    VL_ValorChave:='';
     try
-        CriarChaveTerminal(VL_Chave);
+        if MDPdv.Active then
+        begin
+            MDLoja.DisableControls;
+            MDLoja.Locate('ID',MDPdv.FieldByName('LOJA_ID').ASINTEGER,[]);
+            VL_ValorChave:=MDLoja.FieldByName('CNPJ').AsString;
+            VL_ValorChave:= VL_ValorChave+MDPdv.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.DisableControls;
+            MDLojaModuloConf.Locate('LOJA_ID',MDPdv.FieldByName('LOJA_ID').ASINTEGER,[]);
+            VL_ValorChave:= VL_ValorChave+MDLojaModuloConf.FieldByName('CODIGO').AsString;
+            MDLojaModuloConf.EnableControls;
+            MDLoja.EnableControls;
+        end;
+        CriarChaveTerminal(tcPDV,VL_ValorChave,VL_Chave);
         if Length(VL_Chave) = 0 then
         begin
             ShowMessage('Erro ao gerar chave');

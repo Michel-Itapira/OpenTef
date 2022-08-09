@@ -9,7 +9,7 @@ uses
   {$IFDEF HASAMIGA}
   athreads,
   {$ENDIF}
-  uprincipal, funcoes, // this includes the LCL widgetset
+  uprincipal, // this includes the LCL widgetset
   Forms, zcomponent, indylaz, Interfaces, def;
 
 {$R *.res}

@@ -138,12 +138,12 @@ begin
     Result := 0;
     VL_ArquivoLog := TDModulo(VP_Modulo).V_ArquivoLog;
     try
-        if Assigned(TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta) then
-        begin
-            TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Parar;
-            TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Terminate;
-            TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.WaitFor;
-        end;
+        //if Assigned(TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta) then
+        //begin
+        //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Parar;
+        //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.Terminate;
+        //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.WaitFor;
+        //end;
 
         TDModulo(VP_Modulo).V_DComunicador.free;
         TDModulo(VP_Modulo).free;
@@ -161,7 +161,7 @@ function login(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveTe
 var
     VL_MensagemIN, VL_MensagemOUT: TMensagem;
     VL_S: string;
-    VL_DadosI: int64;
+    VL_DadosI: string;
     VL_Transmissao_ID: string;
 begin
     Result := 1;
@@ -222,14 +222,12 @@ begin
             Result := TDModulo(VP_Modulo).V_DComunicador.ClienteTransmiteSolicitacao(VL_Transmissao_ID, VL_MensagemOUT, VL_MensagemIN, nil, 10000, True);
             if Result <> 0 then
                 Exit;
-            VL_S := VL_MensagemIN.Comando;
+            VL_MensagemIN.GetComando(VL_S,VL_DadosI);
             if VL_S = '0028' then
                 TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Status := csLogado
             else
             if VL_S = '0029' then
             begin
-                VL_DadosI := 0;
-                VL_MensagemIN.GetTag('0036', VL_DadosI);
                 Result := VL_DadosI;
             end
             else
