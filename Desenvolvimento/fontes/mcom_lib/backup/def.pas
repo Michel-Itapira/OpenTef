@@ -8,7 +8,10 @@ uses
   Classes, SysUtils;
 
 const
-    C_lib_versao: array  [0..2] of integer = (1, 0, 0);
+    C_Versao: array  [0..2] of integer = (1, 0, 0);
+    C_Programa: string = 'mcom_lib';
+    C_Mensagem=1;
+
 
 implementation
 

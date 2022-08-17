@@ -1,10 +1,12 @@
 Program opentef;
 
 Uses
-{$IFDEF UNIX}{$IFDEF UseCThreads}
+{$IFDEF UNIX}
   CThreads,
-{$ENDIF}{$ENDIF}
-   DaemonApp, lazdaemonapp, mapeador, servico, comunicador, opentefnucleo;
+{$ENDIF}
+
+  Classes,
+ DaemonApp, lazdaemonapp, mapeador, servico, comunicador, opentefnucleo;
 
 begin
   Application.Initialize;

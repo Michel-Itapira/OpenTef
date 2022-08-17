@@ -15,6 +15,6 @@ object DMapeador: TDMapeador
       WinBindings.AcceptedCodes = []
       LogStatusReport = True
     end>
-  Left = 308
-  Top = 119
+  Left = 506
+  Top = 253
 end

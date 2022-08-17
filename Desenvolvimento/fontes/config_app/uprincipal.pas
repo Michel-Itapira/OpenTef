@@ -37,7 +37,8 @@ uses
     Types,
     LbRSA,
     Grids, Menus, EditBtn,
-    uPesquisamoduloconf;
+    uPesquisamoduloconf,
+    uconfigopentef;
 
 type
 
@@ -58,10 +59,11 @@ type
 
     PResposta = ^TResposta;
 
-    TPResposta = procedure(VP_Transmissao_ID: PChar; VP_Codigo: integer; VP_Dados: PChar); stdcall;
+    TPResposta = procedure(VP_Transmissao_ID: PChar; VP_Codigo: integer; VP_Dados: PChar); cdecl;
 
     Tfprincipal = class(TForm)
         BConectar: TBitBtn;
+        BConfig: TSpeedButton;
         TabLojaCkPessoa: TCheckBox;
         TabLojaLCnpj: TLabel;
         MDLojaFuncaoTAG_TIPO: TStringField;
@@ -80,6 +82,7 @@ type
         TabMultLojaConfFuncaoLTipoFiltro: TLabel;
         TabLojaFuncaoETipoFiltro: TComboBox;
         TabLojaFuncaoLTipoFiltro: TLabel;
+        TabPdvECodigo: TEdit;
         TabTagETipoFiltro: TComboBox;
         TabTagLTipoFiltro: TLabel;
         TabPdvGDados: TGroupBox;
@@ -420,9 +423,7 @@ type
         TabMultLojaBExcluir: TBitBtn;
         TabPdvBExcluir: TBitBtn;
         TabPdvCPinPad: TRxDBLookupCombo;
-        TabPdvECodigo: TEdit;
         TabPdvEPinPadCom: TEdit;
-        TabPdvLCodigo: TLabel;
         TabPdvLPinPadCom: TLabel;
         TabPdvLPinPad: TLabel;
         TabPinPadBExcluir: TBitBtn;
@@ -533,7 +534,8 @@ type
         TabTipoConfESenha: TEdit;
         TabTipoUsuESenha: TEdit;
         procedure BConectarClick(Sender: TObject);
-        procedure FormDestroy(Sender: TObject);
+        procedure BConfigClick(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure MDAdquirenteAfterScroll(DataSet: TDataSet);
         procedure MDAdquirenteFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDBinAfterScroll(DataSet: TDataSet);
@@ -733,19 +735,21 @@ type
 
     public
 
+        V_Erro: PChar;
+
     end;
 
-    TTefInicializar = function(VP_Procedimento: TRetorno; VP_ArquivoLog: PChar): integer; stdcall;
-    TTefFinalizar = function(): integer; stdcall;
-    TTefDesconectar = function(): integer; stdcall;
+    TTefInicializar = function(VP_Procedimento: TRetorno; VP_ArquivoLog: PChar): integer; cdecl;
+    TTefFinalizar = function(): integer; cdecl;
+    TTefDesconectar = function(): integer; cdecl;
     TTLogin = function(VP_Host: PChar; VP_Porta: integer; VP_Chave: PChar; VP_Versao_Comunicacao: integer; VP_Senha: PChar;
-        VP_Tipo: PChar; var VO_Mensagem: PChar): integer; stdcall;
-    TTOpenTefStatus = function(var VO_StatusRetorno: integer): integer; stdcall;
-    TTSolicitacaoBlocante = function(VP_Dados: PChar; var VO_Retorno: PChar; VP_Tempo: integer): integer; stdcall;
+        VP_Tipo: PChar; var VO_Mensagem: PChar): integer; cdecl;
+    TTOpenTefStatus = function(var VO_StatusRetorno: integer): integer; cdecl;
+    TTSolicitacaoBlocante = function(VP_Dados: PChar; var VO_Retorno: PChar; VP_Tempo: integer): integer; cdecl;
 
 
 
-procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
 
 var
     F_Principal: Tfprincipal;
@@ -763,7 +767,6 @@ var
     F_Permissao: boolean;
     F_Navegar: boolean;
     F_TipoConfigurador: TPermissao;
-    F_Erro: TErroMensagem;
     F_TipoTag: TTipoTag;
 
 const
@@ -779,7 +782,7 @@ const
 
 implementation
 
-procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
 begin
 
 end;
@@ -832,7 +835,6 @@ var
     VL_Tag: string;
     VL_Senha: ansistring;
     VL_Tipo: ansistring;
-    VL_MErro: string;
     VL_PMensagem, VL_PTipo, VL_PSenha, VL_PChave, VL_PHost: PChar;
 begin
     if BConectar.Caption = 'Desconectar' then
@@ -900,11 +902,18 @@ begin
         StrPCopy(VL_PHost, F_Host);
         VL_Codigo := F_Login(VL_PHost, F_Porta, VL_PChave, C_Versao_Mensagem, VL_PSenha, VL_PTipo, VL_PMensagem);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_MErro) > 0 then
+        if mensagemerro(VL_Codigo, V_Erro) > 0 then
         begin
-            ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + VL_MErro);
+            ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Exit;
         end;
+
+        if VL_Codigo <> 0 then
+        begin
+            ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + V_Erro);
+            Exit;
+        end;
+
 
         F_OpenTefStatus(VL_Status);
 
@@ -921,8 +930,7 @@ begin
         end;
         VL_Tag := VL_TMensagem.ComandoDados;
 
-        if VL_Tag <> '0' then
-            ShowMessage(ErroLogin(StrToInt(vl_tag)));
+
 
     finally
         begin
@@ -938,9 +946,29 @@ begin
 
 end;
 
-procedure Tfprincipal.FormDestroy(Sender: TObject);
+procedure Tfprincipal.BConfigClick(Sender: TObject);
+var
+    VL_FConfg: TFConfigOpenTef;
 begin
-    F_Finalizar;
+    VL_FConfg := TFConfigOpenTef.Create(Self);
+    F_Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0))+'..\..\opentef\win64\open_tef.ini'));
+    if F_Conf.ReadInteger('Servidor', 'Porta', 0) <> 0 then
+    begin
+        VL_FConfg.OpenTefEPorta.Text := inttostr(F_Conf.ReadInteger('Servidor', 'Porta', 0));
+        VL_FConfg.OpenTefCPortaAtiva.Checked := F_Conf.ReadBool('Servidor', 'Ativa',false);
+    end
+    else
+    begin
+    VL_FConfg.OpenTefEPorta.Text:='';
+    VL_FConfg.OpenTefCPortaAtiva.Checked:=false;
+    end;
+
+    VL_FConfg.ShowModal;
+end;
+
+procedure Tfprincipal.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+
 end;
 
 procedure Tfprincipal.MDAdquirenteAfterScroll(DataSet: TDataSet);
@@ -1282,9 +1310,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDAdquirente, '00DE', 'S', '0082', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_ERRO) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDAdquirente.Locate('ID', 0, []) then
                     MDAdquirente.Delete;
                 exit;
@@ -1298,8 +1326,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_ERRO);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + V_erro);
                     if MDAdquirente.Locate('ID', 0, []) then
                         MDAdquirente.Delete;
                     Exit;
@@ -1317,8 +1345,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        mensagemerro(StrToInt(VL_Tag), V_ERRO);
+                        ShowMessage('ERRO:' + VL_Tag + V_Erro);
                         if MDAdquirente.Locate('ID', 0, []) then
                             MDAdquirente.Delete;
                         Exit;
@@ -1378,9 +1406,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('006F', StrToInt(TabAdquirenteEID.Text), '00E0', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -1391,8 +1419,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '00E0':
@@ -1407,8 +1435,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('006F', VL_ID);
@@ -1644,9 +1672,9 @@ begin
                 MDLojaFuncao.Post;
                 //incluir LOJA função
                 VL_Codigo := IncluirRegistro(MDLojaFuncao, '00AA', 'S', '00A7', VL_Tag);
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDLojaFuncao.Locate('ID', 0, []) then
                         MDLojaFuncao.Delete;
                     exit;
@@ -1660,8 +1688,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                         if MDLojaFuncao.Locate('ID', 0, []) then
                             MDLojaFuncao.Delete;
                         Exit;
@@ -1679,8 +1707,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('ERRO:' + VL_Tag);
+                            mensagemerro(StrToInt(VL_Tag), V_erro);
+                            ShowMessage('ERRO:' + VL_Tag + V_Erro);
                             if MDLojaFuncao.Locate('ID', 0, []) then
                                 MDLojaFuncao.Delete;
                             Exit;
@@ -1708,9 +1736,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
 
@@ -1722,8 +1750,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '00AC':
@@ -1737,8 +1765,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             Exit;
                         end;
                     end;
@@ -1749,9 +1777,9 @@ begin
                 //EXCLUIR multloja função
                 VL_Codigo := ExcluirRegistro('00AB', VL_ID, '00AD', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(vL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(vL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -1762,8 +1790,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '00AD':
                     begin
@@ -1777,8 +1805,8 @@ begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             if vl_tag <> '0' then
                             begin
-                                F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             end;
                         end;
                     end;
@@ -1841,9 +1869,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('0056', StrToInt(TabConfEID.Text), '00BB', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -1854,8 +1882,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '00BB':
@@ -1870,8 +1898,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0056', VL_ID);
@@ -1927,9 +1955,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDBin, '0077', 'S', '0083', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDBin.Locate('ID', 0, []) then
                     MDBin.Delete;
                 exit;
@@ -1943,8 +1971,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     if MDBin.Locate('ID', 0, []) then
                         MDBin.Delete;
                     Exit;
@@ -1954,8 +1982,8 @@ begin
                     if VL_Tag <> 'R' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDBin.Locate('ID', 0, []) then
                             MDBin.Delete;
                         Exit;
@@ -1964,8 +1992,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDBin.Locate('ID', 0, []) then
                             MDBin.Delete;
                         Exit;
@@ -2034,9 +2062,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDModuloConfig, '0073', 'S', '003A', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDModuloConfig.Locate('ID', 0, []) then
                     MDModuloConfig.Delete;
                 exit;
@@ -2050,8 +2078,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     if MDModuloConfig.Locate('ID', 0, []) then
                         MDModuloConfig.Delete;
                     Exit;
@@ -2069,8 +2097,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDModuloConfig.Locate('ID', 0, []) then
                             MDModuloConfig.Delete;
                         Exit;
@@ -2129,9 +2157,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('0076', StrToInt(MDBin.FieldByName('ID').AsString), '0078', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -2141,8 +2169,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '0078':
@@ -2157,8 +2185,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0076', VL_ID); //BIN_ID
@@ -2210,9 +2238,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('007B', StrToInt(MDModuloConfig.FieldByName('ID').AsString), '00BA', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -2223,8 +2251,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '00BA':
@@ -2239,8 +2267,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('007B', VL_ID);
@@ -2295,9 +2323,9 @@ begin
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Exit;
         end;
         VL_Mensagem.Limpar;
@@ -2307,8 +2335,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                 Exit;
             end;
             '0071':
@@ -2323,8 +2351,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     Exit;
                 end;
                 TabConfiguracaoEChave.Lines.Text := VL_Chave;
@@ -2486,9 +2514,9 @@ begin
                 //incluir modulo função
                 VL_Codigo := IncluirRegistro(MDModuloFunc, '007E', 'S', '0092', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDModuloFunc.Locate('ID', 0, []) then
                         MDModuloFunc.Delete;
                     exit;
@@ -2502,8 +2530,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDModuloFunc.Locate('ID', 0, []) then
                             MDModuloFunc.Delete;
                         Exit;
@@ -2521,8 +2549,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro:' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro:' + VL_Tag + #13 + V_Erro);
                             if MDModuloFunc.Locate('ID', 0, []) then
                                 MDModuloFunc.Delete;
                             Exit;
@@ -2550,9 +2578,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
                 VL_Mensagem.Limpar;
@@ -2563,8 +2591,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '00B9':
@@ -2578,8 +2606,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                             Exit;
                         end;
                     end;
@@ -2590,9 +2618,9 @@ begin
                 //EXCLUIR modulo função
                 VL_Codigo := ExcluirRegistro('008B', VL_ID, '007F', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -2602,8 +2630,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '007F':
                     begin
@@ -2615,8 +2643,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         end;
                     end;
                 end;
@@ -2745,9 +2773,9 @@ begin
                 //incluir loja_modulo_conf_funcao
                 VL_Codigo := IncluirRegistro(MDLojaModuloConfFuncao, '009B', 'S', '0098', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
                         MDLojaModuloConfFuncao.Delete;
                     exit;
@@ -2761,8 +2789,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
                             MDLojaModuloConfFuncao.Delete;
                         Exit;
@@ -2780,8 +2808,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                            ShowMessage('ERRO:' + VL_Tag);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                             if MDLojaModuloConfFuncao.Locate('ID', 0, []) then
                                 MDLojaModuloConfFuncao.Delete;
                             Exit;
@@ -2809,9 +2837,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
 
@@ -2823,8 +2851,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '00BF':
@@ -2838,8 +2866,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             Exit;
                         end;
                     end;
@@ -2850,9 +2878,9 @@ begin
                 //alterar multloja função
                 VL_Codigo := ExcluirRegistro('00BC', VL_ID, '0087', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -2863,8 +2891,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '0087':
                     begin
@@ -2878,8 +2906,8 @@ begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             if vl_tag <> '0' then
                             begin
-                                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             end;
                         end;
                     end;
@@ -2978,9 +3006,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('003C', StrToInt(TabLojaEID.Text), '0069', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -2992,8 +3020,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '0069':
@@ -3008,8 +3036,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 F_Navegar := False;
@@ -3114,9 +3142,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDLoja, '0039', 'S', '003E', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDLoja.Locate('ID', 0, []) then
                     MDLoja.Delete;
                 exit;
@@ -3130,8 +3158,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     if MDLoja.Locate('ID', 0, []) then
                         MDLoja.Delete;
                     Exit;
@@ -3150,8 +3178,8 @@ begin
                     if vl_tag <> '0' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDLoja.Locate('ID', 0, []) then
                             MDLoja.Delete;
                         Exit;
@@ -3207,6 +3235,7 @@ end;
 
 procedure Tfprincipal.FormShow(Sender: TObject);
 begin
+    V_Erro := '';
     LimparTela;
     //carrega pagetag
     PagePrincipal.TabIndex := 0;
@@ -3399,7 +3428,6 @@ begin
         TabPdvEID.Text := MDPdv.FieldByName('ID').AsString;
         TabPdvEIP.Text := MDPdv.FieldByName('IP').AsString;
         TabPdvEDescricao.Text := MDPdv.FieldByName('DESCRICAO').AsString;
-        TabPdvECodigo.Text := MDPdv.FieldByName('CODIGO').AsString;
         TabPdvEPinPadCom.Text := MDPdv.FieldByName('PINPAD_COM').AsString;
         TabPdvEChave.Text := MDPdv.FieldByName('CHAVE').AsString;
         if MDPdv.FieldByName('HABILITADO').AsString = 'T' then
@@ -3408,13 +3436,14 @@ begin
             TabPdvCkHabilitar.Checked := False;
 
         //TabPdvModulo
-        TabPDVModuloLDescricao.Caption := MDPdv.FieldByName('DESCRICAO').AsString;
+        TabPDVModuloLDescricao.Caption := 'Código do ' + MDPdv.FieldByName('DESCRICAO').AsString;
 
         if MDPdvModulo.Active = False then
             TabPdvTabDadosModulo.OnShow(self);
 
         TabPDVModuloEID.Text := MDPdvModulo.FieldByName('ID').AsString;
         TabPDVModuloETagNumero.Text := MDPdvModulo.FieldByName('TAG_NUMERO').AsString;
+        TabPdvECodigo.Text := MDPdvModulo.FieldByName('CODIGO').AsString;
         TabPDVModuloETag.Text := MDPdvModulo.FieldByName('DEFINICAO').AsString;
         TabPDVModuloEModuloConfID.Text := MDPdvModulo.FieldByName('MODULO_CONF_ID').AsString;
         TabPDVModuloEModuloConf.Text := MDPdvModulo.FieldByName('MODULO_CONF').AsString;
@@ -3694,7 +3723,6 @@ begin
             MDPdv.FieldByName('PINPAD_ID').AsInteger := MDPinPadPdv.FieldByName('ID').AsInteger;
             MDPdv.FieldByName('IP').AsString := TabPdvEIP.Text;
             MDPdv.FieldByName('DESCRICAO').AsString := TabPdvEDescricao.Text;
-            MDPdv.FieldByName('CODIGO').AsString := TabPdvECodigo.Text;
             MDPdv.FieldByName('PINPAD_COM').AsString := TabPdvEPinPadCom.Text;
             MDPdv.FieldByName('CHAVE').AsString := TabPdvEChave.Text;
             if TabPdvCkHabilitar.Checked then
@@ -3762,6 +3790,7 @@ begin
             MDPdvModulo.FieldByName('PDV_ID').AsInteger := MDPdv.FieldByName('ID').AsInteger;
             MDPdvModulo.FieldByName('TAG_NUMERO').AsString := TabPdvModuloETagNumero.Text;
             MDPdvModulo.FieldByName('DEFINICAO').AsString := TabPdvModuloETag.Text;
+            MDPdvmodulo.FieldByName('CODIGO').AsString := TabPdvECodigo.Text;
             if MDPesquisaModulo.locate('MODULO_CONF_ID', TabPdvModuloEModuloConfID.Text, []) then
                 MDPdvModulo.FieldByName('MODULO').AsString := MDPesquisaModulo.FieldByName('MODULO_DESCRICAO').AsString;
             MDPdvModulo.FieldByName('MODULO_CONF_ID').AsString := TabPdvModuloEModuloConfID.Text;
@@ -4046,9 +4075,9 @@ begin
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -4059,8 +4088,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                 // CarregarTabelas;
                 VP_Tabela.Locate('ID', VP_ID, []);
                 CarregaCampos(VP_TabelaCarregamento);
@@ -4072,8 +4101,8 @@ begin
                 if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('004D', VL_Tag);
@@ -4164,9 +4193,9 @@ begin
 
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -4179,8 +4208,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                 Exit;
             end;
             '0070':
@@ -4189,8 +4218,8 @@ begin
                 if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     Exit;
                 end;
                 //TABELA LOJA
@@ -4802,9 +4831,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDConfigurador, '0057', 'S', '008F', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDConfigurador.Locate('ID', 0, []) then
                     MDConfigurador.Delete;
                 exit;
@@ -4818,8 +4847,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('ERRO:' + VL_Tag);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                     if MDConfigurador.Locate('ID', 0, []) then
                         MDConfigurador.Delete;
                     Exit;
@@ -4837,8 +4866,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO:' + VL_Tag);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                         if MDConfigurador.Locate('ID', 0, []) then
                             MDConfigurador.Delete;
                         Exit;
@@ -4901,9 +4930,9 @@ begin
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Exit;
         end;
         VL_Mensagem.Limpar;
@@ -4913,8 +4942,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                F_Erro.TrataErro(vl_tag, VL_Retorno);
-                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                mensagemerro(StrToInt(vl_tag), V_Erro);
+                ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                 Exit;
             end;
             '0059':
@@ -4929,8 +4958,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     Exit;
                 end;
                 TabConfEChave.Lines.Text := VL_Chave;
@@ -5044,9 +5073,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDLojaModuloConf, '00AE', 'S', '00A7', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDLojaModuloConf.Locate('ID', 0, []) then
                     MDLojaModuloConf.Delete;
                 exit;
@@ -5060,8 +5089,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     if MDLojaModuloConf.Locate('ID', 0, []) then
                         MDLojaModuloConf.Delete;
                     Exit;
@@ -5080,8 +5109,8 @@ begin
                     if vl_tag <> '0' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDLojaModuloConf.Locate('ID', 0, []) then
                             MDLojaModuloConf.Delete;
                         Exit;
@@ -5140,9 +5169,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('00AF', StrToInt(TabLojaModuloEID.Text), '00B2', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -5154,8 +5183,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '00B1':
@@ -5170,8 +5199,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('00AF', VL_ID);
@@ -5296,9 +5325,9 @@ begin
         if GravaRegistros('TabModulo', True) then
         begin
             VL_Codigo := IncluirRegistro(MDModulo, '0074', 'S', '0090', VL_Tag);
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDModulo.Locate('ID', 0, []) then
                     MDModulo.Delete;
                 exit;
@@ -5312,8 +5341,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     if MDModulo.Locate('ID', 0, []) then
                         MDModulo.Delete;
                     Exit;
@@ -5331,8 +5360,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(vL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDModulo.Locate('ID', 0, []) then
                             MDModulo.Delete;
                         Exit;
@@ -5391,9 +5420,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('006C', MDModulo.FieldByName('ID').AsInteger, '002B', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -5404,8 +5433,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '002B':
@@ -5420,8 +5449,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('006C', VL_ID); //MODULO_ID
@@ -5446,7 +5475,7 @@ var
 begin
     VL_FPesquisaTag := TFTags.Create(Self);
     VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-    VL_FPesquisaTag.F_TagTipo := TipoTagToStr(ord(ttMODULO));  //TIPO MODULOS
+    VL_FPesquisaTag.F_TagTipo := TipoTagToStr(Ord(ttMODULO));  //TIPO MODULOS
     VL_FPesquisaTag.ShowModal;
     if VL_FPesquisaTag.F_Carregado then
     begin
@@ -5619,9 +5648,9 @@ begin
                 //incluir modulo função
                 VL_Codigo := IncluirRegistro(MDModuloConfFuncao, '0079', 'S', '0093', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDModuloConfFuncao.Locate('ID', 0, []) then
                         MDModuloConfFuncao.Delete;
                     exit;
@@ -5635,8 +5664,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDModuloConfFuncao.Locate('ID', 0, []) then
                             MDModuloConfFuncao.Delete;
                         Exit;
@@ -5654,8 +5683,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                             if MDModuloConfFuncao.Locate('ID', 0, []) then
                                 MDModuloConfFuncao.Delete;
                             Exit;
@@ -5683,9 +5712,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
                 VL_Mensagem.Limpar;
@@ -5696,8 +5725,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '0085':
@@ -5711,8 +5740,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                             Exit;
                         end;
                     end;
@@ -5722,9 +5751,9 @@ begin
             begin
                 //EXCLUIR modulo_CONF_função
                 VL_Codigo := ExcluirRegistro('006D', VL_ID, '008A', 'S', VL_Tag);
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -5734,8 +5763,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '008A':
                     begin
@@ -5747,8 +5776,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         end;
                     end;
                 end;
@@ -5818,9 +5847,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDMultiLoja, '0064', 'S', '0080', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 exit;
             end;
             VL_Mensagem.Limpar;
@@ -5831,8 +5860,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     if MDMultiLoja.Locate('ID', 0, []) then
                         MDMultiLoja.Delete;
                     Exit;
@@ -5842,8 +5871,8 @@ begin
                     if VL_Tag <> 'R' then
                     begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDMultiLoja.Locate('ID', 0, []) then
                             MDMultiLoja.Delete;
                         Exit;
@@ -5851,8 +5880,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if VL_Tag <> '0' then
                     begin
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDMultiLoja.Locate('ID', 0, []) then
                             MDMultiLoja.Delete;
                         Exit;
@@ -5931,9 +5960,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('0065', MDMultiLoja.FieldByName('ID').AsInteger, '0066', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -5944,8 +5973,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '0066':
@@ -5953,16 +5982,16 @@ begin
                 if VL_Tag <> 'R' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('004D', VL_TAG);
                 if VL_Tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 F_Navegar := False;
@@ -6108,9 +6137,9 @@ begin
 
                 //incluir loja_modulo_conf_funcao
                 VL_Codigo := IncluirRegistro(MDMultiLojaModuloConfFuncao, '00CA', 'S', '00D0', VL_Tag);
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                         MDMultiLojaModuloConfFuncao.Delete;
                     exit;
@@ -6123,8 +6152,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                             MDMultiLojaModuloConfFuncao.Delete;
                         Exit;
@@ -6142,8 +6171,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                                 MDMultiLojaModuloConfFuncao.Delete;
                             Exit;
@@ -6170,9 +6199,9 @@ begin
                 VL_Mensagem.AddTag('0084', MDMultiLojaModuloConfFuncao.FieldByName('HABILITADO').AsString);
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                         MDMultiLojaModuloConfFuncao.Delete;
                     exit;
@@ -6185,8 +6214,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                             MDMultiLojaModuloConfFuncao.Delete;
                         Exit;
@@ -6204,8 +6233,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             if MDMultiLojaModuloConfFuncao.Locate('ID', 0, []) then
                                 MDMultiLojaModuloConfFuncao.Delete;
                             Exit;
@@ -6218,9 +6247,9 @@ begin
                 //excluir multloja_modulo_conf_função
                 VL_Codigo := ExcluirRegistro('00BD', VL_ID, '0088', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -6231,8 +6260,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '0088':
                     begin
@@ -6246,8 +6275,8 @@ begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             if vl_tag <> '0' then
                             begin
-                                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             end;
                         end;
                     end;
@@ -6394,9 +6423,9 @@ begin
                 MDMultiLojaFuncao.Post;
                 //incluir MULTLOJA função
                 VL_Codigo := IncluirRegistro(MDMultiLojaFuncao, '009D', 'S', '009C', VL_Tag);
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDMultiLojaFuncao.Locate('ID', 0, []) then
                         MDMultiLojaFuncao.Delete;
                     exit;
@@ -6409,8 +6438,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDMultiLojaFuncao.Locate('ID', 0, []) then
                             MDMultiLojaFuncao.Delete;
                         Exit;
@@ -6428,8 +6457,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if VL_Tag <> '0' then
                         begin
-                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             if MDMultiLojaFuncao.Locate('ID', 0, []) then
                                 MDMultiLojaFuncao.Delete;
                             Exit;
@@ -6457,9 +6486,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
 
@@ -6470,9 +6499,9 @@ begin
                 case VL_Retorno of
                     '0026':
                     begin
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '009F':
@@ -6486,8 +6515,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if VL_Tag <> '0' then
                         begin
-                            F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                            ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             Exit;
                         end;
                     end;
@@ -6498,9 +6527,9 @@ begin
                 //alterar multloja função
                 VL_Codigo := ExcluirRegistro('009E', VL_ID, '00A0', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -6511,8 +6540,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '00A0':
                     begin
@@ -6526,8 +6555,8 @@ begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             if VL_Tag <> '0' then
                             begin
-                                F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                             end;
                         end;
                     end;
@@ -6597,9 +6626,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDMultiLojaModuloConf, '0096', 'S', '0094', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 Desconectar;
                 exit;
             end;
@@ -6611,8 +6640,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     if MDMultiLojaModuloConf.Locate('ID', 0, []) then
                         MDMultiLojaModuloConf.Delete;
                     Exit;
@@ -6630,8 +6659,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if VL_Tag <> '0' then
                     begin
-                        F_Erro.TrataErro(StrToInt(VL_Tag), VL_Retorno);
-                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                         if MDMultiLojaModuloConf.Locate('ID', 0, []) then
                             MDMultiLojaModuloConf.Delete;
                         Exit;
@@ -6690,9 +6719,9 @@ begin
         end;
 
         VL_Codigo := ExcluirRegistro('0097', StrToInt(TabMultLojaModuloEID.Text), '0099', 'S', VL_Tag);
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -6704,8 +6733,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '0099':
@@ -6721,8 +6750,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_id, VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_id, V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0097', VL_ID);
@@ -6873,9 +6902,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDPdv, '0044', 'S', '008E', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDPdv.Locate('ID', 0, []) then
                     MDPdv.Delete;
                 exit;
@@ -6889,8 +6918,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                     if MDPdv.Locate('ID', 0, []) then
                         MDPdv.Delete;
                     Exit;
@@ -6908,8 +6937,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(vl_tag, VL_Retorno);
-                        ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(vl_tag), V_Erro);
+                        ShowMessage('ERRO:' + VL_Tag + #13 + V_Erro);
                         if MDPdv.Locate('ID', 0, []) then
                             MDPdv.Delete;
                         Exit;
@@ -6969,9 +6998,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('0043', StrToInt(TabPdvEID.Text), '006B', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             ;
             exit;
@@ -6985,8 +7014,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '006B':
@@ -7001,8 +7030,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0043', VL_ID);
@@ -7060,9 +7089,9 @@ begin
         VL_Mensagem.TagToStr(VL_Tag);
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Exit;
         end;
         VL_Mensagem.Limpar;
@@ -7072,8 +7101,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_Tag);
-                F_Erro.TrataErro(vl_tag, VL_Retorno);
-                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                mensagemerro(StrToInt(vl_tag), V_Erro);
+                ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                 Exit;
             end;
             '0045':
@@ -7088,8 +7117,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     Exit;
                 end;
                 TabPdvEChave.Text := VL_Chave;
@@ -7245,9 +7274,9 @@ begin
                 //incluir PDV função
                 VL_Codigo := IncluirRegistro(MDPdvFuncao, '00C2', 'S', '00C1', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDLojaFuncao.Locate('ID', 0, []) then
                         MDLojaFuncao.Delete;
                     exit;
@@ -7261,8 +7290,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDLojaFuncao.Locate('ID', 0, []) then
                             MDLojaFuncao.Delete;
                         Exit;
@@ -7280,8 +7309,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                             if MDLojaFuncao.Locate('ID', 0, []) then
                                 MDLojaFuncao.Delete;
                             Exit;
@@ -7309,9 +7338,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
                 VL_Mensagem.Limpar;
@@ -7321,8 +7350,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '00C4':
@@ -7336,8 +7365,8 @@ begin
                         VL_Mensagem.GetTag('004D', VL_Tag);
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                            ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
+                            ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                             Exit;
                         end;
                     end;
@@ -7348,9 +7377,9 @@ begin
                 //alterar PDV função
                 VL_Codigo := ExcluirRegistro('00C3', VL_ID, '00C5', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -7360,8 +7389,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '00C5':
                     begin
@@ -7375,8 +7404,8 @@ begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
                             if vl_tag <> '0' then
                             begin
-                                F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                                ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                                mensagemerro(StrToInt(VL_Tag), V_Erro);
+                                ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                             end;
                         end;
                     end;
@@ -7427,9 +7456,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDPdvModulo, '00C8', 'S', '00C7', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDPdvModulo.Locate('ID', 0, []) then
                     MDPdvModulo.Delete;
                 exit;
@@ -7443,8 +7472,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                     if MDPdvModulo.Locate('ID', 0, []) then
                         MDPdvModulo.Delete;
                     Exit;
@@ -7460,8 +7489,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDPdvModulo.Locate('ID', 0, []) then
                             MDPdvModulo.Delete;
                         Exit;
@@ -7521,9 +7550,9 @@ begin
         end;
         VL_Codigo := ExcluirRegistro('00C9', StrToInt(TabPdvModuloEID.Text), '00CC', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -7535,8 +7564,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '00CC':
@@ -7551,8 +7580,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('00C9', VL_ID);
@@ -7621,7 +7650,7 @@ begin
         exit;
     VL_FPesquisaTag := TFTags.Create(Self);
     VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-    VL_FPesquisaTag.F_TagTipo := TipoTagToStr(ord(ttNDF));  //TIPO NENHUM
+    VL_FPesquisaTag.F_TagTipo := TipoTagToStr(Ord(ttNDF));  //TIPO NENHUM
     VL_FPesquisaTag.ShowModal;
     if VL_FPesquisaTag.F_Carregado then
     begin
@@ -7698,9 +7727,9 @@ begin
         begin
             vl_codigo := IncluirRegistro(MDPinPad, '0053', 'S', '008D', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDPinPad.Locate('ID', 0, []) then
                     MDPinPad.Delete;
                 exit;
@@ -7714,8 +7743,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     if MDPinPad.Locate('ID', 0, []) then
                         MDPinPad.Delete;
                     Exit;
@@ -7733,8 +7762,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDPinPad.Locate('ID', 0, []) then
                             MDPinPad.Delete;
                         Exit;
@@ -7795,9 +7824,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('0054', StrToInt(TabPinPadEID.Text), '006A', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -7808,8 +7837,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(vl_id, VL_Retorno);
-                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(vl_id, V_Erro);
+                ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '006A':
@@ -7824,8 +7853,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('0054', VL_ID);
@@ -7987,9 +8016,9 @@ begin
                 MDPinPadFuncao.Post;
                 //incluir PINPAD função
                 VL_Codigo := IncluirRegistro(MDPinPadFuncao, '00B5', 'S', '00B4', VL_Tag);
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     if MDLojaFuncao.Locate('ID', 0, []) then
                         MDLojaFuncao.Delete;
                     exit;
@@ -8003,8 +8032,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         if MDLojaFuncao.Locate('ID', 0, []) then
                             MDLojaFuncao.Delete;
                         Exit;
@@ -8025,7 +8054,7 @@ begin
                         if vl_tag <> '0' then
                         begin
                             ShowMessage('ERRO:' + VL_Tag + #13 + VL_Retorno);
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
                             if MDLojaFuncao.Locate('ID', 0, []) then
                                 MDLojaFuncao.Delete;
                             Exit;
@@ -8053,9 +8082,9 @@ begin
                 VL_Mensagem.TagToStr(VL_Tag);
                 VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(Vl_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     exit;
                 end;
 
@@ -8067,8 +8096,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         Exit;
                     end;
                     '00B6':
@@ -8084,7 +8113,7 @@ begin
 
                         if vl_tag <> '0' then
                         begin
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
                             ShowMessage('ERRO:' + VL_Tag);
                             Exit;
                         end;
@@ -8096,9 +8125,9 @@ begin
                 //EXCLUIR PINPAD função
                 VL_Codigo := ExcluirRegistro('00B7', VL_ID, '00B8', 'S', VL_Tag);
 
-                if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+                if mensagemerro(VL_Codigo, V_Erro) <> 0 then
                 begin
-                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                     goto sair;
                 end;
                 VL_Mensagem.Limpar;
@@ -8109,8 +8138,8 @@ begin
                     '0026':
                     begin
                         VL_Mensagem.GetTag('0026', VL_Tag);
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                     end;
                     '00B8':
                     begin
@@ -8122,9 +8151,9 @@ begin
                         else
                         begin
                             VL_Mensagem.GetTag('004D', VL_Tag);
-                            F_Erro.TrataErro(VL_Tag, VL_Retorno);
+                            mensagemerro(StrToInt(VL_Tag), V_Erro);
                             if vl_tag <> '0' then
-                                ShowMessage('ERRO: ' + VL_Tag + #13 + VL_Retorno);
+                                ShowMessage('ERRO: ' + VL_Tag + #13 + V_Erro);
                         end;
                     end;
                 end;
@@ -8197,9 +8226,9 @@ begin
         begin
             VL_Codigo := IncluirRegistro(MDTags, '0052', 'S', '0081', VL_Tag);
 
-            if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+            if mensagemerro(VL_Codigo, V_Erro) <> 0 then
             begin
-                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+                ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
                 if MDTags.Locate('ID', 0, []) then
                     MDTags.Delete;
                 exit;
@@ -8213,8 +8242,8 @@ begin
                 '0026':
                 begin
                     VL_Mensagem.GetTag('0026', VL_Tag);
-                    F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                    ShowMessage('Erro: ' + VL_Tag + VL_Retorno);
+                    mensagemerro(StrToInt(VL_Tag), V_Erro);
+                    ShowMessage('Erro: ' + VL_Tag + V_Erro);
                     if MDTags.Locate('ID', 0, []) then
                         MDTags.Delete;
                     Exit;
@@ -8232,8 +8261,8 @@ begin
                     VL_Mensagem.GetTag('004D', VL_Tag);
                     if vl_tag <> '0' then
                     begin
-                        F_Erro.TrataErro(VL_Tag, VL_Retorno);
-                        ShowMessage('Erro: ' + VL_Tag + #13 + VL_Retorno);
+                        mensagemerro(StrToInt(VL_Tag), V_Erro);
+                        ShowMessage('Erro: ' + VL_Tag + #13 + V_Erro);
                         if MDTags.Locate('ID', 0, []) then
                             MDTags.Delete;
                         Exit;
@@ -8293,9 +8322,9 @@ begin
 
         VL_Codigo := ExcluirRegistro('006E', StrToInt(TabTagEID.Text), '00DC', 'S', VL_Tag);
 
-        if F_Erro.TrataErro(VL_Codigo, VL_Retorno) <> 0 then
+        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
-            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + VL_Retorno);
+            ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
         end;
@@ -8306,8 +8335,8 @@ begin
             '0026':
             begin
                 VL_Mensagem.GetTag('0026', VL_ID);
-                F_Erro.TrataErro(VL_ID, VL_Retorno);
-                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                mensagemerro(VL_ID, V_Erro);
+                ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
             '00DC':
@@ -8322,8 +8351,8 @@ begin
                 if vl_tag <> '0' then
                 begin
                     VL_Mensagem.GetTag('004D', VL_ID);
-                    F_Erro.TrataErro(VL_ID, VL_Retorno);
-                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + VL_Retorno);
+                    mensagemerro(VL_ID, V_Erro);
+                    ShowMessage('Erro: ' + IntToStr(VL_ID) + #13 + V_Erro);
                     Exit;
                 end;
                 VL_Mensagem.GetTag('006E', VL_ID);

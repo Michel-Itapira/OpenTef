@@ -40,23 +40,25 @@ type
     end;
 
 function inicializar(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo; VP_ModuloConf_ID: integer;
-    VP_ArquivoLog: PChar): integer; stdcall;
+    VP_ArquivoLog: PChar): integer; stdcall; cdecl;
 function finalizar(VP_Modulo: Pointer): integer; stdcall;
 function login(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar): integer; stdcall;
 function solicitacao(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetornoModulo; VP_TarefaID, VP_TempoAguarda: integer): integer;
     stdcall;
 function solicitacaoblocante(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; stdcall;
 function modulostatus(VP_Modulo: Pointer; var VO_Versao: PChar; var VO_VersaoMensagem: integer; var VO_StatusRetorno: integer): integer; stdcall;
-procedure Retorno(VP_Transmissao_ID: PChar;  VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+procedure Retorno(VP_Transmissao_ID: PChar; VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+
 var
-    F_RetornoModulo:TRetornoModulo; //caso receba alguma mensagem vindo da operadora sem solicitar
+    F_RetornoModulo: TRetornoModulo; //caso receba alguma mensagem vindo da operadora sem solicitar
+
 implementation
 
 {$R *.lfm}
 
 
-constructor ThProcesso.Create(VP_Suspenso: boolean; VP_Transmissao_ID, VP_ArquivoLog, VP_Dados: ansistring; VP_Procedimento: TRetornoModulo;
-    VP_DModulo: Pointer; VP_Tarefa_ID, VP_TempoAguarda: integer);
+constructor ThProcesso.Create(VP_Suspenso: boolean; VP_Transmissao_ID, VP_ArquivoLog, VP_Dados: ansistring;
+    VP_Procedimento: TRetornoModulo; VP_DModulo: Pointer; VP_Tarefa_ID, VP_TempoAguarda: integer);
 
 begin
     FreeOnTerminate := True;
@@ -97,10 +99,10 @@ begin
     end;
 end;
 
-procedure Retorno(VP_Transmissao_ID: PChar;  VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+procedure Retorno(VP_Transmissao_ID: PChar; VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
 begin
-   if Assigned(F_RetornoModulo) then
-   F_RetornoModulo(VP_Transmissao_ID,0,VP_ModuloProcID,VP_Codigo,VP_Dados);
+    if Assigned(F_RetornoModulo) then
+        F_RetornoModulo(VP_Transmissao_ID, 0, VP_ModuloProcID, VP_Codigo, VP_Dados);
 end;
 
 function inicializar(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo; VP_ModuloConf_ID: integer;
@@ -122,7 +124,7 @@ begin
         TDModulo(VO_Modulo).V_DComunicador.V_ClienteRecebimento := @Retorno;
         TDModulo(VO_Modulo).V_DComunicador.V_ThRecebeEscuta.Start;
 
-        F_RetornoModulo:=VP_Recebimento;
+        F_RetornoModulo := VP_Recebimento;
 
 
     except
@@ -145,8 +147,8 @@ begin
         //    TDModulo(VP_Modulo).V_DComunicador.V_ThRecebeEscuta.WaitFor;
         //end;
 
-        TDModulo(VP_Modulo).V_DComunicador.free;
-        TDModulo(VP_Modulo).free;
+        TDModulo(VP_Modulo).V_DComunicador.Free;
+        TDModulo(VP_Modulo).Free;
 
 
     except
@@ -222,13 +224,13 @@ begin
             Result := TDModulo(VP_Modulo).V_DComunicador.ClienteTransmiteSolicitacao(VL_Transmissao_ID, VL_MensagemOUT, VL_MensagemIN, nil, 10000, True);
             if Result <> 0 then
                 Exit;
-            VL_MensagemIN.GetComando(VL_S,VL_DadosI);
+            VL_MensagemIN.GetComando(VL_S, VL_DadosI);
             if VL_S = '0028' then
                 TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Status := csLogado
             else
             if VL_S = '0029' then
             begin
-                Result := VL_DadosI;
+                Result := StrToInt(VL_DadosI);
             end
             else
                 Result := 34;

@@ -8,12 +8,9 @@ uses
     Classes,
     SysUtils,
     StrUtils,
-    {$IF NOT DEFINED(FRENTE_CAIXA)}
     ZDataset,
     ZConnection,
     DB,
-    {$ENDIF}
-    rxmemds,
     IdContext,
     IdSSLOpenSSL,
     {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
@@ -25,7 +22,7 @@ uses
     Graphics,
     ubarcodes,
     Math,
-    nb30;
+    rxmemds;
 
 type
 
@@ -72,7 +69,7 @@ type
     private
 
     public
-        function TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
+
     end;
 
     TPinPadModelo = (pNDF, pGERTEC_PPC930);
@@ -178,7 +175,7 @@ function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
 procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer;VP_Debug:Boolean=True);
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
@@ -197,7 +194,7 @@ function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
 function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
 function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
 function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
-function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): Real;
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
 procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
@@ -218,6 +215,7 @@ function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar
 function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
 procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
+function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; stdcall;
 
 
 
@@ -529,121 +527,121 @@ end;
 { TErroMensagem }
 
 
-function TErroMensagem.TrataErro(VP_CodigoErro: variant; var VO_RespostaMensagem: string): integer;
-
+function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; stdcall;
+var
+    VL_String:String;
 begin
-    VO_RespostaMensagem := '';
+
+    VO_RespostaMensagem := StrAlloc(2);
+    StrPCopy(VO_RespostaMensagem, '');
+
     Result := 0;
 
-    if StrToIntDef(VP_CodigoErro, 0) = 0 then
-        VP_CodigoErro := 0;
-
     if VP_CodigoErro = 0 then
-    begin
-        Result := 0;
-        exit;
-    end
+        exit
     else
     begin
         case VP_CodigoErro of
-            2: VO_RespostaMensagem := 'PORTA PINPAD NÃO INFORMADA';
-            3: VO_RespostaMensagem := 'MODELO PINPAD NÃO INFORMADO';
-            4: VO_RespostaMensagem := 'MODELO PINPAD NÃO SUPORTADO';
-            5: VO_RespostaMensagem := 'FALHA NA CONEXÃO COM PINPAD';
-            6: VO_RespostaMensagem := 'PINPAD RETORNOU FALHA(CONSULTA Nº DA FALHA NO RETORNO AUXILIAR)';
-            7: VO_RespostaMensagem := 'DLL OU S.O DO PINPAD NÃO ENCONTRADA';
-            8: VO_RespostaMensagem := 'DLL OU S.O DO PINPAD NÃO COMPATÍVEL(VERIFIQUE 32 OU 64 BITS)';
-            9: VO_RespostaMensagem := 'HOST  NÃO INFORMADO PARA O TEF';
-            10: VO_RespostaMensagem := 'HOST NÃO COMPATÍVEL PARA O TEF';
-            11: VO_RespostaMensagem := 'PORTA NÃO INFORMADA PARA O TEF';
-            12: VO_RespostaMensagem := 'PORTA NÃO COMPATÍVEL  PARA O TEF';
-            13: VO_RespostaMensagem := 'VERSÃO_COMUNICAÇÃO NÃO INFORMADA PARA O TEF';
-            14: VO_RespostaMensagem := 'VERSÃO_COMUNICAÇÃO NÃO COMPATÍVEL PARA O TEF';
-            15: VO_RespostaMensagem := 'CHAVE NÃO INFORMADA PARA O TEF';
-            16: VO_RespostaMensagem := 'CHAVE NÃO COMPATÍVEL PARA O TEF';
-            17: VO_RespostaMensagem := 'VERSÃO DLL DO TEF NÃO COMPATÍVEL (SUGERE ATUALIZAÇÃO)';
-            18: VO_RespostaMensagem := 'PACOTE COM A PRIMEIRA TAG DIFERENTE DE ‘0000’';
-            19: VO_RespostaMensagem := 'ERRO O TAMANHO DO PACOTE NÃO PODE SER ZERO';
-            20: VO_RespostaMensagem := 'ERRO O TAMANHO DO PACOTE DIFERENTE DO TAMANHO DA MENSAGEM';
-            21: VO_RespostaMensagem := 'ERRO OS DADOS DO PACOTE MAIOR QUE OS DADOS DA MENSAGEM';
-            22: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO GET DA TAG';
-            23: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO “TAGTOSTR”';
-            24: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL ENVIAR MENSAGEM';
-            25: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR PARA ESCUTAR';
-            26: VO_RespostaMensagem := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR ABERTURA SOCKET';
-            27: VO_RespostaMensagem := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO ADD DA TAG';
-            28: VO_RespostaMensagem := 'ERRO, PARÂMETRO NULO OU DIFERENTE DA ESTRUTURA DA TAG';
-            29: VO_RespostaMensagem := 'ERRO TAG NÃO LOCALIZADA NO PACOTE DA FUNÇÃO GET DA TAG';
-            30: VO_RespostaMensagem := 'DADOS DO PACOTE MAL FORMATADO OU INCOMPATÍVEL, IMPOSSÍVEL DE LER';
-            31: VO_RespostaMensagem := 'CHAVE PUBLICA NÃO LOCALIZADA';
-            32: VO_RespostaMensagem := 'PROBLEMA NAS TROCAS DE CHAVES NO CONECTAR';
-            33: VO_RespostaMensagem := 'SOCKET DO SERVIDOR VINCULADO ESTA DESCONECTADO';
-            34: VO_RespostaMensagem := 'LOGIN RECUSADO';
-            35: VO_RespostaMensagem := 'SERVIDOR NÃO ESTA EM STATUS DE LOGADO';
-            36: VO_RespostaMensagem := 'CHAVE NÃO LOCALIZADA PARA OPENTEF';
-            37: VO_RespostaMensagem := 'SENHA DE ACESSO NÃO INFORMADO PARA O TEF';
-            38: VO_RespostaMensagem := 'IP NÃO NÃO COMPATIVEL PARA O TERMINAL';
-            39: VO_RespostaMensagem := 'SENHA NÃO COMPATÍVEL PARA O TERMINAL';
-            40: VO_RespostaMensagem := 'ERRO VALIDAÇÃO DO TERMINAL';
-            41: VO_RespostaMensagem := 'CHAVE DO TERMINAL NÃO LOCALIZADA';
-            42: VO_RespostaMensagem := 'TIPO DE PERMISSÃO NÃO INFORMADA PARA O TEF';
-            43: VO_RespostaMensagem := 'REGISTRO EM DUPLICIDADE NO BANCO DE DADOS';
-            44: VO_RespostaMensagem := 'ERRO NA INCLUSÃO DO REGISTRO';
-            45: VO_RespostaMensagem := 'PERMISSÃO NÃO AUTORIZADO PARA ESTE PROCEDIMENTO';
-            46: VO_RespostaMensagem := 'ERRO NA ALTERAÇÃO DO REGISTRO';
-            47: VO_RespostaMensagem := 'DADOS INFORMADO NÃO PODE SER ZERO';
-            48: VO_RespostaMensagem := 'TABELA SEM REGISTRO NO BANCO DE DADOS';
-            49: VO_RespostaMensagem := 'DADOS CHAVES PARA O CADASTRO NÃO PODEM SOFRER ALTERAÇÃO';
-            50: VO_RespostaMensagem := 'BIBLIOTECA DO PINPAD NÃO FOI POSSIVEL CARREGAR';
-            51: VO_RespostaMensagem := 'TIPO DE LEITURA DE CARTÃO NÃO SUPORTADO';
-            52: VO_RespostaMensagem := 'CAMPO OBRIGATÓRIO NÃO PODE SER NULO';
-            53: VO_RespostaMensagem := 'NÃO FOI POSSIVEL ENVIAR A MENSAGEM DE RETORNO PARA O ID INFORMADO';
-            54: VO_RespostaMensagem := 'NÃO FOI POSSIVEL INICIALIZAR O MODULO';
-            55: VO_RespostaMensagem := 'ERRO NA PESQUISA DA TABELA';
-            56: VO_RespostaMensagem := 'NÃO FOI ENCONTRADO NENHUMA CONFIGURAÇÃO DE MENU DE CAIXA';
-            57: VO_RespostaMensagem := 'ERRO NO FLUXO DAS TRANSAÇÕES DA TAG 0018';
-            58: VO_RespostaMensagem := 'ERRO AO CRIAR A TRANSACAO';
-            59: VO_RespostaMensagem := 'ERRO AO PEGAR O STATUS DA TRANSACAO';
-            60: VO_RespostaMensagem := 'ERRO AO EXCLUIR UMA TRANSACAO NO TEF_LIB';
-            61: VO_RespostaMensagem := 'ERRO AO RECEBER A FUNCAO TRANSACAO CREATE DO OPENTEF';
-            62: VO_RespostaMensagem := 'ERRO NO PEDIDO DE CRIAÇÃO DE TRANSAÇÃO';
-            63: VO_RespostaMensagem := 'BIN JA ESTAVA CADASTRADO PARA OUTRO MODULO';
-            64: VO_RespostaMensagem := 'REGISTRO DE MODULO NÃO CARREGADO OU NÃO LOCALIZADO';
-            65: VO_RespostaMensagem := 'NÃO FOI POSSIVE ATUALIZAR A TABELA DE BINS';
-            66: VO_RespostaMensagem := 'CONEXAO DO TEMPORIZADOR NAO ENCONTRADA';
-            67: VO_RespostaMensagem := 'A TRANSMISSAO NAO REPONDIDA EM TEMPO HABIL';
-            68: VO_RespostaMensagem := 'DADOS DA TRANSMISSÃO NÃO TEM COMANDO 00D1';
-            69: VO_RespostaMensagem := 'A COMUNICACAO FOI ABORTADA';
-            70: VO_RespostaMensagem := 'Modulo config não carregado para incluir solicitação';
-            71: VO_RespostaMensagem := 'NAO FOI POSSIVEL ATUALIZAR A TABELA DE MENUS';
-            72: VO_RespostaMensagem := 'MENU JA ESTAVA CADASTRADO PARA OUTRO MODULO';
-            73: VO_RespostaMensagem := 'MENU NÃO ESTA NA LISTA DE MENUS OFICIAIS HABILITADOS USE TAG INICIO “FF”';
-            74: VO_RespostaMensagem := 'BIN inválido';
-            75: VO_RespostaMensagem := 'Tag do botao do menu inválido';
-            76: VO_RespostaMensagem := 'Texto do botao do menu inválido';
-            77: VO_RespostaMensagem := 'pinpad_lib  NÃO CARREGADO';
-            78: VO_RespostaMensagem := 'COMANDO NAO IMPLEMENTADO PELO PINPD';
-            79: VO_RespostaMensagem := 'Não foi possível achar uma operadora para processar o cartão';
-            80: VO_RespostaMensagem := 'Essa solicitação de aprovação não esta em conformidade';
-            81: VO_RespostaMensagem := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
-            82: VO_RespostaMensagem := 'ERRO NA EXCLUSÃO DO REGISTRO';
-            83: VO_RespostaMensagem := 'A CONEXÃO FOI DESCONECTA INESPERADAMENTE';
-            84: VO_RespostaMensagem := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAIS NÃO ENVIOU AS CHAVES';
-            85: VO_RespostaMensagem := 'Erro de tempo em capturar a senha no pinpad';
-            86: VO_RespostaMensagem := 'Erro ao cancelar uma transação';
-            87: VO_RespostaMensagem := 'Erro na exclusão, TAG oficial não pode ser excluida';
-            88: VO_RespostaMensagem := 'TAG não é um valor Hexadecimal';
-            89: VO_RespostaMensagem := 'Chave da transação não localizada';
-            90: VO_RespostaMensagem := 'Autorização da venda não localizada';
+            2: VL_String := 'PORTA PINPAD NÃO INFORMADA';
+            3: VL_String := 'MODELO PINPAD NÃO INFORMADO';
+            4: VL_String := 'MODELO PINPAD NÃO SUPORTADO';
+            5: VL_String := 'FALHA NA CONEXÃO COM PINPAD';
+            6: VL_String := 'PINPAD RETORNOU FALHA(CONSULTA Nº DA FALHA NO RETORNO AUXILIAR)';
+            7: VL_String := 'DLL OU S.O DO PINPAD NÃO ENCONTRADA';
+            8: VL_String := 'DLL OU S.O DO PINPAD NÃO COMPATÍVEL(VERIFIQUE 32 OU 64 BITS)';
+            9: VL_String := 'HOST  NÃO INFORMADO PARA O TEF';
+            10: VL_String := 'HOST NÃO COMPATÍVEL PARA O TEF';
+            11: VL_String := 'PORTA NÃO INFORMADA PARA O TEF';
+            12: VL_String := 'PORTA NÃO COMPATÍVEL  PARA O TEF';
+            13: VL_String := 'VERSÃO_COMUNICAÇÃO NÃO INFORMADA PARA O TEF';
+            14: VL_String := 'VERSÃO_COMUNICAÇÃO NÃO COMPATÍVEL PARA O TEF';
+            15: VL_String := 'CHAVE NÃO INFORMADA PARA O TEF';
+            16: VL_String := 'CHAVE NÃO COMPATÍVEL PARA O TEF';
+            17: VL_String := 'VERSÃO DLL DO TEF NÃO COMPATÍVEL (SUGERE ATUALIZAÇÃO)';
+            18: VL_String := 'PACOTE COM A PRIMEIRA TAG DIFERENTE DE ‘0000’';
+            19: VL_String := 'ERRO O TAMANHO DO PACOTE NÃO PODE SER ZERO';
+            20: VL_String := 'ERRO O TAMANHO DO PACOTE DIFERENTE DO TAMANHO DA MENSAGEM';
+            21: VL_String := 'ERRO OS DADOS DO PACOTE MAIOR QUE OS DADOS DA MENSAGEM';
+            22: VL_String := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO GET DA TAG';
+            23: VL_String := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO “TAGTOSTR”';
+            24: VL_String := 'NÃO FOI POSSÍVEL ENVIAR MENSAGEM';
+            25: VL_String := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR PARA ESCUTAR';
+            26: VL_String := 'NÃO FOI POSSÍVEL CONECTAR AO SERVIDOR ABERTURA SOCKET';
+            27: VL_String := 'ERRO NÃO EXISTE PACOTE PARA A FUNÇÃO ADD DA TAG';
+            28: VL_String := 'ERRO, PARÂMETRO NULO OU DIFERENTE DA ESTRUTURA DA TAG';
+            29: VL_String := 'ERRO TAG NÃO LOCALIZADA NO PACOTE DA FUNÇÃO GET DA TAG';
+            30: VL_String := 'DADOS DO PACOTE MAL FORMATADO OU INCOMPATÍVEL, IMPOSSÍVEL DE LER';
+            31: VL_String := 'CHAVE PUBLICA NÃO LOCALIZADA';
+            32: VL_String := 'PROBLEMA NAS TROCAS DE CHAVES NO CONECTAR';
+            33: VL_String := 'SOCKET DO SERVIDOR VINCULADO ESTA DESCONECTADO';
+            34: VL_String := 'LOGIN RECUSADO';
+            35: VL_String := 'SERVIDOR NÃO ESTA EM STATUS DE LOGADO';
+            36: VL_String := 'CHAVE NÃO LOCALIZADA PARA OPENTEF';
+            37: VL_String := 'SENHA DE ACESSO NÃO INFORMADO PARA O TEF';
+            38: VL_String := 'IP NÃO NÃO COMPATIVEL PARA O TERMINAL';
+            39: VL_String := 'SENHA NÃO COMPATÍVEL PARA O TERMINAL';
+            40: VL_String := 'ERRO VALIDAÇÃO DO TERMINAL';
+            41: VL_String := 'CHAVE DO TERMINAL NÃO LOCALIZADA';
+            42: VL_String := 'TIPO DE PERMISSÃO NÃO INFORMADA PARA O TEF';
+            43: VL_String := 'REGISTRO EM DUPLICIDADE NO BANCO DE DADOS';
+            44: VL_String := 'ERRO NA INCLUSÃO DO REGISTRO';
+            45: VL_String := 'PERMISSÃO NÃO AUTORIZADO PARA ESTE PROCEDIMENTO';
+            46: VL_String := 'ERRO NA ALTERAÇÃO DO REGISTRO';
+            47: VL_String := 'DADOS INFORMADO NÃO PODE SER ZERO';
+            48: VL_String := 'TABELA SEM REGISTRO NO BANCO DE DADOS';
+            49: VL_String := 'DADOS CHAVES PARA O CADASTRO NÃO PODEM SOFRER ALTERAÇÃO';
+            50: VL_String := 'BIBLIOTECA DO PINPAD NÃO FOI POSSIVEL CARREGAR';
+            51: VL_String := 'TIPO DE LEITURA DE CARTÃO NÃO SUPORTADO';
+            52: VL_String := 'CAMPO OBRIGATÓRIO NÃO PODE SER NULO';
+            53: VL_String := 'NÃO FOI POSSIVEL ENVIAR A MENSAGEM DE RETORNO PARA O ID INFORMADO';
+            54: VL_String := 'NÃO FOI POSSIVEL INICIALIZAR O MODULO';
+            55: VL_String := 'ERRO NA PESQUISA DA TABELA';
+            56: VL_String := 'NÃO FOI ENCONTRADO NENHUMA CONFIGURAÇÃO DE MENU DE CAIXA';
+            57: VL_String := 'ERRO NO FLUXO DAS TRANSAÇÕES DA TAG 0018';
+            58: VL_String := 'ERRO AO CRIAR A TRANSACAO';
+            59: VL_String := 'ERRO AO PEGAR O STATUS DA TRANSACAO';
+            60: VL_String := 'ERRO AO EXCLUIR UMA TRANSACAO NO TEF_LIB';
+            61: VL_String := 'ERRO AO RECEBER A FUNCAO TRANSACAO CREATE DO OPENTEF';
+            62: VL_String := 'ERRO NO PEDIDO DE CRIAÇÃO DE TRANSAÇÃO';
+            63: VL_String := 'BIN JA ESTAVA CADASTRADO PARA OUTRO MODULO';
+            64: VL_String := 'REGISTRO DE MODULO NÃO CARREGADO OU NÃO LOCALIZADO';
+            65: VL_String := 'NÃO FOI POSSIVEL ATUALIZAR A TABELA DE BINS';
+            66: VL_String := 'CONEXAO DO TEMPORIZADOR NAO ENCONTRADA';
+            67: VL_String := 'A TRANSMISSAO NAO RESPONDIDA EM TEMPO HABIL';
+            68: VL_String := 'DADOS DA TRANSMISSÃO NÃO TEM COMANDO 00D1';
+            69: VL_String := 'A COMUNICACAO FOI ABORTADA';
+            70: VL_String := 'Modulo config não carregado para incluir solicitação';
+            71: VL_String := 'NAO FOI POSSIVEL ATUALIZAR A TABELA DE MENUS';
+            72: VL_String := 'MENU JA ESTAVA CADASTRADO PARA OUTRO MODULO';
+            73: VL_String := 'MENU NÃO ESTA NA LISTA DE MENUS OFICIAIS HABILITADOS USE TAG INICIO “FF”';
+            74: VL_String := 'BIN inválido';
+            75: VL_String := 'Tag do botao do menu inválido';
+            76: VL_String := 'Texto do botao do menu inválido';
+            77: VL_String := 'pinpad_lib  NÃO CARREGADO';
+            78: VL_String := 'COMANDO NAO IMPLEMENTADO PELO PINPD';
+            79: VL_String := 'Não foi possível achar uma operadora para processar o cartão';
+            80: VL_String := 'Essa solicitação de aprovação não esta em conformidade';
+            81: VL_String := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
+            82: VL_String := 'ERRO NA EXCLUSÃO DO REGISTRO';
+            83: VL_String := 'A CONEXÃO FOI DESCONECTA INESPERADAMENTE';
+            84: VL_String := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAIS NÃO ENVIOU AS CHAVES';
+            85: VL_String := 'Erro de tempo em capturar a senha no pinpad';
+            86: VL_String := 'Erro ao cancelar uma transação';
+            87: VL_String := 'Erro na exclusão, TAG oficial não pode ser excluida';
+            88: VL_String := 'TAG não é um valor Hexadecimal';
+            89: VL_String := 'Chave da transação não localizada';
+            90: VL_String := 'Autorização da venda não localizada';
+            91: VL_String := 'Código da loja não localizado';
 
             else
             begin
                 Result := 1;
-                VO_RespostaMensagem := 'Erro Desconhecido ou não catalogado';
-                exit;
+                VL_String := 'Erro Desconhecido ou não catalogado';
             end;
         end;
-        Result := VP_CodigoErro;
+
+            VO_RespostaMensagem := StrAlloc(Length(VL_String)+1);
+            StrPCopy(VO_RespostaMensagem, VL_String);
     end;
 end;
 
@@ -1023,12 +1021,16 @@ begin
 end;
 
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer;VP_Debug:Boolean=True);
 var
     VL_Arquivo: TextFile;
 begin
     if VP_Arquivo = '' then
         exit;
+
+    if not VP_Debug then
+    Exit;
+
     EnterCriticalSection(VF_CriticoLog);
     try
         AssignFile(VL_Arquivo, PChar(VP_Arquivo));
@@ -1253,7 +1255,7 @@ end;
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean);
 var
-    I: int64;
+    I: integer;
 begin
     if not Assigned(VO_TOrigemMemDataset) then
         exit;
@@ -1531,7 +1533,7 @@ begin
     Result := Length(fTags) - 1;
 end;
 
-function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): Real;
 begin
     Result := TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
 end;

@@ -15,6 +15,7 @@ object DNucleo: TDNucleo
     )
     AutoCommit = False
     TransactIsolationLevel = tiReadCommitted
+    AddLogMsgToExceptionOrWarningMsg = False
     Port = 0
     User = 'SYSDBA'
     Protocol = 'firebird'

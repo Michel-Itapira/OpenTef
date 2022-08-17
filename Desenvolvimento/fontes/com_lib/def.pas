@@ -10,7 +10,8 @@ const
     C_Versao: array  [0..2] of integer = (1, 0, 0);
     C_Programa : String ='com_lib';
     C_Mensagem = 1;
-
+var
+      C_Debug:Boolean=True;
 
 implementation
 

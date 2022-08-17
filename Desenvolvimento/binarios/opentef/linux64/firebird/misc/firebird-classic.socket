@@ -1,0 +1,12 @@
+[Unit]
+Description=Firebird Classic Activation Socket
+Conflicts=firebird-superserver.service
+
+[Socket]
+ListenStream=3050
+Accept=true
+MaxConnections=2048
+KeepAlive=true
+
+[Install]
+WantedBy=sockets.target

@@ -5,21 +5,25 @@ unit opentefnucleo;
 interface
 
 uses
+
+    {$IFDEF UNIX}
+      CThreads,
+    {$ENDIF}
     Classes, SysUtils, IniFiles, comunicador, ZConnection, ZDataset, funcoes, rxmemds, IdContext, cadastro;
 
 type
 
 
-    TMenuCompativel = function(VP_Modulo: Pointer; VP_Menu: PChar; var VO_Compativel: boolean): integer; stdcall;
-    TGetFuncao = function(VP_Modulo: Pointer; VP_TagFuncao: PChar; var VO_Implementada: boolean): integer; stdcall;
-    TLogin = function(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar): integer; stdcall;
-    TFinalizar = function(VP_Modulo: Pointer): integer; stdcall;
+    TMenuCompativel = function(VP_Modulo: Pointer; VP_Menu: PChar; var VO_Compativel: boolean): integer; cdecl;
+    TGetFuncao = function(VP_Modulo: Pointer; VP_TagFuncao: PChar; var VO_Implementada: boolean): integer; cdecl;
+    TLogin = function(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar): integer; cdecl;
+    TFinalizar = function(VP_Modulo: Pointer): integer; cdecl;
     TModuloInicializar = function(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo;
-        VP_Modulo_ID: integer; VP_ArquivoLog: PChar): integer; stdcall;
+        VP_Modulo_ID: integer; VP_ArquivoLog: PChar): integer; cdecl;
     TSolicitacao = function(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetornoModulo;
-        VP_Tarefa_ID, VP_TempoAguarda: integer): integer; stdcall;
-    TSolicitacaoblocante = function(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; stdcall;
-    TModuloStatus = function(VP_Modulo: Pointer; var VO_Versao: PChar; var VO_VersaoMensagem: integer; var VO_StatusRetorno: integer): integer; stdcall;
+        VP_Tarefa_ID, VP_TempoAguarda: integer): integer; cdecl;
+    TSolicitacaoblocante = function(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
+    TModuloStatus = function(VP_Modulo: Pointer; var VO_Versao: PChar; var VO_VersaoMensagem: integer; var VO_StatusRetorno: integer): integer; cdecl;
 
 
 
@@ -203,13 +207,21 @@ var
       C_Lib= '.dll';
     {$ENDIF WIN}
 
+    {$IFDEF LINUX}
+    const
+      C_Lib= '.so';
+    {$ENDIF LINUX}
 
-procedure ModuloCaixaRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
-procedure ModuloServicoRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+
+procedure ModuloCaixaRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
+procedure ModuloServicoRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
 
 procedure ServidorRecebimento(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VO_AContext: TIdContext);
 
 implementation
+
+uses
+    def;
 
 
 procedure TThModulo.Execute;
@@ -238,9 +250,16 @@ begin
             begin
                 if VF_LibCarregada = False then
                 begin
+                    {$IFDEF UNIX}
+                    TRegModulo(VF_modulo^).Handle := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_modulo^).Biblioteca));
+                    {$ELSE}
                     TRegModulo(VF_modulo^).Handle := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\' + TRegModulo(VF_modulo^).Biblioteca));
+                    {$ENDIF}
                     if TRegModulo(VF_modulo^).Handle = 0 then
                     begin
+                        GravaLog(VF_ArquivoLog, TRegModulo(VF_modulo^).ModuloConfig_ID, TRegModulo(VF_modulo^).Tag, 'opentefnucleo',
+                           '12082022143300', 'Erro ao tentar carregar a dll:' + TRegModulo(VF_modulo^).Biblioteca, '', 0);
+
                         Terminate;
                         Exit;
                     end;
@@ -251,6 +270,11 @@ begin
                     Pointer(TRegModulo(VF_modulo^).Solicitacaoblocante) := GetProcAddress(TRegModulo(VF_modulo^).Handle, 'solicitacaoblocante');
                     Pointer(TRegModulo(VF_modulo^).ModuloStatus) := GetProcAddress(TRegModulo(VF_modulo^).Handle, 'modulostatus');
 
+
+                    GravaLog(VF_ArquivoLog, TRegModulo(VF_modulo^).ModuloConfig_ID, TRegModulo(VF_modulo^).Tag, 'opentefnucleo',
+                       '12082022154300', 'Carregando funções da dll' + TRegModulo(VF_modulo^).Biblioteca, '', 0,C_Debug);
+
+
                     if VF_ConexaoTipo = cnCaixa then
                         VL_Erro := TRegModulo(VF_modulo^).Inicializar(TRegModulo(VF_modulo^).ModuloProcID, VL_PModulo,
                             @ModuloCaixaRetorno, TRegModulo(VF_modulo^).ModuloConfig_ID,
@@ -258,6 +282,10 @@ begin
                     else
                         VL_Erro := TRegModulo(VF_modulo^).Inicializar(TRegModulo(VF_modulo^).ModuloProcID, VL_PModulo,
                             @ModuloServicoRetorno, TRegModulo(VF_modulo^).ModuloConfig_ID, PChar(VF_ArquivoLog));
+
+                    GravaLog(VF_ArquivoLog, TRegModulo(VF_modulo^).ModuloConfig_ID, TRegModulo(VF_modulo^).Tag, 'opentefnucleo',
+                       '12082022154301', 'Iniciando Mudulo' + TRegModulo(VF_modulo^).Biblioteca, '', 0,C_Debug);
+
 
                     if VL_Erro <> 0 then
                     begin
@@ -420,24 +448,47 @@ procedure TDNucleo.iniciar;
 var
     VL_RegModulo: TRegModulo;
 begin
+    try
+
+    GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '202211081230', 'TDNucleo.iniciar ' +
+            'Iniciando...', '',0,C_Debug);
+
 
     VL_RegModulo.Menu_Operacional_estatico := True;
     VL_RegModulo.Menu_estatico := True;
     VL_RegModulo.ModuloConfig_ID := 0;
 
     {$IFDEF DEBUG}
+    {$IFDEF UNIX}
+//    ZConexao.LibraryLocation := ExtractFilePath(ParamStr(0)) + 'firebird/libfbclient.so';
+    ZConexao.Database := ExtractFilePath(ParamStr(0)) + 'OPENTEF.FDB';
+    {$ELSE}
     ZConexao.Database := ExtractFilePath(ParamStr(0)) + 'opentef.fdb';
     ZConexao.HostName:='localhost';
     ZConexao.Port:=25050;
     ZConexao.Password:='2844';
+    {$ENDIF UNIX}
+    {$ELSE}
+    {$IFDEF UNIX}
+//    ZConexao.LibraryLocation := ExtractFilePath(ParamStr(0)) + 'firebird/libfbclient.so';
+    ZConexao.Database := ExtractFilePath(ParamStr(0)) + 'OPENTEF.FDB';
     {$ELSE}
     ZConexao.LibraryLocation := ExtractFilePath(ParamStr(0)) + 'firebird\fbclient.dll';
     ZConexao.Database := ExtractFilePath(ParamStr(0)) + 'opentef.fdb';
+    {$ENDIF UNIX}
+
+
     {$ENDIF DEBUG}
 
+    GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '2022110812319', 'TDNucleo.iniciar ' +
+            'TentandoConectandoBanco LIB:'+ZConexao.LibraryLocation+' banco:'+ZConexao.Database, '',0,C_Debug);
 
 
     ZConexao.Connect;
+
+    GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '2022110812316', 'TDNucleo.iniciar ' +
+            'ConectandoBanco...', '',0,C_Debug);
+
 
 
     DComunicador := TDComunicador.Create(Self);
@@ -449,16 +500,17 @@ begin
 
     DComunicador.V_ThRecebeEscuta.Start;
 
+    GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '2022110812317', 'TDNucleo.iniciar ' +
+            'ConectadoBanco...', '',0,C_Debug);
 
 
 
     if not FileExists(ExtractFilePath(ParamStr(0)) + 'open_tef.ini') then
     begin
         Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0)) + 'open_tef.ini'));
-        Conf.WriteInteger('Servidor', 'CaixaPorta', 0);
-        Conf.WriteBool('Servidor', 'CaixaAtiva', True);
-        Conf.WriteInteger('Servidor', 'ServicoPorta', 0);
-        Conf.WriteBool('Servidor', 'ServicoAtiva', False);
+        Conf.WriteInteger('Servidor', 'Porta', 0);
+        Conf.WriteBool('Servidor', 'Ativa', True);
+        Conf.WriteBool('Servidor', 'Debug', False);
         Conf.Free;
     end;
 
@@ -471,11 +523,26 @@ begin
         DComunicador.IdTCPServidor.Active := Conf.ReadBool('Servidor', 'Ativa', False);
 
     end;
+
+    C_Debug:=Conf.ReadBool('Servidor', 'Debug', False);
+
+    GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '202211081230', 'TDNucleo.iniciar ' +
+            'Iniciando...', '',DComunicador.IdTCPServidor.DefaultPort);
+
+
+
+
     F_Modulo_ID_Contador := 0;
     F_Tarefa_ID_Contador := 0;
     AtualizaMENU_OPERACIONAL(VL_RegModulo, nil);
     AtualizaMENU(VL_RegModulo, nil);
     ModuloCarrega(0);
+
+    except
+        on e: EInOutError do
+            GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '202211081229', 'TDNucleo.iniciar ' +
+                e.ClassName + '/' + e.Message, '',0);
+    end;
 
 end;
 
@@ -1944,8 +2011,8 @@ begin
         if TTConexao(VP_AContext.Data).Status <> csLogado then
         begin
             VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('000A', 'R');
-            VP_Mensagem.AddTag('004D', '35');
+            VP_Mensagem.AddComando('000A', 'R'); // retorno
+            VP_Mensagem.AddTag('004D', '35');  // resposta com erro
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
             Exit;
         end;
@@ -1963,7 +2030,7 @@ begin
         if Result <> 0 then
         begin
             VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('0026', '35');
+            VP_Mensagem.AddComando('0026', '35'); // retorno com erro
             DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
             Exit;
         end;
@@ -1982,7 +2049,7 @@ begin
         if ((VL_Transacao.GetTagAsAstring('0036') = '') and (VL_Transacao.GetTagAsAstring('004F') <> '')) then //NAO TEM BIN E VEIO TRILHA 2
         begin
             VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('008C', 'S');
+            VP_Mensagem.AddComando('008C', 'S'); // solicita atualizacao da tag
             VP_Mensagem.AddTag('00D9', VL_Transacao.GetTagAsAstring('004F'));                    // pan
             VP_Mensagem.AddTag('0062', '0000' + Copy(VL_Transacao.GetTagAsAstring('004F'), 7, 12));  //pan mascarado
             VP_Mensagem.AddTag('0036', Copy(VL_Transacao.GetTagAsAstring('004F'), 1, 6));       //bin
@@ -2048,8 +2115,8 @@ begin
             VL_Bin := VF_Bin.RetornaBIN(VL_Transacao.GetTagAsAstring('0036'));
             if VL_Bin.ModuloConfID = -1 then                                                      //MODULO NAO CARREGADO PARA ESSE BIN
             begin
-                VP_Mensagem.AddComando('000A', 'R');
-                VP_Mensagem.AddTag('004D', 79);
+                VP_Mensagem.AddComando('000A', 'R');  // retorno
+                VP_Mensagem.AddTag('004D', 79); // resposta com erro
                 DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
@@ -2066,14 +2133,14 @@ begin
 
                 VL_Consulta := TZQuery.Create(nil);
                 VL_Consulta.Connection := ZConexao;
-                VL_Consulta.SQL.Text := 'SELECT S_HABILITADO,S_TAG_NUMERO FROM P_TAG_FUNCAO(' + IntToStr(TTConexao(VP_AContext.Data).Terminal_ID) +
+                VL_Consulta.SQL.Text := 'SELECT S_HABILITADO,S_TAG_NUMERO,S_CODIGO FROM P_TAG_FUNCAO(' + IntToStr(TTConexao(VP_AContext.Data).Terminal_ID) +
                     ',''MODULO'')' +
                     ' WHERE S_HABILITADO=''T'' AND S_TAG_NUMERO=''' + VL_Bin.ModuloTag + '''';
                 VL_Consulta.Open;
                 if VL_Consulta.FieldByName('S_HABILITADO').AsString <> 'T' then
                 begin
-                    VP_Mensagem.AddComando('000A', 'R');
-                    VP_Mensagem.AddTag('004D', 79);
+                    VP_Mensagem.AddComando('000A', 'R'); // retorno
+                    VP_Mensagem.AddTag('004D', 79);  // resposta com erro
                     DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                     Exit;
                 end;
@@ -2084,10 +2151,11 @@ begin
                     try
                         VL_TransacaoChave := TMensagem.Create;
                         VL_TransacaoChave.AddComando('0000', '');
-                        VL_TransacaoChave.AddTag('00F2', VL_Bin.ModuloTag);
-                        VL_TransacaoChave.AddTag('0036', VL_Bin.IIN);
-                        VL_TransacaoChave.AddTag('0034', VL_Transacao.GetTagAsAstring('0034'));
-                        VL_TransacaoChave.AddTag('0091', TTConexao(VP_AContext.Data).Doc);
+                        VL_TransacaoChave.AddTag('00F2', VL_Bin.ModuloTag); // tag do modulo
+                        VL_TransacaoChave.AddTag('0036', VL_Bin.IIN);   // bin
+                        VL_TransacaoChave.AddTag('0034', VL_Transacao.GetTagAsAstring('0034'));  // id da transacao
+                        VL_TransacaoChave.AddTag('0091', TTConexao(VP_AContext.Data).Doc);  // documento(cpf ou cnpj)
+                        VL_TransacaoChave.AddTag('00F9', PChar(VL_Consulta.FieldByName('S_CODIGO').AsString)); // codigo da loja
                         VL_Transacao.AddTag('00F1', VL_TransacaoChave.TagsAsString);
 
                         VP_Mensagem.Limpar;
@@ -2119,7 +2187,7 @@ begin
 
                 if Result <> 0 then
                 begin
-                    VP_Mensagem.AddComando('000A', 'R');
+                    VP_Mensagem.AddComando('000A', 'R'); // retorno
                     VP_Mensagem.AddTag('004D', Result); // retorno com erro
                     DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                     Exit;
@@ -2133,8 +2201,8 @@ begin
             Exit;
         end;
 
-        VP_Mensagem.AddComando('000A', 'R');
-        VP_Mensagem.AddTag('004D', 80);
+        VP_Mensagem.AddComando('000A', 'R'); // retorno
+        VP_Mensagem.AddTag('004D', 80);  // retorno com erro
         DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
 
     finally
@@ -2161,8 +2229,8 @@ begin
         if TTConexao(VP_AContext.Data).Status <> csLogado then
         begin
             VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('00F4', 'R');
-            VP_Mensagem.AddTag('004D', '35');
+            VP_Mensagem.AddComando('00F4', 'R'); // retorno
+            VP_Mensagem.AddTag('004D', '35'); // retorno com erro
             DComunicador.ServidorTransmiteSolicitacao(3000, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
             Exit;
         end;
@@ -2180,25 +2248,13 @@ begin
         if Result <> 0 then
         begin
             VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('0026', '35');
+            VP_Mensagem.AddComando('0026', '35'); // retorno com erro
             DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
             Exit;
         end;
 
-        //se for f6 testar se tem  f1
-        //tendo f1 ver se tem o bin
-        //se nao pede f1 atraves do e1
-        //tendo bin encaminha pro modulo
         if VL_Transacao.GetTagAsAstring('00D5') = '00D3' then  // OPCAO CANCELAMENTO DE VENDA
         begin
-            //if VL_Transacao.GetTagAsAstring('00E1') <> '' then // retorno da chave mas sem valor
-            //begin
-            //    VP_Mensagem.AddComando('00F4', 'R');
-            //    VP_Mensagem.AddTag('004D', 89);  // retorno com erro
-            //    DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
-            //    Exit;
-            //end;
-
             if VL_Transacao.GetTagAsAstring('00F1') = '' then // verifica se possui a chave da transacao
             begin
                 VP_Mensagem.Limpar;
@@ -2210,11 +2266,14 @@ begin
                 Exit;
             end;
 
-            if VL_Transacao.GetTagAsAstring('00F1') = #1 then  // chave veio nula
+            if VL_Transacao.GetTagAsAstring('00F1') = #1 then  // chave da transacao veio nula
             begin
-
+                //VP_Mensagem.Limpar;
+                VP_Mensagem.AddComando(PChar('00F4'), PChar('R'));  // retorno
+                VP_Mensagem.AddTag(PChar('004D'), PChar('89')); // retorno com erro
+                DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
+                Exit;
             end;
-
 
             VL_ChaveTransacaoPainel := TMensagem.Create;
 
@@ -2222,25 +2281,24 @@ begin
 
             VL_ChaveTransacao := PChar(VP_Mensagem.GetTagAsAstring('00F1').Trim);  // eliminando espacos e formatacoes para nao ocorrer erros
 
-            Result := VL_ChaveTransacaoPainel.CarregaTags(VL_ChaveTransacao);
+            Result := VL_ChaveTransacaoPainel.CarregaTags(VL_ChaveTransacao); // carregando a chave como mensagem estruturada
 
             if Result <> 0 then
             begin
-                VP_Mensagem.AddComando('00F4', 'R');
-                VP_Mensagem.AddTag('004D', Result);  // retorno
+                VP_Mensagem.AddComando('00F4', 'R'); // retorno
+                VP_Mensagem.AddTag('004D', Result);  // retorno com erro
                 DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
 
-            VL_BinChave := VL_ChaveTransacaoPainel.GetTagAsAstring('0036');  //bin
+            VL_BinChave := VL_ChaveTransacaoPainel.GetTagAsAstring('0036');  // carrega bin
 
+            VL_Bin := VF_Bin.RetornaBIN(VL_BinChave); // carrega dados do bin
 
-            VL_Bin := VF_Bin.RetornaBIN(VL_BinChave); // bin
-
-            if VL_Bin.ModuloConfID = -1 then                                                      //MODULO NAO CARREGADO PARA ESSE BIN
+            if VL_Bin.ModuloConfID = -1 then  //MODULO NAO CARREGADO PARA ESSE BIN
             begin
-                VP_Mensagem.AddComando('00F4', 'R');
-                VP_Mensagem.AddTag('004D', 79);  // retorno
+                VP_Mensagem.AddComando('00F4', 'R'); // retorno
+                VP_Mensagem.AddTag('004D', 79);  // retorno com erro
                 DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
@@ -2257,7 +2315,6 @@ begin
 
 
         //verifica se tem o bin, para mandar para a operadora
-
         if ((VL_Transacao.GetTagAsAstring('0036') = '') and (VL_Transacao.GetTagAsAstring('00D5') = '')) then //NAO TEM BIN E NÃO TEM BOTAO SELECIONAO
         begin
             // mostra menu operacional
@@ -2270,7 +2327,7 @@ begin
         if ((VL_Transacao.GetTagAsAstring('0036') = '') and (VL_Transacao.GetTagAsAstring('004F') <> '')) then //NAO TEM BIN E VEIO TRILHA 2
         begin
             VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('008C', 'S');
+            VP_Mensagem.AddComando('008C', 'S'); // solicita atualizacao das tags
             VP_Mensagem.AddTag('00D9', VL_Transacao.GetTagAsAstring('004F'));                    // pan
             VP_Mensagem.AddTag('0062', '0000' + Copy(VL_Transacao.GetTagAsAstring('004F'), 7, 12));  //pan mascarado
             VP_Mensagem.AddTag('0036', Copy(VL_Transacao.GetTagAsAstring('004F'), 1, 6));       //bin
@@ -2340,16 +2397,16 @@ begin
             VL_Bin := VF_Bin.RetornaBIN(VL_Transacao.GetTagAsAstring('0036'));
             if VL_Bin.ModuloConfID = -1 then                                                      //MODULO NAO CARREGADO PARA ESSE BIN
             begin
-                VP_Mensagem.AddComando('00F4', 'R');
-                VP_Mensagem.AddTag('004D', 79);
+                VP_Mensagem.AddComando('00F4', 'R'); // retorno
+                VP_Mensagem.AddTag('004D', 79); // retorno com erro
                 DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
 
             if TTConexao(VP_AContext.Data).Terminal_Tipo <> 'PDV' then          // CONEXAO NÃO É DO PDV E NÃO PODE FAZER VENDA
             begin
-                VP_Mensagem.AddComando('00F4', 'R');
-                VP_Mensagem.AddTag('004D', 81);
+                VP_Mensagem.AddComando('00F4', 'R'); // retorno
+                VP_Mensagem.AddTag('004D', 81);  // retorno com erro
                 DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                 Exit;
             end;
@@ -2358,14 +2415,14 @@ begin
 
                 VL_Consulta := TZQuery.Create(nil);
                 VL_Consulta.Connection := ZConexao;
-                VL_Consulta.SQL.Text := 'SELECT S_HABILITADO,S_TAG_NUMERO FROM P_TAG_FUNCAO(' + IntToStr(TTConexao(VP_AContext.Data).Terminal_ID) +
+                VL_Consulta.SQL.Text := 'SELECT S_HABILITADO,S_TAG_NUMERO,S_CODIGO FROM P_TAG_FUNCAO(' + IntToStr(TTConexao(VP_AContext.Data).Terminal_ID) +
                     ',''MODULO'')' +
                     ' WHERE S_HABILITADO=''T'' AND S_TAG_NUMERO=''' + VL_Bin.ModuloTag + '''';
                 VL_Consulta.Open;
                 if VL_Consulta.FieldByName('S_HABILITADO').AsString <> 'T' then
                 begin
-                    VP_Mensagem.AddComando('00F4', 'R');
-                    VP_Mensagem.AddTag('004D', 79);
+                    VP_Mensagem.AddComando('00F4', 'R'); // retorno
+                    VP_Mensagem.AddTag('004D', 79); // retorno com erro
                     DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                     Exit;
                 end;
@@ -2376,10 +2433,11 @@ begin
                     try
                         VL_TransacaoChave := TMensagem.Create;
                         VL_TransacaoChave.AddComando('0000', '');
-                        VL_TransacaoChave.AddTag('00F2', VL_Bin.ModuloTag);
-                        VL_TransacaoChave.AddTag('0036', VL_Bin.IIN);
-                        VL_TransacaoChave.AddTag('0034', VL_Transacao.GetTagAsAstring('0034'));
-                        VL_TransacaoChave.AddTag('0091', TTConexao(VP_AContext.Data).Doc);
+                        VL_TransacaoChave.AddTag('00F2', VL_Bin.ModuloTag); // tag do modulo
+                        VL_TransacaoChave.AddTag('0036', VL_Bin.IIN); // bin
+                        VL_TransacaoChave.AddTag('0034', VL_Transacao.GetTagAsAstring('0034')); // id da transacao
+                        VL_TransacaoChave.AddTag('0091', TTConexao(VP_AContext.Data).Doc);  // documento(cpf ou cnpj)
+                        VL_TransacaoChave.AddTag('00F9', VL_Consulta.FieldByName('S_CODIGO').AsString); // codigo da loja
                         VL_Transacao.AddTag('00F1', VL_TransacaoChave.TagsAsString);
                         VP_Mensagem.Limpar;
                         VP_Mensagem.AddComando('008C', 'S');  // solicita atualizacao da tag
@@ -2404,7 +2462,7 @@ begin
 
                 if Result <> 0 then
                 begin
-                    VP_Mensagem.AddComando('00F4', 'R');
+                    VP_Mensagem.AddComando('00F4', 'R');  // retorno
                     VP_Mensagem.AddTag('004D', Result); // retorno com erro
                     DComunicador.ServidorTransmiteSolicitacao(VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_AContext);
                     Exit;
@@ -2428,7 +2486,7 @@ begin
 end;
 
 
-procedure ModuloCaixaRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+procedure ModuloCaixaRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
 var
     VL_Mensagem: TMensagem;
     VL_Tarefa: ^TTarefa;
@@ -2457,7 +2515,7 @@ begin
 
 end;
 
-procedure ModuloServicoRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+procedure ModuloServicoRetorno(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
 var
     VL_Mensagem: TMensagem;
     VL_Erro: integer;

@@ -10,19 +10,19 @@ uses
 { TDTef }
 type
 
-    TSolicitaDadosPDV = function(VP_Menu: PChar; var VO_Botao, VO_Dados: PChar): integer; stdcall;
-    TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var VO_Dados: PChar): integer; stdcall;
-    TImprime = function(VP_Dados: PChar): integer; stdcall;
-    TMostraMenu = function(VP_Dados: PChar; var VO_Selecionado: PChar): integer; stdcall;
-    TMensagemOperador = function(VP_Dados: PChar): integer; stdcall;
+    TSolicitaDadosPDV = function(VP_Menu: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+    TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+    TImprime = function(VP_Dados: PChar): integer; cdecl;
+    TMostraMenu = function(VP_Dados: PChar; var VO_Selecionado: PChar): integer; cdecl;
+    TMensagemOperador = function(VP_Dados: PChar): integer; cdecl;
 
-    TPinPadDescarrega = function(): integer; stdcall;
+    TPinPadDescarrega = function(): integer; cdecl;
     TPinPadCarrega = function(VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar;
-    VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
-    TPinPadConectar = function(var VO_Mensagem: PChar): integer; stdcall;
-    TPinPadDesconectar = function(VL_Mensagem: PChar): integer; stdcall;
-    TPinPadMensagem = function(VL_Mensagem: PChar): integer; stdcall;
-    TPinPadComando = function(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
+    VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
+    TPinPadConectar = function(var VO_Mensagem: PChar): integer; cdecl;
+    TPinPadDesconectar = function(VL_Mensagem: PChar): integer; cdecl;
+    TPinPadMensagem = function(VL_Mensagem: PChar): integer; cdecl;
+    TPinPadComando = function(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
 
     TThProcesso = class(TThread)
     private
@@ -70,17 +70,17 @@ type
 
 function inicializar(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
     VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
-    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; stdcall;
-function finalizar(): integer; stdcall;
-function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; stdcall;
-function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; stdcall;
-function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; stdcall;
-function opentefstatus(var VO_StatusRetorno: integer): integer; stdcall;
-function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; stdcall;
-function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; stdcall;
-function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; stdcall;
-function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; stdcall;
-procedure transacaofree(VP_TransacaoID: PChar); stdcall;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; cdecl;
+function finalizar(): integer; cdecl;
+function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; cdecl;
+function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; cdecl;
+function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
+function opentefstatus(var VO_StatusRetorno: integer): integer; cdecl;
+function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; cdecl;
+function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; cdecl;
+function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; cdecl;
+function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; cdecl;
+procedure transacaofree(VP_TransacaoID: PChar); cdecl;
 
 procedure RespostaPinPad(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
 
@@ -378,6 +378,9 @@ begin
                 for VL_I := 1 to VL_Mensagem.TagCount do
                 begin
                     VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
+                    if VL_TagDados='' then
+                    ftransacao.fMensagem.AddTag(VL_Tag,PChar(#1))
+                    else
                     ftransacao.fMensagem.AddTag(VL_Tag, VL_TagDados);
                 end;
                 VL_Mensagem.Limpar;
@@ -465,12 +468,6 @@ begin
                     end;
                     VL_PinPadCarregado := True;
                 end;
-
-                //                F_PinPadMensagem('Aguarde...');
-
-                //                while TempoPassouMiliSegundos(VL_TempoSenha)<20000 do
-                //                Sleep(100);
-
                 VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
                 if VL_Erro <> 0 then
                 begin
@@ -493,29 +490,9 @@ begin
                 ftransacao.fMensagem.AddTag('0060', VL_Mensagem.GetTagAsAstring('0060'));
             end
             else
-            if (VL_Mensagem.Comando() = '008C') then  // SOLICITACAO ATUALIZAÇÃO DE TAGS
-            begin
-                for VL_I := 1 to VL_Mensagem.TagCount do
-                begin
-                    VL_Erro := VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
-                    if VL_Erro <> 0 then
-                    begin
-                        ftransacao.erro := VL_Erro;
-                        ftransacao.STATUS := tsComErro;
-                        Exit;
-                    end;
-                    ftransacao.fMensagem.AddTag(VL_Tag, VL_TagDados);
-                end;
-                VL_Mensagem.Limpar;
-            end
-            else
             if (VL_Mensagem.Comando() = '002C') then  // mensagem ao operador
             begin
-                ftransacao.STATUS := IntToTransacaoStatus(VL_Mensagem.GetTagAsInteger('004A'));
                 F_MensagemOperador(PChar(VL_Mensagem.GetTagAsAstring('00DA')));
-
-                if (ftransacao.STATUS <> tsProcessando) and (ftransacao.STATUS <> tsAguardandoComando) then
-                    Exit;
             end;
 
             VL_Mensagem.AddComando(fcomando, 'S');
@@ -538,6 +515,17 @@ begin
             VL_Mensagem.AddTag('0008', F_ModuloPublico);        //modulos
             VL_Mensagem.AddTag('0036', ftransacao.fMensagem.GetTagAsAstring('0036')); //  bin
             VL_Mensagem.AddTag('00F1', ftransacao.fMensagem.GetTagAsAstring('00F1')); //  chave
+
+
+            VL_Mensagem.GetTag('00A4',VL_TagDados);
+            if VL_TagDados<>'' then
+            ftransacao.STATUS := IntToTransacaoStatus(VL_Mensagem.GetTagAsInteger('00A4'));
+
+            if (ftransacao.STATUS <> tsProcessando) and (ftransacao.STATUS <> tsAguardandoComando) then
+            begin
+                ftransacao.erroDescricao   1
+                Exit;
+            end;
 
 
 
@@ -612,7 +600,7 @@ begin
                 end
                 else
                 begin
-                    F_MensagemOperador(PChar('Obrigado<br>' + 'Cartão/bin:' + ftransacao.fMensagem.GetTagAsAstring('00CE')));
+                    F_MensagemOperador(PChar('Obrigado<br>' + 'Cartão/bin:' + ftransacao.fMensagem.GetTagAsAstring('0036')));
                     F_Imprime(PChar('Comprovante<br>Autorizacao 123<br>Valor:' + ftransacao.fMensagem.GetTagAsAstring('0013')));
                     ftransacao.STATUS := tsEfetivada;
                     Exit;
@@ -695,7 +683,7 @@ end;
 
 function inicializar(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
     VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
-    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; stdcall;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; cdecl;
 begin
 
     DTef := TDTef.Create(nil);
@@ -757,7 +745,7 @@ begin
 
 end;
 
-function finalizar(): integer; stdcall;
+function finalizar(): integer; cdecl;
 begin
     if Assigned(F_DComunicador.V_ThRecebeEscuta) then
     begin
@@ -779,7 +767,7 @@ begin
     Result := 0;
 end;
 
-function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; stdcall;
+function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; cdecl;
 var
     VL_Mensagem: TMensagem;
     VL_S, VL_Dados: ansistring;
@@ -883,7 +871,7 @@ begin
 
 end;
 
-function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; stdcall;
+function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; cdecl;
 var
     VL_Th: TThProcesso;
 begin
@@ -893,7 +881,7 @@ begin
 
 end;
 
-function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; stdcall;
+function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
 var
     VL_Transmissao_ID, VL_String: ansistring;
     VL_MensagensOUT, VL_MensagensIN: TMensagem;
@@ -922,7 +910,7 @@ begin
 
 end;
 
-function opentefstatus(var VO_StatusRetorno: integer): integer; stdcall;
+function opentefstatus(var VO_StatusRetorno: integer): integer; cdecl;
 begin
     Result := 0;
     VO_StatusRetorno := Ord(F_DComunicador.V_ConexaoCliente.Status);
@@ -930,7 +918,7 @@ begin
         VO_StatusRetorno := Ord(csNaoInicializado);
 end;
 
-function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; stdcall;
+function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; cdecl;
 var
     VL_Transacao: TTransacao;
     VL_Mensagem: TMensagem;
@@ -1005,7 +993,7 @@ begin
     end;
 end;
 
-function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; stdcall;
+function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; cdecl;
 var
     VL_Transacao: TTransacao;
     VL_I: integer;
@@ -1036,7 +1024,7 @@ begin
 
 end;
 
-function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; stdcall;
+function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; cdecl;
 var
     VL_Transacao: TTransacao;
     VL_I: integer;
@@ -1053,16 +1041,16 @@ begin
             if VL_Transacao.ID = VP_TransacaoID then
             begin
                 Result := VL_Transacao.Erro;
-                if (Result <> 0) and (VL_Transacao.erroDescricao = '') then // verifica se a tag possui erro
-                begin
-                    VL_Codigo := Result;
-                    mensagemerro(VL_Codigo, VO_Status);
-                end
-                else
-                begin
+                //if (Result <> 0) and (VL_Transacao.erroDescricao = '') then // verifica se a tag possui erro
+                //begin
+                //    VL_Codigo := Result;
+                //    mensagemerro(VL_Codigo, VO_Status);
+                //end
+                //else
+                //begin
                     VO_Status := StrAlloc(Length(VL_Transacao.erroDescricao) + 1);
                     StrPCopy(VO_Status, VL_Transacao.erroDescricao);
-                end;
+                //end;
 
                 Exit;
             end;
@@ -1077,7 +1065,7 @@ begin
 
 end;
 
-function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; stdcall;
+function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; cdecl;
 begin
     Result := 0;
 
@@ -1093,7 +1081,7 @@ begin
 
 end;
 
-procedure transacaofree(VP_TransacaoID: PChar); stdcall;
+procedure transacaofree(VP_TransacaoID: PChar); cdecl;
 var
     VL_I: integer;
     VL_Transacao: TTransacao;

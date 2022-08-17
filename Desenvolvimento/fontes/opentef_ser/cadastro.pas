@@ -455,10 +455,9 @@ begin
                     end;
 
                     VL_TPdv.Close;
-                    VL_TPdv.SQL.Text := 'INSERT INTO PDV(LOJA_ID,DESCRICAO,IP,CODIGO,PINPAD_ID,PINPAD_COM,HABILITADO,CHAVE)VALUES(''' + VL_Tabela.FieldByName(
+                    VL_TPdv.SQL.Text := 'INSERT INTO PDV(LOJA_ID,DESCRICAO,IP,PINPAD_ID,PINPAD_COM,HABILITADO,CHAVE)VALUES(''' + VL_Tabela.FieldByName(
                         'LOJA_ID').AsString + ''',''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',''' +
                         VL_Tabela.FieldByName('IP').AsString + ''',''' +
-                        VL_Tabela.FieldByName('CODIGO').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('PINPAD_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('PINPAD_COM').AsString + ''',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''',''' +
@@ -731,7 +730,6 @@ begin
                 VL_TPdv.SQL.Text := 'UPDATE PDV SET ' + 'LOJA_ID=''' + VL_Tabela.FieldByName('LOJA_ID').AsString + ''',' +
                     'DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',' +
                     'IP=''' + VL_Tabela.FieldByName('IP').AsString + ''',' +
-                    'CODIGO=''' + VL_Tabela.FieldByName('CODIGO').AsString + ''',' +
                     'PINPAD_ID=''' + VL_Tabela.FieldByName('PINPAD_ID').AsString + ''',' +
                     'PINPAD_COM=''' + VL_Tabela.FieldByName('PINPAD_COM').AsString + ''',' +
                     'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
@@ -8054,10 +8052,12 @@ begin
                     VL_TPdvModulo.SQL.Text := 'INSERT INTO PDV_MODULO_CONF(' +
                         'PDV_ID,' +
                         'TAG_NUMERO,' +
+                        'CODIGO,' +
                         'HABILITADO,' +
                         'MODULO_CONF_ID)VALUES(' +
                         IntToStr(VL_Tabela.FieldByName('PDV_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''',''' +
+                        VL_Tabela.FieldByName('CODIGO').AsString + ''',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ')';
                     VL_Erro := 44;
@@ -8381,6 +8381,7 @@ begin
                 VL_TPdv_Modulo.Close;
                 VL_TPdv_Modulo.SQL.Text := 'UPDATE PDV_MODULO_CONF SET ' +
                     'TAG_NUMERO=''' + VL_Tabela.FieldByName('TAG_NUMERO').AsString + ''',' +
+                    'CODIGO=''' + VL_Tabela.FieldByName('CODIGO').AsString + ''',' +
                     'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
                     'MODULO_CONF_ID=' + IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ' WHERE ' +
                     'ID=' + IntToStr(VL_ID);

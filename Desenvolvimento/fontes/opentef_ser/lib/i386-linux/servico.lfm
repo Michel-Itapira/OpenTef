@@ -1,0 +1,10 @@
+object DServico: TDServico
+  OldCreateOrder = False
+  OnStart = DataModuleStart
+  OnStop = DataModuleStop
+  OnShutDown = DataModuleShutDown
+  Height = 150
+  HorizontalOffset = 620
+  VerticalOffset = 267
+  Width = 266
+end

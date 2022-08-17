@@ -11,10 +11,9 @@ uses
     ZDataset,
     ZConnection,
     DB,
-    rxmemds,
     IdContext,
     IdSSLOpenSSL,
-    {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
+    {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)OR DEFINED(COM_LIB)}
     def,
     {$ENDIF}
     IdTime,
@@ -23,7 +22,7 @@ uses
     Graphics,
     ubarcodes,
     Math,
-    nb30;
+    rxmemds;
 
 type
 
@@ -80,10 +79,10 @@ type
 
     TConexaoTipo = (cnCaixa, cnServico, cnNaoDefinido);
     TAguardaEvento = (agTempo, agEvento, agAborta);
-    TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
-    TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); stdcall;
+    TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
+    TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
     TServidorRecebimento = procedure(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VO_AContext: TIdContext);
-    TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer): integer; stdcall;
+    TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer): integer; cdecl;
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado, csNaoInicializado);
     TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada,
         tsComErro, tsAbortada, tsAguardandoDadosPDV);
@@ -175,8 +174,8 @@ procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData)
 function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
 procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
-{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) or DEFINED(com_lib)}
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer;VP_Debug:Boolean=True);
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
@@ -195,7 +194,7 @@ function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
 function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
 function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
 function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
-function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): Real;
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
 procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
@@ -203,20 +202,20 @@ procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
 
-function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
-function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; stdcall;
-function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
-function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
-procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
-function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
-function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
-function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
-function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
-function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
-function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
-function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
-procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
-function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; stdcall;
+function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
+function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
+function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+procedure mensagemfree(VP_Mensagem: Pointer); cdecl;
+function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+function mensagemtagcount(VP_Mensagem: Pointer): integer; cdecl;
+function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+procedure mensagemlimpar(VP_Mensagem: Pointer); cdecl;
+function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 
 
 
@@ -415,19 +414,19 @@ begin
 end;
 
 
-function mensagemcreate(var VP_Mensagem: Pointer): integer; stdcall;
+function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
 begin
     Result := 0;
     Pointer(VP_Mensagem) := pointer(TMensagem.Create);
 
 end;
 
-function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; stdcall;
+function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
 begin
     Result := TMensagem(VP_Mensagem).CarregaTags(VP_Dados);
 end;
 
-function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
     VL_Dados: ansistring;
 
@@ -438,7 +437,7 @@ begin
     StrPCopy(VO_Dados, VL_Dados);
 end;
 
-function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
     VL_String: string;
 begin
@@ -448,23 +447,23 @@ begin
     StrPCopy(VO_Dados, VL_String);
 end;
 
-procedure mensagemfree(VP_Mensagem: Pointer); stdcall;
+procedure mensagemfree(VP_Mensagem: Pointer); cdecl;
 begin
     if Assigned(VP_Mensagem) then
         TMensagem(VP_Mensagem).Free;
 end;
 
-function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
+function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 begin
     Result := TMensagem(VP_Mensagem).AddTag(VP_Tag, VP_Dados);
 end;
 
-function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; stdcall;
+function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 begin
     Result := TMensagem(VP_Mensagem).AddComando(VP_Tag, VP_Dados);
 end;
 
-function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
     VL_String: string;
 begin
@@ -474,12 +473,12 @@ begin
     StrPCopy(VO_Dados, VL_String);
 end;
 
-function mensagemtagcount(VP_Mensagem: Pointer): integer; stdcall;
+function mensagemtagcount(VP_Mensagem: Pointer): integer; cdecl;
 begin
     Result := TMensagem(VP_Mensagem).TagCount;
 end;
 
-function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
+function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
     VL_Dados: ansistring;
 begin
@@ -491,7 +490,7 @@ begin
 
 end;
 
-function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; stdcall;
+function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
     VL_Dados, VL_Tag: ansistring;
 begin
@@ -506,7 +505,7 @@ begin
     StrPCopy(VO_Tag, VL_Tag);
 end;
 
-function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; stdcall;
+function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
     VL_Dados: ansistring;
 
@@ -517,7 +516,7 @@ begin
     StrPCopy(VO_Dados, VL_Dados);
 end;
 
-procedure mensagemlimpar(VP_Mensagem: Pointer); stdcall;
+procedure mensagemlimpar(VP_Mensagem: Pointer); cdecl;
 begin
     TMensagem(VP_Mensagem).Limpar;
 end;
@@ -528,7 +527,7 @@ end;
 { TErroMensagem }
 
 
-function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; stdcall;
+function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 var
     VL_String:String;
 begin
@@ -553,7 +552,7 @@ begin
             9: VL_String := 'HOST  NÃO INFORMADO PARA O TEF';
             10: VL_String := 'HOST NÃO COMPATÍVEL PARA O TEF';
             11: VL_String := 'PORTA NÃO INFORMADA PARA O TEF';
-            12: VL_String := 'PORTA NÃO COMPATÍVEL  PARA O TEF';
+            12: VL_String := 'PORTA NÃO COMPATÍVEL PARA O TEF';
             13: VL_String := 'VERSÃO_COMUNICAÇÃO NÃO INFORMADA PARA O TEF';
             14: VL_String := 'VERSÃO_COMUNICAÇÃO NÃO COMPATÍVEL PARA O TEF';
             15: VL_String := 'CHAVE NÃO INFORMADA PARA O TEF';
@@ -606,9 +605,9 @@ begin
             62: VL_String := 'ERRO NO PEDIDO DE CRIAÇÃO DE TRANSAÇÃO';
             63: VL_String := 'BIN JA ESTAVA CADASTRADO PARA OUTRO MODULO';
             64: VL_String := 'REGISTRO DE MODULO NÃO CARREGADO OU NÃO LOCALIZADO';
-            65: VL_String := 'NÃO FOI POSSIVE ATUALIZAR A TABELA DE BINS';
+            65: VL_String := 'NÃO FOI POSSIVEL ATUALIZAR A TABELA DE BINS';
             66: VL_String := 'CONEXAO DO TEMPORIZADOR NAO ENCONTRADA';
-            67: VL_String := 'A TRANSMISSAO NAO REPONDIDA EM TEMPO HABIL';
+            67: VL_String := 'A TRANSMISSAO NAO RESPONDIDA EM TEMPO HABIL';
             68: VL_String := 'DADOS DA TRANSMISSÃO NÃO TEM COMANDO 00D1';
             69: VL_String := 'A COMUNICACAO FOI ABORTADA';
             70: VL_String := 'Modulo config não carregado para incluir solicitação';
@@ -632,6 +631,7 @@ begin
             88: VL_String := 'TAG não é um valor Hexadecimal';
             89: VL_String := 'Chave da transação não localizada';
             90: VL_String := 'Autorização da venda não localizada';
+            91: VL_String := 'Código da loja não localizado';
 
             else
             begin
@@ -1020,13 +1020,17 @@ begin
     end;
 end;
 
-{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer);
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)or defined(com_lib)}
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer;VP_Debug:Boolean=True);
 var
     VL_Arquivo: TextFile;
 begin
     if VP_Arquivo = '' then
         exit;
+
+    if not VP_Debug then
+    Exit;
+
     EnterCriticalSection(VF_CriticoLog);
     try
         AssignFile(VL_Arquivo, PChar(VP_Arquivo));
@@ -1251,7 +1255,7 @@ end;
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean);
 var
-    I: int64;
+    I: integer;
 begin
     if not Assigned(VO_TOrigemMemDataset) then
         exit;
@@ -1529,7 +1533,7 @@ begin
     Result := Length(fTags) - 1;
 end;
 
-function TempoPassouMiliSegundos(VP_Agora: TDateTime): integer;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): Real;
 begin
     Result := TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
 end;

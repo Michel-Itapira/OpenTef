@@ -58,7 +58,7 @@ type
         ServidorPorta: integer;
         Hora: TDateTime;
         ID: integer;
-        DOC:String;
+        DOC: string;
         Terminal_Tipo: ansistring;
         Terminal_ID: integer;
         ChaveComunicacaoIDX: integer;
@@ -150,6 +150,8 @@ var
 
 implementation
 
+uses
+    Def;
 
 {$R *.lfm}
 
@@ -438,7 +440,7 @@ begin
     ClienteIp := '';
     ClientePorta := 0;
 
-    DOC:='';
+    DOC := '';
     Terminal_Tipo := '';
     Terminal_ID := 0;
 
@@ -560,9 +562,21 @@ end;
 procedure TDComunicador.DataModuleCreate(Sender: TObject);
 begin
     V_ProcID := 0;
+
+    GravaLog(V_ArquivoLog, 0, '', 'Comunicador', '10820021612', 'TDComunicador.DataModuleCreate', '', 1, C_Debug);
+
     V_EventoSocketCliente := TEventoSocket.Create;
+
+    GravaLog(V_ArquivoLog, 0, '', 'Comunicador', '10820021613', 'TDComunicador.DataModuleCreate TEventoSocket.Create', '', 1, C_Debug);
+
     V_ChavesDasConexoes := TTChaveConexao.Create;
+
+    GravaLog(V_ArquivoLog, 0, '', 'Comunicador', '10820021614', 'TDComunicador.DataModuleCreate TTChaveConexao.Create', '', 1, C_Debug);
+
     CriptoRsa.GenerateKeyPair;
+
+    GravaLog(V_ArquivoLog, 0, '', 'Comunicador', '10820021615', 'TDComunicador.DataModuleCreate GenerateKeyPair', '', 1, C_Debug);
+
     F_NumeroConexao := 0;
 
 end;
@@ -570,20 +584,19 @@ end;
 procedure TDComunicador.DataModuleDestroy(Sender: TObject);
 var
     VL_I: integer;
-    VL_Temporizador: TTemporizador;
+
 begin
     desativartodasconexao;
 
     for VL_I := 0 to V_EventoSocketCliente.fTemporizadores.Count - 1 do
         V_EventoSocketCliente.abortar(TTemporizador(V_EventoSocketCliente.fTemporizadores[VL_I]).V_ID);
 
-  {  VL_Temporizador := TTemporizador.Create;
-    VL_Temporizador.aguarda(2000, True, VL_Temporizador);
-    VL_Temporizador.Free;}
 
-
-    V_ChavesDasConexoes.Free;
-    V_ChavesDasConexoes := nil;
+    if Assigned(V_ChavesDasConexoes) then
+    begin
+        V_ChavesDasConexoes.Free;
+        V_ChavesDasConexoes := nil;
+    end;
     if Assigned(V_ConexaoCliente) then
     begin
         V_ConexaoCliente.Free;
@@ -593,9 +606,7 @@ begin
     if Assigned(V_ThRecebeEscuta) then
     begin
         V_ThRecebeEscuta.parar;
-        V_ThRecebeEscuta.Terminate;
-        V_ThRecebeEscuta.WaitFor;
-        V_ThRecebeEscuta:=nil;
+        V_ThRecebeEscuta := nil;
     end;
 
 
@@ -1061,7 +1072,7 @@ begin
         end;
     finally
         begin
-            sleep(100);
+            VL_Mensagem.Free;
         end;
     end;
 

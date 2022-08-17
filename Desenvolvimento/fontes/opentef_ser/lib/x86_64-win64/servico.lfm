@@ -3,6 +3,8 @@ object DServico: TDServico
   OnStart = DataModuleStart
   OnStop = DataModuleStop
   OnShutDown = DataModuleShutDown
+  AfterInstall = DataModuleAfterInstall
+  BeforeUnInstall = DataModuleBeforeUnInstall
   Height = 150
   HorizontalOffset = 620
   VerticalOffset = 267

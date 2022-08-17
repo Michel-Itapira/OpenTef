@@ -1,0 +1,108 @@
+object FApp: TFApp
+  Left = 433
+  Height = 374
+  Top = 266
+  Width = 1248
+  Caption = 'Open Tef'
+  ClientHeight = 374
+  ClientWidth = 1248
+  OnClose = FormClose
+  LCLVersion = '2.2.2.0'
+  object BIniciar: TButton
+    Left = 8
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Iniciar'
+    OnClick = BIniciarClick
+    TabOrder = 0
+  end
+  object BParar: TButton
+    Left = 88
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Parar'
+    OnClick = BPararClick
+    TabOrder = 1
+  end
+  object BMenu: TButton
+    Left = 24
+    Height = 25
+    Top = 86
+    Width = 75
+    Caption = 'Menus'
+    OnClick = BMenuClick
+    TabOrder = 2
+  end
+  object MMenu: TMemo
+    Left = 24
+    Height = 239
+    Top = 120
+    Width = 456
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 3
+  end
+  object BBin: TButton
+    Left = 928
+    Height = 25
+    Top = 80
+    Width = 75
+    Caption = 'Bin'
+    OnClick = BBinClick
+    TabOrder = 4
+  end
+  object MBIN: TMemo
+    Left = 928
+    Height = 239
+    Top = 120
+    Width = 304
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 5
+  end
+  object BMenuOperaciona: TButton
+    Left = 488
+    Height = 25
+    Top = 88
+    Width = 152
+    Caption = 'Menu Operacional'
+    OnClick = BMenuOperacionaClick
+    TabOrder = 6
+  end
+  object MMenuOperacional: TMemo
+    Left = 488
+    Height = 239
+    Top = 120
+    Width = 432
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 7
+  end
+  object Button1: TButton
+    Left = 928
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 8
+  end
+  object Image2: TImage
+    Left = 1056
+    Height = 90
+    Top = 0
+    Width = 90
+    Stretch = True
+  end
+  object BarcodeQR1: TBarcodeQR
+    Left = 808
+    Top = 2
+    StrictSize = True
+    Text = 'OpenTef'
+  end
+end

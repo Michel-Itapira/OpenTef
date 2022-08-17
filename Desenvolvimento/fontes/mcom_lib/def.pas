@@ -12,6 +12,10 @@ const
     C_Programa: string = 'mcom_lib';
     C_Mensagem=1;
 
+var
+      C_Debug:Boolean=True;
+
+
 
 implementation
 
