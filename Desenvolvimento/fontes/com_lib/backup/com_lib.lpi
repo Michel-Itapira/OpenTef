@@ -135,7 +135,8 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dCLIENTE"/>
+      <CustomOptions Value="-dCLIENTE
+-dCOM_LIB"/>
       <OtherDefines Count="1">
         <Define0 Value="CLIENTE"/>
       </OtherDefines>

@@ -43,12 +43,13 @@ object FApp: TFApp
     Lines.Strings = (
       'Memo1'
     )
+    ScrollBars = ssAutoVertical
     TabOrder = 3
   end
   object BBin: TButton
     Left = 928
     Height = 25
-    Top = 80
+    Top = 86
     Width = 75
     Caption = 'Bin'
     OnClick = BBinClick
@@ -62,6 +63,7 @@ object FApp: TFApp
     Lines.Strings = (
       'Memo1'
     )
+    ScrollBars = ssAutoVertical
     TabOrder = 5
   end
   object BMenuOperaciona: TButton
@@ -81,10 +83,11 @@ object FApp: TFApp
     Lines.Strings = (
       'Memo1'
     )
+    ScrollBars = ssAutoVertical
     TabOrder = 7
   end
   object Button1: TButton
-    Left = 928
+    Left = 944
     Height = 25
     Top = 8
     Width = 75
@@ -93,16 +96,36 @@ object FApp: TFApp
     TabOrder = 8
   end
   object Image2: TImage
-    Left = 1056
+    Left = 1088
     Height = 90
-    Top = 0
+    Top = 15
     Width = 90
     Stretch = True
   end
   object BarcodeQR1: TBarcodeQR
-    Left = 808
-    Top = 2
-    StrictSize = True
-    Text = 'OpenTef'
+    Left = 688
+    Height = 46
+    Top = 24
+    Width = 64
+    StrictSize = False
+    Text = 'https://www.seicon.com.br'
+  end
+  object Button2: TButton
+    Left = 472
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Envia PDV'
+    OnClick = Button2Click
+    TabOrder = 9
+  end
+  object Button3: TButton
+    Left = 185
+    Height = 25
+    Top = 8
+    Width = 99
+    Caption = 'Solicita bin'
+    OnClick = Button3Click
+    TabOrder = 10
   end
 end

@@ -7,8 +7,8 @@ interface
 uses
     Classes,
     SysUtils,
-    StrUtils,
     Forms,
+    StrUtils,
     Controls,
     Graphics,
     Dialogs,
@@ -182,13 +182,11 @@ type
         TabMultLojaModuloBModificar: TBitBtn;
         TabMultLojaModuloBPesquisaModuloConf: TBitBtn;
         TabMultLojaModuloCkHabilitar: TCheckBox;
-        TabMultLojaModuloECodigo: TEdit;
         TabMultLojaModuloEFiltro: TEdit;
         TabMultLojaModuloEID: TEdit;
         TabMultLojaModuloEModuloConf: TEdit;
         TabMultLojaModuloEModuloConfID: TEdit;
         TabMultLojaModuloGrid: TRxDBGrid;
-        TabMultLojaModuloLCodigo: TLabel;
         TabMultLojaModuloLFiltro: TLabel;
         TabMultLojaModuloLID: TLabel;
         TabMultLojaModuloLModuloConf: TLabel;
@@ -540,7 +538,6 @@ type
         procedure MDAdquirenteFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDBinAfterScroll(DataSet: TDataSet);
         procedure MDConfiguradorFilterRecord(DataSet: TDataSet; var Accept: boolean);
-        procedure MDLojaAfterOpen(DataSet: TDataSet);
         procedure MDLojaFilterRecord(DataSet: TDataSet; var Accept: boolean);
         procedure MDLojaFuncaoCalcFields(DataSet: TDataSet);
         procedure MDLojaFuncaoFilterRecord(DataSet: TDataSet; var Accept: boolean);
@@ -720,6 +717,7 @@ type
         procedure Conectar;
         procedure Desconectar;
         procedure LimparTela;
+        procedure IniciarLib;
         function FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
         function FiltrarTabela(VP_DBGrid: TDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
         procedure CarregaCampos(VP_TabelaCarregamento: string);
@@ -743,13 +741,13 @@ type
     TTefFinalizar = function(): integer; cdecl;
     TTefDesconectar = function(): integer; cdecl;
     TTLogin = function(VP_Host: PChar; VP_Porta: integer; VP_Chave: PChar; VP_Versao_Comunicacao: integer; VP_Senha: PChar;
-        VP_Tipo: PChar; var VO_Mensagem: PChar): integer; cdecl;
+        VP_Tipo: PChar; VP_Terminal_Id: integer): integer; cdecl;
     TTOpenTefStatus = function(var VO_StatusRetorno: integer): integer; cdecl;
     TTSolicitacaoBlocante = function(VP_Dados: PChar; var VO_Retorno: PChar; VP_Tempo: integer): integer; cdecl;
 
 
 
-procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
+procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 
 var
     F_Principal: Tfprincipal;
@@ -764,6 +762,7 @@ var
     F_Host: string;
     F_Porta: integer;
     F_Chave: string;
+    F_Terminal_ID: integer;
     F_Permissao: boolean;
     F_Navegar: boolean;
     F_TipoConfigurador: TPermissao;
@@ -782,9 +781,10 @@ const
 
 implementation
 
-procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
+procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 begin
-
+ if VP_Erro=96 then
+ F_Principal.Desconectar;
 end;
 
 {$R *.lfm}
@@ -832,10 +832,7 @@ procedure Tfprincipal.BConectarClick(Sender: TObject);
 var
     VL_Codigo, VL_Status: integer;
     VL_TMensagem: TMensagem;
-    VL_Tag: string;
-    VL_Senha: ansistring;
     VL_Tipo: ansistring;
-    VL_PMensagem, VL_PTipo, VL_PSenha, VL_PChave, VL_PHost: PChar;
 begin
     if BConectar.Caption = 'Desconectar' then
     begin
@@ -844,14 +841,7 @@ begin
     end;
     try
         VL_TMensagem := TMensagem.Create;
-        VL_Tag := '';
-        VL_Senha := '';
         VL_Tipo := '';
-        New(VL_PMensagem);
-        New(VL_PSenha);
-        New(VL_PTipo);
-        New(VL_PChave);
-        New(VL_PHost);
         VL_Status := 0;
         if not FileExists(ExtractFilePath(ParamStr(0)) + 'config_tef.ini') then
         begin
@@ -859,6 +849,7 @@ begin
             F_Conf.WriteInteger('Servidor', 'Porta', 0);
             F_Conf.WriteString('Servidor', 'Host', '');
             F_Conf.WriteString('Servidor', 'Chave', '');
+            F_Conf.WriteString('Servidor', 'ID', '');
             F_Conf.Free;
         end;
 
@@ -869,8 +860,8 @@ begin
             F_Porta := F_Conf.ReadInteger('Servidor', 'Porta', 0);
             F_Host := F_Conf.ReadString('Servidor', 'Host', '');
             F_Chave := F_Conf.ReadString('Servidor', 'Chave', '');
+            F_Terminal_ID := StrToInt(F_Conf.ReadString('Servidor', 'ID', ''));
         end;
-        VL_Senha := ESenha.Text;
         case CTipo.ItemIndex of
             Ord(pmC):
             begin
@@ -896,11 +887,8 @@ begin
             ShowMessage('Define um tipo de configurador para logar');
             exit;
         end;
-        StrPCopy(VL_PSenha, VL_Senha);
-        StrPCopy(VL_PTipo, VL_Tipo);
-        StrPCopy(VL_PChave, F_Chave);
-        StrPCopy(VL_PHost, F_Host);
-        VL_Codigo := F_Login(VL_PHost, F_Porta, VL_PChave, C_Versao_Mensagem, VL_PSenha, VL_PTipo, VL_PMensagem);
+
+        VL_Codigo := F_Login(Pchar(F_Host), F_Porta, Pchar(F_Chave), C_Versao_Mensagem, Pchar(ESenha.Text), Pchar(VL_Tipo), F_Terminal_ID);
 
         if mensagemerro(VL_Codigo, V_Erro) > 0 then
         begin
@@ -925,20 +913,13 @@ begin
             BConectar.ImageIndex := 4;
             F_Permissao := True;
             CarregarTabelas(True, '', '', 0);
-            TabMultLojaTabModuloDados.OnShow(SELF);
             Exit;
         end;
-        VL_Tag := VL_TMensagem.ComandoDados;
 
 
 
     finally
         begin
-            Dispose(VL_PMensagem);
-            Dispose(VL_PSenha);
-            Dispose(VL_PTipo);
-            Dispose(VL_PChave);
-            Dispose(VL_PHost);
             VL_TMensagem.Free;
         end;
 
@@ -951,24 +932,40 @@ var
     VL_FConfg: TFConfigOpenTef;
 begin
     VL_FConfg := TFConfigOpenTef.Create(Self);
-    F_Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0))+'..\..\opentef\win64\open_tef.ini'));
+    //carrega opentef.ini
+    F_Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0)) + '..\..\opentef\win64\open_tef.ini'));
     if F_Conf.ReadInteger('Servidor', 'Porta', 0) <> 0 then
     begin
-        VL_FConfg.OpenTefEPorta.Text := inttostr(F_Conf.ReadInteger('Servidor', 'Porta', 0));
-        VL_FConfg.OpenTefCPortaAtiva.Checked := F_Conf.ReadBool('Servidor', 'Ativa',false);
+        VL_FConfg.TabOpenTefEPorta.Text := IntToStr(F_Conf.ReadInteger('Servidor', 'Porta', 0));
+        VL_FConfg.TabOpenTefCPortaAtiva.Checked := F_Conf.ReadBool('Servidor', 'Ativa', False);
     end
     else
     begin
-    VL_FConfg.OpenTefEPorta.Text:='';
-    VL_FConfg.OpenTefCPortaAtiva.Checked:=false;
+        VL_FConfg.TabOpenTefEPorta.Text := '';
+        VL_FConfg.TabOpenTefCPortaAtiva.Checked := False;
     end;
+    //carrega config.ini
+    F_Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0)) + 'config_tef.ini'));
 
+    if F_Conf.ReadInteger('Servidor', 'Porta', 0) <> 0 then
+    begin
+        VL_FConfg.TabConfiguradorEPorta.Text := IntToStr(F_Conf.ReadInteger('Servidor', 'Porta', 0));
+        VL_FConfg.TabConfiguradorEHost.Text := F_Conf.ReadString('Servidor', 'Host', '');
+        VL_FConfg.TabConfiguradorEChave.Text := F_Conf.ReadString('Servidor', 'Chave', '');
+    end
+    else
+    begin
+        VL_FConfg.TabConfiguradorEPorta.Text := '';
+        VL_FConfg.TabConfiguradorEHost.Text := '';
+        VL_FConfg.TabConfiguradorEChave.Text := '';
+    end;
+    VL_FConfg.PPrincipal.TabIndex := 0;
     VL_FConfg.ShowModal;
 end;
 
 procedure Tfprincipal.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-
+    F_Finalizar;
 end;
 
 procedure Tfprincipal.MDAdquirenteAfterScroll(DataSet: TDataSet);
@@ -991,11 +988,6 @@ begin
 end;
 
 procedure Tfprincipal.MDConfiguradorFilterRecord(DataSet: TDataSet; var Accept: boolean);
-begin
-
-end;
-
-procedure Tfprincipal.MDLojaAfterOpen(DataSet: TDataSet);
 begin
 
 end;
@@ -1130,7 +1122,7 @@ end;
 
 procedure Tfprincipal.MDMultiLojaAfterScroll(DataSet: TDataSet);
 begin
-    if ((MDMultiLoja.Active = False) or (MDMultiLoja.RecordCount = 0) or (F_Navegar = False)) then
+    {if ((MDMultiLoja.Active = False) or (MDMultiLoja.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
     if MDMultiLojaModuloConf.Active then
@@ -1155,7 +1147,7 @@ begin
         TabMultLojaTabFuncaoDados.OnShow(self);
     end
     else
-        TabMultLojaTabFuncaoDados.OnShow(self);
+        TabMultLojaTabFuncaoDados.OnShow(self);  }
 
 
     CarregaCampos('MULTILOJA');
@@ -2942,7 +2934,7 @@ end;
 
 procedure Tfprincipal.TabLojaTabModuloDadosShow(Sender: TObject);
 begin
-    if ((F_Permissao) and (F_Navegar)) then
+    if ((F_Permissao) and (F_Navegar) and (MDLoja.RecordCount>0)) then
         CarregarTabelas(False, '00A7', '003C', MDLoja.FieldByName('ID').AsInteger);
 end;
 
@@ -3212,15 +3204,7 @@ begin
     F_Permissao := False;
     F_TipoConfigurador := pmS;
 
-    F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
-    Pointer(F_Inicializar) := GetProcAddress(F_ComLib, 'inicializar');
-    Pointer(F_Finalizar) := GetProcAddress(F_ComLib, 'finalizar');
-    Pointer(F_Desconectar) := GetProcAddress(F_ComLib, 'desconectar');
-    Pointer(F_Login) := GetProcAddress(F_ComLib, 'login');
-    Pointer(F_SolicitacaoBlocante) := GetProcAddress(F_ComLib, 'solicitacaoblocante');
-    Pointer(F_OpenTefStatus) := GetProcAddress(F_ComLib, 'opentefstatus');
-
-    F_Inicializar(@Retorno, PChar(ExtractFilePath(ParamStr(0)) + 'config_app_com_lib.log'));
+   IniciarLib;
 
 
     MDModuloFunc.Open;
@@ -3338,7 +3322,6 @@ begin
             TabMultLojaTabModuloDados.OnShow(self);
 
         TabMultLojaModuloEID.Text := MDMultiLojaModuloConf.FieldByName('ID').AsString;
-        TabMultLojaModuloECodigo.Text := MDMultiLojaModuloConf.FieldByName('CODIGO').AsString;
         TabMultLojaModuloEModuloConfID.Text := MDMultiLojaModuloConf.FieldByName('MODULO_CONF_ID').AsString;
         TabMultLojaModuloEModuloConf.Text := MDMultiLojaModuloConf.FieldByName('MODULO_CONF').AsString;
 
@@ -3392,13 +3375,13 @@ begin
     end;
     //TabLojaPdv
     VL_TipoDocumento := '';
-    if length(MDLojaPDV.FieldByName('DOC').AsString) > 12 then
-        VL_TipoDocumento := 'CNPJ: ' + FormataDoc(tdCNPJ, MDLojaPDV.FieldByName('DOC').AsString)
-    else
-        VL_TipoDocumento := 'CPF: ' + FormataDoc(tdCPF, MDLojaPDV.FieldByName('DOC').AsString);
-
-    if ((MDLojaPDV.Active) and ((VP_TabelaCarregamento = 'LOJAPDV') or (VP_TabelaCarregamento = 'TODAS'))) then
+    if ((MDLojaPDV.Active) and (MDPdv.Active)) and ((VP_TabelaCarregamento = 'LOJAPDV') or (VP_TabelaCarregamento = 'TODAS')) then
     begin
+        if length(MDLojaPDV.FieldByName('DOC').AsString) > 12 then
+            VL_TipoDocumento := 'CNPJ: ' + FormataDoc(tdCNPJ, MDLojaPDV.FieldByName('DOC').AsString)
+        else
+            VL_TipoDocumento := 'CPF: ' + FormataDoc(tdCPF, MDLojaPDV.FieldByName('DOC').AsString);
+
         TabPdvMDadosLoja.Clear;
         TabPdvMDadosLoja.Lines.Add('ID:  ' + MDLojaPDV.FieldByName('ID').AsString + VL_TipoDocumento);
         TabPdvMDadosLoja.Lines.Add('');
@@ -3570,8 +3553,8 @@ begin
 
             MDMultiLoja.FieldByName('ID').AsInteger := VL_ID;
             MDMultiLoja.FieldByName('LOJA_ID').AsString := MDLoja.FieldByName('ID').AsString;
-            MDMultiLoja.FieldByName('CNPJ').AsString := MDLoja.FieldByName('CNPJ').AsString;
-            MDMultiLoja.FieldByName('RAZAO').AsString := MDLoja.FieldByName('RAZAO').AsString;
+      //      MDMultiLoja.FieldByName('CNPJ').AsString := MDLoja.FieldByName('CNPJ').AsString;
+       //     MDMultiLoja.FieldByName('RAZAO').AsString := MDLoja.FieldByName('RAZAO').AsString;
             if TabMultLojaCkLojaMaster.Checked then
                 MDMultiLoja.FieldByName('HABILITADO').AsString := 'T'
             else
@@ -3654,7 +3637,6 @@ begin
                 MDMultiLojaModuloConf.FieldByName('MODULO').AsString := MDPesquisaModulo.FieldByName('MODULO_DESCRICAO').AsString;
             MDMultiLojaModuloConf.FieldByName('MODULO_CONF_ID').AsString := TabMultLojaModuloEModuloConfID.Text;
             MDMultiLojaModuloConf.FieldByName('MODULO_CONF').AsString := TabMultLojaModuloEModuloConf.Text;
-            MDMultiLojaModuloConf.FieldByName('CODIGO').AsString := TabMultLojaModuloECodigo.Text;
             if TabMultLojaModuloCkHabilitar.Checked then
                 MDMultiLojaModuloConf.FieldByName('HABILITADO').AsString := 'T'
             else
@@ -4165,8 +4147,8 @@ begin
     VL_Tabela := TRxMemoryData.Create(nil);
     try
         if F_Permissao = False then
-            exit;
-        F_Navegar := False;
+
+            F_Navegar := False;
 
         //carrega tabela
         VL_Mensagem.Limpar;
@@ -4193,8 +4175,9 @@ begin
 
         VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
 
-        if mensagemerro(VL_Codigo, V_Erro) <> 0 then
+        if VL_Codigo<> 0 then
         begin
+            mensagemerro(VL_Codigo, V_Erro);
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Desconectar;
             exit;
@@ -4629,24 +4612,43 @@ procedure Tfprincipal.LimparTela;
 var
     i: integer;
 begin
-    MDLoja.EmptyTable;
-    MDLojaPdv.EmptyTable;
-    MDPdv.EmptyTable;
-    MDPinPad.EmptyTable;
-    MDConfigurador.EmptyTable;
+  {  MDLoja.EmptyTable;
     MDMultiLoja.EmptyTable;
-    MDModulo.EmptyTable;
-    MDModuloConfig.EmptyTable;
-    MDBin.EmptyTable;
+    MDMultiLojaLoja.EmptyTable;
     MDMultiLojaModuloConf.EmptyTable;
-    MDMultiLojaModuloConfFuncao.EmptyTable;
     MDLojaModuloConf.EmptyTable;
+    MDMultiLojaFuncao.EmptyTable;
+    MDLojaFuncao.EmptyTable;
+    MDMultiLojaModuloConfFuncao.EmptyTable;
+    MDLojaModuloConfFuncao.EmptyTable;
+    MDPinPad.EmptyTable;
+    MDPinPadFuncao.EmptyTable;
+    MDPinPadPdv.EmptyTable;
+    MDPdv.EmptyTable;
+    MDLojaPdv.EmptyTable;
+    MDPdvFuncao.EmptyTable;
+    MDPdvModulo.EmptyTable;
+    MDConfigurador.EmptyTable;
+    MDModulo.EmptyTable;
+    MDModuloFunc.EmptyTable;
+    MDModuloConfig.EmptyTable;
+    MDPesquisaModulo.EmptyTable;
+    MDModuloConfFuncao.EmptyTable;
+    MDBin.EmptyTable;
     MDTags.EmptyTable;
+    MDAdquirente.EmptyTable;   }
+
+
 
     with self do
     begin
         for i := 0 to ComponentCount - 1 do
         begin
+            if Components[i] is TRxMemoryData then
+            begin
+                TRxMemoryData(Components[i]).EmptyTable;
+                TRxMemoryData(Components[i]).Filtered:=false;
+            end;
             if Components[i] is TEdit then
                 TEdit(Components[i]).Text := '';
             if Components[i] is TMaskEdit then
@@ -4664,6 +4666,19 @@ begin
                 TCheckBox(Components[i]).Checked := False;
         end;
     end;
+end;
+
+procedure Tfprincipal.IniciarLib;
+begin
+      F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
+    Pointer(F_Inicializar) := GetProcAddress(F_ComLib, 'inicializar');
+    Pointer(F_Finalizar) := GetProcAddress(F_ComLib, 'finalizar');
+    Pointer(F_Desconectar) := GetProcAddress(F_ComLib, 'desconectar');
+    Pointer(F_Login) := GetProcAddress(F_ComLib, 'login');
+    Pointer(F_SolicitacaoBlocante) := GetProcAddress(F_ComLib, 'solicitacaoblocante');
+    Pointer(F_OpenTefStatus) := GetProcAddress(F_ComLib, 'opentefstatus');
+
+    F_Inicializar(@Retorno, PChar(ExtractFilePath(ParamStr(0)) + 'config_app_com_lib.log'));
 end;
 
 function Tfprincipal.FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
@@ -4715,7 +4730,7 @@ end;
 
 procedure Tfprincipal.MDLojaAfterScroll(DataSet: TDataSet);
 begin
-    if ((MDLoja.Active = False) or (MDLoja.RecordCount = 0) or (F_Navegar = False)) then
+ {   if ((MDLoja.Active = False) or (MDLoja.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
     if MDLojaModuloConf.Active then
@@ -4740,7 +4755,7 @@ begin
         TabLojaTabFuncaoDados.OnShow(self);
     end
     else
-        TabLojaTabFuncaoDados.OnShow(self);
+        TabLojaTabFuncaoDados.OnShow(self);  }
 
     CarregaCampos('MULTILOJA');
 end;
@@ -7693,7 +7708,7 @@ end;
 
 procedure Tfprincipal.TabPdvTabDadosModuloShow(Sender: TObject);
 begin
-    if ((F_Permissao) and (F_Navegar)) then
+    if ((F_Permissao) and (F_Navegar) and (MDPdv.Active)) then
         CarregarTabelas(False, '00C7', '0043', MDPdv.FieldByName('ID').AsInteger);
 end;
 

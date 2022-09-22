@@ -15,11 +15,9 @@ uses
 {$R *.res}
 
 begin
-  RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(Tfprincipal, f_principal);
-  Application.CreateForm(TFConfigOpenTef, FConfigOpenTef);
   Application.Run;
 end.
 

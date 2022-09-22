@@ -8,8 +8,8 @@
       <Unit>
         <Filename Value="mcom_lib.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="117" Y="34"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="128" Y="22"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -20,9 +20,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="383"/>
-        <CursorPos X="5" Y="390"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="127"/>
+        <CursorPos X="29" Y="142"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -33,12 +33,10 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="445"/>
-        <CursorPos X="69" Y="450"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="72"/>
+        <CursorPos X="97" Y="108"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.pas"/>
@@ -46,15 +44,15 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <CursorPos X="105"/>
+        <TopLine Value="947"/>
+        <CursorPos X="98" Y="980"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="2"/>
         <CursorPos Y="17"/>
         <UsageCount Value="245"/>
         <Loaded Value="True"/>
@@ -62,11 +60,10 @@
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="28"/>
         <CursorPos X="7" Y="33"/>
         <UsageCount Value="140"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\frente_caixa\uprincipal.pas"/>
@@ -76,7 +73,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="191"/>
         <CursorPos X="30" Y="203"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="46"/>
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
@@ -86,15 +83,29 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="246"/>
         <CursorPos X="30" Y="281"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbasym.pas"/>
         <UnitName Value="LbAsym"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="6" Y="34"/>
-        <UsageCount Value="16"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="45"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\com_lib\com.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\modulo_lib\modulo_padrao\modulo.pas"/>
+        <ComponentName Value="DModulo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="288"/>
+        <CursorPos Y="250"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
     <OtherDefines Count="3">
@@ -104,124 +115,124 @@
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="17" Column="15"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="26" Column="16" TopLine="7"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="999" Column="42" TopLine="980"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="654" Column="72" TopLine="638"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="999" Column="42" TopLine="980"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="17" Column="32"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="176" Column="44" TopLine="157"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="625" Column="7" TopLine="509"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1104" Column="30" TopLine="1084"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Column="18"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="67" Column="12" TopLine="36"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="69" Column="10" TopLine="38"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="73" Column="41" TopLine="42"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="78" Column="16" TopLine="47"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="89" Column="18" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="142" Column="25" TopLine="111"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="143" Column="25" TopLine="112"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="144" Column="34" TopLine="113"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="146" Column="26" TopLine="115"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="157" Column="58" TopLine="126"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="158" Column="75" TopLine="127"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="177" Column="146" TopLine="146"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="510" Column="17" TopLine="488"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="73" Column="18" TopLine="51"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="209" Column="19" TopLine="182"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="450" Column="69" TopLine="445"/>
-      </Position>
-      <Position>
-        <Filename Value="def.pas"/>
-        <Caret Line="17"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="15" Column="92"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="34" Column="121"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="260" Column="79" TopLine="223"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="47" Column="22" TopLine="26"/>
+        <Caret Line="366" Column="50" TopLine="328"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="372" Column="52" TopLine="334"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="403" Column="49" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="410" Column="53" TopLine="372"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="458" Column="51" TopLine="420"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="465" Column="55" TopLine="427"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="552" Column="56" TopLine="515"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="578" Column="67" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="59" Column="19" TopLine="32"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="21" Column="22"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="412" Column="58" TopLine="361"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="60" Column="64" TopLine="37"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="75" Column="92" TopLine="37"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="91" Column="64" TopLine="53"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="60" Column="64" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="75" Column="92" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="52" Column="28" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="578" Column="50" TopLine="560"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="80" Column="28" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="560" Column="28" TopLine="547"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="580" Column="87" TopLine="547"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="52" Column="29" TopLine="29"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="426" Column="94" TopLine="398"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="463" Column="46" TopLine="458"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="44" Column="21" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="910" Column="24" TopLine="902"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="956" Column="120" TopLine="948"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="969" Column="63" TopLine="947"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="354" Column="31" TopLine="344"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -234,4 +245,15 @@
       </List>
     </HistoryLists>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="mcom.pas"/>
+        <Line Value="242"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>

@@ -3,6 +3,9 @@ library tef_lib;
 {$mode objfpc}{$H+}
 
 uses
+    {$IFDEF UNIX}
+    cthreads,
+    {$ENDIF}
     Interfaces,
     Classes,
     tef,

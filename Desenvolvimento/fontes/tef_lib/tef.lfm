@@ -1,4 +1,5 @@
 object DTef: TDTef
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 220
   HorizontalOffset = 714
@@ -8,6 +9,12 @@ object DTef: TDTef
     PrimeTestIterations = 20
     KeySize = aks128
     Left = 24
+    Top = 16
+  end
+  object CriptoAes: TLbRijndael
+    CipherMode = cmECB
+    KeySize = ks256
+    Left = 112
     Top = 16
   end
 end

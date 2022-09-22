@@ -3,6 +3,10 @@ library mcom_lib;
 {$mode objfpc}{$H+}
 
 uses
+    {$IFDEF UNIX}
+      CThreads,
+    {$ENDIF}
+
     Interfaces,
     Classes,
     mcom,
@@ -30,7 +34,8 @@ exports
     mensagemgettag,
     mensagemgettagidx,
     mensagemtagtostr,
-    mensagemlimpar;
+    mensagemlimpar,
+    mensagemerro;
 
 begin
 

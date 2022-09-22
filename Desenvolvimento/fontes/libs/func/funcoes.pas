@@ -79,23 +79,33 @@ type
 
     TConexaoTipo = (cnCaixa, cnServico, cnNaoDefinido);
     TAguardaEvento = (agTempo, agEvento, agAborta);
-    TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
-    TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
-    TServidorRecebimento = procedure(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; var VO_AContext: TIdContext);
-    TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer): integer; cdecl;
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado, csNaoInicializado);
-    TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada,
-        tsComErro, tsAbortada, tsAguardandoDadosPDV);
-
 
     TPermissao = (pmS, pmC, pmA, pmU);  // pmS=permissao de sistema
     // pmC=permissao de controlador permissao maxima
     // pmA permissao de administrador pode gerenciar as transacao e fazer cadastros
     // pmU permissao de usuario consulta e visualizacao das transacoes
 
+    TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
+    TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
+
+    TRetornoDoCliente = function(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+    TServidorRecebimento = procedure(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
+        VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
+        VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
+    TServidorRecebimentoLib = function(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+        VP_Conexao_ID: integer; VP_Chave: PChar): integer; cdecl;
+    TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada,
+        tsComErro, tsAbortada, tsAguardandoDadosPDV);
+
+
+
+
     TTipoDocumento = (tdCNPJ, tdCPF); // tipo do documento prar formatação
 
     TTipoChave = (tcC50, tcPDV, tcConfigurador, tcModuloConfig); // tipo de chaves de validação
+
+    TTipoTerminal = (ttrNDF, ttrPDV, ttrConfigurador, ttrModulo); // tipo de terminal
 
     TTipoTag = (ttNDF, ttCOMANDO, ttDADOS, ttMENU_PDV, ttMENU_OPERACIONAL, ttPINPAD_FUNC, ttMODULO); //tipo de tag cadastrado no banco de dados
 
@@ -108,8 +118,7 @@ type
     protected
         procedure Execute; override;
     public
-        f_parar: boolean;
-        constructor Create(VP_Suspenso: boolean; VP_Temporizador: Pointer);
+        constructor Create(VP_Temporizador: Pointer);
     end;
 
 
@@ -118,14 +127,15 @@ type
     private
         fTEmporizadorTThread: TTEmporizadorTThread;
         fEvento: TAguardaEvento;
+        fListaThreads: TList;
 
     public
         V_Dados: string;
         V_Executado: boolean;
-        V_Aguardando: boolean;
         V_Aborta: boolean;
+        V_Aguardando: boolean;
         V_ID: string;
-        constructor Create;
+        constructor Create(VO_ListaThreads: TList);
         procedure parar;
         procedure abortar;
         function aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean; VP_Temporizador: Pointer): TAguardaEvento;
@@ -139,6 +149,7 @@ type
         fMensagem: TMensagem;
         fcomando: string;
         fTemporizador: TTemporizador;
+        fAbortada: boolean;
     private
         function GetErro: integer;
         function GetErroDescricao: string;
@@ -174,14 +185,18 @@ procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData)
 function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
 procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
-{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) or DEFINED(com_lib)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer;VP_Debug:Boolean=True);
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib)}
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
+    VP_CodigoErro: integer; VP_Debug: boolean = True);
+function versao(var VO_Dados: PChar): integer; cdecl;
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
 function StrToPermissao(VP_Permissao: ansistring): TPermissao;
 function TipoTagToStr(VP_TipoTag: integer): ansistring;
 function StrToTipoTag(VP_TipoTag: ansistring): integer;
+function TipoTerminalToStr(VP_TipoTerminal: integer): ansistring;
+function StrToTipoTerminal(VP_TipoTerminal: ansistring): integer;
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
 function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
 function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
@@ -194,10 +209,14 @@ function PinPadModeloTipoToStr(VP_PinPadModelo: TPinPadModelo): string;
 function IntToPinPadModelo(VP_PinPadModelo: integer): TPinPadModelo;
 function StrToPinPadModelo(VP_PinPadModelo: string): TPinPadModelo;
 function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
-function TempoPassouMiliSegundos(VP_Agora: TDateTime): Real;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): real;
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
 procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
+function StrToSql(S: string; ConsideraNull: boolean = False; VL_Tamanho: int64 = 0): string;
+function VerificaSelect(Sql: string): string;
+function ConverteSQL(Script: string): string;
+function CriaID: string;
 
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
@@ -215,7 +234,7 @@ function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar
 function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 procedure mensagemlimpar(VP_Mensagem: Pointer); cdecl;
-function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; cdecl;
+function mensagemerro(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 
 
 
@@ -229,6 +248,18 @@ const
 
 
 implementation
+
+function versao(var VO_Dados: PChar): integer; cdecl;
+begin
+    try
+        Result := 0;
+        VO_Dados := StrAlloc(Length(IntToStr(C_Versao[0])) + Length(IntToStr(C_Versao[1])) + Length(IntToStr(C_Versao[2])) + 3);
+        StrPCopy(VO_Dados, IntToStr(C_Versao[0]) + '.' + IntToStr(C_Versao[1]) + '.' + IntToStr(C_Versao[2]));
+    except
+        Result := 1;
+    end;
+
+end;
 
 function CalculaDigito(Texto: string): string;
 var
@@ -527,9 +558,9 @@ end;
 { TErroMensagem }
 
 
-function mensagemerro(VP_CodigoErro: Integer; var VO_RespostaMensagem: PChar): integer; cdecl;
+function mensagemerro(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 var
-    VL_String:String;
+    VL_String: string;
 begin
 
     VO_RespostaMensagem := StrAlloc(2);
@@ -624,7 +655,7 @@ begin
             81: VL_String := 'ESSA CONEXAO NÃO PERMITE APROVAÇÃO';
             82: VL_String := 'ERRO NA EXCLUSÃO DO REGISTRO';
             83: VL_String := 'A CONEXÃO FOI DESCONECTA INESPERADAMENTE';
-            84: VL_String := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAIS NÃO ENVIOU AS CHAVES';
+            84: VL_String := 'A OPERADORA/ADQUIRENTE EXIGE CRIPTOGRAFIA, MAS NÃO ENVIOU AS CHAVES';
             85: VL_String := 'Erro de tempo em capturar a senha no pinpad';
             86: VL_String := 'Erro ao cancelar uma transação';
             87: VL_String := 'Erro na exclusão, TAG oficial não pode ser excluida';
@@ -632,6 +663,16 @@ begin
             89: VL_String := 'Chave da transação não localizada';
             90: VL_String := 'Autorização da venda não localizada';
             91: VL_String := 'Código da loja não localizado';
+            92: VL_String := 'Desafio da chave não completado';
+            93: VL_String := 'ID do terminal não informada para o OPENTEF';
+            94: VL_String := 'ID do terminal não encontrado para o OPENTEF';
+            95: VL_String := 'Login negado pelo adquirente';
+            96: VL_String := 'Cliente Desconectado do servidor';
+            97: VL_String := 'Tarefa não encontrada para remoção';
+            98: VL_String := 'Chaves públicas não trocada';
+            99: VL_String := 'Conexão não encontrada';
+            100: VL_String := 'Conexão não está estabelecida';
+            101: VL_String := 'Comando inválido para o OPENTEF';
 
             else
             begin
@@ -640,53 +681,60 @@ begin
             end;
         end;
 
-            VO_RespostaMensagem := StrAlloc(Length(VL_String)+1);
-            StrPCopy(VO_RespostaMensagem, VL_String);
+        VO_RespostaMensagem := StrAlloc(Length(VL_String) + 1);
+        StrPCopy(VO_RespostaMensagem, VL_String);
     end;
 end;
 
 
 { TTemporizador }
 
-constructor TTemporizador.Create;
+constructor TTemporizador.Create(VO_ListaThreads: TList);
 begin
-    VF_Sequencia := VF_Sequencia + 1;
-    V_ID := IntToStr(VF_Sequencia);
     inherited Create;
-    V_ID := V_ID + FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now);
-    Randomize;
+    fListaThreads := VO_ListaThreads;
     V_Executado := False;
     V_Aborta := False;
-    V_Dados := '';
     V_Aguardando := False;
-    V_ID := V_ID + IntToStr(Random(999));
+    V_Dados := '';
+    V_ID := '';
+
 end;
 
 procedure TTemporizador.parar;
 begin
     V_Executado := True;
-    V_Aguardando := False;
     V_Aborta := False;
     if Assigned(fTEmporizadorTThread) then
-        if not fTEmporizadorTThread.f_parar then
+    begin
+        fTEmporizadorTThread.Terminate;
+        if not V_Aguardando then
         begin
-            fTEmporizadorTThread.f_parar := True;
-            fTEmporizadorTThread.Terminate;
+            fTEmporizadorTThread.WaitFor;
+            fTEmporizadorTThread.Free;
+            fTEmporizadorTThread := nil;
+
         end;
+
+    end;
 end;
 
 procedure TTemporizador.abortar;
 begin
     V_Executado := False;
-    V_Aguardando := False;
     V_Aborta := True;
     if Assigned(fTEmporizadorTThread) then
-        if not fTEmporizadorTThread.f_parar then
+    begin
+        fTEmporizadorTThread.Terminate;
+        if not V_Aguardando then
         begin
-            fTEmporizadorTThread.f_parar := True;
-            fTEmporizadorTThread.Terminate;
+            fTEmporizadorTThread.WaitFor;
+            fTEmporizadorTThread.Free;
+            fTEmporizadorTThread := nil;
+
         end;
 
+    end;
 end;
 
 function TTemporizador.aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean; VP_Temporizador: Pointer): TAguardaEvento;
@@ -702,15 +750,27 @@ begin
             Result := agEvento;
             Exit;
         end;
-        fTEmporizadorTThread := TTEmporizadorTThread.Create(True, VP_Temporizador);
-        fTEmporizadorTThread.fTempo := VP_Tempo;
-        fTEmporizadorTThread.Start;
-        fTEmporizadorTThread.WaitFor;
-        if Assigned(fTEmporizadorTThread) then
+
+        if V_Aborta then
         begin
-            //            fTEmporizadorTThread.free;
-            fTEmporizadorTThread := nil;
+            Result := agAborta;
+            Exit;
         end;
+
+
+        fTEmporizadorTThread := TTEmporizadorTThread.Create(VP_Temporizador);
+        fTEmporizadorTThread.fTempo := VP_Tempo;
+        if Assigned(fListaThreads) then
+            fListaThreads.Add(@fTEmporizadorTThread);
+        fTEmporizadorTThread.Start;
+
+        WaitForThreadTerminate(fTEmporizadorTThread.Handle, VP_Tempo);
+        if Assigned(fListaThreads) then
+            fListaThreads.Remove(@fTEmporizadorTThread);
+
+        //        fTEmporizadorTThread.WaitFor;
+        fTEmporizadorTThread.Free;
+        fTEmporizadorTThread := nil;
 
         if V_Executado then
             Result := agEvento
@@ -728,12 +788,16 @@ end;
 destructor TTemporizador.Destroy;
 begin
     if Assigned(fTEmporizadorTThread) then
-        if not fTEmporizadorTThread.f_parar then
+    begin
+        fTEmporizadorTThread.Terminate;
+        if not V_Aguardando then
         begin
-            fTEmporizadorTThread.f_parar := True;
-            fTEmporizadorTThread.Terminate;
             fTEmporizadorTThread.WaitFor;
+            fTEmporizadorTThread.Free;
+            fTEmporizadorTThread := nil;
+
         end;
+    end;
     inherited Destroy;
 end;
 
@@ -743,29 +807,32 @@ procedure TTEmporizadorTThread.Execute;
 var
     VL_Data: TDateTime;
 begin
-    VL_Data := now;
-    while not Terminated do
-    begin
-        sleep(1);
-        if ((fTempo <> INFINITE) and
-            ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > fTempo)) then
+    try
+        VL_Data := now;
+        while not Terminated do
         begin
-            if Assigned(fTemporizador) then
-                TTemporizador(fTemporizador).fEvento := agTempo;
-            exit;
+            if ((fTempo <> INFINITE) and
+                ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > fTempo)) then
+            begin
+                if Assigned(fTemporizador) then
+                    TTemporizador(fTemporizador).fEvento := agTempo;
+                exit;
+            end;
+            sleep(10);
         end;
+    except
+
     end;
 end;
 
 
 
-constructor TTEmporizadorTThread.Create(VP_Suspenso: boolean; VP_Temporizador: Pointer);
+constructor TTEmporizadorTThread.Create(VP_Temporizador: Pointer);
 begin
-    inherited Create(VP_Suspenso);
+    inherited Create(True);
+    FreeOnTerminate := False;
     TTemporizador(VP_Temporizador).fEvento := agEvento;
     fTemporizador := VP_Temporizador;
-    FreeOnTerminate := True;
-    f_parar := False;
 
 end;
 
@@ -817,6 +884,7 @@ begin
     inherited Create;
     fcomando := VP_Comando;
     fMensagem := TMensagem.Create;
+    fAbortada := False;
 
     if VP_TransacaoString <> '' then
     begin
@@ -1020,8 +1088,9 @@ begin
     end;
 end;
 
-{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)or defined(com_lib)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring; VP_CodigoErro: integer;VP_Debug:Boolean=True);
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib)}
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
+    VP_CodigoErro: integer; VP_Debug: boolean = True);
 var
     VL_Arquivo: TextFile;
 begin
@@ -1029,7 +1098,7 @@ begin
         exit;
 
     if not VP_Debug then
-    Exit;
+        Exit;
 
     EnterCriticalSection(VF_CriticoLog);
     try
@@ -1043,7 +1112,7 @@ begin
         WriteLn(VL_Arquivo, '[ Data:' + DateToStr(now) + '] - [ Hora:' + TimeToStr(now) + '] - [ Linha:' + VP_Linha +
             '] - [ Modulo_ID:' + IntToStr(VP_Modulo_ID) +
             ']- [ TagComando:' + VP_Tag_Comando + '] - [ Programa:' + C_Programa + '] - [ Unit:' +
-            VP_Unit + '] - [ VersaoMensage:' + IntToStr(C_Mensagem) + '] - [ Versao:' + IntToStr(C_Versao[0]) + '.' +
+            VP_Unit + '] - [ VersaoMensagem:' + IntToStr(C_Mensagem) + '] - [ Versao:' + IntToStr(C_Versao[0]) + '.' +
             IntToStr(C_Versao[1]) + '.' + IntToStr(C_Versao[1]) + '] -  [ CodigoErro:' +
             IntToStr(VP_CodigoErro) + ']  - [ Ocorrencia:' + VP_Ocorrencia + '] - [ TMensagem:' + VP_Tag + ']');
 
@@ -1082,16 +1151,47 @@ begin
 
 end;
 
+
+
+
+function TipoTerminalToStr(VP_TipoTerminal: integer): ansistring;
+begin
+    case VP_TipoTerminal of
+        Ord(ttrNDF): Result := 'NDF';
+        Ord(ttrPDV): Result := 'PDV';
+        Ord(ttrConfigurador): Result := 'CONFIGURADOR';
+        Ord(ttrModulo): Result := 'MODULO';
+        else
+            Result := '';
+
+    end;
+end;
+
+function StrToTipoTerminal(VP_TipoTerminal: ansistring): integer;
+begin
+
+    case VP_TipoTerminal of
+        'NDF': Result := Ord(ttrNDF);
+        'PDV': Result := Ord(ttrPDV);
+        'CONFIGUARADOR': Result := Ord(ttrConfigurador);
+        'MODULO': Result := Ord(ttrModulo);
+        else
+            raise Exception.Create('Esse valor:"' + VP_TipoTerminal + '" não é um Tipo de Terminal Válido');
+    end;
+end;
+
+
+
 function TipoTagToStr(VP_TipoTag: integer): ansistring;
 begin
     case VP_TipoTag of
-        ord(ttNDF): Result := 'NDF';
-        ord(ttCOMANDO): Result := 'COMANDO';
-        ord(ttDADOS): Result := 'DADOS';
-        ord(ttMENU_PDV): Result := 'MENU_PDV';
-        ord(ttMENU_OPERACIONAL): Result := 'MENU_OPERACIONAL';
-        ord(ttPINPAD_FUNC): Result := 'PINPAD_FUNC';
-        ord(ttMODULO): Result := 'MODULO';
+        Ord(ttNDF): Result := 'NDF';
+        Ord(ttCOMANDO): Result := 'COMANDO';
+        Ord(ttDADOS): Result := 'DADOS';
+        Ord(ttMENU_PDV): Result := 'MENU_PDV';
+        Ord(ttMENU_OPERACIONAL): Result := 'MENU_OPERACIONAL';
+        Ord(ttPINPAD_FUNC): Result := 'PINPAD_FUNC';
+        Ord(ttMODULO): Result := 'MODULO';
         else
             Result := '';
 
@@ -1102,15 +1202,15 @@ function StrToTipoTag(VP_TipoTag: ansistring): integer;
 begin
 
     case VP_TipoTag of
-        'NDF': Result := ord(ttNDF);
-        'COMANDO': Result := ord(ttCOMANDO);
-        'DADOS': Result := ord(ttDADOS);
-        'MENU_PDV': Result := ord(ttMENU_PDV);
-        'MENU_OPERACIONAL': Result := ord(ttMENU_OPERACIONAL);
-        'PINPAD_FUNC': Result := ord(ttPINPAD_FUNC);
-        'MODULO': Result := ord(ttMODULO);
+        'NDF': Result := Ord(ttNDF);
+        'COMANDO': Result := Ord(ttCOMANDO);
+        'DADOS': Result := Ord(ttDADOS);
+        'MENU_PDV': Result := Ord(ttMENU_PDV);
+        'MENU_OPERACIONAL': Result := Ord(ttMENU_OPERACIONAL);
+        'PINPAD_FUNC': Result := Ord(ttPINPAD_FUNC);
+        'MODULO': Result := Ord(ttMODULO);
         else
-            raise Exception.Create('Esse valor:"' +  VP_TipoTag + '" não é um Tipo de Tag Válido');
+            raise Exception.Create('Esse valor:"' + VP_TipoTag + '" não é um Tipo de Tag Válido');
     end;
 end;
 
@@ -1533,7 +1633,7 @@ begin
     Result := Length(fTags) - 1;
 end;
 
-function TempoPassouMiliSegundos(VP_Agora: TDateTime): Real;
+function TempoPassouMiliSegundos(VP_Agora: TDateTime): real;
 begin
     Result := TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
 end;
@@ -1598,6 +1698,7 @@ var
 
 begin
     Result := 0;
+
     //Verifica se existe o pacote
     if length(fTags) = 0 then
     begin
@@ -1643,6 +1744,300 @@ begin
 
 end;
 
+function StrToSql(S: string; ConsideraNull: boolean = False; VL_Tamanho: int64 = 0): string;
+begin
+    if (ConsideraNull) and ((Trim(S) = '') or (UpperCase(Trim(S)) = 'NULL')) then
+    begin
+        Result := 'NULL';
+        exit;
+    end;
+
+    Result := S;
+
+    if VerificaSelect(Result) <> 'OK' then
+        Result := '';
+
+    // eric 28/10/2019
+    if VL_Tamanho > 0 then
+        Result := copy(Result, 0, VL_Tamanho);
+
+    Result := '''' + ConverteSQL(Result) + '''';
+end;
+
+function VerificaSelect(Sql: string): string;
+var
+    VL_String: string;
+begin
+    VL_String := UpperCase(Sql);
+
+    if ((pos(' OR ', VL_String) = 0) and
+        (pos('OR  ', VL_String) = 0) and // linha nova
+        (pos('  OR', VL_String) = 0) and // linha nova
+        (pos('(OR:', VL_String) = 0) and
+        (pos('(OR ', VL_String) = 0) and
+        (pos('(OR' + #13, VL_String) = 0) and
+        (pos('(OR--', VL_String) = 0) and
+        (pos('(OR/', VL_String) = 0) and
+        (pos('(OR(', VL_String) = 0) and
+        (pos(' OR' + #13, VL_String) = 0) and
+        (pos('OR' + #13, VL_String) = 0) and  // linha nova
+        (pos('OR ' + #13, VL_String) = 0) and // linha nova
+        (pos(' (OR' + #13, VL_String) = 0) and
+        (pos(#$A + 'OR(', VL_String) = 0) and
+        (pos(#$A + 'OR' + #13, VL_String) = 0) and
+        (pos(#$A + 'OR ', VL_String) = 0) and
+        (pos(#$A + 'OR/', VL_String) = 0) and
+        (pos(#$A + 'OR:', VL_String) = 0) and
+        (pos(' OR:', VL_String) = 0) and
+        (pos('OR :', VL_String) = 0) and // linha nova
+        (pos('OR:', VL_String) = 0) and  // linha nova
+        (pos(' OR(', VL_String) = 0) and
+        (pos('/OR', VL_String) = 0) and
+        (pos('/ OR', VL_String) = 0) and
+        (pos('OR/', VL_String) = 0) and
+        (pos('OR /', VL_String) = 0) and // linha nova
+        (pos('(OR ', VL_String) = 0) and
+        (pos('OR--', VL_String) = 0) and
+        (pos('OR --', VL_String) = 0) and
+        (pos(' OR--', VL_String) = 0) and
+        (pos(' OR''', VL_String) = 0) and
+        (pos('''OR', VL_String) = 0) and // linha nova
+        (pos('OR''', VL_String) = 0) and
+        (pos(' OR ''', VL_String) = 0) and // linha nova
+        (pos('OR ''', VL_String) = 0) and  // linha nova
+        (pos('0OR', VL_String) = 0) and    // linha nova
+        (pos('1OR', VL_String) = 0) and    // linha nova
+        (pos('2OR', VL_String) = 0) and    // linha nova
+        (pos('3OR', VL_String) = 0) and    // linha nova
+        (pos('4OR', VL_String) = 0) and    // linha nova
+        (pos('5OR', VL_String) = 0) and    // linha nova
+        (pos('6OR', VL_String) = 0) and    // linha nova
+        (pos('7OR', VL_String) = 0) and    // linha nova
+        (pos('8OR', VL_String) = 0) and    // linha nova
+        (pos('9OR', VL_String) = 0) and    // linha nova
+
+        (pos(' SELECT ', VL_String) = 0) and
+        (pos('SELECT ', VL_String) = 0) and
+        (pos('(SELECT:', VL_String) = 0) and
+        (pos('(SELECT ', VL_String) = 0) and
+        (pos('(SELECT' + #13, VL_String) = 0) and
+        (pos('(SELECT--', VL_String) = 0) and
+        (pos('(SELECT/', VL_String) = 0) and
+        (pos('(SELECT(', VL_String) = 0) and
+        (pos(' SELECT' + #13, VL_String) = 0) and
+        (pos(' (SELECT' + #13, VL_String) = 0) and
+        (pos(#$A + 'SELECT(', VL_String) = 0) and
+        (pos(#$A + 'SELECT' + #13, VL_String) = 0) and
+        (pos(#$A + 'SELECT ' + #13, VL_String) = 0) and
+        (pos(#$A + 'SELECT ', VL_String) = 0) and
+        (pos(#$A + 'SELECT/', VL_String) = 0) and
+        (pos(#$A + 'SELECT:', VL_String) = 0) and
+        (pos(' SELECT:', VL_String) = 0) and
+        (pos(' SELECT(', VL_String) = 0) and
+        (pos('/SELECT', VL_String) = 0) and
+        (pos('SELECT/', VL_String) = 0) and
+        (pos('(SELECT ', VL_String) = 0) and
+        (pos('SELECT--', VL_String) = 0) and
+        (pos('SELECT --', VL_String) = 0) and
+        (pos(' SELECT--', VL_String) = 0) and
+
+        (pos(' DELETE ', VL_String) = 0) and
+        (pos('DELETE ', VL_String) = 0) and
+        (pos('(DELETE:', VL_String) = 0) and
+        (pos('(DELETE ', VL_String) = 0) and
+        (pos('(DELETE' + #13, VL_String) = 0) and
+        (pos('(DELETE--', VL_String) = 0) and
+        (pos('(DELETE/', VL_String) = 0) and
+        (pos('(DELETE(', VL_String) = 0) and
+        (pos(' DELETE' + #13, VL_String) = 0) and
+        (pos('DELETE' + #13, VL_String) = 0) and
+        (pos('DELETE ' + #13, VL_String) = 0) and
+        (pos(' (DELETE' + #13, VL_String) = 0) and
+        (pos(#$A + 'DELETE(', VL_String) = 0) and
+        (pos(#$A + 'DELETE' + #13, VL_String) = 0) and
+        (pos(#$A + 'DELETE ', VL_String) = 0) and
+        (pos(#$A + 'DELETE/', VL_String) = 0) and
+        (pos(#$A + 'DELETE:', VL_String) = 0) and
+        (pos(' DELETE:', VL_String) = 0) and
+        (pos(' DELETE(', VL_String) = 0) and
+        (pos('/DELETE', VL_String) = 0) and
+        (pos('DELETE/', VL_String) = 0) and
+        (pos('(DELETE ', VL_String) = 0) and
+        (pos('DELETE--', VL_String) = 0) and
+        (pos('DELETE --', VL_String) = 0) and
+        (pos(' DELETE--', VL_String) = 0) and
+
+        (pos(' UPDATE ', VL_String) = 0) and
+        (pos('UPDATE ', VL_String) = 0) and
+        (pos('(UPDATE:', VL_String) = 0) and
+        (pos('(UPDATE ', VL_String) = 0) and
+        (pos('(UPDATE' + #13, VL_String) = 0) and
+        (pos('(UPDATE--', VL_String) = 0) and
+        (pos('(UPDATE/', VL_String) = 0) and
+        (pos('(UPDATE(', VL_String) = 0) and
+        (pos(' UPDATE' + #13, VL_String) = 0) and
+        (pos(' (UPDATE' + #13, VL_String) = 0) and
+        (pos('UPDATE' + #13, VL_String) = 0) and
+        (pos('UPDATE ' + #13, VL_String) = 0) and
+        (pos(#$A + 'UPDATE(', VL_String) = 0) and
+        (pos(#$A + 'UPDATE' + #13, VL_String) = 0) and
+        (pos(#$A + 'UPDATE ' + #13, VL_String) = 0) and
+        (pos(#$A + 'UPDATE ', VL_String) = 0) and
+        (pos(#$A + 'UPDATE/', VL_String) = 0) and
+        (pos(#$A + 'UPDATE:', VL_String) = 0) and
+        (pos(' UPDATE:', VL_String) = 0) and
+        (pos(' UPDATE(', VL_String) = 0) and
+        (pos('/UPDATE', VL_String) = 0) and
+        (pos('UPDATE/', VL_String) = 0) and
+        (pos('UPDATE /', VL_String) = 0) and
+        (pos('(UPDATE ', VL_String) = 0) and
+        (pos('UPDATE--', VL_String) = 0) and
+        (pos('UPDATE --', VL_String) = 0) and
+        (pos(' UPDATE--', VL_String) = 0) and
+
+        (pos(' INSERT ', VL_String) = 0) and
+        (pos('INSERT ', VL_String) = 0) and
+        (pos('(INSERT:', VL_String) = 0) and
+        (pos('(INSERT ', VL_String) = 0) and
+        (pos('(INSERT' + #13, VL_String) = 0) and
+        (pos('(INSERT--', VL_String) = 0) and
+        (pos('(INSERT/', VL_String) = 0) and
+        (pos('(INSERT(', VL_String) = 0) and
+        (pos(' INSERT' + #13, VL_String) = 0) and
+        (pos(' (INSERT' + #13, VL_String) = 0) and
+        (pos('INSERT' + #13, VL_String) = 0) and
+        (pos('INSERT ' + #13, VL_String) = 0) and
+        (pos(#$A + 'INSERT(', VL_String) = 0) and
+        (pos(#$A + 'INSERT' + #13, VL_String) = 0) and
+        (pos(#$A + 'INSERT ', VL_String) = 0) and
+        (pos(#$A + 'INSERT/', VL_String) = 0) and
+        (pos(#$A + 'INSERT:', VL_String) = 0) and
+        (pos(' INSERT:', VL_String) = 0) and
+        (pos(' INSERT(', VL_String) = 0) and
+        (pos('/INSERT', VL_String) = 0) and
+        (pos('INSERT/', VL_String) = 0) and
+        (pos('(INSERT ', VL_String) = 0) and
+        (pos('INSERT--', VL_String) = 0) and
+        (pos('INSERT --', VL_String) = 0) and
+        (pos(' INSERT--', VL_String) = 0) and
+
+        (pos(' DROP ', VL_String) = 0) and
+        (pos('DROP ', VL_String) = 0) and
+        (pos('(DROP:', VL_String) = 0) and
+        (pos('(DROP ', VL_String) = 0) and
+        (pos('(DROP' + #13, VL_String) = 0) and
+        (pos('(DROP--', VL_String) = 0) and
+        (pos('(DROP/', VL_String) = 0) and
+        (pos('(DROP(', VL_String) = 0) and
+        (pos(' DROP' + #13, VL_String) = 0) and
+        (pos(' (DROP' + #13, VL_String) = 0) and
+        (pos('DROP' + #13, VL_String) = 0) and
+        (pos('DROP ' + #13, VL_String) = 0) and
+        (pos(#$A + 'DROP(', VL_String) = 0) and
+        (pos(#$A + 'DROP' + #13, VL_String) = 0) and
+        (pos(#$A + 'DROP ', VL_String) = 0) and
+        (pos(#$A + 'DROP/', VL_String) = 0) and
+        (pos(#$A + 'DROP:', VL_String) = 0) and
+        (pos(' DROP:', VL_String) = 0) and
+        (pos(' DROP(', VL_String) = 0) and
+        (pos('/DROP', VL_String) = 0) and
+        (pos('DROP/', VL_String) = 0) and
+        (pos('(DROP ', VL_String) = 0) and
+        (pos('DROP--', VL_String) = 0) and
+        (pos('DROP --', VL_String) = 0) and
+        (pos(' DROP--', VL_String) = 0) and
+
+        (pos(' ALTER ', VL_String) = 0) and
+        (pos('ALTER ', VL_String) = 0) and
+        (pos('(ALTER:', VL_String) = 0) and
+        (pos('(ALTER ', VL_String) = 0) and
+        (pos('(ALTER' + #13, VL_String) = 0) and
+        (pos('(ALTER--', VL_String) = 0) and
+        (pos('(ALTER/', VL_String) = 0) and
+        (pos('(ALTER(', VL_String) = 0) and
+        (pos(' ALTER' + #13, VL_String) = 0) and
+        (pos(' (ALTER' + #13, VL_String) = 0) and
+        (pos('ALTER' + #13, VL_String) = 0) and
+        (pos('ALTER ' + #13, VL_String) = 0) and
+        (pos(#$A + 'ALTER(', VL_String) = 0) and
+        (pos(#$A + 'ALTER' + #13, VL_String) = 0) and
+        (pos(#$A + 'ALTER ', VL_String) = 0) and
+        (pos(#$A + 'ALTER/', VL_String) = 0) and
+        (pos(#$A + 'ALTER:', VL_String) = 0) and
+        (pos(' ALTER:', VL_String) = 0) and
+        (pos(' ALTER(', VL_String) = 0) and
+        (pos('/ALTER', VL_String) = 0) and
+        (pos('ALTER/', VL_String) = 0) and
+        (pos('(ALTER ', VL_String) = 0) and
+        (pos('ALTER--', VL_String) = 0) and
+        (pos('ALTER --', VL_String) = 0) and
+        (pos(' ALTER--', VL_String) = 0) and
+
+        (pos(' CREATE ', VL_String) = 0) and
+        (pos('CREATE ', VL_String) = 0) and
+        (pos('(CREATE:', VL_String) = 0) and
+        (pos('(CREATE ', VL_String) = 0) and
+        (pos('(CREATE' + #13, VL_String) = 0) and
+        (pos('(CREATE--', VL_String) = 0) and
+        (pos('(CREATE/', VL_String) = 0) and
+        (pos('(CREATE(', VL_String) = 0) and
+        (pos(' CREATE' + #13, VL_String) = 0) and
+        (pos(' (CREATE' + #13, VL_String) = 0) and
+        (pos('CREATE' + #13, VL_String) = 0) and
+        (pos('CREATE ' + #13, VL_String) = 0) and
+        (pos(#$A + 'CREATE(', VL_String) = 0) and
+        (pos(#$A + 'CREATE' + #13, VL_String) = 0) and
+        (pos(#$A + 'CREATE ', VL_String) = 0) and
+        (pos(#$A + 'CREATE/', VL_String) = 0) and
+        (pos(#$A + 'CREATE:', VL_String) = 0) and
+        (pos(' CREATE:', VL_String) = 0) and
+        (pos(' CREATE(', VL_String) = 0) and
+        (pos('/CREATE', VL_String) = 0) and
+        (pos('CREATE/', VL_String) = 0) and
+        (pos('(CREATE ', VL_String) = 0) and
+        (pos('CREATE--', VL_String) = 0) and
+        (pos('CREATE --', VL_String) = 0) and
+        (pos(' CREATE--', VL_String) = 0)) then
+
+        Result := 'OK'
+    else
+        Result := 'Erro';
+
+end;
+
+function ConverteSQL(Script: string): string;
+var
+    LocalLetraFuncao, I: int64;
+    ResultadoFuncao: string;
+    TextoFuncao: string;
+begin
+    Result := '';
+    LocalLetraFuncao := 1;
+    ResultadoFuncao := '';
+    for I := 1 to Length(Script) do
+    begin
+        TextoFuncao := copy(Script, LocalLetraFuncao, 1);
+        if TextoFuncao <> '''' then
+            ResultadoFuncao := ResultadoFuncao + copy(Script, LocalLetraFuncao, 1)
+        else
+            ResultadoFuncao := ResultadoFuncao + '''''';
+        LocalLetraFuncao := LocalLetraFuncao + 1;
+
+    end;
+    Result := ResultadoFuncao;
+end;
+
+function CriaID: string;
+var
+    VL_ID: string;
+begin
+    VF_Sequencia := VF_Sequencia + 1;
+    VL_ID := IntToStr(VF_Sequencia);
+    VL_ID := VL_ID + FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now);
+    Randomize;
+    Result := VL_ID + IntToStr(Random(999));
+
+end;
 
 initialization
     VF_Sequencia := 0;

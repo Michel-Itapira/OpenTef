@@ -8,8 +8,9 @@
       <Unit>
         <Filename Value="opentef.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="17" Y="6"/>
+        <CursorPos X="31" Y="6"/>
         <UsageCount Value="104"/>
         <Loaded Value="True"/>
       </Unit>
@@ -55,10 +56,9 @@
         <ComponentName Value="DNucleo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="452"/>
-        <CursorPos X="6" Y="472"/>
+        <TopLine Value="1918"/>
+        <CursorPos X="5" Y="1891"/>
         <UsageCount Value="104"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -126,11 +126,7 @@
       <Define1 Value="WIN"/>
       <Define2 Value="DEBUG"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="28">
-      <Position>
-        <Filename Value="opentefnucleo.pas"/>
-        <Caret Line="167" Column="20" TopLine="142"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="opentefnucleo.pas"/>
         <Caret Line="493" Column="12" TopLine="470"/>
@@ -242,6 +238,14 @@
       <Position>
         <Filename Value="opentefnucleo.pas"/>
         <Caret Line="2483" Column="130" TopLine="2455"/>
+      </Position>
+      <Position>
+        <Filename Value="opentefnucleo.pas"/>
+        <Caret Line="163" Column="25" TopLine="161"/>
+      </Position>
+      <Position>
+        <Filename Value="opentefnucleo.pas"/>
+        <Caret Line="1891" Column="5" TopLine="1918"/>
       </Position>
     </JumpHistory>
     <RunParams>

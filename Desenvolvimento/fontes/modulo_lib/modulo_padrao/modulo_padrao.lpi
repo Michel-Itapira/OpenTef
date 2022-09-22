@@ -18,7 +18,7 @@
       <Macro1 Name="LCLWidgetType" Value="nogui"/>
     </MacroValues>
     <BuildModes>
-      <Item Name="Windows" Default="True"/>
+      <Item Name="Windows Debug" Default="True"/>
       <Item Name="Release">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="nogui"/>
@@ -27,7 +27,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\binarios\modulo\padrao\win64\modulo_padrao"/>
+            <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -50,34 +50,9 @@
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Debug">
-        <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="nogui"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="..\..\..\binarios\opentef_app\win64\\modulo\0068"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\libs\func"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <RelocatableUnit Value="True"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <UseExternalDbgSyms Value="True"/>
-            </Debugging>
-            <Options>
-              <ExecutableType Value="Library"/>
-            </Options>
-          </Linking>
+          <Other>
+            <CustomOptions Value="-dTEF_LIB"/>
+          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="Linux">
@@ -119,7 +94,7 @@
         </CompilerOptions>
       </Item>
       <SharedMatrixOptions Count="1">
-        <Item1 ID="592077647640" Modes="Linux,Windows,Release,Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+        <Item1 ID="592077647640" Modes="Linux,Windows Debug,Release" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -178,7 +153,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\binarios\opentef\win64\\modulo\0068"/>
+      <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

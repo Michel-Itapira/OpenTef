@@ -4,4 +4,10 @@ object DCom: TDCom
   HorizontalOffset = 769
   VerticalOffset = 578
   Width = 357
+  object CriptoAes: TLbRijndael
+    CipherMode = cmECB
+    KeySize = ks256
+    Left = 140
+    Top = 44
+  end
 end

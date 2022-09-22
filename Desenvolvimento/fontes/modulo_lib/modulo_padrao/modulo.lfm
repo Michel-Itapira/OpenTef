@@ -4,4 +4,10 @@ object DModulo: TDModulo
   HorizontalOffset = 817
   VerticalOffset = 272
   Width = 331
+  object CriptoAes: TLbRijndael
+    CipherMode = cmECB
+    KeySize = ks256
+    Left = 136
+    Top = 16
+  end
 end

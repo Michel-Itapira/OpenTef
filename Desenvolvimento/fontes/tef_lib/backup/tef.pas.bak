@@ -5,24 +5,24 @@ unit tef;
 interface
 
 uses
-    Classes, SysUtils, comunicador, funcoes, def, LbRSA;
+    Classes, SysUtils, comunicador, funcoes, def, LbRSA, LbAsym, LbClass;
 
 { TDTef }
 type
 
-    TSolicitaDadosPDV = function(VP_Menu: PChar; var VO_Botao, VO_Dados: PChar): integer; stdcall;
-    TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var VO_Dados: PChar): integer; stdcall;
-    TImprime = function(VP_Dados: PChar): integer; stdcall;
-    TMostraMenu = function(VP_Dados: PChar; var VO_Selecionado: PChar): integer; stdcall;
-    TMensagemOperador = function(VP_Dados: PChar): integer; stdcall;
+    TSolicitaDadosPDV = function(VP_Menu: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+    TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+    TImprime = function(VP_Dados: PChar): integer; cdecl;
+    TMostraMenu = function(VP_Dados: PChar; var VO_Selecionado: PChar): integer; cdecl;
+    TMensagemOperador = function(VP_Dados: PChar): integer; cdecl;
 
-    TPinPadDescarrega = function(): integer; stdcall;
+    TPinPadDescarrega = function(): integer; cdecl;
     TPinPadCarrega = function(VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar;
-    VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
-    TPinPadConectar = function(var VO_Mensagem: PChar): integer; stdcall;
-    TPinPadDesconectar = function(VL_Mensagem: PChar): integer; stdcall;
-    TPinPadMensagem = function(VL_Mensagem: PChar): integer; stdcall;
-    TPinPadComando = function(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
+        VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
+    TPinPadConectar = function(var VO_Mensagem: PChar): integer; cdecl;
+    TPinPadDesconectar = function(VL_Mensagem: PChar): integer; cdecl;
+    TPinPadMensagem = function(VL_Mensagem: PChar): integer; cdecl;
+    TPinPadComando = function(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
 
     TThProcesso = class(TThread)
     private
@@ -63,24 +63,28 @@ type
 
 
     TDTef = class(TDataModule)
+        CriptoAes: TLbRijndael;
         CriptoRsa: TLbRSA;
+        procedure DataModuleDestroy(Sender: TObject);
     private
     public
     end;
 
 function inicializar(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
-    VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
-    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; stdcall;
-function finalizar(): integer; stdcall;
-function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; stdcall;
-function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; stdcall;
-function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; stdcall;
-function opentefstatus(var VO_StatusRetorno: integer): integer; stdcall;
-function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; stdcall;
-function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; stdcall;
-function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; stdcall;
-function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; stdcall;
-procedure transacaofree(VP_TransacaoID: PChar); stdcall;
+    VP_RetornoCliente: TRetornoDoCliente; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; cdecl;
+function finalizar(): integer; cdecl;
+function login(VP_Host: PChar; VP_Porta, VP_ID: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; cdecl;
+function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; cdecl;
+function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
+function opentefstatus(var VO_StatusRetorno: integer): integer; cdecl;
+function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; cdecl;
+function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; cdecl;
+function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; cdecl;
+function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; cdecl;
+procedure transacaofree(VP_TransacaoID: PChar); cdecl;
+
+procedure SolicitaParaCliente(VP_Transmissao_ID: PChar; VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
 
 procedure RespostaPinPad(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
 
@@ -97,7 +101,7 @@ var
     F_Imprime: TImprime;
     F_MostraMenu: TMostraMenu;
     F_MensagemOperador: TMensagemOperador;
-
+    F_RetornoCliente: TRetornoDoCliente;
 
     F_PinPadModelo: TPinPadModelo;
     F_PinPadLib, F_PinPadModeloLib, F_PinPadModeloPorta: string;
@@ -127,9 +131,232 @@ implementation
 
 {$R *.lfm}
 
+procedure SolicitaParaCliente(VP_Transmissao_ID: PChar; VP_ProcID, VP_Codigo: integer; VP_Dados: PChar); cdecl;
+var
+    VL_Dados: PChar;
+    VL_Botao: PChar;
+    VL_Erro: integer;
+    VL_I: integer;
+    VL_DiretoOpeTef: boolean;
+    VL_Mensagem, VL_TransacaoDadosPublicos, VL_Chave: TMensagem;
+    VL_Tag, VL_TagDados, VL_String: string;
+    VL_PinPadCarregado: boolean;
+    VL_Criptografa: boolean;
+    VL_ChaveTamanho: integer;
+    VL_ChaveExpoente: string;
+    VL_ChaveModulo: string;
+    VL_Comando: string;
+    VL_Chave_00F1: string;
+    VL_Transmissao_ID: string;
+    VL_Rsa: TLbRSA;
+    VL_Status: integer;
+
+    //function tmkEY(VP_Tamanho: Integer): TLbAsymKeySize;
+    //begin
+    //    Result := aks128;
+    //    case VP_Tamanho of
+    //        0: Result := aks128;
+    //        1: Result := aks256;
+    //        2: Result := aks512;
+    //        3: Result := aks768;
+    //        4: Result := aks1024;
+    //    end;
+
+    //end;
+
+begin
+    try
+        VL_Transmissao_ID := VP_Transmissao_ID;
+        VL_ChaveExpoente := '';
+        VL_ChaveModulo := '';
+        VL_ChaveTamanho := 0;
+        VL_Criptografa := False;
+        VL_Dados := '';
+        VL_Botao := '';
+        VL_Tag := '';
+        VL_String := '';
+        VL_TagDados := '';
+        VL_Comando := '';
+        VL_Mensagem := TMensagem.Create;
+        VL_Chave := TMensagem.Create;
+        VL_TransacaoDadosPublicos := TMensagem.Create;
+        VL_Erro := 0;
+        VL_PinPadCarregado := False;
+        VL_Rsa := TLbRSA.Create(nil);
+        VL_Status := TransacaoStatusToInt(tsProcessando);
+
+     {
+     1º recebe uma transacao tag 007A
+     solicitar o menu no open tef
+     havendo erro suspende
+     mostrar o menu no pdv e para
+
+     2º recebe tag 00E3 então operadora quer que criptografe dados
+      }
+
+
+
+
+        //VL_DiretoOpeTef := True;
+        vl_erro := VL_Mensagem.CarregaTags(VP_Dados);
+        if VL_Erro <> 0 then
+        begin
+            GravaLog(F_ArquivoLog, 0, '', 'tef', '230820221655', 'Erro na SolicitaParaCliente ', '', VL_Erro);
+            Exit;
+        end;
+
+        VL_Mensagem.GetTag('00A4', VL_TagDados);
+        if VL_TagDados <> '' then
+            VL_Status := VL_Mensagem.GetTagAsInteger('00A4');
+
+        if VL_Status = TransacaoStatusToInt(tsEfetivada) then
+        begin
+            Exit;
+        end;
+
+        VL_TagDados := '';
+        if VL_Mensagem.Comando() = '0111' then  // solicita chave publica
+        begin
+            VL_Mensagem.AddComando('0111', 'R'); // retorno da chave publica
+            VL_Mensagem.AddTag('0008', DTef.CriptoRsa.PublicKey.ModulusAsString); //modulos
+            VL_Mensagem.AddTag('0027', DTef.CriptoRsa.PublicKey.ExponentAsString);  //expoente
+            VL_Mensagem.AddTag('00E4', Ord(DTef.CriptoRsa.PublicKey.KeySize));   //tamanho chave
+            VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 30000, False);
+            if VL_Erro <> 0 then
+                GravaLog(F_ArquivoLog, 0, '', 'tef', '310820221757', 'Erro na SolicitaParaCliente ', '', VL_Erro);
+            Exit;
+        end;
+
+        if VL_Mensagem.Comando() = '0026' then  // comando com erro
+        begin
+            VL_String := VL_Mensagem.ComandoDados();
+            GravaLog(F_ArquivoLog, 0, '', 'tef', '210920221056', 'SolicitaParaCliente recebeu comando com erro', '', StrToInt(VL_String));
+            Exit;
+        end;
+
+
+        //exit;
+
+        VL_ChaveTamanho := VL_Mensagem.GetTagAsInteger('00E4');   //tamanho chave
+        VL_ChaveExpoente := VL_Mensagem.GetTagAsAstring('0027');  //expoente
+        VL_ChaveModulo := VL_Mensagem.GetTagAsAstring('0008');  //modulos
+        VL_Comando := VL_Mensagem.Comando();
+        VL_Chave_00F1 := VL_Mensagem.GetTagAsAstring('00F1'); //chave da transacao
+
+        if VL_Mensagem.GetTagAsAstring('00F8') = 'F' then // mensagem vinda do openTef
+            VL_DiretoOpeTef := False
+        else
+            VL_DiretoOpeTef := True;
+
+
+        VL_Rsa.PublicKey.KeySize := TLbAsymKeySize(VL_ChaveTamanho);
+        VL_Rsa.PublicKey.ExponentAsString := VL_ChaveExpoente;
+        VL_Rsa.PublicKey.ModulusAsString := VL_ChaveModulo;
+
+
+        if not VL_Criptografa then
+        begin
+            VL_Criptografa := (VL_Mensagem.GetTag('00E3', VL_TagDados) = 0); // verifica se precisar responder criptografado
+
+            if VL_Criptografa then // verifica se veio as chaves da criptografia
+            begin
+
+                if (trim(VL_ChaveExpoente) = '') or
+                    (trim(VL_ChaveModulo) = '') then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '230820221700', 'Erro na SolicitaParaCliente ', '', 84);
+                    Exit;
+
+                end;
+            end;
+        end
+        else
+            VL_Mensagem.GetTag('00E3', VL_TagDados);
+
+        if VL_TagDados <> '' then
+        begin
+            VL_TagDados := DTef.CriptoRsa.DecryptString(VL_TagDados);
+            VL_Erro := VL_Mensagem.CarregaTags(VL_TagDados);
+
+            if VL_Erro <> 0 then
+            begin
+                GravaLog(F_ArquivoLog, 0, '', 'tef', '230820221701', 'Erro na SolicitaParaCliente ', '', VL_Erro);
+                Exit;
+            end;
+        end;
+
+        if Assigned(F_RetornoCliente) then
+        begin
+            //VL_Mensagem.Limpar;
+
+            //   if VL_Mensagem.Comando() = '0111' then
+
+
+
+            VL_Erro := F_RetornoCliente(PChar(VL_Mensagem.TagsAsString()), VL_Dados);
+            if VL_Erro <> 0 then
+                VL_Mensagem.AddComando('0026', PChar(IntToStr(VL_Erro))) // retorno com erro
+            else
+            if Assigned(VL_Dados) then
+                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
+            if VL_Erro <> 0 then
+                VL_Mensagem.AddComando('0026', PChar(IntToStr(VL_Erro))); // retorno com erro
+
+            if VL_Mensagem.Comando() <> '' then
+            begin
+                if VL_Criptografa then
+                begin
+                    VL_Comando := VL_Mensagem.Comando();
+                    VL_String := VL_Rsa.EncryptString(VL_Mensagem.TagsAsString);
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddTag('00E3', VL_String);
+                    VL_Mensagem.AddComando(VL_Comando, 'R');
+                    VL_TransacaoDadosPublicos.AddTag('00F1', VL_Chave_00F1); //  chave da transacao
+                    VL_Mensagem.AddTag('007D', VL_TransacaoDadosPublicos.TagsAsString);
+                end;
+                VL_Mensagem.AddTag('00F1', VL_Chave_00F1);        // chave da transacao
+                VL_Mensagem.AddTag('00E4', F_TamanhoPublico);        //tamanho chave
+                VL_Mensagem.AddTag('0027', F_ExpoentePublico);        //expoente
+                VL_Mensagem.AddTag('0008', F_ModuloPublico);        //modulos
+
+                VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 30000, False);
+
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '230820221732', 'Erro na SolicitaParaCliente ', '', VL_Erro);
+                    Exit;
+                end;
+
+            end;
+        end;
+
+    finally
+        begin
+            VL_Mensagem.Free;
+            VL_TransacaoDadosPublicos.Free;
+            VL_Chave.Free;
+        end;
+    end;
+
+end;
 
 procedure RespostaPinPad(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
 begin
+
+end;
+
+{ TDTef }
+
+procedure TDTef.DataModuleDestroy(Sender: TObject);
+begin
+    F_DComunicador.Free;
+    F_ListaTransacao.Free;
+    if F_PinPadModelo <> pNDF then
+    begin
+        F_PinPadDesconectar('    OpenTef    ');
+        F_PinPadDescarrega;
+        UnloadLibrary(F_PinPad);
+    end;
 
 end;
 
@@ -150,6 +377,8 @@ var
     VL_ChaveTamanho: integer;
     VL_ChaveExpoente: string;
     VL_ChaveModulo: string;
+    VL_Rsa: TLbRSA;
+    VL_Transacao: TTransacao;
 
     //function tmkEY(VP_Tamanho: Integer): TLbAsymKeySize;
     //begin
@@ -180,6 +409,8 @@ begin
         VL_TransacaoDadosPublicos := TMensagem.Create;
         VL_Erro := 0;
         VL_PinPadCarregado := False;
+        VL_Rsa := TLbRSA.Create(nil);
+        VL_Transacao := TTransacao.Create(ftransacao.fcomando, '', '', 0, ftransacao.fMensagem.TagsAsString);
 
      {
      1º recebe uma transacao tag 007A
@@ -224,9 +455,14 @@ begin
             ftransacao.fMensagem.AddTag('0027', VL_ChaveExpoente);
             ftransacao.fMensagem.AddTag('0008', VL_ChaveModulo);
 
-            //  DTef.CriptoRsa.KeySize := TLbAsymKeySize(VL_ChaveTamanho);
-            DTef.CriptoRsa.PublicKey.ExponentAsString := VL_ChaveExpoente;
-            DTef.CriptoRsa.PublicKey.ModulusAsString := VL_ChaveModulo;
+            //DTef.CriptoRsa.KeySize := TLbAsymKeySize(VL_ChaveTamanho);
+
+            //DTef.CriptoRsa.PublicKey.ExponentAsString := VL_ChaveExpoente;
+            //DTef.CriptoRsa.PublicKey.ModulusAsString := VL_ChaveModulo;
+
+            VL_Rsa.PublicKey.KeySize := TLbAsymKeySize(VL_ChaveTamanho);
+            VL_Rsa.PublicKey.ExponentAsString := VL_ChaveExpoente;
+            VL_Rsa.PublicKey.ModulusAsString := VL_ChaveModulo;
 
 
 
@@ -241,8 +477,9 @@ begin
                     if (trim(VL_ChaveExpoente) = '') or
                         (trim(VL_ChaveModulo) = '') then
                     begin
-                        ftransacao.erro := 184;
+                        ftransacao.erro := 84;
                         ftransacao.STATUS := tsComErro;
+                        GravaLog(F_ArquivoLog, 0, '', 'tef', '240820220911', 'Erro na ThTransacao.execute', '', 84);
                         Exit;
 
                     end;
@@ -264,9 +501,14 @@ begin
                 end;
             end;
 
-            if (VL_Mensagem.Comando() = '00F5') then  // SOLICITACAO DE CAPTURA OPÇÃO DO MENU
+            if (VL_Mensagem.Comando() = '00F5') then  // SOLICITACAO DE CAPTURA OPÇÃO DO MENU OPERACIONAL
             begin
                 VL_Erro := F_MostraMenu(PChar(VL_Mensagem.TagsAsString), VL_Botao);
+                if ftransacao.fAbortada then
+                begin
+                    F_MensagemOperador(PChar('A transação foi abortada'));
+                    Exit;
+                end;
                 if VL_Erro <> 0 then
                 begin
                     ftransacao.erro := VL_Erro;
@@ -284,9 +526,14 @@ begin
                 end;
             end
             else
-            if (VL_Mensagem.Comando() = '0018') then  // SOLICITACAO DE CAPTURA OPÇÃO DO MENU
+            if (VL_Mensagem.Comando() = '0018') then  // SOLICITACAO DE CAPTURA OPÇÃO DO MENU DE VENDA
             begin
                 VL_Erro := F_MostraMenu(PChar(VL_Mensagem.TagsAsString), VL_Botao);
+                if ftransacao.fAbortada then
+                begin
+                    F_MensagemOperador(PChar('A transação foi abortada'));
+                    Exit;
+                end;
                 if VL_Erro <> 0 then
                 begin
                     ftransacao.erro := VL_Erro;
@@ -307,6 +554,11 @@ begin
             if (VL_Mensagem.Comando() = '002A') then  // SOLICITACAO DE CAPTURA DE DADOS NO PDV
             begin
                 VL_Erro := F_SolicitaDadosPDV(PChar(VL_Mensagem.TagsAsString), VL_Botao, VL_Dados);
+                if ftransacao.fAbortada then
+                begin
+                    F_MensagemOperador(PChar('A transação foi abortada'));
+                    Exit;
+                end;
                 VL_Mensagem.Limpar;
                 if VL_Erro <> 0 then
                 begin
@@ -335,6 +587,7 @@ begin
                     begin
                         ftransacao.erro := VL_Erro;
                         ftransacao.STATUS := tsComErro;
+                        GravaLog(F_ArquivoLog, 0, '', 'tef', '240820220837', 'Erro na ThTransacao.execute', '', VL_Erro);
                         Exit;
                     end;
 
@@ -361,6 +614,11 @@ begin
             if (VL_Mensagem.Comando() = '00E1') then  // SOLICITACAO DE DADOS DA VENDA
             begin
                 VL_Erro := F_SolicitaDadosTransacao(PChar(VL_Mensagem.TagsAsString), VL_Dados);
+                if ftransacao.fAbortada then
+                begin
+                    F_MensagemOperador(PChar('A transação foi abortada'));
+                    Exit;
+                end;
                 VL_Mensagem.Limpar;
                 if VL_Erro <> 0 then
                 begin
@@ -378,10 +636,10 @@ begin
                 for VL_I := 1 to VL_Mensagem.TagCount do
                 begin
                     VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
-                    if VL_TagDados='' then
-                    ftransacao.fMensagem.AddTag(VL_Tag,PChar(#1))
+                    if VL_TagDados = '' then
+                        ftransacao.fMensagem.AddTag(VL_Tag, PChar(#1))
                     else
-                    ftransacao.fMensagem.AddTag(VL_Tag, VL_TagDados);
+                        ftransacao.fMensagem.AddTag(VL_Tag, VL_TagDados);
                 end;
                 VL_Mensagem.Limpar;
             end
@@ -394,6 +652,11 @@ begin
                     else
                     begin
                         VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib), PChar(F_PinPadModeloPorta), @RespostaPinPad);
+                        if ftransacao.fAbortada then
+                        begin
+                            F_MensagemOperador(PChar('A transação foi abortada'));
+                            Exit;
+                        end;
                         if VL_Erro <> 0 then
                         begin
                             ftransacao.erro := VL_Erro;
@@ -451,6 +714,11 @@ begin
                 begin
 
                     VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib), PChar(F_PinPadModeloPorta), @RespostaPinPad);
+                    if ftransacao.fAbortada then
+                    begin
+                        F_MensagemOperador(PChar('A transação foi abortada'));
+                        Exit;
+                    end;
                     if VL_Erro <> 0 then
                     begin
                         ftransacao.erro := VL_Erro;
@@ -458,6 +726,11 @@ begin
                         Exit;
                     end;
                     VL_Erro := F_PinPadConectar(VL_Dados);
+                    if ftransacao.fAbortada then
+                    begin
+                        F_MensagemOperador(PChar('A transação foi abortada'));
+                        Exit;
+                    end;
                     if VL_Erro <> 0 then
                     begin
                         ftransacao.erro := VL_Erro;
@@ -468,12 +741,6 @@ begin
                     end;
                     VL_PinPadCarregado := True;
                 end;
-
-                //                F_PinPadMensagem('Aguarde...');
-
-                //                while TempoPassouMiliSegundos(VL_TempoSenha)<20000 do
-                //                Sleep(100);
-
                 VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
                 if VL_Erro <> 0 then
                 begin
@@ -496,36 +763,33 @@ begin
                 ftransacao.fMensagem.AddTag('0060', VL_Mensagem.GetTagAsAstring('0060'));
             end
             else
-            if (VL_Mensagem.Comando() = '008C') then  // SOLICITACAO ATUALIZAÇÃO DE TAGS
-            begin
-                for VL_I := 1 to VL_Mensagem.TagCount do
-                begin
-                    VL_Erro := VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
-                    if VL_Erro <> 0 then
-                    begin
-                        ftransacao.erro := VL_Erro;
-                        ftransacao.STATUS := tsComErro;
-                        Exit;
-                    end;
-                    ftransacao.fMensagem.AddTag(VL_Tag, VL_TagDados);
-                end;
-                VL_Mensagem.Limpar;
-            end
-            else
             if (VL_Mensagem.Comando() = '002C') then  // mensagem ao operador
             begin
-                ftransacao.STATUS := IntToTransacaoStatus(VL_Mensagem.GetTagAsInteger('004A'));
-                F_MensagemOperador(PChar(VL_Mensagem.GetTagAsAstring('00DA')));
-
-                if (ftransacao.STATUS <> tsProcessando) and (ftransacao.STATUS <> tsAguardandoComando) then
+                F_MensagemOperador(PChar(VL_Mensagem.GetTagAsAstring('00DA'))); // mensagem a ser mostrada
+                if ftransacao.fAbortada then
+                begin
+                    F_MensagemOperador(PChar('A transação foi abortada'));
                     Exit;
+                end;
             end;
+
+            VL_Mensagem.GetTag('002D', VL_TagDados); // texto a ser impresso
+            if VL_TagDados <> '' then // verifica se precisa imprimir
+            begin
+                F_Imprime(PChar(VL_TagDados));
+                if ftransacao.fAbortada then
+                begin
+                    F_MensagemOperador(PChar('A transação foi abortada'));
+                    Exit;
+                end;
+            end;
+
 
             VL_Mensagem.AddComando(fcomando, 'S');
 
             if VL_Criptografa then
             begin
-                VL_String := DTef.CriptoRsa.EncryptString(ftransacao.fMensagem.TagsAsString);
+                VL_String := VL_Rsa.EncryptString(ftransacao.fMensagem.TagsAsString);
                 VL_Mensagem.AddTag('00E3', VL_String);
                 VL_TransacaoDadosPublicos.AddComando('000A', ftransacao.fMensagem.ComandoDados());
                 VL_TransacaoDadosPublicos.AddTag('0051', ftransacao.fMensagem.GetTagAsAstring('0051'));
@@ -541,6 +805,17 @@ begin
             VL_Mensagem.AddTag('0008', F_ModuloPublico);        //modulos
             VL_Mensagem.AddTag('0036', ftransacao.fMensagem.GetTagAsAstring('0036')); //  bin
             VL_Mensagem.AddTag('00F1', ftransacao.fMensagem.GetTagAsAstring('00F1')); //  chave
+
+
+            VL_Mensagem.GetTag('00A4', VL_TagDados);
+            if VL_TagDados <> '' then
+                ftransacao.STATUS := IntToTransacaoStatus(VL_Mensagem.GetTagAsInteger('00A4'));
+
+            if (ftransacao.STATUS <> tsProcessando) and (ftransacao.STATUS <> tsAguardandoComando) then
+            begin
+                ftransacao.erroDescricao;
+                Exit;
+            end;
 
 
 
@@ -616,13 +891,23 @@ begin
                 else
                 begin
                     F_MensagemOperador(PChar('Obrigado<br>' + 'Cartão/bin:' + ftransacao.fMensagem.GetTagAsAstring('0036')));
+                    if ftransacao.fAbortada then
+                    begin
+                        F_MensagemOperador(PChar('A transação foi abortada'));
+                        Exit;
+                    end;
                     F_Imprime(PChar('Comprovante<br>Autorizacao 123<br>Valor:' + ftransacao.fMensagem.GetTagAsAstring('0013')));
+                    if ftransacao.fAbortada then
+                    begin
+                        F_MensagemOperador(PChar('A transação foi abortada'));
+                        Exit;
+                    end;
                     ftransacao.STATUS := tsEfetivada;
                     Exit;
                 end;
             end
             else
-                VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
+                VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
 
             if VL_Erro <> 0 then
             begin
@@ -689,7 +974,7 @@ begin
     VL_Mensagem := TMensagem.Create;
     try
         VL_Mensagem.CarregaTags(fdados);
-        VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
+        VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
         fprocedimento(PChar(ftransmissaoID), 0, VL_Erro, PChar(VL_Mensagem.TagsAsString));
     finally
         VL_Mensagem.Free;
@@ -697,8 +982,8 @@ begin
 end;
 
 function inicializar(VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
-    VP_Procedimento: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
-    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; stdcall;
+    VP_RetornoCliente: TRetornoDoCliente; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; cdecl;
 begin
 
     DTef := TDTef.Create(nil);
@@ -706,18 +991,23 @@ begin
     if not Assigned(F_DComunicador) then
         F_DComunicador := TDComunicador.Create(nil);
 
+    if Assigned(VP_RetornoCliente) then
+        F_RetornoCliente := VP_RetornoCliente;
+
     DTef.CriptoRsa.KeySize := F_DComunicador.CriptoRsa.KeySize;
     DTef.CriptoRsa.GenerateKeyPair;
+
+
 
     F_ModuloPublico := DTef.CriptoRsa.PublicKey.ModulusAsString;
     F_ExpoentePublico := DTef.CriptoRsa.PublicKey.ExponentAsString;
     F_TamanhoPublico := Ord(DTef.CriptoRsa.PublicKey.KeySize);
 
-    F_DComunicador.V_ConexaoCliente := TTConexao.Create(@F_DComunicador);
-    F_DComunicador.V_ThRecebeEscuta := TThRecebe.Create(True, @F_DComunicador, VP_ArquivoLog);
-    F_DComunicador.V_ThRecebeEscuta.Start;
+    //F_DComunicador.V_ConexaoCliente := TTConexao.Create(F_DComunicador);
+    //F_DComunicador.V_ThRecebeEscuta := TThRecebe.Create(F_DComunicador);
+    //F_DComunicador.V_ThRecebeEscuta.Start;
 
-    F_DComunicador.V_ClienteRecebimento := VP_Procedimento;
+    F_DComunicador.V_ClienteRecebimento := @SolicitaParaCliente;
     F_ListaTransacao := TList.Create;
     F_SolicitaDadosPDV := VP_SolicitaDadosPDV;
     F_SolicitaDadosTransacao := VP_SolicitaDadosTransacao;
@@ -760,37 +1050,21 @@ begin
 
 end;
 
-function finalizar(): integer; stdcall;
+function finalizar(): integer; cdecl;
 begin
-    if Assigned(F_DComunicador.V_ThRecebeEscuta) then
-    begin
-        F_DComunicador.V_ConexaoCliente.ConexaoAtivadada := False;
-        F_DComunicador.V_ThRecebeEscuta.Parar;
-        F_DComunicador.V_ThRecebeEscuta.Terminate;
-    end;
-    F_ListaTransacao.Free;
-    F_DComunicador.Free;
-
-    if F_PinPadModelo <> pNDF then
-    begin
-        F_PinPadDesconectar('    OpenTef    ');
-        F_PinPadDescarrega;
-        UnloadLibrary(F_PinPad);
-    end;
-
     DTef.Free;
     Result := 0;
 end;
 
-function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; stdcall;
+function login(VP_Host: PChar; VP_Porta, VP_ID: integer; VP_ChaveTerminal: PChar; VP_Versao_Comunicacao: integer): integer; cdecl;
 var
     VL_Mensagem: TMensagem;
     VL_S, VL_Dados: ansistring;
-    VL_DadosI: int64;
-    VL_Transmissao_ID: string;
+    VL_Transmissao_ID, VL_Desafio, VL_Desafio_ID: string;
 begin
     VL_S := '';
     VL_Dados := '';
+    VL_Desafio := '';
     VL_Transmissao_ID := '';
     VL_Mensagem := TMensagem.Create;
     try
@@ -832,7 +1106,7 @@ begin
             (F_ChaveTerminal <> VP_ChaveTerminal) or
             (F_Versao_Comunicacao <> VP_Versao_Comunicacao)) then
         begin
-            F_DComunicador.DesconectarCliente;
+            F_DComunicador.DesconectarCliente(F_DComunicador);
             F_DComunicador.V_ConexaoCliente.ServidorHost := VP_Host;
             F_DComunicador.V_ConexaoCliente.ServidorPorta := VP_Porta;
             F_ChaveTerminal := VP_ChaveTerminal;
@@ -840,10 +1114,14 @@ begin
         end;
 
         F_DComunicador.V_ConexaoCliente.ConexaoAtivadada := True;
-        Result := F_DComunicador.ConectarCliente;
+
+        Result := F_DComunicador.ConectarCliente(F_DComunicador);
 
         if Result <> 0 then
+        begin
+            GravaLog(F_ArquivoLog, 0, '', 'tef_lib', '190920220851', 'Erro no login', '', Result);
             Exit;
+        end;
 
         if F_DComunicador.V_ConexaoCliente.Status = csLogado then
         begin
@@ -853,22 +1131,35 @@ begin
 
         if F_DComunicador.V_ConexaoCliente.Status = csChaveado then
         begin
+            DTef.CriptoAes.GenerateKey(VP_ChaveTerminal);
+            VL_Desafio_ID := FloatToStr(Random(10000)) + '      ';
+            VL_Desafio := DTef.CriptoAes.EncryptString(VL_Desafio_ID + DateTimeToStr(Now) + FloatToStr(Random(1000)));
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('0001', '');
-            VL_Mensagem.AddTag('0002', VP_ChaveTerminal);
-            VL_Mensagem.AddTag('0005', IntToStr(C_versao[0]) + '.' + IntToStr(C_versao[1]) + '.' + IntToStr(C_versao[2]));
-            VL_Mensagem.AddTag('0006', IntToStr(C_mensagem));
-            VL_Mensagem.AddTag('0037', 'S');
+            VL_Mensagem.AddTag('0106', VL_Desafio); // desafio de chave
+            VL_Mensagem.AddTag('00A3', IntToStr(VP_ID)); // ID
+            VL_Mensagem.AddTag('0005', IntToStr(C_versao[0]) + '.' + IntToStr(C_versao[1]) + '.' + IntToStr(C_versao[2])); // versao do tef
+            VL_Mensagem.AddTag('0006', IntToStr(C_mensagem)); // versao da mensageira
+            VL_Mensagem.AddTag('0037', 'S');  // permissao do terminal
 
-            Result := F_DComunicador.ClienteTransmiteSolicitacao(VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 10000, True);
+            Result := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 10000, True);
             if Result <> 0 then
+            begin
+                GravaLog(F_ArquivoLog, 0, '', 'tef_lib', '190920220849', 'Erro no login', '', Result);
                 Exit;
+            end;
             VL_Mensagem.GetComando(VL_S, VL_Dados);
             VL_S := VL_Mensagem.Comando;
             if VL_S = '0028' then
             begin
-                F_DComunicador.V_ConexaoCliente.Status := csLogado;
-                F_DComunicador.V_ConexaoCliente.ConexaoAtivadada := True;
+                VL_Mensagem.GetTag('0106', VL_Dados);
+                if trim(VL_Dados) = trim(VL_Desafio_ID) then
+                begin
+                    F_DComunicador.V_ConexaoCliente.Status := csLogado;
+                    F_DComunicador.V_ConexaoCliente.ConexaoAtivadada := True;
+                end
+                else
+                    Result := 92;
             end
             else
             if VL_S = '0029' then
@@ -886,7 +1177,7 @@ begin
 
 end;
 
-function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; stdcall;
+function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; cdecl;
 var
     VL_Th: TThProcesso;
 begin
@@ -896,7 +1187,7 @@ begin
 
 end;
 
-function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; stdcall;
+function solicitacaoblocante(var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
 var
     VL_Transmissao_ID, VL_String: ansistring;
     VL_MensagensOUT, VL_MensagensIN: TMensagem;
@@ -907,7 +1198,7 @@ begin
         VL_MensagensOUT := TMensagem.Create;
         VL_MensagensOUT.CarregaTags(VP_Dados);
         VL_MensagensIN := TMensagem.Create;
-        Result := F_DComunicador.ClienteTransmiteSolicitacao(VL_Transmissao_ID, VL_MensagensOUT, VL_MensagensIN, nil, VP_TempoAguarda, True);
+        Result := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_MensagensOUT, VL_MensagensIN, nil, VP_TempoAguarda, True);
 
         VO_Transmissao_ID := StrAlloc(Length(VL_Transmissao_ID) + 1);
         StrPCopy(VO_Transmissao_ID, VL_Transmissao_ID);
@@ -925,15 +1216,18 @@ begin
 
 end;
 
-function opentefstatus(var VO_StatusRetorno: integer): integer; stdcall;
+function opentefstatus(var VO_StatusRetorno: integer): integer; cdecl;
 begin
     Result := 0;
     VO_StatusRetorno := Ord(F_DComunicador.V_ConexaoCliente.Status);
+    if (VO_StatusRetorno = Ord(csLogado)) and (F_AmbienteTeste <> 1) then
+        Result := F_DComunicador.ClienteVerificaConexao(F_DComunicador);
+
     if not F_DComunicador.V_ConexaoCliente.ConexaoAtivadada then
         VO_StatusRetorno := Ord(csNaoInicializado);
 end;
 
-function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; stdcall;
+function transacaocreate(VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaoID: PChar; VP_TempoAguarda: integer): integer; cdecl;
 var
     VL_Transacao: TTransacao;
     VL_Mensagem: TMensagem;
@@ -954,7 +1248,11 @@ begin
 
 
             if (F_AmbienteTeste <> 1) then
-                Result := F_DComunicador.ClienteTransmiteSolicitacao(VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 10000, True)
+            begin
+                Result := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 10000, True);
+                if Result <> 0 then
+                    GravaLog(F_ArquivoLog, 0, '', 'tef_lib', '190920220854', 'Erro na transacaocreate', '', Result);
+            end
             else
             begin
                 for VL_I := 1 to VL_Mensagem.TagCount do
@@ -1008,14 +1306,28 @@ begin
     end;
 end;
 
-function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; stdcall;
+function transacaostatus(var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; cdecl;
 var
     VL_Transacao: TTransacao;
     VL_I: integer;
 begin
-    Result := 0;
 
     VO_Status := Ord(tsNaoLocalizada);
+
+    if F_AmbienteTeste = 1 then // ambiente de teste ativado
+    begin
+        Result := opentefstatus(VO_Status);
+        if VO_Status <> Ord(csLogado) then
+            Exit;
+    end
+    else // ambiente de teste desativado
+    begin
+        Result := F_DComunicador.ClienteVerificaConexao(F_DComunicador);
+    end;
+
+    if Result <> 0 then
+        Exit;
+
     try
         for VL_I := 0 to F_ListaTransacao.Count - 1 do
         begin
@@ -1039,11 +1351,11 @@ begin
 
 end;
 
-function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; stdcall;
+function transacaostatusdescricao(var VO_Status: PChar; VP_TransacaoID: PChar): integer; cdecl;
 var
     VL_Transacao: TTransacao;
     VL_I: integer;
-    VL_Codigo: Integer;
+    VL_Codigo: integer;
 begin
     Result := 0;
 
@@ -1056,17 +1368,8 @@ begin
             if VL_Transacao.ID = VP_TransacaoID then
             begin
                 Result := VL_Transacao.Erro;
-                if (Result <> 0) and (VL_Transacao.erroDescricao = '') then // verifica se a tag possui erro
-                begin
-                    VL_Codigo := Result;
-                    mensagemerro(VL_Codigo, VO_Status);
-                end
-                else
-                begin
-                    VO_Status := StrAlloc(Length(VL_Transacao.erroDescricao) + 1);
-                    StrPCopy(VO_Status, VL_Transacao.erroDescricao);
-                end;
-
+                VO_Status := StrAlloc(Length(VL_Transacao.erroDescricao) + 1);
+                StrPCopy(VO_Status, VL_Transacao.erroDescricao);
                 Exit;
             end;
         end;
@@ -1080,7 +1383,7 @@ begin
 
 end;
 
-function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; stdcall;
+function transacaocancela(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; cdecl;
 begin
     Result := 0;
 
@@ -1096,7 +1399,7 @@ begin
 
 end;
 
-procedure transacaofree(VP_TransacaoID: PChar); stdcall;
+procedure transacaofree(VP_TransacaoID: PChar); cdecl;
 var
     VL_I: integer;
     VL_Transacao: TTransacao;
@@ -1108,7 +1411,8 @@ begin
             if VL_Transacao.ID = VP_TransacaoID then
             begin
                 F_ListaTransacao.Remove(VL_Transacao);
-                VL_Transacao.Free;
+                VL_Transacao.fAbortada := True;
+                //VL_Transacao.Free;
                 Exit;
             end;
         end;

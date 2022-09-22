@@ -41,7 +41,9 @@ exports
     transacaofree,
     transacaostatus,
     transacaostatusdescricao,
-    transacaocancela
+    transacaocancela,
+
+    versao
 
 ;
 

@@ -29,7 +29,9 @@ exports
     mensagemtagcount,
     mensagemgettag,
     mensagemgettagidx,
-    mensagemtagtostr;
+    mensagemtagtostr,
+    mensagemlimpar,
+    mensagemerro;
 
 begin
 

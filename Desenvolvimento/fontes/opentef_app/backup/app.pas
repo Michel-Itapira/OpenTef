@@ -12,13 +12,15 @@ type
     { TFApp }
 
     TFApp = class(TForm)
-      BarcodeQR1: TBarcodeQR;
+        BarcodeQR1: TBarcodeQR;
         BIniciar: TButton;
         BMenuOperaciona: TButton;
         BParar: TButton;
         BMenu: TButton;
         BBin: TButton;
         Button1: TButton;
+        Button2: TButton;
+        Button3: TButton;
         Image2: TImage;
         MMenu: TMemo;
         MBIN: TMemo;
@@ -30,6 +32,7 @@ type
         procedure BBinClick(Sender: TObject);
         procedure Button1Click(Sender: TObject);
         procedure Button2Click(Sender: TObject);
+        procedure Button3Click(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 
     private
@@ -51,23 +54,28 @@ implementation
 procedure TFApp.BIniciarClick(Sender: TObject);
 begin
     DNucleo := TDNucleo.Create(nil);
-    F_ArquivoLog:= ExtractFilePath(ParamStr(0)) +'appopentef.log';
+    F_ArquivoLog := ExtractFilePath(ParamStr(0)) + 'appopentef.log';
     DNucleo.iniciar;
 end;
 
 procedure TFApp.BMenuOperacionaClick(Sender: TObject);
 var
-    VL_I:Integer;
-    VL_Menu:TRecMenu;
+    VL_I: integer;
+    VL_Menu: TRecMenu;
 begin
     MMenuOperacional.Lines.Clear;
-    for VL_I:=0 to DNucleo.VF_MenuOperacional.Count -1 do
+
+    if not Assigned(DNucleo) then
+        Exit;
+
+    if DNucleo.VF_MenuOperacional.Count = 0 then
+        Exit;
+
+    for VL_I := 0 to DNucleo.VF_MenuOperacional.Count - 1 do
     begin
-      VL_Menu:=DNucleo.VF_MenuOperacional.Get(VL_I);
-      MMenuOperacional.Lines.Add('Menu TAG:'+VL_Menu.Tag+' Menu Botao:'+VL_Menu.TextoBotao+' ModuloConf_ID:'+IntToStr(VL_Menu.ModuloConfID));
+        VL_Menu := DNucleo.VF_MenuOperacional.Get(VL_I);
+        MMenuOperacional.Lines.Add('Menu TAG:' + VL_Menu.Tag + ' Menu Botao:' + VL_Menu.TextoBotao + ' ModuloConf_ID:' + IntToStr(VL_Menu.ModuloConfID));
     end;
-
-
 
 end;
 
@@ -79,45 +87,81 @@ end;
 
 procedure TFApp.BMenuClick(Sender: TObject);
 var
-    VL_I:Integer;
-    VL_Menu:TRecMenu;
+    VL_I: integer;
+    VL_Menu: TRecMenu;
 begin
     MMenu.Lines.Clear;
-    for VL_I:=0 to DNucleo.VF_Menu.Count -1 do
+
+    if not Assigned(DNucleo) then
+        Exit;
+
+    if DNucleo.VF_Menu.Count = 0 then
+        Exit;
+
+    for VL_I := 0 to DNucleo.VF_Menu.Count - 1 do
     begin
-      VL_Menu:=DNucleo.VF_Menu.Get(VL_I);
-      MMenu.Lines.Add('Menu TAG:'+VL_Menu.Tag+' Menu Botao:'+VL_Menu.TextoBotao+' ModuloConf_ID:'+IntToStr(VL_Menu.ModuloConfID));
+        VL_Menu := DNucleo.VF_Menu.Get(VL_I);
+        MMenu.Lines.Add('Menu TAG:' + VL_Menu.Tag + ' Menu Botao:' + VL_Menu.TextoBotao + ' ModuloConf_ID:' + IntToStr(VL_Menu.ModuloConfID));
     end;
 
 end;
 
 procedure TFApp.BBinClick(Sender: TObject);
 var
-    VL_I:Integer;
-    VL_RecBin:TRecBin;
+    VL_I: integer;
+    VL_RecBin: TRecBin;
 begin
     MBIN.Lines.Clear;
-    for VL_I:=0 to DNucleo.VF_Bin.Count -1 do
+
+    if not Assigned(DNucleo) then
+        Exit;
+
+    if DNucleo.VF_Bin.Count = 0 then
+        Exit;
+
+    for VL_I := 0 to DNucleo.VF_Bin.Count - 1 do
     begin
-      VL_RecBin:=DNucleo.VF_Bin.Get(VL_I);
-      MBIN.Lines.Add('BIN:'+VL_RecBin.IIN+' ModuloConf_ID:'+IntToStr(VL_RecBin.ModuloConfID));
+        VL_RecBin := DNucleo.VF_Bin.Get(VL_I);
+        MBIN.Lines.Add('BIN:' + VL_RecBin.IIN + ' ModuloConf_ID:' + IntToStr(VL_RecBin.ModuloConfID));
     end;
 
 end;
 
 procedure TFApp.Button1Click(Sender: TObject);
 var
-   s:string;
+    s: string;
 
 begin
-    s:='';
+    s := '';
 
-    BarcodeToStr(s,BarcodeQR1);
-    StrToImagem(s,Image2);
+    BarcodeToStr(s, BarcodeQR1);
+    StrToImagem(s, Image2);
 end;
 
 procedure TFApp.Button2Click(Sender: TObject);
+var
+    VL_Mensagem: TMensagem;
 begin
+    VL_Mensagem := TMensagem.Create;
+    VL_Mensagem.AddComando('0111', 'S');
+
+    DComunicador.ServidorTransmiteSolicitacaoIdentificacao(@DComunicador, 30000, False, nil, '122', VL_Mensagem, VL_Mensagem,
+        'PDV', 'L01C001');
+
+end;
+
+procedure TFApp.Button3Click(Sender: TObject);
+var
+    VL_Mensagem: TMensagem;
+begin
+    VL_Mensagem := TMensagem.Create;
+    try
+        VL_Mensagem.AddComando('00CD', 'S'); //SOLICITA BINS
+        DNucleo.ModuloAddSolicitacaoIdentificacaoAdquirente(0, '', 10000, '1', VL_Mensagem, cnServico);
+
+    finally
+        VL_Mensagem.Free;
+    end;
 
 end;
 
@@ -126,7 +170,7 @@ end;
 procedure TFApp.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     if Assigned(DNucleo) then
-    DNucleo.parar;
+        DNucleo.parar;
 end;
 
 
