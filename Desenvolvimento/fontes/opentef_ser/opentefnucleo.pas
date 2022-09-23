@@ -58,6 +58,9 @@ type
         destructor Destroy; override;
     end;
 
+
+
+
     { TThTransacao }
 
     TThTransacao = class(TThread)
@@ -191,7 +194,7 @@ type
             VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
             VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string): integer;
         function ModuloCarrega(VP_ModuloConfig_ID: integer): integer;
-        function ModuloDescarrega(VP_ModuloConfig_ID: integer): integer;
+        function ModuloDescarrega(VP_ModuloConfig_ID, VP_ModuloProcID: integer): integer;
         function ModuloAddSolicitacao(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64;
             VP_ModuloConfig_ID: integer; VP_Mensagem: TMensagem; VP_ConexaoTipo: TConexaoTipo): integer;
         function ModuloAddSolicitacao(VP_Transmissao_ID: string; VP_TempoEspera, VP_ModuloProcID: integer; VP_Mensagem: TMensagem): integer;
@@ -260,12 +263,22 @@ var
     VL_PRegModulo: ^TRegModulo;
     VL_String: string;
     VL_Erro: integer;
+
+    procedure Descarrega(VP_ModuloProcID: integer);
+    begin
+        DNucleo.ModuloDescarrega(-1, VP_ModuloProcID);
+    end;
+
 begin
     try
         try
 
             VL_Mensagem := TMensagem.Create;
             VL_PRegModulo := DNucleo.ModuloGetReg(VP_ModuloProcID);
+
+            if not Assigned(VL_PRegModulo) then
+                exit;
+
             VL_Tarefa := nil;
 
             for VL_I := 0 to VL_PRegModulo^.ThModulo.V_ListaTarefas.Count - 1 do
@@ -276,6 +289,18 @@ begin
                 else
                     VL_Tarefa := nil;
             end;
+
+            if VP_Erro = 96 then
+            begin
+                with TThread.CreateAnonymousThread(TProcedure(@Descarrega)) do
+                begin
+                    FreeOnTerminate := True;
+                    start;
+                end;
+                Exit;
+            end;
+
+
 
             VL_Erro := VL_Mensagem.CarregaTags(VP_Dados);
             if VL_Erro <> 0 then
@@ -362,6 +387,13 @@ var
     VL_Erro: integer;
     VL_String: string;
     VL_PRegModulo: ^TRegModulo;
+
+    procedure Descarrega();
+    begin
+            DNucleo.ModuloDescarrega(-1, VP_ModuloProcID);
+        //  DNucleo.VF_Bin.RemovePorModuloConf(VL_PRegModulo^.ModuloConfig_ID);
+    end;
+
 begin
 
     VL_String := '';
@@ -371,6 +403,21 @@ begin
         VL_Mensagem.AddTag('00F8', 'F');
 
         VL_PRegModulo := DNucleo.ModuloGetReg(VP_ModuloProcID);
+
+        if not Assigned(VL_PRegModulo) then
+            exit;
+
+        if VP_Erro = 96 then
+        begin
+            with TThread.CreateAnonymousThread(TProcedure(@Descarrega)) do
+            begin
+                FreeOnTerminate := True;
+                start;
+            end;
+            Exit;
+        end;
+
+
 
         VL_Erro := VL_Mensagem.CarregaTags(VP_Dados);
         if VL_Erro <> 0 then
@@ -513,214 +560,223 @@ begin
         VL_TipoConexao := 'S';
     try
         try
-            while not Terminated do
             begin
-
-                if VF_Sair then
-                    Exit;
-
-                if VF_LibCarregada = False then
+                while not Terminated do
                 begin
+
+                    if VF_Sair then
+                        Exit;
+
+                    if VF_LibCarregada = False then
+                    begin
                     {$IFDEF UNIX}
                     TRegModulo(VF_RegModulo^).Handle := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca));
                     {$ELSE}
-                    TRegModulo(VF_RegModulo^).Handle := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\' + TRegModulo(VF_RegModulo^).Biblioteca));
+                        TRegModulo(VF_RegModulo^).Handle := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\' + TRegModulo(VF_RegModulo^).Biblioteca));
                     {$ENDIF}
-                    if TRegModulo(VF_RegModulo^).Handle = 0 then
-                    begin
-                        GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
-                            '12082022143300', 'Erro ao tentar carregar a dll:' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0);
-                        Exit;
-                    end;
-                    Pointer(TRegModulo(VF_RegModulo^).Login) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'login');
-                    Pointer(TRegModulo(VF_RegModulo^).Finalizar) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'finalizar');
-                    Pointer(TRegModulo(VF_RegModulo^).Inicializar) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'inicializar');
-                    Pointer(TRegModulo(VF_RegModulo^).Solicitacao) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'solicitacao');
-                    Pointer(TRegModulo(VF_RegModulo^).Solicitacaoblocante) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'solicitacaoblocante');
-                    Pointer(TRegModulo(VF_RegModulo^).ModuloStatus) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'modulostatus');
-
-
-                    GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
-                        '12082022154300', 'Carregando funções da dll' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0, C_Debug);
-
-                    if VF_Sair then
-                        Exit;
-
-
-                    if VF_ConexaoTipo = cnCaixa then
-                        VL_Erro := TRegModulo(VF_RegModulo^).Inicializar(TRegModulo(VF_RegModulo^).ModuloProcID,
-                            TRegModulo(VF_RegModulo^).PModulo, @ModuloCaixaRetorno, TRegModulo(VF_RegModulo^).ModuloConfig_ID,
-                            PChar(VF_ArquivoLog))
-                    else
-                        VL_Erro := TRegModulo(VF_RegModulo^).Inicializar(TRegModulo(VF_RegModulo^).ModuloProcID,
-                            TRegModulo(VF_RegModulo^).PModulo, @ModuloServicoRetorno, TRegModulo(VF_RegModulo^).ModuloConfig_ID, PChar(VF_ArquivoLog));
-
-                    GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
-                        '12082022154301', 'Iniciando Mudulo' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0, C_Debug);
-
-
-                    if VL_Erro <> 0 then
-                    begin
-                        GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
-                            '030520221138', 'Erro ao tentar inicializar a dll:' + TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro);
-                        Exit;
-                    end;
-                    VF_LibCarregada := True;
-                    if (VF_ConexaoTipo = cnServico) then
-                        DNucleo.AtualizaBIN(TRegModulo(VF_RegModulo^), nil);
-                end
-                else
-                begin
-
-                    if VF_Sair then
-                        Exit;
-
-                    // pega o status da conexao
-                    VL_Erro := TRegModulo(VF_RegModulo^).ModuloStatus(TRegModulo(VF_RegModulo^).PModulo, VL_VersaoModulo, VL_VersaoMensagem, VL_DadosInteger);
-                    if VL_Erro <> 0 then
-                    begin
-                        GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
-                            '030520221503', 'Erro ao tentar pegar status da conexao ' + ConexaoTipoToStr(VF_ConexaoTipo) + ' da dll:' +
-                            TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro);
-                        Exit;
-                    end;
-                    VL_ConexaoStatus := IntToConexaoStatus(VL_DadosInteger);
-
-                    if VL_ConexaoStatus <> csLogado then
-                    begin
-                        VL_Erro := TRegModulo(VF_RegModulo^).Login(TRegModulo(VF_RegModulo^).PModulo, PChar(TRegModulo(VF_RegModulo^).Host),
-                            TRegModulo(VF_RegModulo^).Porta,
-                            PChar(TRegModulo(VF_RegModulo^).Chave), VL_TipoConexao);
-                        if VL_Erro <> 0 then
+                        if TRegModulo(VF_RegModulo^).Handle = 0 then
+                        begin
                             GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
-                                '030520221540', 'Erro ao tentar logar da conexao ' + ConexaoTipoToStr(VF_ConexaoTipo) + ' da dll:' +
-                                TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro)
+                                '12082022143300', 'Erro ao tentar carregar a dll:' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0);
+                            Exit;
+                        end;
+                        Pointer(TRegModulo(VF_RegModulo^).Login) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'login');
+                        Pointer(TRegModulo(VF_RegModulo^).Finalizar) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'finalizar');
+                        Pointer(TRegModulo(VF_RegModulo^).Inicializar) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'inicializar');
+                        Pointer(TRegModulo(VF_RegModulo^).Solicitacao) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'solicitacao');
+                        Pointer(TRegModulo(VF_RegModulo^).Solicitacaoblocante) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'solicitacaoblocante');
+                        Pointer(TRegModulo(VF_RegModulo^).ModuloStatus) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'modulostatus');
+
+
+                        GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
+                            '12082022154300', 'Carregando funções da dll' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0, C_Debug);
+
+                        if VF_Sair then
+                            Exit;
+
+
+                        if VF_ConexaoTipo = cnCaixa then
+                            VL_Erro := TRegModulo(VF_RegModulo^).Inicializar(TRegModulo(VF_RegModulo^).ModuloProcID,
+                                TRegModulo(VF_RegModulo^).PModulo, @ModuloCaixaRetorno, TRegModulo(VF_RegModulo^).ModuloConfig_ID,
+                                PChar(VF_ArquivoLog))
                         else
-                        begin
-                            VL_Erro := TRegModulo(VF_RegModulo^).ModuloStatus(TRegModulo(VF_RegModulo^).PModulo, VL_VersaoModulo,
-                                VL_VersaoMensagem, VL_DadosInteger);
-                            VL_ConexaoStatus := IntToConexaoStatus(VL_DadosInteger);
-                        end;
+                            VL_Erro := TRegModulo(VF_RegModulo^).Inicializar(TRegModulo(VF_RegModulo^).ModuloProcID,
+                                TRegModulo(VF_RegModulo^).PModulo, @ModuloServicoRetorno, TRegModulo(VF_RegModulo^).ModuloConfig_ID, PChar(VF_ArquivoLog));
 
-                        if VF_Sair then
+                        GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
+                            '12082022154301', 'Iniciando Mudulo' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0, C_Debug);
+
+
+                        if VL_Erro <> 0 then
+                        begin
+                            GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
+                                '030520221138', 'Erro ao tentar inicializar a dll:' + TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro);
                             Exit;
-
-
-                        if (VL_ConexaoStatus = csLogado) and (VF_ConexaoTipo = cnServico) and (TRegModulo(VF_RegModulo^).Menu_estatico = False) then
-                        begin
-                            // atualiza MENUS
-
-                            VL_Mensagem := TMensagem.Create;
-                            try
-                                VL_Mensagem.AddComando('00CF', 'S'); //SOLICITA MENU VENDA
-                                TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(''),
-                                    PChar(VL_Mensagem.TagsAsString), @ModuloServicoRetorno, 0, 60000);
-
-
-                            finally
-                                VL_Mensagem.Free;
-                            end;
-
                         end;
-
-                        if (VL_ConexaoStatus = csLogado) and (VF_ConexaoTipo = cnServico) and
-                            (TRegModulo(VF_RegModulo^).Menu_Operacional_estatico = False) then
-                        begin
-                            // atualiza MENUS  OPERACIONAL
-
-                            VL_Mensagem := TMensagem.Create;
-                            try
-
-                                VL_Mensagem.AddComando('00D4', 'S'); //SOLICITA MENU OPERACIONAL
-                                TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(''),
-                                    PChar(VL_Mensagem.TagsAsString), @ModuloServicoRetorno, 0, 60000);
-
-
-
-                            finally
-                                VL_Mensagem.Free;
-                            end;
-
-                        end;
-
-
-                        if VF_Sair then
-                            Exit;
-
-
-                        if (VL_ConexaoStatus = csLogado) and (VF_ConexaoTipo = cnServico) and (TRegModulo(VF_RegModulo^).Menu_estatico = False) then
-                        begin
-                            // atualiza BINS
-
-                            VL_Mensagem := TMensagem.Create;
-                            try
-                                VL_Mensagem.AddComando('00CD', 'S'); //SOLICITA BINS
-                                TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(''),
-                                    PChar(VL_Mensagem.TagsAsString), @ModuloServicoRetorno, 0, 60000);
-
-
-
-                            finally
-                                VL_Mensagem.Free;
-                            end;
-
-                        end;
-
-                    end;
-
-                    // inicia as tratativas das solicitações
-                    if VL_ConexaoStatus = csLogado then
+                        VF_LibCarregada := True;
+                        if (VF_ConexaoTipo = cnServico) then
+                            DNucleo.AtualizaBIN(TRegModulo(VF_RegModulo^), nil);
+                    end
+                    else
                     begin
 
                         if VF_Sair then
                             Exit;
 
-                        for VL_I := 0 to V_ListaTarefas.Count - 1 do
+                        // pega o status da conexao
+                        VL_Erro := TRegModulo(VF_RegModulo^).ModuloStatus(TRegModulo(VF_RegModulo^).PModulo, VL_VersaoModulo, VL_VersaoMensagem, VL_DadosInteger);
+                        if VL_Erro <> 0 then
                         begin
+                            GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
+                                '030520221503', 'Erro ao tentar pegar status da conexao ' + ConexaoTipoToStr(VF_ConexaoTipo) + ' da dll:' +
+                                TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro);
+                            Exit;
+                        end;
+                        VL_ConexaoStatus := IntToConexaoStatus(VL_DadosInteger);
+
+                        if VL_ConexaoStatus <> csLogado then
+                        begin
+                            VL_Erro := TRegModulo(VF_RegModulo^).Login(TRegModulo(VF_RegModulo^).PModulo, PChar(TRegModulo(VF_RegModulo^).Host),
+                                TRegModulo(VF_RegModulo^).Porta,
+                                PChar(TRegModulo(VF_RegModulo^).Chave), VL_TipoConexao);
+                            if VL_Erro <> 0 then
+                                GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo',
+                                    '030520221540', 'Erro ao tentar logar da conexao ' + ConexaoTipoToStr(VF_ConexaoTipo) + ' da dll:' +
+                                    TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro)
+                            else
+                            begin
+                                VL_Erro := TRegModulo(VF_RegModulo^).ModuloStatus(TRegModulo(VF_RegModulo^).PModulo, VL_VersaoModulo,
+                                    VL_VersaoMensagem, VL_DadosInteger);
+                                VL_ConexaoStatus := IntToConexaoStatus(VL_DadosInteger);
+                            end;
+
                             if VF_Sair then
                                 Exit;
 
 
-                            VL_Tarefa := V_ListaTarefas[VL_I];
-
-                            if VL_Tarefa^.VF_Tratando = False then
+                            if (VL_ConexaoStatus = csLogado) and (VF_ConexaoTipo = cnServico) and (TRegModulo(VF_RegModulo^).Menu_estatico = False) then
                             begin
-                                VL_Tarefa^.VF_Tratando := True;
-                                if VF_ConexaoTipo = cnCaixa then
-                                    VL_Erro := TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(VL_Tarefa^.VF_TransmissaoID),
-                                        PChar(VL_Tarefa^.VF_Mensagem), @ModuloCaixaRetorno, VL_Tarefa^.VF_ID, VL_Tarefa^.VF_TempoEspera)
-                                else
-                                    VL_Erro := TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(VL_Tarefa^.VF_TransmissaoID),
-                                        PChar(VL_Tarefa^.VF_Mensagem), @ModuloServicoRetorno, VL_Tarefa^.VF_ID, VL_Tarefa^.VF_TempoEspera);
+                                // atualiza MENUS
+
+                                VL_Mensagem := TMensagem.Create;
+                                try
+                                    VL_Mensagem.AddComando('00CF', 'S'); //SOLICITA MENU VENDA
+                                    TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(''),
+                                        PChar(VL_Mensagem.TagsAsString), @ModuloServicoRetorno, 0, 60000);
+
+
+                                finally
+                                    VL_Mensagem.Free;
+                                end;
 
                             end;
-                        end;
 
-                        for VL_I := 0 to V_ListaTarefas.Count - 1 do
-                        begin
+                            if (VL_ConexaoStatus = csLogado) and (VF_ConexaoTipo = cnServico) and
+                                (TRegModulo(VF_RegModulo^).Menu_Operacional_estatico = False) then
+                            begin
+                                // atualiza MENUS  OPERACIONAL
+
+                                VL_Mensagem := TMensagem.Create;
+                                try
+
+                                    VL_Mensagem.AddComando('00D4', 'S'); //SOLICITA MENU OPERACIONAL
+                                    TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(''),
+                                        PChar(VL_Mensagem.TagsAsString), @ModuloServicoRetorno, 0, 60000);
+
+
+
+                                finally
+                                    VL_Mensagem.Free;
+                                end;
+
+                            end;
+
 
                             if VF_Sair then
                                 Exit;
 
 
-                            VL_Tarefa := V_ListaTarefas[VL_I];
-                            if ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Tarefa^.VF_DataCriacao))) >
-                                VL_Tarefa^.VF_TempoEspera) then
+                            if (VL_ConexaoStatus = csLogado) and (VF_ConexaoTipo = cnServico) and (TRegModulo(VF_RegModulo^).Bin_Estatico = False) then
                             begin
-                                // pode estudar uma opcao de enviar uma mensagem de erro
-                                V_ListaTarefas.Remove(VL_Tarefa);
-                                Dispose(VL_Tarefa);
-                                Break;
+                                // atualiza BINS
+
+                                VL_Mensagem := TMensagem.Create;
+                                try
+                                    VL_Mensagem.AddComando('00CD', 'S'); //SOLICITA BINS
+                                    TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(''),
+                                        PChar(VL_Mensagem.TagsAsString), @ModuloServicoRetorno, 0, 60000);
+
+
+
+                                finally
+                                    VL_Mensagem.Free;
+                                end;
+
+                            end;
+
+                        end;
+
+                        // inicia as tratativas das solicitações
+                        if VL_ConexaoStatus = csLogado then
+                        begin
+
+                            if VF_Sair then
+                                Exit;
+
+                            for VL_I := 0 to V_ListaTarefas.Count - 1 do
+                            begin
+                                if VF_Sair then
+                                    Exit;
+
+
+                                VL_Tarefa := V_ListaTarefas[VL_I];
+
+                                if VL_Tarefa^.VF_Tratando = False then
+                                begin
+                                    VL_Tarefa^.VF_Tratando := True;
+                                    if VF_ConexaoTipo = cnCaixa then
+                                        VL_Erro := TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(VL_Tarefa^.VF_TransmissaoID),
+                                            PChar(VL_Tarefa^.VF_Mensagem), @ModuloCaixaRetorno, VL_Tarefa^.VF_ID, VL_Tarefa^.VF_TempoEspera)
+                                    else
+                                        VL_Erro := TRegModulo(VF_RegModulo^).Solicitacao(TRegModulo(VF_RegModulo^).PModulo, PChar(VL_Tarefa^.VF_TransmissaoID),
+                                            PChar(VL_Tarefa^.VF_Mensagem), @ModuloServicoRetorno, VL_Tarefa^.VF_ID, VL_Tarefa^.VF_TempoEspera);
+
+                                end;
+                            end;
+
+                            for VL_I := 0 to V_ListaTarefas.Count - 1 do
+                            begin
+
+                                if VF_Sair then
+                                    Exit;
+
+
+                                VL_Tarefa := V_ListaTarefas[VL_I];
+                                if ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Tarefa^.VF_DataCriacao))) >
+                                    VL_Tarefa^.VF_TempoEspera) then
+                                begin
+                                    // pode estudar uma opcao de enviar uma mensagem de erro
+                                    V_ListaTarefas.Remove(VL_Tarefa);
+                                    Dispose(VL_Tarefa);
+                                    Break;
+                                end;
                             end;
                         end;
                     end;
+                    if VF_ConexaoTipo = cnCaixa then
+                        Sleep(100)
+                    else
+                        Sleep(500);
+
                 end;
-                if VF_ConexaoTipo = cnCaixa then
-                    Sleep(100)
-                else
-                    Sleep(500);
+
+                if VF_ConexaoTipo = cnServico then
+                begin
+                    DNucleo.VF_Bin.RemovePorModuloConf(TRegModulo(VF_RegModulo^).ModuloConfig_ID);
+                end;
 
             end;
+
         except
             on e: EInOutError do
                 GravaLog(F_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, '', 'opentefnucleo', '200520220934', 'Erro na TThModulo.Execute ' +
@@ -846,7 +902,7 @@ procedure TDNucleo.parar;
 begin
     if not Assigned(DNucleo) then
         Exit;
-    ModuloDescarrega(0);
+    ModuloDescarrega(0, 0);
 
     DComunicador.Free;
     DComunicador := nil;
@@ -919,7 +975,7 @@ end;
 
 
 
-function TDNucleo.ModuloDescarrega(VP_ModuloConfig_ID: integer): integer;
+function TDNucleo.ModuloDescarrega(VP_ModuloConfig_ID, VP_ModuloProcID: integer): integer;
 var
     VL_I: integer;
     VL_RegModulo: ^TRegModulo;
@@ -946,6 +1002,7 @@ begin
 
     end
     else
+    if VP_ModuloConfig_ID > 0 then
     begin
         if Assigned(VF_ListaTRegModulo) then
         begin
@@ -986,7 +1043,31 @@ begin
                 end;
             end;
         end;
+    end
+    else
+    if VP_ModuloProcID > 0 then
+    begin
+        if Assigned(VF_ListaTRegModulo) then
+        begin
+            for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
+            begin
+                if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
+                begin
+                    VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
+                    if VL_RegModulo^.ModuloProcID = VP_ModuloProcID then
+                    begin
+                        VL_RegModulo^.ThModulo.VF_Sair := True;
+                        VL_RegModulo^.ThModulo.WaitFor;
+                        VL_RegModulo^.ThModulo.Free;
+                        VF_ListaTRegModulo.Remove(VL_RegModulo);
+                        Dispose(VL_RegModulo);
+                        Break;
+                    end;
+                end;
+            end;
+        end;
     end;
+
 end;
 
 function TDNucleo.ModuloAddSolicitacao(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64;
@@ -2377,7 +2458,7 @@ var
     VL_TerminalSenha: string;
     VL_Permissao: TPermissao;
     VL_AContext: TIdContext;
-    VL_String: String;
+    VL_String: string;
 begin
     Result := 0;
     VL_Mensagem := TMensagem.Create;
@@ -2385,7 +2466,7 @@ begin
     VL_TerminalSenha := '';
     VL_TagDados := '';
     VL_ID := '';
-    VL_String:='';
+    VL_String := '';
     VL_Permissao := pmS;
 
 
@@ -2415,7 +2496,7 @@ begin
         VL_Consulta.Close;
         VL_String := 'SELECT S_STATUS,S_TERMINAL,S_DOC,S_CHAVE,S_IDENTIFICACAO FROM P_VAL_TERMINAL(''' + VL_IP + ''',' + VL_ID + ',''' +
             VL_TerminalSenha + ''',''' + PermissaoToStr(VL_Permissao) + ''')';
-        VL_Consulta.SQL.Text:= VL_String;
+        VL_Consulta.SQL.Text := VL_String;
         VL_Consulta.Open;
 
         if VL_Consulta.FieldByName('S_STATUS').AsInteger <> 0 then

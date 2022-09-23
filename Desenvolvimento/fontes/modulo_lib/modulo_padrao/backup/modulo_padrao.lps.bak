@@ -20,8 +20,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="217"/>
-        <CursorPos X="32" Y="227"/>
+        <TopLine Value="112"/>
+        <CursorPos Y="119"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -33,10 +33,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="916"/>
-        <CursorPos X="146" Y="944"/>
+        <TopLine Value="327"/>
+        <CursorPos X="18" Y="350"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="def.pas"/>
@@ -137,7 +138,7 @@
     <OtherDefines Count="1">
       <Define0 Value="TEF_LIB"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="1">
+    <JumpHistory HistoryIndex="11">
       <Position>
         <Filename Value="..\..\libs\func\comunicador.pas"/>
         <Caret Line="1482" Column="52" TopLine="1467"/>
@@ -145,6 +146,46 @@
       <Position>
         <Filename Value="modulo.pas"/>
         <Caret Line="227" Column="32" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="55" Column="15" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="944" Column="146" TopLine="916"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="936" Column="27" TopLine="924"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="915" Column="5" TopLine="913"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="607" Column="25" TopLine="600"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="98" Column="23" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="120" Column="112" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="117" Column="47" TopLine="98"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="122" TopLine="98"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="132" Column="3" TopLine="101"/>
       </Position>
     </JumpHistory>
     <RunParams>

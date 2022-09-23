@@ -343,17 +343,12 @@ begin
             begin
                 TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado := csDesconectado;
                 if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimento('', 0, 96, PChar(''))
+                    TDComunicador(f_DComunicador).V_ClienteRecebimento('', TDComunicador(f_DComunicador).V_ProcID, 96, PChar(''))
                 else
                 if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('', 0, 0, 96, PChar(''), TDComunicador(f_DComunicador).V_Modulo);
+                    TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('', 0, TDComunicador(f_DComunicador).V_ProcID, 96, PChar(''), TDComunicador(f_DComunicador).V_Modulo);
             end;
 
-
-
-
-            if TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csDesconectado then
-                exit;
 
             if Terminated then
                 Exit;
@@ -362,6 +357,11 @@ begin
                 Exit;
 
             VL_Dados := f_Dados;
+
+
+            if TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csDesconectado then
+                exit;
+
 
             if VL_Dados = '' then
                 exit;
@@ -1388,7 +1388,7 @@ begin
                 if TDComunicador(f_DComunicador).IdTCPCliente.Connected then
                     TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.CheckForDisconnect
                 else
-                if ((TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado)) and
+                if ((TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado) and
                     (TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csLogado)) then
                 begin
                     TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csDesconectado;

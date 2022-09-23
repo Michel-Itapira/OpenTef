@@ -284,7 +284,7 @@ begin
         end;
 
         F_Erro(StrToInt(VL_PChar), VL_DescricaoErro);
-        ShowMessage('Erro: ' + VL_Dados + #13 + 'Descrição: ' + VL_DescricaoErro);
+        ShowMessage('Erro: ' + VL_PChar + #13 + 'Descrição: ' + VL_DescricaoErro);
     end
     else
     if VL_Dados = '0018' then //Veio pedido de mostrar menu de venda

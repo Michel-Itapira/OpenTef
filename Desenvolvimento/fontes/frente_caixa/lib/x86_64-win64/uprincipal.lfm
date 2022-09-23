@@ -1,21 +1,22 @@
 object F_Principal: TF_Principal
-  Left = 1358
+  Left = 767
   Height = 682
-  Top = 153
+  Top = 104
   Width = 943
   Caption = 'Caixa'
   ClientHeight = 682
   ClientWidth = 943
   OnCreate = FormCreate
   OnShow = FormShow
+  Position = poDesktopCenter
   LCLVersion = '2.2.2.0'
   object PageControl1: TPageControl
     Left = -4
     Height = 602
     Top = 6
     Width = 947
-    ActivePage = TabSheet2
-    TabIndex = 1
+    ActivePage = TabSheet1
+    TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Venda'

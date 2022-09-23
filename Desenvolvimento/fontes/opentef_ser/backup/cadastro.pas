@@ -182,6 +182,7 @@ begin
                         IntToStr(VL_Tabela.FieldByName('MULTILOJA_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''')';
                     VL_Erro := 44;
+                    VL_Linha := VL_TLoja.SQL.Text;
                     VL_Linha := '300520221119';
                     VL_TLoja.ExecSQL;
 
@@ -4970,8 +4971,7 @@ begin
                     //verifica se o modulo_func ja foi cadastrado
                     VL_TMultLojaModulo.Close;
                     VL_TMultLojaModulo.SQL.Text := 'SELECT FIRST 1 ID FROM MULTILOJA_MODULO_CONF WHERE MODULO_CONF_ID=''' +
-                        VL_Tabela.FieldByName('MODULO_CONF_ID').AsString + ''' AND CODIGO=''' +
-                        VL_Tabela.FieldByName('CODIGO').AsString + '''';
+                        VL_Tabela.FieldByName('MODULO_CONF_ID').AsString+ '''';
                     VL_Erro := 55;
                     VL_Linha := '020620220931';
                     VL_TMultLojaModulo.Open;

@@ -9,7 +9,7 @@
         <Filename Value="operadora.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos Y="23"/>
+        <CursorPos X="77" Y="25"/>
         <UsageCount Value="244"/>
         <Loaded Value="True"/>
       </Unit>
@@ -20,8 +20,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="19"/>
-        <CursorPos X="51" Y="48"/>
+        <TopLine Value="761"/>
+        <CursorPos X="29" Y="774"/>
         <UsageCount Value="244"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -58,8 +58,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="147"/>
-        <CursorPos X="57" Y="185"/>
+        <TopLine Value="229"/>
+        <CursorPos X="18" Y="196"/>
         <UsageCount Value="120"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -70,10 +70,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="290"/>
-        <CursorPos X="115" Y="310"/>
+        <CursorPos X="70" Y="369"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\control.inc"/>
@@ -202,124 +202,124 @@
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="1052" Column="55" TopLine="1031"/>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="279" Column="21" TopLine="263"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="109" Column="23" TopLine="86"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="200" Column="5" TopLine="199"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="98" Column="20" TopLine="86"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1053" Column="55" TopLine="1032"/>
+        <Caret Line="36" Column="153" TopLine="7"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1054" Column="55" TopLine="1033"/>
+        <Caret Line="1032" TopLine="1021"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1053" Column="55" TopLine="1032"/>
+        <Caret Line="872" Column="62" TopLine="841"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1129" Column="88" TopLine="1095"/>
+        <Caret Line="915" Column="58" TopLine="878"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1020" TopLine="1020"/>
+        <Caret Line="952" Column="54" TopLine="915"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="425" Column="91" TopLine="395"/>
+        <Caret Line="1104" Column="46" TopLine="1067"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="436" Column="43" TopLine="407"/>
+        <Caret Line="522" Column="54" TopLine="500"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="422" Column="108" TopLine="407"/>
+        <Caret Line="586" Column="54" TopLine="549"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="420" TopLine="407"/>
+        <Caret Line="641" Column="98" TopLine="604"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="659" TopLine="637"/>
+        <Caret Line="668" Column="54" TopLine="631"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="693" TopLine="671"/>
+        <Caret Line="706" Column="58" TopLine="669"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1105" Column="39" TopLine="761"/>
+        <Caret Line="747" Column="66" TopLine="710"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="931" Column="54" TopLine="902"/>
+        <Caret Line="786" Column="101" TopLine="749"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="927" Column="67" TopLine="902"/>
+        <Caret Line="807" Column="62" TopLine="770"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="507" Column="72" TopLine="507"/>
+        <Caret Line="838" Column="66" TopLine="801"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="527" Column="96" TopLine="507"/>
+        <Caret Line="872" Column="62" TopLine="835"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="988" Column="20" TopLine="965"/>
+        <Caret Line="915" Column="58" TopLine="878"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="131" Column="34" TopLine="118"/>
+        <Caret Line="952" Column="54" TopLine="915"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="172" Column="34" TopLine="135"/>
+        <Caret Line="1104" Column="46" TopLine="1067"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1043" Column="82" TopLine="1006"/>
+        <Caret Line="987" Column="67" TopLine="971"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="144" Column="35" TopLine="115"/>
+        <Caret Line="144" Column="35" TopLine="121"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="205" Column="104" TopLine="168"/>
+        <Caret Line="708" Column="108" TopLine="671"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="987" Column="67" TopLine="950"/>
+        <Caret Line="635" Column="58" TopLine="599"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="209" Column="36" TopLine="172"/>
+        <Caret Line="678" Column="60" TopLine="641"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="1043" Column="111" TopLine="1006"/>
+        <Caret Line="774" Column="62" TopLine="737"/>
       </Position>
       <Position>
         <Filename Value="uprincipal.pas"/>
-        <Caret Line="16" Column="28"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="20" Column="69"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="16" Column="28" TopLine="7"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="20" Column="69" TopLine="7"/>
+        <Caret Line="777" Column="59" TopLine="736"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -120,11 +120,17 @@ end;
 
 function inicializar(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo; VP_ModuloConf_ID: integer;
     VP_ArquivoLog: PChar): integer; cdecl;
+var
+    VL_Modulo:TDModulo;
 begin
     try
         Result := 0;
 
-        Pointer(VO_Modulo) := Pointer(TDModulo.Create(nil));
+        VL_Modulo:=TDModulo.Create(nil);
+
+        VO_Modulo := AllocMem(SizeOf(VL_Modulo)+ 1);
+
+        Pointer(VO_Modulo) := Pointer(VL_Modulo);
         TDModulo(VO_Modulo).V_Modulo := VO_Modulo;
         TDModulo(VO_Modulo).V_ModuloProcID := VP_ModuloProcID;
         TDModulo(VO_Modulo).V_ModuloConf_ID := VP_ModuloConf_ID;
@@ -216,7 +222,10 @@ begin
         Result := TDModulo(VP_Modulo).V_DComunicador.ConectarCliente(TDModulo(VP_Modulo).V_DComunicador);
 
         if Result <> 0 then
+        begin
+            GravaLog(VL_ArquivoLog, 0, '', 'modulo', '190920220909', 'Erro no login', '', Result);
             Exit;
+        end;
 
         if TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Status = csLogado then
         begin

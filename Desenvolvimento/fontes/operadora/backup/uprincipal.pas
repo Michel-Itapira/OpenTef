@@ -1029,6 +1029,8 @@ begin
     finalizaconexao;
 end;
 
+
+
 procedure TForm1.BAtivaClick(Sender: TObject);
 var
     VL_Erro: integer;
@@ -1062,68 +1064,70 @@ begin
     VL_Chave00F1 := nil;
     VL_Transacao := nil;
 
-    if not Assigned(respondeservico) then
-    begin
-        ShowMessage('Inicialize a lib');
-        Exit;
-    end;
-
     F_MensagemCreate(VL_Mensagem);
     F_MensagemCreate(VL_Chave00F1);
     F_MensagemCreate(VL_Transacao);
-    VL_Dados := '';
-    VL_DescricaoErro := '';
 
-    F_MensagemAddComando(VL_Chave00F1, '0000', '');
-    F_MensagemAddTag(VL_Chave00F1, '00F2', '0068'); // tag do modulo
-    F_MensagemAddTag(VL_Chave00F1, '0036', '629867'); // bin
-    F_MensagemAddTag(VL_Chave00F1, '0110', 'S'); // conexao tipo s sistema c tipo caixa
-    F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
-    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text)); // codigo da loja
-    F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
-    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(EIdentificacao.Text));  // identificacao
+    try
+        if not Assigned(respondeservico) then
+        begin
+            ShowMessage('Inicialize a lib');
+            Exit;
+        end;
 
-    F_MensagemTagAsString(VL_Chave00F1, VL_Dados);
+        VL_Dados := '';
+        VL_DescricaoErro := '';
 
-    F_MensagemAddComando(VL_Mensagem, '0105', 'S'); // solicita comando para ser executado no pdv
-    //F_MensagemAddComando(VL_Mensagem, '0999', 'S');
-    F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
+        F_MensagemAddComando(VL_Chave00F1, '0000', '');
+        F_MensagemAddTag(VL_Chave00F1, '00F2', '0068'); // tag do modulo
+        F_MensagemAddTag(VL_Chave00F1, '0036', '629867'); // bin
+        F_MensagemAddTag(VL_Chave00F1, '0110', 'S'); // conexao tipo s sistema c tipo caixa
+        F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
+        F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text)); // codigo da loja
+        F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
+        F_MensagemAddTag(VL_Chave00F1, '0108', PChar(EIdentificacao.Text));  // identificacao
 
-    F_MensagemAddComando(VL_Transacao, '0104', 'S'); // solicita tags
-    F_MensagemAddTag(VL_Transacao, '0103', ''); // versao do tef
+        F_MensagemTagAsString(VL_Chave00F1, VL_Dados);
 
-    F_MensagemTagAsString(VL_Transacao, VL_Dados);
+        F_MensagemAddComando(VL_Mensagem, '0105', 'S'); // solicita comando para ser executado no pdv
+        F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
 
-    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
+        F_MensagemAddComando(VL_Transacao, '0104', 'S'); // solicita tags
+        F_MensagemAddTag(VL_Transacao, '0103', ''); // versao do tef
+
+        F_MensagemTagAsString(VL_Transacao, VL_Dados);
+
+        F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
 
 
-    F_MensagemTagAsString(VL_Mensagem, VL_Dados);
+        F_MensagemTagAsString(VL_Mensagem, VL_Dados);
 
-    VL_Id := -1;
+        VL_Id := -1;
 
-    for VL_I := 0 to F_OpenTef.Count - 1 do
-    begin
-        VL_RecOpenTef := F_OpenTef.GetRecOpeTef(VL_I);
-        if VL_RecOpenTef.V_Tipo = 'S' then
-            VL_Id := VL_RecOpenTef.V_ID;
+        for VL_I := 0 to F_OpenTef.Count - 1 do
+        begin
+            VL_RecOpenTef := F_OpenTef.GetRecOpeTef(VL_I);
+            if VL_RecOpenTef.V_Tipo = 'S' then
+                VL_Id := VL_RecOpenTef.V_ID;
+        end;
+
+        if VL_Id = -1 then
+        begin
+            ShowMessage('Conexão não encontrada');
+            Exit;
+        end;
+
+        VL_Erro := respondeservico('', VL_Dados, VL_Id);
+        if VL_Erro <> 0 then
+        begin
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
+        end;
+    finally
+        F_MensagemFree(VL_Mensagem);
+        F_MensagemFree(VL_Chave00F1);
+        F_MensagemFree(VL_Transacao);
     end;
-
-    if VL_Id = -1 then
-    begin
-        ShowMessage('Conexão não encontrada');
-        Exit;
-    end;
-
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
-    if VL_Erro <> 0 then
-    begin
-        F_Erro(VL_Erro, VL_DescricaoErro);
-        ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
-    end;
-
-    F_MensagemFree(VL_Mensagem);
-    F_MensagemFree(VL_Chave00F1);
-    F_MensagemFree(VL_Transacao);
 
 end;
 

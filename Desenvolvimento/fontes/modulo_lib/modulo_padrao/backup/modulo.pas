@@ -52,7 +52,7 @@ function solicitacao(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_
     cdecl;
 function solicitacaoblocante(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
 function modulostatus(VP_Modulo: Pointer; var VO_Versao: PChar; var VO_VersaoMensagem: integer; var VO_StatusRetorno: integer): integer; cdecl;
-procedure Retorno(VP_Transmissao_ID: PChar; VP_TarefaID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
+procedure Retorno(VP_Transmissao_ID: PChar; VP_TarefaID, VP_ModuloProcID, VP_Erro: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
 
 
 
@@ -112,23 +112,35 @@ begin
     end;
 end;
 
-procedure Retorno(VP_Transmissao_ID: PChar; VP_TarefaID, VP_ModuloProcID, VP_Codigo: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
+procedure Retorno(VP_Transmissao_ID: PChar; VP_TarefaID, VP_ModuloProcID, VP_Erro: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
+
+    procedure executar;
+    begin
+        if Assigned(TDModulo(VP_Modulo).V_Retorno) then
+            TDModulo(VP_Modulo).V_Retorno(VP_Transmissao_ID, 0, VP_ModuloProcID, VP_Erro, VP_Dados, VP_Modulo);
+    end;
+
 begin
-    if Assigned(TDModulo(VP_Modulo).V_Retorno) then
-        TDModulo(VP_Modulo).V_Retorno(VP_Transmissao_ID, 0, VP_ModuloProcID, VP_Codigo, VP_Dados, VP_Modulo);
+
+    with TThread.CreateAnonymousThread(TProcedure(@executar)) do
+    begin
+        FreeOnTerminate := True;
+        start;
+    end;
+
 end;
 
 function inicializar(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo; VP_ModuloConf_ID: integer;
     VP_ArquivoLog: PChar): integer; cdecl;
 var
-    VL_Modulo:TDModulo;
+    VL_Modulo: TDModulo;
 begin
     try
         Result := 0;
 
-        VL_Modulo:=TDModulo.Create(nil);
+        VL_Modulo := TDModulo.Create(nil);
 
-        VO_Modulo := AllocMem(SizeOf(VL_Modulo)+ 1);
+        VO_Modulo := AllocMem(SizeOf(VL_Modulo) + 1);
 
         Pointer(VO_Modulo) := Pointer(VL_Modulo);
         TDModulo(VO_Modulo).V_Modulo := VO_Modulo;
@@ -223,7 +235,7 @@ begin
 
         if Result <> 0 then
         begin
-            GravaLog(fArquivoLog, 0, '', 'modulo', '190920220909', 'Erro no login', '', Result);
+            GravaLog(VL_ArquivoLog, 0, '', 'modulo', '190920220909', 'Erro no login', '', Result);
             Exit;
         end;
 

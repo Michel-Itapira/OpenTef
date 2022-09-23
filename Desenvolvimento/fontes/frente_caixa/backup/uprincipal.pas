@@ -277,14 +277,14 @@ begin
     F_MensagemComandoDados(VL_Mensagem, VL_PChar);
     if VL_Dados = '0026' then  // retorno com erro
     begin
-        if VL_PChar = '0096' then // desconectado
+        if VL_PChar = '96' then // desconectado
         begin
             F_Principal.lblStatusConexao.Caption := 'Desconectado';
             F_Principal.lblStatusConexao.Font.Color := clRed;
         end;
 
         F_Erro(StrToInt(VL_PChar), VL_DescricaoErro);
-        ShowMessage('Erro: ' + VL_Dados + #13 + 'Descrição: ' + VL_DescricaoErro);
+        ShowMessage('Erro: ' + VL_PChar + #13 + 'Descrição: ' + VL_DescricaoErro);
     end
     else
     if VL_Dados = '0018' then //Veio pedido de mostrar menu de venda

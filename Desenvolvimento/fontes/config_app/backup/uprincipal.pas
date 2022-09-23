@@ -64,6 +64,7 @@ type
     Tfprincipal = class(TForm)
         BConectar: TBitBtn;
         BConfig: TSpeedButton;
+        TabLojaBLimpar: TBitBtn;
         TabLojaCkPessoa: TCheckBox;
         TabLojaLCnpj: TLabel;
         MDLojaFuncaoTAG_TIPO: TStringField;
@@ -76,6 +77,7 @@ type
         MDPinPadFuncaoTAG_TIPO: TStringField;
         TabFuncaoModuloETipoFiltro: TComboBox;
         TabFuncaoModuloLTipoFiltro: TLabel;
+        TabLojaModuloBLimpar: TBitBtn;
         TabLojaTabFuncaoDadosETipoFiltro: TComboBox;
         TabLojaTabFuncaoDadosLTipoFiltro: TLabel;
         TabMultLojaConfFuncaoETipoFiltro: TComboBox;
@@ -83,6 +85,7 @@ type
         TabLojaFuncaoETipoFiltro: TComboBox;
         TabLojaFuncaoLTipoFiltro: TLabel;
         TabPdvECodigo: TEdit;
+        TabPinPadBLimpar: TBitBtn;
         TabTagETipoFiltro: TComboBox;
         TabTagLTipoFiltro: TLabel;
         TabPdvGDados: TGroupBox;
@@ -586,6 +589,7 @@ type
         procedure TabConfiguracaoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: boolean);
         procedure TabFuncaoModuloConfShow(Sender: TObject);
         procedure TabFuncaoModuloETipoFiltroChange(Sender: TObject);
+        procedure TabLojaBLimparClick(Sender: TObject);
         procedure TabLojaCkPessoaClick(Sender: TObject);
         procedure TabLojaConfFuncaoCKSelecionadaChange(Sender: TObject);
         procedure TabLojaFuncaoCKSelecionadaChange(Sender: TObject);
@@ -607,6 +611,7 @@ type
         procedure TabFuncaoModuloEFiltroChange(Sender: TObject);
         procedure TabFuncaoModuloGridCellClick(Column: TColumn);
         procedure TabLojaGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+        procedure TabLojaModuloBLimparClick(Sender: TObject);
         procedure TabLojaModuloEFiltroChangeBounds(Sender: TObject);
         procedure TabLojaTabFuncaoDadosEFiltroChange(Sender: TObject);
         procedure TabLojaTabFuncaoDadosETipoFiltroChange(Sender: TObject);
@@ -696,6 +701,7 @@ type
         procedure TabPdvTabDadosModuloShow(Sender: TObject);
         procedure TabPinPadBAdicionarClick(Sender: TObject);
         procedure TabPinPadBExcluirClick(Sender: TObject);
+        procedure TabPinPadBLimparClick(Sender: TObject);
         procedure TabPinPadBModificarClick(Sender: TObject);
         procedure TabPinPadEFiltroChange(Sender: TObject);
         procedure TabPinPadFuncaoCKSelecionadaChange(Sender: TObject);
@@ -717,6 +723,7 @@ type
         procedure Conectar;
         procedure Desconectar;
         procedure LimparTela;
+        procedure LimpaCadastro(VP_NomeTab: string);
         procedure IniciarLib;
         function FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
         function FiltrarTabela(VP_DBGrid: TDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
@@ -784,7 +791,7 @@ implementation
 procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 begin
  if VP_Erro=96 then
-
+ F_Principal.Desconectar;
 end;
 
 {$R *.lfm}
@@ -796,7 +803,7 @@ begin
     if ((MDModulo.Active = False) or (MDModulo.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
-    if MDModuloConfig.Active then
+   { if MDModuloConfig.Active then
     begin
         MDModuloConfig.EmptyTable;
         TabConfiguracao.OnShow(self);
@@ -818,7 +825,7 @@ begin
         TabModuloTabDadosFuncao.OnShow(self);
     end
     else
-        TabModuloTabDadosFuncao.OnShow(self);
+        TabModuloTabDadosFuncao.OnShow(self);  }
 
     CarregaCampos('MODULO');
 end;
@@ -1039,7 +1046,7 @@ end;
 
 procedure Tfprincipal.MDLojaPDVAfterScroll(DataSet: TDataSet);
 begin
-    if ((MDLojaPDV.Active = False) or (MDLojaPDV.RecordCount = 0) or (F_Navegar = False)) then
+    {if ((MDLojaPDV.Active = False) or (MDLojaPDV.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
     if MDPdvModulo.Active then
@@ -1056,7 +1063,7 @@ begin
         TabPdvTabDadosFuncao.OnShow(self);
     end
     else
-        TabPdvTabDadosFuncao.OnShow(self);
+        TabPdvTabDadosFuncao.OnShow(self);  }
 
     CarregaCampos('LOJAPDV');
 end;
@@ -1068,7 +1075,7 @@ end;
 
 procedure Tfprincipal.MDModuloConfigAfterScroll(DataSet: TDataSet);
 begin
-    if ((MDModuloConfig.Active = False) or (MDModuloConfig.RecordCount = 0) or (F_Navegar = False)) then
+   { if ((MDModuloConfig.Active = False) or (MDModuloConfig.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
     if MDModuloConfFuncao.Active then
@@ -1077,7 +1084,7 @@ begin
         TabModuloTabDadosFuncao.OnShow(self);
     end
     else
-        TabModuloTabDadosFuncao.OnShow(self);
+        TabModuloTabDadosFuncao.OnShow(self); }
     CarregaCampos('MODULOCONFIG');
 end;
 
@@ -1518,6 +1525,11 @@ begin
         MDModuloFunc.Filter := 'TAG_TIPO=''' + TabFuncaoModuloETipoFiltro.Text + '''';
         MDModuloFunc.Filtered := True;
     end;
+end;
+
+procedure Tfprincipal.TabLojaBLimparClick(Sender: TObject);
+begin
+  LimpaCadastro('TABLOJA');
 end;
 
 procedure Tfprincipal.TabLojaCkPessoaClick(Sender: TObject);
@@ -2660,6 +2672,11 @@ begin
     CarregaCampos('MULTILOJA');
 end;
 
+procedure Tfprincipal.TabLojaModuloBLimparClick(Sender: TObject);
+begin
+  LimpaCadastro('tablojamodulo');
+end;
+
 procedure Tfprincipal.TabLojaModuloEFiltroChangeBounds(Sender: TObject);
 begin
 
@@ -3115,6 +3132,11 @@ begin
             ShowMessage('MDLoja não está ativo');
             Exit;
         end;
+        if LENGTH(TabLojaEID.Text) > 0 then
+        begin
+            ShowMessage('Limpe o cadastro antes de Adicionar uma loja');
+            exit;
+        end;
         if TabLojaECnpj.Text = '' then
         begin
             ShowMessage(TabLojaLCnpj.Caption + ' é um campo obrigatório');
@@ -3404,7 +3426,7 @@ begin
         end;
     end;
     //TabPdv
-    if ((MDPdv.Active) and ((VP_TabelaCarregamento = 'PDV') or (VP_TabelaCarregamento = 'TODAS'))) then
+    if ((MDPdv.Active) and (MDPdv.RecordCount>0) and ((VP_TabelaCarregamento = 'PDV') or (VP_TabelaCarregamento = 'TODAS'))) then
     begin
         MDPinPadPdv.Locate('ID', MDPdv.FieldByName('PINPAD_ID').AsInteger, []);
         TabPdvCPinPad.KeyValue := MDPinPadPdv.FieldByName('FABRICANTE_MODELO').AsVariant;
@@ -3600,7 +3622,9 @@ begin
 
             MDLoja.FieldByName('ID').AsInteger := VL_ID;
             MDLoja.FieldByName('DOC').AsString := TabLojaECnpj.Text;
+            VL_Tabela:=TabLojaECnpj.Text;
             MDLoja.FieldByName('RAZAO').AsString := TabLojaERazao.Text;
+                        VL_Tabela:=TabLojaERazao.Text;
             MDLoja.FieldByName('FANTASIA').AsString := TabLojaEFantasia.Text;
             MDLoja.FieldByName('MULTILOJA_ID').AsString := MDMultiLojaLoja.FieldByName('ID').AsString;
             MDLoja.FieldByName('MULT').AsString := VL_BOOL;
@@ -4668,6 +4692,42 @@ begin
     end;
 end;
 
+procedure Tfprincipal.LimpaCadastro(VP_NomeTab: string);
+begin
+  if VP_NomeTab='' then
+     exit;
+  VP_NomeTab:=UpperCase(VP_NomeTab);
+
+  if VP_NomeTab='TABLOJA' THEN
+  BEGIN
+      TabLojaEID.Text:='';
+      TabLojaERazao.Text:='';
+      TabLojaEFantasia.Text:='';
+      TabLojaECnpj.Text:='';
+      TabLojaCkPessoa.Checked:=FALSE;
+      TabLojaCkHabilitar.Checked:=FALSE;
+      TabLojaCMultLoja.KeyValue := 'Não Definido';
+      LimpaCadastro('TABLOJAMODULO');
+  end
+  else
+  if VP_NomeTab='TABLOJAMODULO' THEN
+    BEGIN
+        TabLojaModuloEModuloConfID.Text:='';
+        TabLojaModuloEModuloConf.Text:='';
+        TabLojaModuloECodigo.Text:='';
+        TabLojaModuloEID.Text:='';
+        TabLojaModuloCkHabilitar.Checked:=FALSE;
+    end
+   else
+   if VP_NomeTab='TABPINPAD' THEN
+     BEGIN
+      TabPinPadEID.Text:='';
+      TabPinPadMFabricante.Text:='';
+     end;
+
+
+end;
+
 procedure Tfprincipal.IniciarLib;
 begin
       F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
@@ -4730,10 +4790,10 @@ end;
 
 procedure Tfprincipal.MDLojaAfterScroll(DataSet: TDataSet);
 begin
- {   if ((MDLoja.Active = False) or (MDLoja.RecordCount = 0) or (F_Navegar = False)) then
+    if ((MDLoja.Active = False) or (MDLoja.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
-    if MDLojaModuloConf.Active then
+ {   if MDLojaModuloConf.Active then
     begin
         MDLojaModuloConf.EmptyTable;
         TabLojaTabModuloDados.OnShow(self);
@@ -4766,7 +4826,7 @@ begin
     if ((MDPdv.Active = False) or (MDPdv.RecordCount = 0) or (F_Navegar = False)) then
         exit;
 
-    if MDPdvModulo.Active then
+  {  if MDPdvModulo.Active then
     begin
         MDPdvModulo.EmptyTable;
         TabPdvTabDadosModulo.OnShow(self);
@@ -4780,7 +4840,7 @@ begin
         TabPdvTabDadosFuncao.OnShow(self);
     end
     else
-        TabPdvTabDadosFuncao.OnShow(self);
+        TabPdvTabDadosFuncao.OnShow(self);    }
 
     CarregaCampos('PDV');
 end;
@@ -4794,13 +4854,13 @@ procedure Tfprincipal.MDPinPadAfterScroll(DataSet: TDataSet);
 begin
     if ((MDPinPad.Active = False) or (MDPinPad.RecordCount = 0) or (F_Navegar = False)) then
         exit;
-    if MDPinPadFuncao.Active then
+ {   if MDPinPadFuncao.Active then
     begin
         MDPinPadFuncao.EmptyTable;
         TabPinPadTabDadosFuncao.OnShow(self);
     end
     else
-        TabPinPadTabDadosFuncao.OnShow(self);
+        TabPinPadTabDadosFuncao.OnShow(self);}
 
 
     CarregaCampos('PINPAD');
@@ -5084,6 +5144,13 @@ begin
             ShowMessage('MDLojaModulo não está ativo');
             Exit;
         end;
+        if length(TabLojaModuloEModuloConfID.Text) > 0 then
+        begin
+            ShowMessage('Para Adicionar um módulo, Limpe antes o Cadastro');
+            exit;
+        end;
+
+
         if GravaRegistros('TabLojaModulo', True) then
         begin
             VL_Codigo := IncluirRegistro(MDLojaModuloConf, '00AE', 'S', '00A7', VL_Tag);
@@ -7691,6 +7758,7 @@ end;
 procedure Tfprincipal.TabPdvShow(Sender: TObject);
 begin
     TabPdvPageModuloFuncao.TabIndex := 0;
+    TabPdvTabDadosModulo.OnShow(self);
 end;
 
 procedure Tfprincipal.TabPdvTabDadosFuncaoShow(Sender: TObject);
@@ -7736,6 +7804,11 @@ begin
         if MDPinPad.Active = False then
         begin
             ShowMessage('MDPinPad não está ativo');
+            Exit;
+        end;
+        if length(TabPinPadEID.text) > 0 then
+        begin
+            ShowMessage('Para incluir PinPad, limpe antes o formulário');
             Exit;
         end;
         if GravaRegistros('TabPinPad', True) then
@@ -7886,6 +7959,11 @@ begin
         VL_Mensagem.Free;
         F_Navegar := True;
     end;
+end;
+
+procedure Tfprincipal.TabPinPadBLimparClick(Sender: TObject);
+begin
+  LimpaCadastro('tabpinpad');
 end;
 
 procedure Tfprincipal.TabPinPadBModificarClick(Sender: TObject);
