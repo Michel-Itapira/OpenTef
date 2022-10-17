@@ -20,6 +20,8 @@ uses
     DateTimePicker,
     StrUtils,
     def,
+    Base64,
+    md5,
     uimpressao,
     Types;
 
@@ -88,6 +90,8 @@ type
         EOperador: TEdit;
         EParcela: TEdit;
         EPinPadLib: TEdit;
+        EPinPadLibHashMd5: TEdit;
+        EPinPadModeloLibHashMd5: TEdit;
         EPinPadModelo: TEdit;
         EPinPadModeloLib: TEdit;
         EPinPadModeloPorta: TEdit;
@@ -115,6 +119,8 @@ type
         Label16: TLabel;
         Label17: TLabel;
         Label19: TLabel;
+        Label24: TLabel;
+        Label27: TLabel;
         Label28: TLabel;
         Label31: TLabel;
         lblStatusConexao: TLabel;
@@ -353,12 +359,14 @@ var
             exit;
         end;
 
-        for i := 0 to Length(Dados) div 2 - 1 do
-        begin
-            L := copy(Dados, ((1 + i) * 2) - 1, 2);
-            s := s + char(Hex2Dec(L));
-        end;
+        //for i := 0 to Length(Dados) div 2 - 1 do
+        //begin
+        //    L := copy(Dados, ((1 + i) * 2) - 1, 2);
+        //    s := s + char(Hex2Dec(L));
+        //end;
 
+
+        s := DecodeStringBase64(Dados);
 
         Sm := TStringStream.Create(s);
 
@@ -864,6 +872,7 @@ var
     VL_DescricaoErro: PChar;
 
 begin
+
     VL_Status := 0;
     VL_DescricaoErro := '';
 
@@ -904,6 +913,7 @@ var
     VL_DescricaoErro: PChar;
 begin
     try
+
         VL_DescricaoErro := '';
 
         if cbxAmbienteTeste.Checked then // ambiente de teste
@@ -914,6 +924,25 @@ begin
         begin
             VL_AmbienteTeste := 0; // desativado
         end;
+
+
+        if EPinPadLibHashMd5.Text <> '' then
+        begin
+            if EPinPadLibHashMd5.Text <> md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + ETefLib.Text)) then
+                ShowMessage('O Arquivo PinPad lib não esta com o Hash Válido');
+        end
+        else
+            EPinPadLibHashMd5.Text := md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + ETefLib.Text));
+
+
+        if EPinPadModeloLibHashMd5.Text <> '' then
+        begin
+            if EPinPadModeloLibHashMd5.Text <> md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + EPinPadLibHashMd5.Text)) then
+                ShowMessage('O Arquivo Modelo lib não esta com o Hash Válido');
+        end
+        else
+            EPinPadModeloLibHashMd5.Text := md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + EPinPadModeloLibHashMd5.Text));
+
 
         F_TefLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + ETefLib.Text));
 

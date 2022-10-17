@@ -9,8 +9,8 @@
         <Filename Value="pinpad_lib.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
-        <CursorPos X="61" Y="12"/>
-        <UsageCount Value="154"/>
+        <CursorPos X="12" Y="14"/>
+        <UsageCount Value="163"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,20 +19,20 @@
         <ComponentName Value="DPinPad"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <TopLine Value="38"/>
-        <CursorPos X="27" Y="35"/>
-        <UsageCount Value="154"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="362"/>
+        <CursorPos X="74" Y="376"/>
+        <UsageCount Value="163"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
-        <TopLine Value="244"/>
-        <CursorPos X="77" Y="266"/>
-        <UsageCount Value="154"/>
+        <TopLine Value="484"/>
+        <CursorPos X="32" Y="484"/>
+        <UsageCount Value="163"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -42,16 +42,18 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="103" Y="7"/>
-        <UsageCount Value="153"/>
+        <TopLine Value="1651"/>
+        <CursorPos X="5" Y="1655"/>
+        <UsageCount Value="162"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="4"/>
-        <CursorPos X="4" Y="10"/>
-        <UsageCount Value="93"/>
+        <CursorPos X="27" Y="12"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -60,168 +62,169 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos X="3" Y="30"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="3"/>
         <TopLine Value="1883"/>
         <CursorPos X="17" Y="1791"/>
-        <UsageCount Value="59"/>
+        <UsageCount Value="63"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
         <UnitName Value="GpinpadDelphi32"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="160"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="149"/>
         <CursorPos X="34" Y="167"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="31"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\key_lib\key.pas"/>
         <EditorIndex Value="1"/>
         <TopLine Value="157"/>
         <CursorPos X="10" Y="55"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
         <UnitName Value="GpinpadDelphi32"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="301"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="289"/>
         <CursorPos X="8" Y="115"/>
-        <UsageCount Value="16"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
     </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="pinpad_lib"/>
+    </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
-        <Caret Line="54" Column="32" TopLine="32"/>
-      </Position>
-      <Position>
-        <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
-        <Caret Line="251" Column="37" TopLine="215"/>
-      </Position>
-      <Position>
         <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="60" Column="28" TopLine="42"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="116" Column="52" TopLine="80"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="188" Column="90" TopLine="152"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="207" Column="95" TopLine="172"/>
-      </Position>
-      <Position>
-        <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
-        <Caret Line="74" Column="5" TopLine="47"/>
-      </Position>
-      <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="248" Column="27" TopLine="70"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="285" Column="41" TopLine="271"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="310" Column="18" TopLine="274"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="360" Column="14" TopLine="324"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="400" Column="18" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="145" Column="24" TopLine="140"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="81" TopLine="59"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="148" TopLine="126"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="402" Column="20" TopLine="383"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="365" Column="29" TopLine="342"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="400" Column="86" TopLine="378"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="403" Column="23" TopLine="392"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="357" Column="5" TopLine="335"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="355" Column="27" TopLine="315"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="332" Column="60" TopLine="309"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="414" Column="9" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="416" Column="35" TopLine="398"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="86" Column="23" TopLine="73"/>
-      </Position>
-      <Position>
-        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="172" Column="93" TopLine="148"/>
+        <Caret Line="293" Column="5" TopLine="261"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="7" Column="103"/>
+        <Caret Line="239" Column="87" TopLine="247"/>
       </Position>
       <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="62" Column="17" TopLine="37"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="31" Column="29"/>
       </Position>
       <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="84" Column="5" TopLine="82"/>
+        <Filename Value="def.pas"/>
+        <Caret Line="15" Column="35"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad_lib.lpr"/>
+        <Caret Line="6" Column="60"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="190" Column="85" TopLine="167"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="16" Column="88"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1147" Column="86" TopLine="1143"/>
       </Position>
       <Position>
         <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
-        <Caret Line="86" Column="24" TopLine="58"/>
+        <Caret Line="14" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="207" Column="62" TopLine="180"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="322" Column="47" TopLine="303"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="105" Column="40" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="332" Column="9" TopLine="320"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="8" Column="46"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Column="16"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="380" Column="36" TopLine="340"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="332" Column="17" TopLine="317"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="381" Column="26" TopLine="353"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="68" Column="19" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="138" Column="34" TopLine="121"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="337" Column="42" TopLine="309"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="69" Column="17" TopLine="60"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="163" TopLine="145"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="55" Column="20" TopLine="32"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="163" TopLine="145"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="105" Column="20" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="37" Column="7" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="157" Column="18" TopLine="124"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="391" Column="46" TopLine="371"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="276" Column="68" TopLine="254"/>
       </Position>
     </JumpHistory>
     <RunParams>

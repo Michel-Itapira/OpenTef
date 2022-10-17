@@ -18,8 +18,7 @@ function comando0053(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conex
 function comando0055(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar PinPad
 function comando0057(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir CONFIGURADOR
 function comando0058(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar CONFIGURADOR
-function comando0059(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//valida chave do CONFIGURADOR
+function comando0059(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //valida chave do CONFIGURADOR
 function comando0064(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir MultLoja
 function comando0066(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MultLoja
 function comando0067(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar MultLoja
@@ -38,16 +37,13 @@ function comando0079(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conex
 function comando007E(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir MODULO_FUNCAO
 function comando007F(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MODULO_FUNCAO
 function comando0085(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar MODULO_CONF_FUNCAO
-function comando0087(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//excluir LOJA_MODULO_CONF_FUNCAO
-function comando0088(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//excluir MULTILOJA_MODULO_CONF_FUNCAO
+function comando0087(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir LOJA_MODULO_CONF_FUNCAO
+function comando0088(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MULTILOJA_MODULO_CONF_FUNCAO
 function comando008A(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MODULO_CONF_FUNCAO
 function comando0096(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir MULTLOJA_MODULO
 function comando0099(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MULTLOJA_MODULO
 function comando009A(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar MULTLOJA_MODULO
-function comando009B(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//incluir LOJA_MODULO_CONF_FUNCAO
+function comando009B(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir LOJA_MODULO_CONF_FUNCAO
 function comando009D(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir MULTLOJA_FUNCAO
 function comando009F(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar MULTLOJA_FUNCAO
 function comando00A0(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MULTLOJA_FUNCAO
@@ -55,8 +51,7 @@ function comando00AA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conex
 function comando00AC(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar LOJA_FUNCAO
 function comando00AD(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir LOJA_FUNCAO
 function comando00AE(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir LOJA_MODULO
-function comando00B0(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//alterar MULTILOJA_MODULO_CONF_FUNCAO
+function comando00B0(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar MULTILOJA_MODULO_CONF_FUNCAO
 function comando00B1(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar LOJA_MODULO
 function comando00B2(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir LOJA_MODULO
 function comando00B5(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir PINPAD_FUNCAO
@@ -65,14 +60,12 @@ function comando00B8(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conex
 function comando00B9(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar MODULO_FUNCAO
 function comando00BA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir MODULO_CONF
 function comando00BB(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir CONFIGURADOR
-function comando00BF(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//alterar LOJA_MODULO_CONF_FUNCAO
+function comando00BF(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar LOJA_MODULO_CONF_FUNCAO
 function comando00C2(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir PDV_FUNCAO
 function comando00C4(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar PDV_FUNCAO
 function comando00C5(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir PDV_FUNCAO
 function comando00C8(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir PDV_MODULO
-function comando00CA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
-//incluir MULTILOJA_MODULO_CONF_FUNCAO
+function comando00CA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir MULTILOJA_MODULO_CONF_FUNCAO
 function comando00CB(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar PDV_MODULO
 function comando00CC(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir PDV_MODULO
 function comando00DB(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar TAG
@@ -80,6 +73,7 @@ function comando00DC(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conex
 function comando00DE(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir ADQUIRENTE
 function comando00DF(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //alterar ADQUIRENTE
 function comando00E0(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //excluir ADQUIRENTE
+function comando00FA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer; //incluir Loja em Multiloja(guarda-chuva)
 
 
 const
@@ -182,7 +176,6 @@ begin
                         IntToStr(VL_Tabela.FieldByName('MULTILOJA_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''')';
                     VL_Erro := 44;
-                    VL_Linha := VL_TLoja.SQL.Text;
                     VL_Linha := '300520221119';
                     VL_TLoja.ExecSQL;
 
@@ -477,12 +470,13 @@ begin
                     end;
 
                     VL_TPdv.Close;
-                    VL_TPdv.SQL.Text := 'INSERT INTO PDV(LOJA_ID,DESCRICAO,IP,PINPAD_ID,PINPAD_COM,HABILITADO,CHAVE)VALUES(''' + VL_Tabela.FieldByName(
+                    VL_TPdv.SQL.Text := 'INSERT INTO PDV(LOJA_ID,DESCRICAO,IP,PINPAD_ID,PINPAD_COM,HABILITADO,IDENTIFICACAO,CHAVE)VALUES(''' + VL_Tabela.FieldByName(
                         'LOJA_ID').AsString + ''',''' + VL_Tabela.FieldByName('DESCRICAO').AsString + ''',''' +
-                        VL_Tabela.FieldByName('IP').AsString + ''',''' +
+                        VL_Tabela.FieldByName('IP').AsString + ''',' +
                         IntToStr(VL_Tabela.FieldByName('PINPAD_ID').AsInteger) + ',''' +
                         VL_Tabela.FieldByName('PINPAD_COM').AsString + ''',''' +
                         VL_Tabela.FieldByName('HABILITADO').AsString + ''',''' +
+                        VL_Tabela.FieldByName('IDENTIFICACAO').AsString + ''',''' +
                         VL_Tabela.FieldByName('CHAVE').AsString + ''')';
                     VL_Erro := 44;
                     VL_Linha := '300520221136';
@@ -764,6 +758,7 @@ begin
                     'PINPAD_ID=''' + VL_Tabela.FieldByName('PINPAD_ID').AsString + ''',' +
                     'PINPAD_COM=''' + VL_Tabela.FieldByName('PINPAD_COM').AsString + ''',' +
                     'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
+                    'IDENTIFICACAO=''' + VL_Tabela.FieldByName('IDENTIFICACAO').AsString + ''',' +
                     'CHAVE=''' + VL_Tabela.FieldByName('CHAVE').AsString + ''' WHERE ' + 'ID=' + IntToStr(VL_ID);
                 VL_Erro := 46;
                 VL_Linha := '300520221144';
@@ -1101,11 +1096,17 @@ begin
                 if VL_Tabela.FieldByName('ID').AsInteger = 0 then
                 begin
                     VL_TPinPad.Close;
-                    VL_TPinPad.SQL.Text := 'INSERT INTO PINPAD(FABRICANTE_MODELO)VALUES(''' + VL_Tabela.FieldByName(
-                        'FABRICANTE_MODELO').AsString + ''')';
+                    VL_TPinPad.SQL.Text := 'INSERT INTO PINPAD(FABRICANTE_MODELO,TAG_NUMERO)VALUES(''' +
+                    VL_Tabela.FieldByName('FABRICANTE_MODELO').AsString + ''','''+
+                    VL_Tabela.FieldByName('TAG_NUMERO').AsString+''')';
                     VL_Erro := 44;
                     VL_Linha := '300520221150';
                     VL_TPinPad.ExecSQL;
+
+                    //CARREGA PINPAD
+                    VL_TPinPad.close;
+                    VL_TPinPad.SQL.Text:='SELECT MAX(ID) AS ID FROM PINPAD';
+                    VL_TPinPad.Open;
 
                     VL_Mensagem.Limpar;
                     VL_Mensagem.AddComando('0053', 'R');
@@ -2613,7 +2614,7 @@ begin
                 if VP_Mensagem.GetTag('0065', VL_Dados) = 0 then //pesquisa a mult-loja pelo MULT-LOJA_ID 0=todas
                 begin
                     VL_TTabela.Close;
-                    VL_TTabela.SQL.Text := 'SELECT M.*,L.DOC,L.RAZAO FROM MULTILOJA M ' +
+                    VL_TTabela.SQL.Text := 'SELECT M.*,L.DOC,L.RAZAO,L.FANTASIA FROM MULTILOJA M ' +
                         ' LEFT OUTER JOIN LOJA L ON L.ID=M.LOJA_ID WHERE ((M.ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) +
                         ' is not null) and ' + '((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
                     VL_TTabela.Open;
@@ -2637,8 +2638,7 @@ begin
                         'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, MULTILOJA_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and ' +
                         'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MULTILOJA_ID=' + IntToStr(VL_Dados) +
                         ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
-                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MULTILOJA_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND T2.PADRAO=''T'' AND '
-                        +
+                        'T.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MULTILOJA_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND T2.PADRAO=''T'' AND '+
                         'M2.MULTILOJA_ID=' + IntToStr(VL_Dados) + ' AND T2.TAG_TIPO<>''DADOS'' AND  M2.TAG_NUMERO=T2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
                     VL_TTabela.Open;
@@ -5280,8 +5280,7 @@ begin
                 end;
                 VL_TMultLoja_Modulo.Close;
                 VL_TMultLoja_Modulo.SQL.Text := 'UPDATE MULTILOJA_MODULO_CONF SET ' + 'HABILITADO=''' + VL_Tabela.FieldByName('HABILITADO').AsString + ''',' +
-                    'MODULO_CONF_ID=''' + IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ''',' + 'CODIGO=''' +
-                    VL_Tabela.FieldByName('CODIGO').AsString + ''' WHERE ' + 'ID=' + IntToStr(VL_ID);
+                    'MODULO_CONF_ID=''' + IntToStr(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ''' WHERE ' + 'ID=' + IntToStr(VL_ID);
                 VL_Erro := 46;
                 VL_Linha := '020620221000';
                 VL_TMultLoja_Modulo.ExecSQL;
@@ -9242,7 +9241,7 @@ begin
                     end;
                     //VERIFICA SE EXISTE O ADQUIRENTE CADASTRADO
                     VL_TAdquirente.Close;
-                    VL_TAdquirente.SQL.Text := 'SELECT * FROM ADQUIRENTE WHERE DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + '''';
+                    VL_TAdquirente.SQL.Text := 'SELECT * FROM ADQUIRENTE WHERE IDENTIFICACAO=' + VL_Tabela.FieldByName('IDENTIFICACAO').AsString;
                     VL_Erro := 55;
                     VL_Linha := '300520221012';
                     VL_TAdquirente.Open;
@@ -9250,13 +9249,13 @@ begin
                     if VL_TAdquirente.RecordCount > 0 then
                     begin
                         VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0052', 'R');
+                        VL_Mensagem.AddComando('00DE', 'R');
                         VL_Mensagem.AddTag('004D', '43');
                         DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID,
                             VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
                         VL_Erro := 43;
                         VL_Linha := '300520221013';
-                        GravaLog(F_ArquivoLog, 0, '00DE', 'cadastro', VL_Linha, 'ja existe um registro cadastrado com esta descrição:' +
+                        GravaLog(F_ArquivoLog, 0, '00DE', 'cadastro', VL_Linha, 'ja existe um registro cadastrado com esta identificação:' +
                             VL_Tabela.FieldByName('DESCRICAO').AsString + ' na tabela de Adquirente', '', VL_Erro);
                         Exit;
                     end
@@ -9265,15 +9264,17 @@ begin
                         VL_TAdquirente.Close;
                         VL_TAdquirente.SQL.Text := 'INSERT INTO ADQUIRENTE(' +
                             'DESCRICAO,' +
+                            'IDENTIFICACAO,'+
                             'CONTATO) VALUES(''' +
                             VL_Tabela.FieldByName('DESCRICAO').AsString + ''',''' +
+                            VL_Tabela.FieldByName('IDENTIFICACAO').AsString + ''',''' +
                             VL_Tabela.FieldByName('CONTATO').AsString + ''')';
                         VL_Erro := 44;
                         VL_Linha := '300520221014';
                         VL_TAdquirente.ExecSQL;
 
                         VL_TAdquirente.Close;
-                        VL_TAdquirente.SQL.Text := 'SELECT * FROM ADQUIRENTE WHERE DESCRICAO=''' + VL_Tabela.FieldByName('DESCRICAO').AsString + '''';
+                        VL_TAdquirente.SQL.Text := 'SELECT * FROM ADQUIRENTE WHERE IDENTIFICACAO=''' + VL_Tabela.FieldByName('IDENTIFICACAO').AsString + '''';
                         VL_Erro := 55;
                         VL_Linha := '060620220948';
                         VL_TAdquirente.Open;
@@ -9613,5 +9614,152 @@ begin
         end;
     end;
 end;
+function comando00FA(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_Permissao: TPermissao): integer;
+    //INCLUIR LOJA DENTRO DO GUARDA-CHUVA DA MULTILOJA
+var
+    VL_Mensagem: TMensagem;
+    VL_TLoja: TZQuery;
+    VL_Tag: ansistring;
+    VL_Erro: integer;
+    VL_Linha: string;
+    VL_LojaID,VL_MultiLojaID : Int64;
+begin
+    Result := 0;
+    VL_Mensagem := TMensagem.Create;
+    VL_TLoja := TZQuery.Create(DComunicador);
+    VL_TLoja.Connection := DNucleo.ZConexao;
+    VL_Tag := '';
+    VL_Linha := '';
+    VL_Erro := 0;
+    VL_LojaID:=0;
+    VL_MultiLojaID:=0;
+    try
+        try
+            //verifica permissao
+            if (VP_Permissao <> pmC) then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00FA', 'R');
+                VL_Mensagem.AddTag('004D', '45');//sem permissao
+                DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID,
+                    VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
+                VL_Erro := 45;
+                VL_Linha := '031020221703';
+                GravaLog(F_ArquivoLog, 0, '00FA', 'CADASTRO', VL_Linha, 'sem permissao para incluir registro na tabela Loja', '', VL_Erro);
+                Exit;
+            end;
+            //CARREGA CAMPOS
+            //LOJA_ID
+            VP_Mensagem.GetTag('003C', VL_LojaID);
+            if VL_LojaID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00FA', 'R');
+                VL_Mensagem.AddTag('004D', '47');//DADOS INFORMADOS VAZIO
+                DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID,
+                    VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
+                VL_Erro := 47;
+                VL_Linha := '031020221704';
+                GravaLog(F_ArquivoLog, 0, '00FA', 'CADASTRO', VL_Linha, 'parametro informado na Tag:003C esta vazia ou zerada', '', VL_Erro);
+                Exit;
+            end;
+            //MULTILOJA_ID
+            VP_Mensagem.GetTag('0065', VL_MultiLojaID);
+            if VL_MultiLojaID = 0 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00FA', 'R');
+                VL_Mensagem.AddTag('004D', '47');//DADOS INFORMADOS VAZIO
+                DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID,
+                    VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
+                VL_Erro := 47;
+                VL_Linha := '031020221705';
+                GravaLog(F_ArquivoLog, 0, '00FA', 'CADASTRO', VL_Linha, 'parametro informado na Tag:0065 esta vazia ou zerada', '', VL_Erro);
+                Exit;
+            end;
 
+            //VERIFICA SE EXISTE A LOJA CADASTRADA
+            VL_TLoja.Close;
+            VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE ID=' + INTTOSTR(VL_LojaID);
+            VL_Erro := 55;
+            VL_Linha := '031020221706';
+            VL_TLoja.Open;
+
+            if VL_TLoja.RecordCount < 1 then
+            begin
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00FA', 'R');
+                VL_Mensagem.AddTag('004D', '48');
+                DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID,
+                    VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
+                VL_Erro := 48;
+                VL_Linha := '031020221707';
+                GravaLog(F_ArquivoLog, 0, '00FA', 'cadastro', VL_Linha, 'Nenhuma Loja cadastrado com este ID:' +
+                    inttostr(VL_LojaID) + ' na tabela de Loja', '', VL_Erro);
+                Exit;
+            end
+            else
+            begin
+                VL_TLoja.Close;
+                VL_TLoja.SQL.Text := 'UPDATE LOJA SET ' +
+                    'MULTILOJA_ID=''' + INTTOSTR(VL_MultiLojaID) + ''' '+
+                    'WHERE ' +
+                    'ID=' + IntToStr(VL_LojaID);
+                VL_Erro := 46;
+                VL_Linha := '031020221707';
+                VL_TLoja.ExecSQL;
+
+                VL_TLoja.Close;
+                VL_TLoja.SQL.Text := 'SELECT * FROM LOJA WHERE ID=' + INTTOSTR(VL_LojaID) ;
+                VL_Erro := 55;
+                VL_Linha := '031020221708';
+                VL_TLoja.Open;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('00FA', 'R');
+                VL_Mensagem.AddTag('004D', '0');
+                VL_Mensagem.AddTag('003C', VL_TLoja.FieldByName('ID').AsInteger);
+                DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID,
+                    VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
+                exit;
+            end;
+            VL_Mensagem.Limpar;
+            VL_Mensagem.AddComando('00FA', 'R');
+            VL_Mensagem.AddTag('004D', '46');
+            DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, C_TempoAguarda, False, nil, VP_Transmissao_ID, VL_Mensagem, VP_Mensagem, VP_Conexao_ID);
+        except
+            on E: Exception do
+            begin
+                try
+                    if Assigned(DNucleo) then
+                    begin
+                        if DNucleo.ZConexao.Connected then
+                            if DNucleo.ZConexao.InTransaction then
+                                DNucleo.ZConexao.Rollback;
+                    end;
+                except
+                    on E: Exception do
+                        GravaLog(F_ArquivoLog, 0, '00FA', 'cadastro', VL_Linha, '', '', VL_Erro);
+                end;
+                GravaLog(F_ArquivoLog, 0, '00FA', 'cadastro', VL_Linha, '', '', VL_Erro);
+            end;
+        end;
+    finally
+        begin
+            VL_Mensagem.Free;
+            VL_TLoja.Free;
+            try
+                if Assigned(DNucleo) then
+                begin
+                    if DNucleo.ZConexao.Connected then
+                        if DNucleo.ZConexao.InTransaction then
+                            DNucleo.ZConexao.Commit;
+                end;
+            except
+                on E: Exception do
+                    GravaLog(F_ArquivoLog, 0, '00FA', 'cadastro', VL_Linha, '', '', VL_Erro);
+            end;
+        end;
+    end;
+end;
 end.

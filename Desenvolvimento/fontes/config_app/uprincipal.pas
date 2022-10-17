@@ -41,7 +41,6 @@ uses
     uconfigopentef;
 
 type
-
     { Tfprincipal }
 
     TResposta = record
@@ -55,7 +54,6 @@ type
     TConexaoStatus = (csDesconectado, csLink, csChaveado, csLogado);
 
     TTipoTag = (ttNDF, ttCOMANDO, ttDADOS, ttMENU_PDV, ttMENU_OPERACIONAL, ttPINPAD_FUNC, ttMODULO);
-
 
     PResposta = ^TResposta;
 
@@ -908,7 +906,6 @@ begin
             ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + V_Erro);
             Exit;
         end;
-
 
         F_OpenTefStatus(VL_Status);
 
@@ -2396,9 +2393,9 @@ end;
 
 procedure Tfprincipal.TabConfiguracaoBPesquisarAdquirenteClick(Sender: TObject);
 var
-    VL_FPesquisaAdquirente: TFAdquirente;
+    VL_FPesquisaAdquirente: TFPesquisaAdquirente;
 begin
-    VL_FPesquisaAdquirente := TFAdquirente.Create(Self);
+    VL_FPesquisaAdquirente := TFPesquisaAdquirente.Create(Self);
     VL_FPesquisaAdquirente.F_Tabela := RxMemDataToStr(MDAdquirente);
     VL_FPesquisaAdquirente.ShowModal;
     if VL_FPesquisaAdquirente.F_Carregado then
@@ -4354,7 +4351,6 @@ begin
                         StrToRxMemData(VL_Tag, MDModulo);
                         MDModulo.Open;
                     end;
-
                 end;
                 //PESQUISA_MODULO
                 if ((VP_CarregaTodasTabelas) and (VP_TagTabelaEspecifica = '')) or
@@ -4730,7 +4726,7 @@ end;
 
 procedure Tfprincipal.IniciarLib;
 begin
-      F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
+    F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
     Pointer(F_Inicializar) := GetProcAddress(F_ComLib, 'inicializar');
     Pointer(F_Finalizar) := GetProcAddress(F_ComLib, 'finalizar');
     Pointer(F_Desconectar) := GetProcAddress(F_ComLib, 'desconectar');
@@ -5269,7 +5265,7 @@ begin
                 ShowMessage('ERRO:' + IntToStr(VL_ID) + #13 + V_Erro);
                 Exit;
             end;
-            '00B1':
+            '00B2':
             begin
                 if VL_Tag <> 'R' then
                 begin
@@ -5325,11 +5321,11 @@ end;
 
 procedure Tfprincipal.TabLojaModuloBPesquisaModuloConfClick(Sender: TObject);
 var
-    VL_FPesquisaModulo: TFModuloConf;
+    VL_FPesquisaModulo: TFPesquisaModuloConf;
 begin
     if F_Permissao = False then
         exit;
-    VL_FPesquisaModulo := TFModuloConf.Create(Self);
+    VL_FPesquisaModulo := TFPesquisaModuloConf.Create(Self);
     VL_FPesquisaModulo.F_Tabela := RxMemDataToStr(MDPesquisaModulo);
     VL_FPesquisaModulo.ShowModal;
     if VL_FPesquisaModulo.F_Carregado then
@@ -6882,11 +6878,11 @@ end;
 
 procedure Tfprincipal.TabMultLojaModuloBPesquisaModuloConfClick(Sender: TObject);
 var
-    VL_FPesquisaModulo: TFModuloConf;
+    VL_FPesquisaModulo: TFPesquisaModuloConf;
 begin
     if F_Permissao = False then
         exit;
-    VL_FPesquisaModulo := TFModuloConf.Create(Self);
+    VL_FPesquisaModulo := TFPesquisaModuloConf.Create(Self);
     VL_FPesquisaModulo.F_Tabela := RxMemDataToStr(MDPesquisaModulo);
     VL_FPesquisaModulo.ShowModal;
     if VL_FPesquisaModulo.F_Carregado then
@@ -7707,11 +7703,11 @@ end;
 
 procedure Tfprincipal.TabPDVModuloBPesquisaModuloConfClick(Sender: TObject);
 var
-    VL_FPesquisaModulo: TFModuloConf;
+    VL_FPesquisaModulo: TFPesquisaModuloConf;
 begin
     if F_Permissao = False then
         exit;
-    VL_FPesquisaModulo := TFModuloConf.Create(Self);
+    VL_FPesquisaModulo := TFPesquisaModuloConf.Create(Self);
     VL_FPesquisaModulo.F_Tabela := RxMemDataToStr(MDPesquisaModulo);
     VL_FPesquisaModulo.ShowModal;
     if VL_FPesquisaModulo.F_Carregado then

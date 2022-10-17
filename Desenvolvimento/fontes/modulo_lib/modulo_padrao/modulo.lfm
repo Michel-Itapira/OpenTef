@@ -1,8 +1,8 @@
 object DModulo: TDModulo
   OldCreateOrder = False
   Height = 150
-  HorizontalOffset = 817
-  VerticalOffset = 272
+  HorizontalOffset = 819
+  VerticalOffset = 273
   Width = 331
   object CriptoAes: TLbRijndael
     CipherMode = cmECB

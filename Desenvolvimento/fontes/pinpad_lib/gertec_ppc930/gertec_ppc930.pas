@@ -5,11 +5,13 @@ unit gertec_ppc930;
 interface
 
 uses
-    Classes, SysUtils, pinpad, funcoes;
+    Classes, SysUtils, pinpad, funcoes, base64;
 
 type
 
     { TGertec_ppc930 }
+
+    TUnit8 = array of uint8;
 
     TAbecsSpePanMask = record
         leftOpenDigits: int8;
@@ -28,7 +30,7 @@ type
     end;
 
     TAbecsCmdGpn_S = record
-        method: Integer;
+        method: integer;
         keyIdx: uint8;
         wkEnc: array[0 .. 32] of char;
         pan: array[0 .. 19] of char;
@@ -55,6 +57,17 @@ type
     Tabecs_cmd_clo = function(pinpad: Pointer; msg: PChar): integer; stdcall;
     Tabecs_cmd_cex = procedure(pinpad: Pointer; cexOp: PChar; timeout: Pointer; panMask: Pointer) stdcall;
     Tabecs_cmd_gpn = procedure(pinpad: Pointer; AbecsCmdGpn_S: Pointer) stdcall;
+
+
+    Tabecs_cmd_mlx = procedure(pinpad: Pointer; path, Name: PChar; tipo: uint8); stdcall;
+    Tabecs_cmd_dsi = function(pinpad: Pointer; filename: PChar): integer; stdcall;
+    Tabecs_cmd_mli = function(pinpad: Pointer; filename: PChar; filesize: uint32; crc16: uint16; tipo: uint8): integer; stdcall;
+    Tabecs_cmd_mlr = function(pinpad: Pointer; Data: TUnit8; SIZE_T: SIZE_T): integer; stdcall;
+    Tabecs_cmd_mle = function(pinpad: Pointer): uint16; stdcall;
+    Tabecs_cmd_mlx_crc16 = function(filename: ansistring): uint16; stdcall;
+
+
+
 
     Tabecs_cmd_cex_response = function(pinpad: Pointer; outmap: Pointer; outNotify: Pointer): integer; stdcall;
     //Tabecs_cmd_gcx_response = function(pinpad: Pointer; outmap: Pointer; outNotify: Pointer): integer; stdcall;
@@ -89,6 +102,7 @@ type
         function PinPadConecta(VO_Mensagem: TMensagem): integer; override;
         function PinPadDesconectar(VL_Mensagem: string): integer; override;
         function PinPadMensagem(VP_Mensagem: string): integer; override;
+        function PinPadImagem(VP_Imagem: string): integer; override;
         function PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer; var VO_Mensagem: TMensagem): integer; override;
         function PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
             VP_Mensagem: string; var VO_Mensagem: TMensagem; VP_TempoEspera: integer): integer; override;
@@ -110,6 +124,14 @@ var
     abecs_cmd_clo: Tabecs_cmd_clo;
     abecs_cmd_cex: Tabecs_cmd_cex;
     abecs_cmd_gpn: Tabecs_cmd_gpn;
+
+    abecs_cmd_mlx: Tabecs_cmd_mlx;
+    abecs_cmd_dsi: Tabecs_cmd_dsi;
+    abecs_cmd_mli: Tabecs_cmd_mli;
+    abecs_cmd_mlr: Tabecs_cmd_mlr;
+    abecs_cmd_mle: Tabecs_cmd_mle;
+    abecs_cmd_mlx_crc16: Tabecs_cmd_mlx_crc16;
+
 
     abecs_cmd_cex_response: Tabecs_cmd_cex_response;
     //abecs_cmd_gcx_response: Tabecs_cmd_gcx_response;
@@ -175,6 +197,16 @@ begin
     Pointer(abecs_cmd_clo) := GetProcAddress(fPinPadLib, 'abecs_cmd_clo');
     Pointer(abecs_cmd_cex) := GetProcAddress(fPinPadLib, 'abecs_cmd_cex');
     Pointer(abecs_cmd_gpn) := GetProcAddress(fPinPadLib, 'abecs_cmd_gpn');
+
+
+    Pointer(abecs_cmd_mlx) := GetProcAddress(fPinPadLib, 'abecs_cmd_mlx');
+    Pointer(abecs_cmd_dsi) := GetProcAddress(fPinPadLib, 'abecs_cmd_dsi');
+    Pointer(abecs_cmd_mli) := GetProcAddress(fPinPadLib, 'abecs_cmd_mli');
+    Pointer(abecs_cmd_mlr) := GetProcAddress(fPinPadLib, 'abecs_cmd_mlr');
+    Pointer(abecs_cmd_mle) := GetProcAddress(fPinPadLib, 'abecs_cmd_mle');
+    Pointer(abecs_cmd_mlx_crc16) := GetProcAddress(fPinPadLib, 'abecs_cmd_mlx_crc16');
+
+
 
     Pointer(abecs_cmd_cex_response) := GetProcAddress(fPinPadLib, 'abecs_cmd_cex_response');
 
@@ -287,6 +319,70 @@ begin
     Result := 0;
 end;
 
+function TGertec_ppc930.PinPadImagem(VP_Imagem: string): integer;
+var
+    v_crc16: uint16;
+    d_byte: TLBytes;
+    dados: string;
+    i, pacotes: integer;
+    dadosbyte: TUnit8;
+begin
+
+    dados := DecodeStringBase64(VP_Imagem);
+    d_byte:=nil;
+    dadosbyte:=nil;
+    SetLength(d_byte, 0);
+
+    for i := 0 to Length(dados) - 1 do
+    begin
+        SetLength(d_byte, Length(d_byte) + 1);
+        d_byte[I] := Ord(DADOS[I + 1]);
+    end;
+
+    v_crc16 := crc16(d_byte, Length(d_byte));
+    Result := abecs_cmd_mli(fPinPad, 'OPENTEFI', Length(d_byte), v_crc16, 1);
+
+    if Result <> 0 then
+        Exit;
+
+    SetLength(dadosbyte, 0);
+    pacotes := 0;
+    for I := 0 to Length(d_byte) - 1 do
+    begin
+
+        SetLength(dadosbyte, Length(dadosbyte) + 1);
+        dadosbyte[pacotes] := d_byte[I];
+        pacotes := pacotes + 1;
+        if pacotes > 800 then
+        begin
+            pacotes := 0;
+            Result := abecs_cmd_mlr(fPinPad, dadosbyte, Length(dadosbyte));
+
+            if Result <> 0 then
+                Exit;
+
+            SetLength(dadosbyte, 0);
+            if I = Length(d_byte) - 1 then
+                Break;
+        end;
+        if I = Length(d_byte) - 1 then
+        begin
+            Result:=abecs_cmd_mlr(fPinPad, dadosbyte, Length(dadosbyte));
+            if Result <> 0 then
+                Exit;
+
+        end;
+
+    end;
+
+    Result :=abecs_cmd_mle(fPinPad);
+    if Result <> 0 then
+        Exit;
+
+    abecs_cmd_dsi(fPinPad, 'OPENTEFI');
+
+end;
+
 function TGertec_ppc930.PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer; var VO_Mensagem: TMensagem): integer;
 var
     VL_PanMask: TAbecsSpePanMask;
@@ -313,13 +409,13 @@ begin
 
         VF_PinpadExecption := False;
 
-        VP_TempoEspera:=VP_TempoEspera div 1000;
+        VP_TempoEspera := VP_TempoEspera div 1000;
 
         if VP_TempoEspera = 0 then
             VP_TempoEspera := 30;
         VL_Timeout^ := VP_TempoEspera;
 
-        VP_TempoEspera:=VP_TempoEspera*1000;
+        VP_TempoEspera := VP_TempoEspera * 1000;
 
         abecs_cmd_cex(fPinPad, '110000', VL_Timeout, @VL_PanMask);
 
@@ -453,7 +549,7 @@ begin
         Exit;
     end;
 
-    if VL_Notificacao.msg[0]<>#0 then
+    if VL_Notificacao.msg[0] <> #0 then
     begin
         VO_Mensagem.AddComando('0049', 'R');
         VO_Mensagem.AddTag('004D', 1);

@@ -47,6 +47,7 @@ type
         procedure BPesquisarClick(Sender: TObject);
         procedure BSairClick(Sender: TObject);
         procedure FormShow(Sender: TObject);
+        procedure MDTagsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
     private
         procedure LimpaTela;
     public
@@ -132,6 +133,11 @@ begin
     ELSE
         ETipoFuncao.ItemIndex := 0;
     end;
+end;
+
+procedure TFTags.MDTagsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+begin
+
 end;
 
 procedure TFTags.LimpaTela;

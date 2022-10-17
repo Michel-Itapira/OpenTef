@@ -6,7 +6,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-    ComCtrls, rxspin;
+    ComCtrls, Base64, rxspin;
 
 type
 
@@ -74,6 +74,7 @@ type
         Bevel1: TBevel;
         BInicializaDll: TButton;
         cbxCPF: TCheckBox;
+        cbxQrcodePinPad: TCheckBox;
         cbxSenha: TCheckBox;
         cbxQrcode: TCheckBox;
         EChave: TEdit;
@@ -102,6 +103,7 @@ type
         procedure BAtivaClick(Sender: TObject);
         procedure BConsultarTefClick(Sender: TObject);
         procedure BDesativarClick(Sender: TObject);
+        procedure Bevel1ChangeBounds(Sender: TObject);
         procedure BInicializaDllClick(Sender: TObject);
         procedure FormCreate(Sender: TObject);
     private
@@ -199,7 +201,7 @@ begin
     F_MensagemComando(VL_Mensagem, VL_Comando);
 
 
-    if VL_Comando = '0028' then
+    if VL_Comando = '0028' then // login
         F_OpenTef.Add(VP_ID, VP_Transmissao_ID, 'C', VP_Chave, VP_IP)
     else
         ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP, VP_ID, respondecaixa);
@@ -235,7 +237,7 @@ begin
 
     F_MensagemComando(VL_Mensagem, VL_Comando);
 
-    if VL_Comando = '0028' then
+    if VL_Comando = '0028' then // login
         F_OpenTef.Add(VP_ID, VP_Transmissao_ID, 'S', VP_Chave, VP_IP)
     else
         ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP, VP_ID, respondeservico);
@@ -368,12 +370,12 @@ var
     VL_ChaveMensagem: Pointer;
     VL_Autorizacao: PChar;
     VL_DescricaoErro: PChar;
-
+    VL_QrCodeEnviado: PChar;
 
     procedure ImagemToStr(var Dados: string; Imagem: TImage);
     var
         Sm: TStringStream;
-        I: integer;
+        //        I: integer;
         S: string;
     begin
         Dados := '';
@@ -381,8 +383,9 @@ var
         Imagem.Picture.SaveToStream(Sm);
         S := sm.DataString;
 
-        for i := 0 to Length(S) - 1 do
-            Dados := Dados + HexStr(Ord(S[i + 1]), 2);
+        Dados := EncodeStringBase64(S);
+        //        for i := 0 to Length(S) - 1 do
+        //          Dados := Dados + HexStr(Ord(S[i + 1]), 2);
 
 
         Sm.Free;
@@ -435,7 +438,7 @@ begin
         F_MensagemComandoDados(VL_Mensagem, VL_ComandoDados);
 
 
-        if VL_Comando = '0026' then        // RETORNO DO COMANDO
+        if VL_Comando = '0026' then        // RETORNO DO COMANDO COM ERRO
         begin
             VL_TagDados := '';
             F_MensagemGetTag(VL_Mensagem, '007D', VL_TagDados);
@@ -456,10 +459,10 @@ begin
         begin
 
             F_MensagemLimpar(VL_Mensagem);
-            F_MensagemAddComando(VL_Mensagem, '00CD', 'R');
+            F_MensagemAddComando(VL_Mensagem, '00CD', 'R'); // retorno da tabela de bin
             F_MensagemAddTag(VL_Mensagem, '004D', PChar('0'));
-            F_MensagemAddTag(VL_Mensagem, '00CE', PChar('629867'));
-            F_MensagemTagAsString(VL_Mensagem, VL_PChar);
+            F_MensagemAddTag(VL_Mensagem, '00CE', PChar('629867')); // bin
+            F_MensagemTagAsString(VL_Mensagem, VL_PChar);     //converte em string a mensagem
             fVP_Retorno(PChar(fVP_Transmissao_ID), VL_PChar, fVP_ID);
             Exit;
 
@@ -469,10 +472,10 @@ begin
         begin
 
             F_MensagemLimpar(VL_Mensagem);
-            F_MensagemAddComando(VL_Mensagem, '00CF', 'R');              // RETORNO VAZIO
+            F_MensagemAddComando(VL_Mensagem, '00CF', 'R');              // RETORNO DO COMANDO VAZIO
             F_MensagemAddTag(VL_Mensagem, '004D', PChar('0'));
-            F_MensagemAddTag(VL_Mensagem, '007D', PChar(''));
-            F_MensagemTagAsString(VL_Mensagem, VL_PChar);
+            F_MensagemAddTag(VL_Mensagem, '007D', PChar(''));  // mensagem vazia
+            F_MensagemTagAsString(VL_Mensagem, VL_PChar);  //converte em string a mensagem
             fVP_Retorno(PChar(fVP_Transmissao_ID), VL_PChar, fVP_ID);
             Exit;
 
@@ -536,7 +539,7 @@ begin
                 //F_MensagemLimpar(VL_Mensagem_Dados);
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('0026'), PChar('89')); // resposta com erro
                 F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsAbortada))));  // transacao obortada
-                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);
+                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);   //converte em string a mensagem
                 fVP_Retorno(PChar(fVP_Transmissao_ID), VL_Tag, fVP_ID); // envia de volta o comando
             end;
 
@@ -556,7 +559,7 @@ begin
             begin
                 //F_MensagemLimpar(VL_Mensagem_Dados);
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('0026'), PChar('90')); // resposta com erro
-                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);
+                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);   //converte em string a mensagem
                 fVP_Retorno(PChar(fVP_Transmissao_ID), VL_Tag, fVP_ID); // envia de volta o comando
                 F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsAbortada))));  // transacao obortada
                 Exit;
@@ -567,7 +570,7 @@ begin
             F_MensagemAddComando(VL_Mensagem_Dados, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
             F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar(VL_String));  // mensagem no pdv
             F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsEfetivada))));  // transacao obortada
-            F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);
+            F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);    //converte em string a mensagem
             fVP_Retorno(PChar(fVP_Transmissao_ID), VL_Tag, fVP_ID); // envia de volta o comando
             Exit;
 
@@ -650,7 +653,7 @@ begin
             F_MensagemAddComando(VL_Mensagem_Dados, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
             F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar(VL_String));  // mensagem no pdv
             F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsEfetivada))));  // transacao obortada
-            F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);
+            F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);   //converte em string a mensagem
             fVP_Retorno(PChar(fVP_Transmissao_ID), VL_Tag, fVP_ID); // envia de volta o comando
             Exit;
 
@@ -682,6 +685,8 @@ begin
             F_MensagemGetTag(VL_Mensagem_Dados, PChar('0060'), VL_Senha);            // senha criptografada dados capturados
 
             F_MensagemGetTag(VL_Mensagem_Dados, PChar('0013'), VL_Valor);            // valor dados capturados
+
+            F_MensagemGetTag(VL_Mensagem_Dados, PChar('00FF'), VL_QrCodeEnviado);    // QRCODE MOSTRADO
 
             F_MensagemGetTag(VL_Mensagem_Dados, PChar('00E7'), VL_Cartao);            // cartao dados capturados
 
@@ -722,7 +727,7 @@ begin
                 F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
                 F_MensagemAddTag(VL_Mensagem_Dados, '004A', PChar(VL_String));  // mensagem erro descricao
 
-                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);
+                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);  //converte em string a mensagem
 
                 fVP_Retorno(PChar(fVP_Transmissao_ID), VL_Tag, fVP_ID); // envia de volta o comando
                 Exit;
@@ -761,7 +766,7 @@ begin
 
                     // INFORMA OS BOTOES DENTRO DA TAG DE COMANDO DO BOTAO 0018
 
-                    F_MensagemAddComando(VL_Mensagem_Dados, '0000', 'S');
+                {    F_MensagemAddComando(VL_Mensagem_Dados, '0000', 'S');
                     F_MensagemAddTag(VL_Mensagem_Dados, '00E8', PChar('OK'));    //BOTAO OK
 
                     F_MensagemTagAsString(VL_Mensagem_Dados, VL_PChar);     //converte em string a mensagem
@@ -782,15 +787,15 @@ begin
                     F_MensagemTagAsString(VL_Mensagem_Dados, VL_PChar);     //converte em string a mensagem
 
                     F_MensagemAddComando(VL_Mensagem, PChar('002A'), PChar('S'));   //solicita dados pdv
-                    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_PChar);
+                    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_PChar);  // transacao criptografada
 
                     F_MensagemTagAsString(VL_Mensagem, VL_PChar);     //converte em string a mensagem
 
                     fVP_Retorno(PChar(fVP_Transmissao_ID), VL_PChar, fVP_ID); // envia de volta o comando
 
-                    Exit;
+                    Exit; }
 
-                    { solicita senha pin pad
+                    // solicita senha pin pad
                     F_MensagemAddComando(VL_Mensagem_Dados, PChar('005A'), PChar('S'));   //solicita senha
 
                     F_MensagemAddTag(VL_Mensagem_Dados, PChar('005B'), PChar(IntToStr(F_Imk())));
@@ -814,7 +819,7 @@ begin
 
                     fVP_Retorno(PChar(fVP_Transmissao_ID), VL_PChar, fVP_ID); // envia de volta o comando
                     Exit;
-                    }
+
                 end;
 
             end;
@@ -877,6 +882,29 @@ begin
                 end;
             end;
 
+            if ((Form1.cbxQrcodePinPad.Checked) and (VL_QrCodeEnviado <> 'T')) then    // mostra o qr code no pinpad
+            begin
+
+                F_MensagemLimpar(VL_Mensagem_Dados);
+                F_MensagemAddComando(VL_Mensagem_Dados, PChar('00FC'), PChar('S'));   //solicita MOSTRAR O QR CODE
+
+                ImagemToStr(VL_String,Form1.Image1);
+
+//                VL_String:=GerarQRCodeAsString('teste');
+
+                F_MensagemAddTag(VL_Mensagem_Dados, PChar('00FE'), PChar(VL_String));  // IMAGEM
+
+                F_MensagemTagAsString(VL_Mensagem_Dados, VL_PChar);     //converte em string a mensagem
+
+                F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_PChar);  // transacao criptografada
+
+                F_MensagemTagAsString(VL_Mensagem, VL_PChar);     //converte em string a mensagem
+                fVP_Retorno(PChar(fVP_Transmissao_ID), VL_PChar, fVP_ID); // envia de volta o comando
+                Exit;
+
+            end;
+
+
 
 
             vl_erro := F_MensagemCarregaTags(VL_ChaveMensagem, VL_ChaveTransacao);  // carrega os dados da chave da transacao
@@ -890,7 +918,7 @@ begin
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('004D'), PChar(IntToStr(VL_Erro))); // resposta com erro
                 F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsAbortada))));  // transacao obortada
 
-                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);
+                F_MensagemTagAsString(VL_Mensagem_Dados, VL_Tag);   //converte em string a mensagem
 
                 fVP_Retorno(PChar(fVP_Transmissao_ID), VL_Tag, fVP_ID); // envia de volta o comando
                 Exit;
@@ -930,14 +958,14 @@ begin
 
                 F_MensagemAddTag(VL_Mensagem_Dados, PChar('002D'), PChar(VL_String));  // imprimir
 
-                VL_String := 'Cartão:' + VL_Cartao + '<br>Valor dos itens:' + VL_Valor;
+                VL_String := 'Cartão:' + VL_Cartao +'<br> Senha:'+F_DescriptaSenha3Des(F_Wk(),VL_Pan, VL_Senha)+ '<br>Valor dos itens:' + VL_Valor;
                 if Form1.cbxCPF.Checked then
                     VL_String := VL_String + '<br>CPF:' + VL_Cpf;
 
                 F_MensagemAddComando(VL_Mensagem_Dados, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
                 F_MensagemAddTag(VL_Mensagem_Dados, '00DA', PChar(VL_String));  // mensagem no pdv
                 F_MensagemAddTag(VL_Mensagem_Dados, '00A4', PChar(IntToStr(Ord(tsEfetivada))));  // transacao obortada
-                F_MensagemTagAsString(VL_Mensagem_Dados, VL_PChar);
+                F_MensagemTagAsString(VL_Mensagem_Dados, VL_PChar);   //converte em string a mensagem
                 fVP_Retorno(PChar(fVP_Transmissao_ID), VL_PChar, fVP_ID); // envia de volta o comando
 
             end;
@@ -1029,6 +1057,11 @@ begin
     finalizaconexao;
 end;
 
+procedure TForm1.Bevel1ChangeBounds(Sender: TObject);
+begin
+
+end;
+
 
 
 procedure TForm1.BAtivaClick(Sender: TObject);
@@ -1085,9 +1118,9 @@ begin
         F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
         F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text)); // codigo da loja
         F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
-        F_MensagemAddTag(VL_Chave00F1, '0108', PChar(EIdentificacao.Text));  // identificacao
+        F_MensagemAddTag(VL_Chave00F1, '0108', PChar(EIdentificacao.Text));  // identificacao do pdv
 
-        F_MensagemTagAsString(VL_Chave00F1, VL_Dados);
+        F_MensagemTagAsString(VL_Chave00F1, VL_Dados);  //converte em string a mensagem
 
         F_MensagemAddComando(VL_Mensagem, '0105', 'S'); // solicita comando para ser executado no pdv
         F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
@@ -1095,19 +1128,19 @@ begin
         F_MensagemAddComando(VL_Transacao, '0104', 'S'); // solicita tags
         F_MensagemAddTag(VL_Transacao, '0103', ''); // versao do tef
 
-        F_MensagemTagAsString(VL_Transacao, VL_Dados);
+        F_MensagemTagAsString(VL_Transacao, VL_Dados);  //converte em string a mensagem
 
         F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
 
 
-        F_MensagemTagAsString(VL_Mensagem, VL_Dados);
+        F_MensagemTagAsString(VL_Mensagem, VL_Dados);  //converte em string a mensagem
 
         VL_Id := -1;
 
         for VL_I := 0 to F_OpenTef.Count - 1 do
         begin
             VL_RecOpenTef := F_OpenTef.GetRecOpeTef(VL_I);
-            if VL_RecOpenTef.V_Tipo = 'S' then
+            if VL_RecOpenTef.V_Tipo = 'S' then // servico
                 VL_Id := VL_RecOpenTef.V_ID;
         end;
 

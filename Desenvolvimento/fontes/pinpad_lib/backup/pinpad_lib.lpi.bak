@@ -36,6 +36,9 @@
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dpinpad_lib"/>
+          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="Release">
@@ -66,6 +69,9 @@
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dpinpad_lib"/>
+          </Other>
         </CompilerOptions>
       </Item>
     </BuildModes>
@@ -150,6 +156,12 @@
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dpinpad_lib"/>
+      <OtherDefines Count="1">
+        <Define0 Value="pinpad_lib"/>
+      </OtherDefines>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>

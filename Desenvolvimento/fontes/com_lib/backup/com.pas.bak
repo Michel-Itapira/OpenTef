@@ -100,11 +100,6 @@ begin
     if not Assigned(DComunicador) then
         DComunicador := TDComunicador.Create(nil);
 
-    //DComunicador.V_ConexaoCliente := TTConexao.Create(@DComunicador);
-    //DComunicador.V_ThRecebeEscuta := TThRecebe.Create(@DComunicador);
-    //DComunicador.V_ThRecebeEscuta.Start;
-
-
     DComunicador.V_ClienteRecebimento := VP_Procedimento;
 
     Result := 0;

@@ -1,8 +1,8 @@
 object DCom: TDCom
   OldCreateOrder = False
   Height = 267
-  HorizontalOffset = 769
-  VerticalOffset = 578
+  HorizontalOffset = 770
+  VerticalOffset = 579
   Width = 357
   object CriptoAes: TLbRijndael
     CipherMode = cmECB

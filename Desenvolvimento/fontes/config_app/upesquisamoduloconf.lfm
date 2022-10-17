@@ -1,16 +1,17 @@
-object FModuloConf: TFModuloConf
-  Left = 1092
+object FPesquisaModuloConf: TFPesquisaModuloConf
+  Left = 1386
   Height = 656
-  Top = 120
+  Top = 121
   Width = 564
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Pesquisa Modulos'
   ClientHeight = 656
   ClientWidth = 564
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.2.0'
   object pnlBase: TPanel
     Left = 0
     Height = 656
@@ -41,6 +42,7 @@ object FModuloConf: TFModuloConf
         Caption = 'Pesquisa de Módulos e suas Configurações'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object LDescricaoModulo: TLabel
@@ -50,6 +52,7 @@ object FModuloConf: TFModuloConf
         Width = 119
         Caption = 'Descrição do Módulo:'
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object EDescricaoModulo: TEdit
@@ -68,6 +71,7 @@ object FModuloConf: TFModuloConf
         Width = 211
         Caption = 'Descrição da Configuração do Módulo:'
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object EDescricaoModuloConf: TEdit
@@ -86,6 +90,7 @@ object FModuloConf: TFModuloConf
         Width = 120
         Caption = 'Nome do Adquirente:'
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object EAdquirente: TEdit

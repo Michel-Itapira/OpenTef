@@ -3,8 +3,8 @@ object DNucleo: TDNucleo
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 1573
-  VerticalOffset = 283
+  HorizontalOffset = 1574
+  VerticalOffset = 284
   Width = 416
   object ZConsulta: TZQuery
     Connection = ZConexao

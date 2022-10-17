@@ -1,10 +1,10 @@
 object FApp: TFApp
-  Left = 433
-  Height = 374
-  Top = 266
+  Left = 474
+  Height = 558
+  Top = 301
   Width = 1248
   Caption = 'Open Tef'
-  ClientHeight = 374
+  ClientHeight = 558
   ClientWidth = 1248
   OnClose = FormClose
   LCLVersion = '2.2.2.0'
@@ -87,28 +87,30 @@ object FApp: TFApp
     TabOrder = 7
   end
   object Button1: TButton
-    Left = 944
+    Left = 312
     Height = 25
-    Top = 8
-    Width = 75
-    Caption = 'Button1'
+    Top = 408
+    Width = 96
+    Caption = 'Copia qrcode'
     OnClick = Button1Click
     TabOrder = 8
   end
   object Image2: TImage
-    Left = 1088
-    Height = 90
-    Top = 15
-    Width = 90
+    Left = 488
+    Height = 184
+    Top = 368
+    Width = 200
     Stretch = True
   end
   object BarcodeQR1: TBarcodeQR
-    Left = 688
-    Height = 46
-    Top = 24
-    Width = 64
+    Left = 80
+    Height = 230
+    Top = 368
+    Width = 230
     StrictSize = False
-    Text = 'https://www.seicon.com.br'
+    BackgroundColor = clNone
+    OnPaint = BarcodeQR1Paint
+    Text = 'http://opentef.com.br'
   end
   object Button2: TButton
     Left = 472
@@ -127,5 +129,49 @@ object FApp: TFApp
     Caption = 'Solicita bin'
     OnClick = Button3Click
     TabOrder = 10
+  end
+  object Button4: TButton
+    Left = 304
+    Height = 25
+    Top = 368
+    Width = 115
+    Caption = 'Salvar como arquivo'
+    OnClick = Button4Click
+    TabOrder = 11
+  end
+  object Button5: TButton
+    Left = 308
+    Height = 25
+    Top = 449
+    Width = 111
+    Caption = 'Salva como jpg'
+    OnClick = Button5Click
+    TabOrder = 12
+  end
+  object Button6: TButton
+    Left = 308
+    Height = 25
+    Top = 488
+    Width = 111
+    Caption = 'Salva como png'
+    OnClick = Button6Click
+    TabOrder = 13
+  end
+  object Button7: TButton
+    Left = 712
+    Height = 25
+    Top = 376
+    Width = 112
+    Caption = 'Gera QR Code'
+    OnClick = Button7Click
+    TabOrder = 14
+  end
+  object Edit1: TEdit
+    Left = 712
+    Height = 23
+    Top = 405
+    Width = 400
+    TabOrder = 15
+    Text = '2600020101021226740014br.gov.bcb.pix210812345678220412342308123456782420001122334455667788995204000053039865406123.455802BR5913FULANO DETAL6008BRASILIA62190515RP12345678-201980720014br.gov.bcb.pix2550bx.com.br/spi/U0VHUkVET1RPVEFMTUVOVEVBTEVBVE9SSU8=630434D1'
   end
 end

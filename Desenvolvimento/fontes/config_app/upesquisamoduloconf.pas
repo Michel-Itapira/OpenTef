@@ -5,13 +5,13 @@ unit uPesquisamoduloconf;
 interface
 
 uses
-    Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs,funcoes, ExtCtrls, StdCtrls, Buttons, RxDBGrid, rxmemds;
+    Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, funcoes, ExtCtrls, StdCtrls, Buttons, RxDBGrid, rxmemds;
 
 type
 
-    { TFModuloConf }
+    { TFPesquisaModuloConf }
 
-    TFModuloConf = class(TForm)
+    TFPesquisaModuloConf = class(TForm)
         BCarregar: TBitBtn;
         BPesquisar: TBitBtn;
         BSair: TBitBtn;
@@ -32,35 +32,42 @@ type
         procedure BCarregarClick(Sender: TObject);
         procedure BPesquisarClick(Sender: TObject);
         procedure BSairClick(Sender: TObject);
+        procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
     private
         procedure LimpaTela;
     public
         F_Tabela: string;
         F_Carregado: boolean;
+        F_ModuloID: integer;
     end;
 
 var
-    FModuloConf: TFModuloConf;
+    FPesquisaModuloConf: TFPesquisaModuloConf;
 
 implementation
 
 {$R *.lfm}
 
-{ TFModuloConf }
+{ TFPesquisaModuloConf }
 
-procedure TFModuloConf.BSairClick(Sender: TObject);
+procedure TFPesquisaModuloConf.BSairClick(Sender: TObject);
 begin
     Close;
 end;
 
-procedure TFModuloConf.BCarregarClick(Sender: TObject);
+procedure TFPesquisaModuloConf.FormCreate(Sender: TObject);
+begin
+    F_ModuloID := 0;
+end;
+
+procedure TFPesquisaModuloConf.BCarregarClick(Sender: TObject);
 begin
     F_Carregado := True;
     Close;
 end;
 
-procedure TFModuloConf.BPesquisarClick(Sender: TObject);
+procedure TFPesquisaModuloConf.BPesquisarClick(Sender: TObject);
 var
     VL_Filtro: string;
 begin
@@ -99,15 +106,16 @@ begin
 
 end;
 
-procedure TFModuloConf.FormShow(Sender: TObject);
+procedure TFPesquisaModuloConf.FormShow(Sender: TObject);
 begin
     LimpaTela;
     F_Carregado := False;
 end;
 
-procedure TFModuloConf.LimpaTela;
+procedure TFPesquisaModuloConf.LimpaTela;
 begin
-    EDescricaoModulo.Text := '';
+    if F_ModuloID = 0 then
+        EDescricaoModulo.Text := '';
     EDescricaoModuloConf.Text := '';
     EAdquirente.Text := '';
     CKModuloAtivo.Checked := False;

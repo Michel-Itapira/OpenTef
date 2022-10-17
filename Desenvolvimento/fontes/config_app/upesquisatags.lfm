@@ -10,7 +10,7 @@ object FTags: TFTags
   ClientWidth = 484
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.2.0'
   object pnlBase: TPanel
     Left = 0
     Height = 598
@@ -41,6 +41,7 @@ object FTags: TFTags
         Caption = 'Pesquisa Tags de Comando'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object LTag: TLabel
@@ -49,6 +50,7 @@ object FTags: TFTags
         Top = 44
         Width = 25
         Caption = 'TAG:'
+        ParentColor = False
       end
       object ETag: TEdit
         Left = 43
@@ -65,6 +67,7 @@ object FTags: TFTags
         Top = 44
         Width = 53
         Caption = 'Definição:'
+        ParentColor = False
       end
       object EDefinicao: TEdit
         Left = 203
@@ -233,6 +236,7 @@ object FTags: TFTags
         Top = 81
         Width = 123
         Caption = 'Tipo da Função da Tag:'
+        ParentColor = False
       end
     end
     object pnlPrincipal: TPanel
@@ -377,6 +381,7 @@ object FTags: TFTags
   object MDTags: TRxMemoryData
     Filtered = True
     FieldDefs = <>
+    OnFilterRecord = MDTagsFilterRecord
     PacketRecords = 0
     Left = 298
     Top = 171

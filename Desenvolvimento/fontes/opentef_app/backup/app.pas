@@ -21,10 +21,16 @@ type
         Button1: TButton;
         Button2: TButton;
         Button3: TButton;
+        Button4: TButton;
+        Button5: TButton;
+        Button6: TButton;
+        Button7: TButton;
+        Edit1: TEdit;
         Image2: TImage;
         MMenu: TMemo;
         MBIN: TMemo;
         MMenuOperacional: TMemo;
+        procedure BarcodeQR1Paint(Sender: TObject);
         procedure BIniciarClick(Sender: TObject);
         procedure BMenuOperacionaClick(Sender: TObject);
         procedure BPararClick(Sender: TObject);
@@ -33,6 +39,10 @@ type
         procedure Button1Click(Sender: TObject);
         procedure Button2Click(Sender: TObject);
         procedure Button3Click(Sender: TObject);
+        procedure Button4Click(Sender: TObject);
+        procedure Button5Click(Sender: TObject);
+        procedure Button6Click(Sender: TObject);
+        procedure Button7Click(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 
     private
@@ -56,6 +66,11 @@ begin
     DNucleo := TDNucleo.Create(nil);
     F_ArquivoLog := ExtractFilePath(ParamStr(0)) + 'appopentef.log';
     DNucleo.iniciar;
+end;
+
+procedure TFApp.BarcodeQR1Paint(Sender: TObject);
+begin
+
 end;
 
 procedure TFApp.BMenuOperacionaClick(Sender: TObject);
@@ -145,7 +160,7 @@ begin
     VL_Mensagem := TMensagem.Create;
     VL_Mensagem.AddComando('0111', 'S');
 
-    DComunicador.ServidorTransmiteSolicitacaoIdentificacao(@DComunicador, 30000, False, nil, '122', VL_Mensagem, VL_Mensagem,
+    DComunicador.ServidorTransmiteSolicitacaoIdentificacao(DComunicador, 30000, False, nil, '122', VL_Mensagem, VL_Mensagem,
         'PDV', 'L01C001');
 
 end;
@@ -163,6 +178,66 @@ begin
         VL_Mensagem.Free;
     end;
 
+end;
+
+procedure TFApp.Button4Click(Sender: TObject);
+begin
+  BarcodeQR1.SaveToFile('qrcode.png');
+end;
+
+procedure TFApp.Button5Click(Sender: TObject);
+var
+
+    JPEG:TJPEGImage;
+
+begin
+    JPEG:=TJPEGImage.Create;
+    JPEG.Assign(Image2.Picture.Graphic);
+    JPEG.GrayScale:=true;
+    JPEG.CompressionQuality:=5;
+
+    JPEG.Compress;
+    JPEG.SaveToFile('qrcode.jpg');
+    JPEG.Free;
+end;
+
+procedure TFApp.Button6Click(Sender: TObject);
+var
+  R: TRect;
+  png : TPortableNetworkGraphic;
+  s:string;
+begin
+   s:='';
+   BarcodeToStr(s,BarcodeQR1);
+   StrToImagem(s,Image2,TI_Png);
+
+   Image2.Picture.SaveToFile('qrcode.png');
+   exit;
+
+
+
+  png := TPortableNetworkGraphic.Create;
+  try
+   R := Rect(0, 0, BarcodeQR1.Width , BarcodeQR1.Height );
+   png.SetSize(BarcodeQR1.Width , BarcodeQR1.Height );
+   png.Monochrome:=true;
+   png.Canvas.Brush.Color := clWhite;
+   png.Canvas.FillRect(R);
+
+   BarcodeQR1.PaintOnCanvas(png.Canvas, R);
+
+   png.SaveToFile('qrcode.png');
+
+ finally
+   png.Free;
+ end;
+
+end;
+
+procedure TFApp.Button7Click(Sender: TObject);
+begin
+ StrToImagem(GerarQRCodeAsString(Edit1.Text),Image2,TI_Png;
+ Image2.Picture.SaveToFile('qrcode.png');
 end;
 
 

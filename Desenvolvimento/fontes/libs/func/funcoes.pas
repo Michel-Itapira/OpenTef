@@ -13,7 +13,7 @@ uses
     DB,
     IdContext,
     IdSSLOpenSSL,
-    {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)OR DEFINED(COM_LIB)}
+    {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)OR DEFINED(COM_LIB)OR  DEFINED(pinpad_lib)}
     def,
     {$ENDIF}
     IdTime,
@@ -22,11 +22,13 @@ uses
     Graphics,
     ubarcodes,
     Math,
+    base64,
     rxmemds;
 
 type
 
     TImagem = (TI_Jpg, TI_Png, TI_BMP, TI_GIF);
+    TLBytes = array of byte;
 
     TTag = record
         Tag: ansistring;
@@ -185,7 +187,7 @@ procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData)
 function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
 procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: ansistring);
-{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib)}
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
     VP_CodigoErro: integer; VP_Debug: boolean = True);
 function versao(var VO_Dados: PChar): integer; cdecl;
@@ -217,7 +219,7 @@ function StrToSql(S: string; ConsideraNull: boolean = False; VL_Tamanho: int64 =
 function VerificaSelect(Sql: string): string;
 function ConverteSQL(Script: string): string;
 function CriaID: string;
-
+function GerarQRCodeAsString(QrCode:String):String;
 
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
 
@@ -235,7 +237,7 @@ function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PC
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 procedure mensagemlimpar(VP_Mensagem: Pointer); cdecl;
 function mensagemerro(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
-
+function Crc16(s: TLBytes;len:integer; Polynom: WORD = $1021; Seed: WORD = $00): WORD;
 
 
 var
@@ -249,6 +251,7 @@ const
 
 implementation
 
+
 function versao(var VO_Dados: PChar): integer; cdecl;
 begin
     try
@@ -260,6 +263,27 @@ begin
     end;
 
 end;
+
+function Crc16(s: TLBytes;len:integer; Polynom: WORD = $1021; Seed: WORD = $00): WORD;
+var
+  i, j: Integer;
+begin
+  Result := Seed;
+  for i := 0 to len-1 do
+  begin
+    Result := Result xor (S[i] shl 8);
+    for j := 0 to 7 do
+    begin
+      if (Result and $8000) <> 0 then
+        Result := (Result shl 1) xor Polynom
+      else
+        Result := Result shl 1;
+    end;
+  end;
+  Result := Result and $FFFF;
+
+end;
+
 
 function CalculaDigito(Texto: string): string;
 var
@@ -342,23 +366,24 @@ var
     PNG: TPortableNetworkGraphic;
     BPM: TBitmap;
     Sm: TStringStream;
-    i: integer;
-    S, L: string;
+//    i: integer;
+    S: string;
 begin
     s := '';
-    L := '';
+    //L := '';
     if Dados = '' then
     begin
         Imagem.Picture.Graphic := nil;
         exit;
     end;
 
-    for i := 0 to Length(Dados) div 2 - 1 do
-    begin
-        L := copy(Dados, ((1 + i) * 2) - 1, 2);
-        s := s + char(Hex2Dec(L));
-    end;
+    //for i := 0 to Length(Dados) div 2 - 1 do
+    //begin
+        //L := copy(Dados, ((1 + i) * 2) - 1, 2);
+        //s := s + char(Hex2Dec(L));
+    //end;
 
+    s:=DecodeStringBase64(Dados);
 
     Sm := TStringStream.Create(s);
 
@@ -404,7 +429,7 @@ end;
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
 var
     Sm: TStringStream;
-    I: integer;
+    //I: integer;
     S: string;
 begin
     Dados := '';
@@ -412,33 +437,56 @@ begin
     Imagem.Picture.SaveToStream(Sm);
     S := sm.DataString;
 
-    for i := 0 to Length(S) - 1 do
-        Dados := Dados + HexStr(Ord(S[i + 1]), 2);
+    Dados:=EncodeStringBase64(s);
+
+
+    //for i := 0 to Length(S) - 1 do
+        //Dados := Dados + HexStr(Ord(S[i + 1]), 2);
 
 
     Sm.Free;
 end;
 
+
+function GerarQRCodeAsString(QrCode:String):String;
+var
+  Barcode: TBarcodeQR;
+  Dados:String;
+begin
+    Dados:='';
+    Barcode:=TBarcodeQR.Create(nil);
+    Barcode.Width:=230;
+    Barcode.Height:=230;
+    Barcode.ECCLevel:=eBarcodeQR_ECCLevel_Auto;
+    Barcode.StrictSize:=False;
+    Barcode.BackgroundColor:=clNone;
+    Barcode.Text:=QrCode;
+    BarcodeToStr(Dados,Barcode);
+    Result:=Dados;
+    Barcode.Free;
+end;
+
 procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
 var
-    bmp: TFPImageBitmap;
+    R: TRect;
+    png: TPortableNetworkGraphic;
     img: TImage;
 begin
-    bmp := TBitmap.Create;
+    png := TPortableNetworkGraphic.Create;
     img := TImage.Create(nil);
     try
-        bmp.SetSize(Barcode.Width, Barcode.Height);
-        bmp.Canvas.Brush.Color := clWhite;
-        bmp.Canvas.FillRect(0, 0, bmp.Width, bmp.Height);
-        Barcode.PaintOnCanvas(bmp.Canvas, Rect(0, 0, bmp.Width, bmp.Height));
+        R := Rect(0, 0, Barcode.Width, Barcode.Height);
+        png.SetSize(Barcode.Width, Barcode.Height);
+        png.Monochrome := True;
+        png.Canvas.Brush.Color := clWhite;
+        png.Canvas.FillRect(R);
 
-        img.Picture.Assign(bmp);
+        Barcode.PaintOnCanvas(png.Canvas, R);
+        img.Picture.Assign(png);
 
         ImagemToStr(Dados, img);
-
-
     finally
-        bmp.Free;
+        png.Free;
         img.Free;
     end;
 
@@ -673,6 +721,7 @@ begin
             99: VL_String := 'Conexão não encontrada';
             100: VL_String := 'Conexão não está estabelecida';
             101: VL_String := 'Comando inválido para o OPENTEF';
+            102: VL_String := 'DADOS INFORMADOS DIFERENTE DOS DADOS DA TABELA NO BANCO DE DADOS';
 
             else
             begin
@@ -931,11 +980,11 @@ function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
 var
     VL_MemString: TStringStream;
     VL_Mem: TMemoryStream;
-    VL_String: ansistring;
-    VL_bytes: array of byte;
-    VL_i: integer;
+    //VL_String: ansistring;
+    //VL_bytes: array of byte;
+    //VL_i: integer;
 begin
-    VL_bytes := nil;
+    //VL_bytes := nil;
 
     VL_MemString := TStringStream.Create;
     VL_Mem := TMemoryStream.Create;
@@ -944,7 +993,10 @@ begin
 
     VL_Mem.SaveToStream(VL_MemString);
 
-    VL_String := VL_MemString.DataString;
+
+    Result:=EncodeStringBase64(VL_MemString.DataString);
+
+{    VL_String := VL_MemString.DataString;
 
     //  converte em bytes
     for VL_i := 0 to Length(VL_String) - 1 do
@@ -957,26 +1009,26 @@ begin
     for VL_i := 0 to Length(VL_bytes) - 1 do
         VL_String := VL_String + HexStr(VL_bytes[VL_i], 2);
 
-    Result := VL_String;
+    Result := VL_String; }
     VL_MemString.Free;
     VL_Mem.Free;
 end;
 
 procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
 var
-    VL_bytes: array of byte;
-    VL_i: integer;
+    //VL_bytes: array of byte;
+    //VL_i: integer;
     VL_String: ansistring;
     VL_MemString: TStringStream;
     VL_Mem: TMemoryStream;
 begin
 
-    VL_bytes := nil;
+    //VL_bytes := nil;
     // converte em bytes
     if VP_Dados = '' then
         exit;
 
-    for VL_i := 0 to (Length(VP_Dados) div 2) - 1 do
+  {  for VL_i := 0 to (Length(VP_Dados) div 2) - 1 do
     begin
         SetLength(VL_bytes, Length(VL_bytes) + 1);
         VL_bytes[VL_i] := Hex2Dec(copy(VP_Dados, ((VL_i + 1) * 2) - 1, 2));
@@ -991,7 +1043,12 @@ begin
         VL_String[VL_i + 1] := char(VL_bytes[VL_i]);
     end;
 
+
     VL_MemString := TStringStream.Create(VL_String);
+    }
+
+    VL_MemString := TStringStream.Create(DecodeStringBase64(VL_String));
+
     VL_Mem := TMemoryStream.Create;
 
     VL_MemString.SaveToStream(VL_Mem);
@@ -1088,7 +1145,7 @@ begin
     end;
 end;
 
-{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib)}
+{$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
     VP_CodigoErro: integer; VP_Debug: boolean = True);
 var

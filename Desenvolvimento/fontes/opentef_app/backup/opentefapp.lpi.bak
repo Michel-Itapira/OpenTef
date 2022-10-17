@@ -54,6 +54,44 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="DebugWin64_local">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\opentef\win64\opentefapp"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func;..\opentef_ser"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <RelocatableUnit Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dWIN"/>
+            <OtherDefines Count="4">
+              <Define0 Value="OPEN_TEF"/>
+              <Define1 Value="WIN"/>
+              <Define2 Value="DEBUG"/>
+              <Define3 Value="COMUNICADOR"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>

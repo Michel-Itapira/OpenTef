@@ -21,9 +21,9 @@ uses
 
 type
 
-    { TFAdquirente }
+    { TFPesquisaAdquirente }
 
-    TFAdquirente = class(TForm)
+    TFPesquisaAdquirente = class(TForm)
       BCarregar: TBitBtn;
         BPesquisar: TBitBtn;
         BSair: TBitBtn;
@@ -50,20 +50,20 @@ type
     end;
 
 var
-    FAdquirente: TFAdquirente;
+    FPesquisaAdquirente: TFPesquisaAdquirente;
 
 implementation
 
 {$R *.lfm}
 
-{ TFAdquirente }
+{ TFPesquisaAdquirente }
 
-procedure TFAdquirente.BSairClick(Sender: TObject);
+procedure TFPesquisaAdquirente.BSairClick(Sender: TObject);
 begin
     Close;
 end;
 
-procedure TFAdquirente.FormShow(Sender: TObject);
+procedure TFPesquisaAdquirente.FormShow(Sender: TObject);
 begin
     EID.Text := '';
     EDescricao.Text := '';
@@ -72,13 +72,13 @@ begin
     F_Carregado := False;
 end;
 
-procedure TFAdquirente.BCarregarClick(Sender: TObject);
+procedure TFPesquisaAdquirente.BCarregarClick(Sender: TObject);
 begin
     F_Carregado := True;
     Close;
 end;
 
-procedure TFAdquirente.BPesquisarClick(Sender: TObject);
+procedure TFPesquisaAdquirente.BPesquisarClick(Sender: TObject);
 var
     VL_Filtro: string;
 begin

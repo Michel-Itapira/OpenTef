@@ -1,10 +1,10 @@
 object fprincipal: Tfprincipal
-  Left = 616
-  Height = 741
-  Top = 184
+  Left = 368
+  Height = 726
+  Top = 228
   Width = 1048
   Caption = 'Administrador OpenTef'
-  ClientHeight = 741
+  ClientHeight = 726
   ClientWidth = 1048
   OnClose = FormClose
   OnCreate = FormCreate
@@ -12,11 +12,11 @@ object fprincipal: Tfprincipal
   LCLVersion = '2.2.2.0'
   object PTopo: TPanel
     Left = 0
-    Height = 80
+    Height = 72
     Top = 0
     Width = 1048
     Align = alTop
-    ClientHeight = 80
+    ClientHeight = 72
     ClientWidth = 1048
     Font.Style = [fsBold]
     ParentFont = False
@@ -203,50 +203,50 @@ object fprincipal: Tfprincipal
   end
   object PPrincipal: TPanel
     Left = 0
-    Height = 661
-    Top = 80
+    Height = 654
+    Top = 72
     Width = 1048
     Align = alClient
-    ClientHeight = 661
+    ClientHeight = 654
     ClientWidth = 1048
     TabOrder = 1
     object PagePrincipal: TPageControl
       Left = 1
-      Height = 659
+      Height = 652
       Top = 1
       Width = 1046
-      ActivePage = TabCadastro
+      ActivePage = TabModulo
       Align = alClient
-      TabIndex = 0
+      TabIndex = 4
       TabOrder = 0
       object TabCadastro: TTabSheet
         Caption = 'Gerenciador das Lojas'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         OnShow = TabCadastroShow
         object PageCadastroLoja: TPageControl
           Left = 0
-          Height = 621
+          Height = 614
           Top = 10
           Width = 1038
-          ActivePage = TabLoja
+          ActivePage = TabMultLoja
           Align = alClient
           BorderSpacing.Top = 10
-          TabIndex = 1
+          TabIndex = 0
           TabOrder = 0
           object TabMultLoja: TTabSheet
             Caption = 'Cadastro de Mult-Lojas'
-            ClientHeight = 593
+            ClientHeight = 586
             ClientWidth = 1030
             object TabMultLojaPnlPesquisa: TPanel
               Left = 5
-              Height = 583
+              Height = 576
               Top = 5
               Width = 368
               Align = alLeft
               BorderSpacing.Around = 5
               BevelInner = bvLowered
-              ClientHeight = 583
+              ClientHeight = 576
               ClientWidth = 368
               TabOrder = 0
               object TabMultLojaBAdicionar: TBitBtn
@@ -342,7 +342,7 @@ object fprincipal: Tfprincipal
               object TabMultLojaPnlFiltro: TPanel
                 Left = 2
                 Height = 392
-                Top = 189
+                Top = 182
                 Width = 364
                 Align = alBottom
                 BevelOuter = bvNone
@@ -519,13 +519,13 @@ object fprincipal: Tfprincipal
             end
             object PnlBase: TPanel
               Left = 378
-              Height = 583
+              Height = 576
               Top = 5
               Width = 647
               Align = alClient
               BorderSpacing.Around = 5
               BevelInner = bvLowered
-              ClientHeight = 583
+              ClientHeight = 576
               ClientWidth = 647
               TabOrder = 1
               object TabMultLojaPnlLojaMaster: TPanel
@@ -641,7 +641,7 @@ object fprincipal: Tfprincipal
               object PageMultiLojaVisualizarModuloFuncao: TPageControl
                 Left = 7
                 Height = 378
-                Top = 203
+                Top = 196
                 Width = 636
                 ActivePage = TabMultLojaModulo
                 Align = alBottom
@@ -658,13 +658,13 @@ object fprincipal: Tfprincipal
                     Height = 340
                     Top = 5
                     Width = 622
-                    ActivePage = TabMultLojaTabModuloDados
+                    ActivePage = TabMultLojaTabFuncaoDados
                     Align = alClient
                     BorderSpacing.Left = 3
                     BorderSpacing.Top = 5
                     BorderSpacing.Right = 3
                     BorderSpacing.Bottom = 5
-                    TabIndex = 0
+                    TabIndex = 1
                     TabOrder = 0
                     object TabMultLojaTabModuloDados: TTabSheet
                       Caption = 'Configuração do Módulo da MultiLoja'
@@ -1394,582 +1394,33 @@ object fprincipal: Tfprincipal
           end
           object TabLoja: TTabSheet
             Caption = 'Cadastro das Lojas'
-            ClientHeight = 593
+            ClientHeight = 586
             ClientWidth = 1030
             OnShow = TabLojaShow
             object TabLojaPPrincipal: TPanel
               Left = 360
-              Height = 583
+              Height = 576
               Top = 5
               Width = 665
               Align = alRight
               BorderSpacing.Around = 5
               BevelInner = bvLowered
-              ClientHeight = 583
+              ClientHeight = 576
               ClientWidth = 665
               TabOrder = 1
               object PageLojaVisualizarModuloFuncao: TPageControl
                 Left = 7
-                Height = 352
-                Top = 224
+                Height = 312
+                Top = 257
                 Width = 651
                 ActivePage = TabLojaTabModulo
                 Align = alBottom
                 BorderSpacing.Around = 5
-                TabIndex = 0
+                TabIndex = 1
                 TabOrder = 0
-                object TabLojaTabModulo: TTabSheet
-                  Caption = 'Configuração da Loja'
-                  ClientHeight = 324
-                  ClientWidth = 643
-                  OnShow = TabLojaTabModuloShow
-                  object PageLojaVizualizarConfModuloFuncao: TPageControl
-                    Left = 5
-                    Height = 314
-                    Top = 5
-                    Width = 633
-                    ActivePage = TabLojaTabModuloDados
-                    Align = alClient
-                    BorderSpacing.Around = 5
-                    TabIndex = 0
-                    TabOrder = 0
-                    object TabLojaTabModuloDados: TTabSheet
-                      Caption = 'Configuração do Módulo da Loja'
-                      ClientHeight = 286
-                      ClientWidth = 625
-                      OnShow = TabLojaTabModuloDadosShow
-                      object TabLojaModuloLFiltro: TLabel
-                        Left = 5
-                        Height = 15
-                        Top = 133
-                        Width = 30
-                        Caption = 'Filtro:'
-                        ParentColor = False
-                      end
-                      object TabLojaModuloEFiltro: TEdit
-                        Left = 3
-                        Height = 23
-                        Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
-                        Top = 149
-                        Width = 272
-                        OnChange = TabLojaModuloEFiltroChange
-                        ParentShowHint = False
-                        ShowHint = True
-                        TabOrder = 0
-                        Text = 'TabLojaModuloEFiltro'
-                      end
-                      object TabLojaModuloGrid: TRxDBGrid
-                        Left = 3
-                        Height = 107
-                        Top = 175
-                        Width = 619
-                        ColumnDefValues.BlobText = '(blob)'
-                        TitleButtons = False
-                        AutoSort = True
-                        Columns = <                        
-                          item
-                            Title.Alignment = taCenter
-                            Title.Orientation = toHorizontal
-                            Title.Caption = 'Módulo'
-                            Width = 293
-                            FieldName = 'MODULO'
-                            EditButtons = <>
-                            Filter.DropDownRows = 0
-                            Filter.EmptyValue = '(Empty)'
-                            Filter.NotEmptyValue = '(Não está vazio)'
-                            Filter.AllValue = '(Todos os valores)'
-                            Filter.EmptyFont.Style = [fsItalic]
-                            Filter.ItemIndex = -1
-                            Footers = <>
-                          end                        
-                          item
-                            Title.Alignment = taCenter
-                            Title.Orientation = toHorizontal
-                            Title.Caption = 'Config Módulo'
-                            Width = 293
-                            FieldName = 'MODULO_CONF'
-                            EditButtons = <>
-                            Filter.DropDownRows = 0
-                            Filter.EmptyValue = '(Empty)'
-                            Filter.NotEmptyValue = '(Não está vazio)'
-                            Filter.AllValue = '(Todos os valores)'
-                            Filter.EmptyFont.Style = [fsItalic]
-                            Filter.ItemIndex = -1
-                            Footers = <>
-                          end>
-                        KeyStrokes = <                        
-                          item
-                            Command = rxgcShowFindDlg
-                            ShortCut = 16454
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowColumnsDlg
-                            ShortCut = 16471
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowFilterDlg
-                            ShortCut = 16468
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowSortDlg
-                            ShortCut = 16467
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowQuickFilter
-                            ShortCut = 16465
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcHideQuickFilter
-                            ShortCut = 16456
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcSelectAll
-                            ShortCut = 16449
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcDeSelectAll
-                            ShortCut = 16429
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcInvertSelection
-                            ShortCut = 16426
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcOptimizeColumnsWidth
-                            ShortCut = 16427
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcCopyCellValue
-                            ShortCut = 16451
-                            Enabled = True
-                          end>
-                        FooterOptions.DrawFullLine = False
-                        SearchOptions.QuickSearchOptions = [loCaseInsensitive, loPartialKey]
-                        SearchOptions.FromStart = False
-                        OptionsRx = [rdgAllowColumnsForm, rdgAllowDialogFind, rdgAllowQuickFilter]
-                        AutoFillColumns = True
-                        Color = clWindow
-                        DrawFullLine = False
-                        FocusColor = clRed
-                        SelectedColor = clHighlight
-                        DataSource = DSLojaModuloConf
-                        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
-                        ReadOnly = True
-                        TabOrder = 1
-                      end
-                      object Panel4: TPanel
-                        Left = 3
-                        Height = 129
-                        Top = 3
-                        Width = 619
-                        Align = alTop
-                        BorderSpacing.Around = 3
-                        BevelInner = bvLowered
-                        ClientHeight = 129
-                        ClientWidth = 619
-                        TabOrder = 2
-                        object TabLojaModuloCkHabilitar: TCheckBox
-                          Left = 232
-                          Height = 19
-                          Top = 43
-                          Width = 181
-                          Caption = 'Habilitar Configuração da Loja'
-                          ParentFont = False
-                          TabOrder = 0
-                        end
-                        object TabLojaModuloLCodigo: TLabel
-                          Left = 95
-                          Height = 15
-                          Top = 25
-                          Width = 83
-                          Caption = 'Código da Loja:'
-                          ParentColor = False
-                        end
-                        object TabLojaModuloECodigo: TEdit
-                          Left = 95
-                          Height = 23
-                          Top = 42
-                          Width = 104
-                          TabOrder = 1
-                          Text = 'TabLojaModuloECodigo'
-                        end
-                        object TabLojaModuloLID: TLabel
-                          Left = 16
-                          Height = 15
-                          Top = 25
-                          Width = 14
-                          Caption = 'ID:'
-                          ParentColor = False
-                        end
-                        object TabLojaModuloEID: TEdit
-                          Left = 16
-                          Height = 23
-                          Top = 87
-                          Width = 80
-                          TabOrder = 2
-                          Text = 'TabLojaModuloEID'
-                        end
-                        object TabLojaModuloBAdicionar: TBitBtn
-                          Left = 480
-                          Height = 28
-                          Top = 36
-                          Width = 130
-                          Caption = 'Adicionar Módulo'
-                          Font.Style = [fsBold]
-                          NumGlyphs = 2
-                          Images = ListaImg
-                          ImageIndex = 0
-                          ImageWidth = 22
-                          OnClick = TabLojaModuloBAdicionarClick
-                          ParentFont = False
-                          TabOrder = 3
-                        end
-                        object TabLojaModuloBModificar: TBitBtn
-                          Left = 480
-                          Height = 28
-                          Top = 66
-                          Width = 130
-                          Caption = 'Alterar Módulo'
-                          Font.Style = [fsBold]
-                          Images = ListaImg
-                          ImageIndex = 2
-                          ImageWidth = 22
-                          OnClick = TabLojaModuloBModificarClick
-                          ParentFont = False
-                          TabOrder = 4
-                        end
-                        object TabLojaModuloBExcluir: TBitBtn
-                          Left = 480
-                          Height = 28
-                          Top = 96
-                          Width = 130
-                          Caption = 'Excluir Módulo'
-                          Font.Style = [fsBold]
-                          Images = ListaImg
-                          ImageIndex = 1
-                          ImageWidth = 22
-                          OnClick = TabLojaModuloBExcluirClick
-                          ParentFont = False
-                          TabOrder = 5
-                        end
-                        object TabLojaModuloLModuloConf: TLabel
-                          Left = 16
-                          Height = 15
-                          Top = 69
-                          Width = 117
-                          Caption = 'Módulo Configuração'
-                          ParentColor = False
-                        end
-                        object TabLojaModuloEModuloConf: TEdit
-                          Left = 102
-                          Height = 23
-                          Top = 87
-                          Width = 300
-                          TabOrder = 6
-                          Text = 'TabLojaModuloEModuloConf'
-                        end
-                        object TabLojaModuloBPesquisaModuloConf: TBitBtn
-                          Left = 405
-                          Height = 26
-                          Top = 86
-                          Width = 34
-                          Font.Style = [fsBold]
-                          Glyph.Data = {
-                            36040000424D3604000000000000360000002800000010000000100000000100
-                            2000000000000004000064000000640000000000000000000000000000003C3A
-                            37D52A2825D52A29261500000000000000000000000000000000000000000000
-                            0000000000000000000000000000000000000000000000000000C19A74FF5E55
-                            4DFF2E2C28FF413930FFB48D69FFBF956EFFBF946CFFBE936BFFBE936AFFBE92
-                            6AFFBD9269FFBD9169FFBD9169FFBC9169FFBC9169FFBC9169FFC39B75FFE0E0
-                            E0FF62615FFF2E2C28FF484744FFDCDCDCFFEBEBEBFFEBEBEBFFEBEBEBFFEAEA
-                            EAFFEAEAEAFFE9E9E9FFE8E8E8FFE8E8E8FFE7E7E7FFBC9169FFC59C76FFEEEE
-                            EEFFE2E2E2FF62625EFF2E2C28FF494844FF6B6B68FF3F3D3AFF403E3BFF6B6A
-                            67FFD2D2D1FFEBEBEBFFEAEAEAFFE9E9E9FFE8E8E8FFBC9169FFC79E77FFF1F1
-                            F1FFF1F1F1FFE5E5E5FF5F5E5BFF35342FFF948F88FFC6BDB4FFC3BAB1FF958F
-                            88FF4E4C49FFD3D2D2FFEBEBEBFFEAEAEAFFE9E9E9FFBC9169FFC9A079FFF3F3
-                            F3FFF4F4F4FFF4F4F4FF767573FF958F89FFDBD2C9FFDBD0C6FFD5CAC0FFCCC2
-                            B8FF958F88FF6B6B68FFECECECFFEAEAEAFFE9E9E9FFBD9269FFCBA17AFFF6F6
-                            F6FFF7F7F7FFF7F7F7FF42413DFFDBD2C9FFE9DED4FFE8DDD2FFE1D6CCFFD6CB
-                            C1FFC4BBB1FF403E3BFFEEEEEEFFEBEBEBFFEAEAEAFFBE936AFFCDA37BFFF9F9
-                            F9FFF9F9F9FFF9F9F9FF43423FFFE1D8CFFFF0E5DBFFEFE3D9FFE8DDD3FFDCD1
-                            C7FFC7BEB5FF3F3D3AFFEFEFEFFFEDEDEDFFEAEAEAFFBE936BFFCFA47CFFFBFB
-                            FBFFFBFBFBFFFBFBFBFF807F7CFF9E9892FFF1E7DEFFF0E6DCFFEAE0D6FFDDD3
-                            CAFF958F89FF6F6F6CFFF0F0F0FFEDEDEDFFEBEBEBFFBF946CFFD0A57DFFFCFC
-                            FCFFFDFDFDFFFDFDFDFFE7E7E6FF555451FF9E9892FFE2D8D0FFDCD3CAFF9691
-                            8AFF4D4C49FFDADADAFFF0F0F0FFEDEDEDFFEBEBEBFFBF956EFFD1A67DFFFDFD
-                            FDFFFEFEFEFFFEFEFEFFFEFEFEFFE8E7E7FF807F7CFF43423FFF42413DFF7877
-                            75FFDEDEDDFFF3F3F3FFF1F1F1FFEEEEEEFFECECECFFC0966FFFD1A67EFFFEFE
-                            FEFFFEFEFEFFFEFEFEFFFEFEFEFFFEFEFEFFFDFDFDFFFDFDFDFFFBFBFBFFF9F9
-                            F9FFF7F7F7FFF4F4F4FFF1F1F1FFEEEEEEFFEBEBEBFFC09770FFD1A67EFFD2A7
-                            7EFFD2A77EFFD3A77EFFD2A67DFFD2A67CFFD1A57CFFD0A47BFFCFA37AFFCDA2
-                            79FFCBA077FFC99E76FFC79C75FFC49B74FFC29973FFC19872FFD1A67EFFD2A7
-                            7EFFD2A77EFFD2A77EFFD2A77EFFD2A67DFFD1A67DFFD0A57CFFCFA47BFFCEA2
-                            7AFFCCA179FFC99F77FFC79D76FFC59C75FFC39A74FFC19973FFD0A67EFFD1A6
-                            7EFFD2A67EFFD2A67EFFD2A67EFFD1A67DFFD1A67DFFD0A57CFFCFA47CFFCDA3
-                            7BFFCBA17AFFC9A079FFC79E77FFC59C76FFC39B75FFC19A74FF000000000000
-                            0000000000000000000000000000000000000000000000000000000000000000
-                            0000000000000000000000000000000000000000000000000000
-                          }
-                          Images = ListaImg
-                          ImageIndex = 6
-                          ImageWidth = 16
-                          OnClick = TabLojaModuloBPesquisaModuloConfClick
-                          ParentFont = False
-                          TabOrder = 7
-                        end
-                        object TabLojaModuloEModuloConfID: TEdit
-                          Left = 16
-                          Height = 23
-                          Top = 42
-                          Width = 67
-                          TabOrder = 8
-                          Text = 'TabLojaModuloEModuloConfID'
-                        end
-                        object TabLojaModuloBLimpar: TBitBtn
-                          Left = 480
-                          Height = 28
-                          Top = 6
-                          Width = 130
-                          Caption = 'Limpar Cadastro'
-                          Font.Style = [fsBold]
-                          NumGlyphs = 2
-                          Images = ListaImg
-                          ImageIndex = 8
-                          ImageWidth = 22
-                          OnClick = TabLojaModuloBLimparClick
-                          ParentFont = False
-                          TabOrder = 9
-                        end
-                      end
-                    end
-                    object TabLojaTabFuncaoDados: TTabSheet
-                      Caption = 'Funções do Módulo da Loja'
-                      ClientHeight = 286
-                      ClientWidth = 625
-                      OnShow = TabLojaTabFuncaoDadosShow
-                      object TabLojaTabFuncaoDadosLTitulo: TLabel
-                        Left = 4
-                        Height = 21
-                        Top = 10
-                        Width = 375
-                        Caption = 'Funções cadastradas para a configuração da  Loja'
-                        Font.Height = -16
-                        Font.Style = [fsBold]
-                        ParentColor = False
-                        ParentFont = False
-                      end
-                      object TabLojaTabFuncaoDadosLFiltro: TLabel
-                        Left = 237
-                        Height = 15
-                        Top = 45
-                        Width = 58
-                        Caption = 'Filtrar por:'
-                        Font.Style = [fsBold]
-                        ParentColor = False
-                        ParentFont = False
-                      end
-                      object TabLojaTabFuncaoDadosEFiltro: TEdit
-                        Left = 237
-                        Height = 23
-                        Top = 65
-                        Width = 238
-                        CharCase = ecUppercase
-                        OnChange = TabLojaTabFuncaoDadosEFiltroChange
-                        TabOrder = 0
-                        Text = 'TABLOJATABFUNCAODADOSEFILTRO'
-                      end
-                      object TabLojaTabFuncaoDadosGrid: TRxDBGrid
-                        Left = 4
-                        Height = 196
-                        Top = 96
-                        Width = 617
-                        ColumnDefValues.BlobText = '(blob)'
-                        TitleButtons = False
-                        AutoSort = True
-                        Columns = <                        
-                          item
-                            Title.Alignment = taCenter
-                            Title.Orientation = toHorizontal
-                            Title.Caption = 'X'
-                            Width = 60
-                            FieldName = 'VALIDADO_F'
-                            EditButtons = <>
-                            Filter.DropDownRows = 0
-                            Filter.EmptyValue = '(Empty)'
-                            Filter.NotEmptyValue = '(Não está vazio)'
-                            Filter.AllValue = '(Todos os valores)'
-                            Filter.EmptyFont.Style = [fsItalic]
-                            Filter.ItemIndex = -1
-                            Footers = <>
-                          end                        
-                          item
-                            Title.Alignment = taCenter
-                            Title.Orientation = toHorizontal
-                            Title.Caption = 'Tag'
-                            Width = 150
-                            FieldName = 'TAG_NUMERO'
-                            EditButtons = <>
-                            Filter.DropDownRows = 0
-                            Filter.EmptyValue = '(Empty)'
-                            Filter.NotEmptyValue = '(Não está vazio)'
-                            Filter.AllValue = '(Todos os valores)'
-                            Filter.EmptyFont.Style = [fsItalic]
-                            Filter.ItemIndex = -1
-                            Footers = <>
-                          end                        
-                          item
-                            Title.Alignment = taCenter
-                            Title.Orientation = toHorizontal
-                            Title.Caption = 'Descrição'
-                            Width = 300
-                            FieldName = 'DEFINICAO'
-                            EditButtons = <>
-                            Filter.DropDownRows = 0
-                            Filter.EmptyValue = '(Empty)'
-                            Filter.NotEmptyValue = '(Não está vazio)'
-                            Filter.AllValue = '(Todos os valores)'
-                            Filter.EmptyFont.Style = [fsItalic]
-                            Filter.ItemIndex = -1
-                            Footers = <>
-                          end                        
-                          item
-                            Title.Alignment = taCenter
-                            Title.Orientation = toHorizontal
-                            Title.Caption = 'Habilitado'
-                            Width = 70
-                            FieldName = 'HABILITADO_F'
-                            EditButtons = <>
-                            Filter.DropDownRows = 0
-                            Filter.EmptyValue = '(Empty)'
-                            Filter.NotEmptyValue = '(Não está vazio)'
-                            Filter.AllValue = '(Todos os valores)'
-                            Filter.EmptyFont.Style = [fsItalic]
-                            Filter.ItemIndex = -1
-                            Footers = <>
-                          end>
-                        KeyStrokes = <                        
-                          item
-                            Command = rxgcShowFindDlg
-                            ShortCut = 16454
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowColumnsDlg
-                            ShortCut = 16471
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowFilterDlg
-                            ShortCut = 16468
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowSortDlg
-                            ShortCut = 16467
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcShowQuickFilter
-                            ShortCut = 16465
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcHideQuickFilter
-                            ShortCut = 16456
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcSelectAll
-                            ShortCut = 16449
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcDeSelectAll
-                            ShortCut = 16429
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcInvertSelection
-                            ShortCut = 16426
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcOptimizeColumnsWidth
-                            ShortCut = 16427
-                            Enabled = True
-                          end                        
-                          item
-                            Command = rxgcCopyCellValue
-                            ShortCut = 16451
-                            Enabled = True
-                          end>
-                        FooterOptions.DrawFullLine = False
-                        SearchOptions.QuickSearchOptions = [loCaseInsensitive, loPartialKey]
-                        SearchOptions.FromStart = False
-                        OptionsRx = [rdgAllowColumnsForm, rdgAllowDialogFind, rdgAllowQuickFilter]
-                        Color = clWindow
-                        DrawFullLine = False
-                        FocusColor = clRed
-                        SelectedColor = clHighlight
-                        DataSource = DSLojaModuloConfFuncao
-                        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
-                        TabOrder = 1
-                        OnCellClick = TabLojaTabFuncaoDadosGridCellClick
-                      end
-                      object TabLojaConfFuncaoCKSelecionada: TCheckBox
-                        Left = 483
-                        Height = 19
-                        Top = 65
-                        Width = 138
-                        Caption = 'Mostrar Selecionadas'
-                        Font.Style = [fsBold]
-                        OnChange = TabLojaConfFuncaoCKSelecionadaChange
-                        ParentFont = False
-                        TabOrder = 2
-                      end
-                      object TabLojaTabFuncaoDadosLTipoFiltro: TLabel
-                        Left = 4
-                        Height = 15
-                        Top = 45
-                        Width = 128
-                        Caption = 'Filtro da Função da Tag:'
-                        Font.Style = [fsBold]
-                        ParentColor = False
-                        ParentFont = False
-                      end
-                      object TabLojaTabFuncaoDadosETipoFiltro: TComboBox
-                        Left = 4
-                        Height = 23
-                        Top = 65
-                        Width = 224
-                        ItemHeight = 15
-                        Items.Strings = (
-                          'TODOS'
-                          'COMANDO'
-                          'MENU_PDV'
-                          'MENU_OPERACIONAL'
-                          'PINPAD_FUNC'
-                        )
-                        OnChange = TabLojaTabFuncaoDadosETipoFiltroChange
-                        TabOrder = 3
-                        Text = 'TabLojaTabFuncaoDadosETipoFiltro'
-                      end
-                    end
-                  end
-                end
                 object TabLojaFuncao: TTabSheet
                   Caption = 'Funções da Loja'
-                  ClientHeight = 324
+                  ClientHeight = 284
                   ClientWidth = 643
                   OnShow = TabLojaFuncaoShow
                   object TabLojaFuncaoLFiltro: TLabel
@@ -2180,6 +1631,555 @@ object fprincipal: Tfprincipal
                     Text = 'TabLojaFuncaoETipoFiltro'
                   end
                 end
+                object TabLojaTabModulo: TTabSheet
+                  Caption = 'Configuração da Loja'
+                  ClientHeight = 284
+                  ClientWidth = 643
+                  OnShow = TabLojaTabModuloShow
+                  object PageLojaVizualizarConfModuloFuncao: TPageControl
+                    Left = 5
+                    Height = 274
+                    Top = 5
+                    Width = 633
+                    ActivePage = TabLojaTabModuloDados
+                    Align = alClient
+                    BorderSpacing.Around = 5
+                    TabIndex = 0
+                    TabOrder = 0
+                    object TabLojaTabModuloDados: TTabSheet
+                      Caption = 'Configuração do Módulo da Loja'
+                      ClientHeight = 246
+                      ClientWidth = 625
+                      OnShow = TabLojaTabModuloDadosShow
+                      object TabLojaModuloLFiltro: TLabel
+                        Left = 5
+                        Height = 15
+                        Top = 133
+                        Width = 30
+                        Caption = 'Filtro:'
+                        ParentColor = False
+                      end
+                      object TabLojaModuloEFiltro: TEdit
+                        Left = 3
+                        Height = 23
+                        Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
+                        Top = 149
+                        Width = 272
+                        OnChange = TabLojaModuloEFiltroChange
+                        ParentShowHint = False
+                        ShowHint = True
+                        TabOrder = 0
+                        Text = 'TabLojaModuloEFiltro'
+                      end
+                      object TabLojaModuloGrid: TRxDBGrid
+                        Left = 3
+                        Height = 107
+                        Top = 175
+                        Width = 619
+                        ColumnDefValues.BlobText = '(blob)'
+                        TitleButtons = False
+                        AutoSort = True
+                        Columns = <                        
+                          item
+                            Title.Alignment = taCenter
+                            Title.Orientation = toHorizontal
+                            Title.Caption = 'Módulo'
+                            Width = 293
+                            FieldName = 'MODULO'
+                            EditButtons = <>
+                            Filter.DropDownRows = 0
+                            Filter.EmptyValue = '(Empty)'
+                            Filter.NotEmptyValue = '(Não está vazio)'
+                            Filter.AllValue = '(Todos os valores)'
+                            Filter.EmptyFont.Style = [fsItalic]
+                            Filter.ItemIndex = -1
+                            Footers = <>
+                          end                        
+                          item
+                            Title.Alignment = taCenter
+                            Title.Orientation = toHorizontal
+                            Title.Caption = 'Config Módulo'
+                            Width = 293
+                            FieldName = 'MODULO_CONF'
+                            EditButtons = <>
+                            Filter.DropDownRows = 0
+                            Filter.EmptyValue = '(Empty)'
+                            Filter.NotEmptyValue = '(Não está vazio)'
+                            Filter.AllValue = '(Todos os valores)'
+                            Filter.EmptyFont.Style = [fsItalic]
+                            Filter.ItemIndex = -1
+                            Footers = <>
+                          end>
+                        KeyStrokes = <                        
+                          item
+                            Command = rxgcShowFindDlg
+                            ShortCut = 16454
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowColumnsDlg
+                            ShortCut = 16471
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowFilterDlg
+                            ShortCut = 16468
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowSortDlg
+                            ShortCut = 16467
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowQuickFilter
+                            ShortCut = 16465
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcHideQuickFilter
+                            ShortCut = 16456
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcSelectAll
+                            ShortCut = 16449
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcDeSelectAll
+                            ShortCut = 16429
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcInvertSelection
+                            ShortCut = 16426
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcOptimizeColumnsWidth
+                            ShortCut = 16427
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcCopyCellValue
+                            ShortCut = 16451
+                            Enabled = True
+                          end>
+                        FooterOptions.DrawFullLine = False
+                        SearchOptions.QuickSearchOptions = [loCaseInsensitive, loPartialKey]
+                        SearchOptions.FromStart = False
+                        OptionsRx = [rdgAllowColumnsForm, rdgAllowDialogFind, rdgAllowQuickFilter]
+                        AutoFillColumns = True
+                        Color = clWindow
+                        DrawFullLine = False
+                        FocusColor = clRed
+                        SelectedColor = clHighlight
+                        DataSource = DSModuloConfig
+                        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                        ReadOnly = True
+                        TabOrder = 1
+                      end
+                      object Panel4: TPanel
+                        Left = 3
+                        Height = 129
+                        Top = 3
+                        Width = 619
+                        Align = alTop
+                        BorderSpacing.Around = 3
+                        BevelInner = bvLowered
+                        ClientHeight = 129
+                        ClientWidth = 619
+                        TabOrder = 2
+                        object TabLojaModuloCkHabilitar: TCheckBox
+                          Left = 232
+                          Height = 19
+                          Top = 43
+                          Width = 181
+                          Caption = 'Habilitar Configuração da Loja'
+                          ParentFont = False
+                          TabOrder = 0
+                        end
+                        object TabLojaModuloLCodigo: TLabel
+                          Left = 95
+                          Height = 15
+                          Top = 25
+                          Width = 83
+                          Caption = 'Código da Loja:'
+                          ParentColor = False
+                        end
+                        object TabLojaModuloECodigo: TEdit
+                          Left = 95
+                          Height = 23
+                          Top = 42
+                          Width = 104
+                          TabOrder = 1
+                          Text = 'TabLojaModuloECodigo'
+                        end
+                        object TabLojaModuloLID: TLabel
+                          Left = 16
+                          Height = 15
+                          Top = 25
+                          Width = 14
+                          Caption = 'ID:'
+                          ParentColor = False
+                        end
+                        object TabLojaModuloEID: TEdit
+                          Left = 16
+                          Height = 23
+                          Top = 87
+                          Width = 80
+                          TabOrder = 2
+                          Text = 'TabLojaModuloEID'
+                        end
+                        object TabLojaModuloBAdicionar: TBitBtn
+                          Left = 480
+                          Height = 28
+                          Top = 36
+                          Width = 130
+                          Caption = 'Adicionar Módulo'
+                          Font.Style = [fsBold]
+                          NumGlyphs = 2
+                          Images = ListaImg
+                          ImageIndex = 0
+                          ImageWidth = 22
+                          OnClick = TabLojaModuloBAdicionarClick
+                          ParentFont = False
+                          TabOrder = 3
+                        end
+                        object TabLojaModuloBModificar: TBitBtn
+                          Left = 480
+                          Height = 28
+                          Top = 66
+                          Width = 130
+                          Caption = 'Alterar Módulo'
+                          Font.Style = [fsBold]
+                          Images = ListaImg
+                          ImageIndex = 2
+                          ImageWidth = 22
+                          OnClick = TabLojaModuloBModificarClick
+                          ParentFont = False
+                          TabOrder = 4
+                        end
+                        object TabLojaModuloBExcluir: TBitBtn
+                          Left = 480
+                          Height = 28
+                          Top = 96
+                          Width = 130
+                          Caption = 'Excluir Módulo'
+                          Font.Style = [fsBold]
+                          Images = ListaImg
+                          ImageIndex = 1
+                          ImageWidth = 22
+                          OnClick = TabLojaModuloBExcluirClick
+                          ParentFont = False
+                          TabOrder = 5
+                        end
+                        object TabLojaModuloLModuloConf: TLabel
+                          Left = 16
+                          Height = 15
+                          Top = 69
+                          Width = 117
+                          Caption = 'Módulo Configuração'
+                          ParentColor = False
+                        end
+                        object TabLojaModuloEModuloConf: TEdit
+                          Left = 102
+                          Height = 23
+                          Top = 87
+                          Width = 300
+                          TabOrder = 6
+                          Text = 'TabLojaModuloEModuloConf'
+                        end
+                        object TabLojaModuloBPesquisaModuloConf: TBitBtn
+                          Left = 405
+                          Height = 26
+                          Top = 86
+                          Width = 34
+                          Font.Style = [fsBold]
+                          Glyph.Data = {
+                            36040000424D3604000000000000360000002800000010000000100000000100
+                            2000000000000004000064000000640000000000000000000000000000003C3A
+                            37D52A2825D52A29261500000000000000000000000000000000000000000000
+                            0000000000000000000000000000000000000000000000000000C19A74FF5E55
+                            4DFF2E2C28FF413930FFB48D69FFBF956EFFBF946CFFBE936BFFBE936AFFBE92
+                            6AFFBD9269FFBD9169FFBD9169FFBC9169FFBC9169FFBC9169FFC39B75FFE0E0
+                            E0FF62615FFF2E2C28FF484744FFDCDCDCFFEBEBEBFFEBEBEBFFEBEBEBFFEAEA
+                            EAFFEAEAEAFFE9E9E9FFE8E8E8FFE8E8E8FFE7E7E7FFBC9169FFC59C76FFEEEE
+                            EEFFE2E2E2FF62625EFF2E2C28FF494844FF6B6B68FF3F3D3AFF403E3BFF6B6A
+                            67FFD2D2D1FFEBEBEBFFEAEAEAFFE9E9E9FFE8E8E8FFBC9169FFC79E77FFF1F1
+                            F1FFF1F1F1FFE5E5E5FF5F5E5BFF35342FFF948F88FFC6BDB4FFC3BAB1FF958F
+                            88FF4E4C49FFD3D2D2FFEBEBEBFFEAEAEAFFE9E9E9FFBC9169FFC9A079FFF3F3
+                            F3FFF4F4F4FFF4F4F4FF767573FF958F89FFDBD2C9FFDBD0C6FFD5CAC0FFCCC2
+                            B8FF958F88FF6B6B68FFECECECFFEAEAEAFFE9E9E9FFBD9269FFCBA17AFFF6F6
+                            F6FFF7F7F7FFF7F7F7FF42413DFFDBD2C9FFE9DED4FFE8DDD2FFE1D6CCFFD6CB
+                            C1FFC4BBB1FF403E3BFFEEEEEEFFEBEBEBFFEAEAEAFFBE936AFFCDA37BFFF9F9
+                            F9FFF9F9F9FFF9F9F9FF43423FFFE1D8CFFFF0E5DBFFEFE3D9FFE8DDD3FFDCD1
+                            C7FFC7BEB5FF3F3D3AFFEFEFEFFFEDEDEDFFEAEAEAFFBE936BFFCFA47CFFFBFB
+                            FBFFFBFBFBFFFBFBFBFF807F7CFF9E9892FFF1E7DEFFF0E6DCFFEAE0D6FFDDD3
+                            CAFF958F89FF6F6F6CFFF0F0F0FFEDEDEDFFEBEBEBFFBF946CFFD0A57DFFFCFC
+                            FCFFFDFDFDFFFDFDFDFFE7E7E6FF555451FF9E9892FFE2D8D0FFDCD3CAFF9691
+                            8AFF4D4C49FFDADADAFFF0F0F0FFEDEDEDFFEBEBEBFFBF956EFFD1A67DFFFDFD
+                            FDFFFEFEFEFFFEFEFEFFFEFEFEFFE8E7E7FF807F7CFF43423FFF42413DFF7877
+                            75FFDEDEDDFFF3F3F3FFF1F1F1FFEEEEEEFFECECECFFC0966FFFD1A67EFFFEFE
+                            FEFFFEFEFEFFFEFEFEFFFEFEFEFFFEFEFEFFFDFDFDFFFDFDFDFFFBFBFBFFF9F9
+                            F9FFF7F7F7FFF4F4F4FFF1F1F1FFEEEEEEFFEBEBEBFFC09770FFD1A67EFFD2A7
+                            7EFFD2A77EFFD3A77EFFD2A67DFFD2A67CFFD1A57CFFD0A47BFFCFA37AFFCDA2
+                            79FFCBA077FFC99E76FFC79C75FFC49B74FFC29973FFC19872FFD1A67EFFD2A7
+                            7EFFD2A77EFFD2A77EFFD2A77EFFD2A67DFFD1A67DFFD0A57CFFCFA47BFFCEA2
+                            7AFFCCA179FFC99F77FFC79D76FFC59C75FFC39A74FFC19973FFD0A67EFFD1A6
+                            7EFFD2A67EFFD2A67EFFD2A67EFFD1A67DFFD1A67DFFD0A57CFFCFA47CFFCDA3
+                            7BFFCBA17AFFC9A079FFC79E77FFC59C76FFC39B75FFC19A74FF000000000000
+                            0000000000000000000000000000000000000000000000000000000000000000
+                            0000000000000000000000000000000000000000000000000000
+                          }
+                          Images = ListaImg
+                          ImageIndex = 6
+                          ImageWidth = 16
+                          OnClick = TabLojaModuloBPesquisaModuloConfClick
+                          ParentFont = False
+                          TabOrder = 7
+                        end
+                        object TabLojaModuloEModuloConfID: TEdit
+                          Left = 16
+                          Height = 23
+                          Top = 42
+                          Width = 67
+                          TabOrder = 8
+                          Text = 'TabLojaModuloEModuloConfID'
+                        end
+                        object TabLojaModuloBLimpar: TBitBtn
+                          Left = 480
+                          Height = 28
+                          Top = 6
+                          Width = 130
+                          Caption = 'Limpar Cadastro'
+                          Font.Style = [fsBold]
+                          NumGlyphs = 2
+                          Images = ListaImg
+                          ImageIndex = 8
+                          ImageWidth = 22
+                          OnClick = TabLojaModuloBLimparClick
+                          ParentFont = False
+                          TabOrder = 9
+                        end
+                      end
+                    end
+                    object TabLojaTabFuncaoDados: TTabSheet
+                      Caption = 'Funções do Módulo da Loja'
+                      ClientHeight = 246
+                      ClientWidth = 625
+                      OnShow = TabLojaTabFuncaoDadosShow
+                      object TabLojaTabFuncaoDadosLTitulo: TLabel
+                        Left = 4
+                        Height = 21
+                        Top = 10
+                        Width = 375
+                        Caption = 'Funções cadastradas para a configuração da  Loja'
+                        Font.Height = -16
+                        Font.Style = [fsBold]
+                        ParentColor = False
+                        ParentFont = False
+                      end
+                      object TabLojaTabFuncaoDadosLFiltro: TLabel
+                        Left = 237
+                        Height = 15
+                        Top = 45
+                        Width = 58
+                        Caption = 'Filtrar por:'
+                        Font.Style = [fsBold]
+                        ParentColor = False
+                        ParentFont = False
+                      end
+                      object TabLojaTabFuncaoDadosEFiltro: TEdit
+                        Left = 237
+                        Height = 23
+                        Top = 65
+                        Width = 238
+                        CharCase = ecUppercase
+                        OnChange = TabLojaTabFuncaoDadosEFiltroChange
+                        TabOrder = 0
+                        Text = 'TABLOJATABFUNCAODADOSEFILTRO'
+                      end
+                      object TabLojaTabFuncaoDadosGrid: TRxDBGrid
+                        Left = 4
+                        Height = 144
+                        Top = 96
+                        Width = 617
+                        ColumnDefValues.BlobText = '(blob)'
+                        TitleButtons = False
+                        AutoSort = True
+                        Columns = <                        
+                          item
+                            Title.Alignment = taCenter
+                            Title.Orientation = toHorizontal
+                            Title.Caption = 'X'
+                            Width = 60
+                            FieldName = 'VALIDADO_F'
+                            EditButtons = <>
+                            Filter.DropDownRows = 0
+                            Filter.EmptyValue = '(Empty)'
+                            Filter.NotEmptyValue = '(Não está vazio)'
+                            Filter.AllValue = '(Todos os valores)'
+                            Filter.EmptyFont.Style = [fsItalic]
+                            Filter.ItemIndex = -1
+                            Footers = <>
+                          end                        
+                          item
+                            Title.Alignment = taCenter
+                            Title.Orientation = toHorizontal
+                            Title.Caption = 'Tag'
+                            Width = 150
+                            FieldName = 'TAG_NUMERO'
+                            EditButtons = <>
+                            Filter.DropDownRows = 0
+                            Filter.EmptyValue = '(Empty)'
+                            Filter.NotEmptyValue = '(Não está vazio)'
+                            Filter.AllValue = '(Todos os valores)'
+                            Filter.EmptyFont.Style = [fsItalic]
+                            Filter.ItemIndex = -1
+                            Footers = <>
+                          end                        
+                          item
+                            Title.Alignment = taCenter
+                            Title.Orientation = toHorizontal
+                            Title.Caption = 'Descrição'
+                            Width = 300
+                            FieldName = 'DEFINICAO'
+                            EditButtons = <>
+                            Filter.DropDownRows = 0
+                            Filter.EmptyValue = '(Empty)'
+                            Filter.NotEmptyValue = '(Não está vazio)'
+                            Filter.AllValue = '(Todos os valores)'
+                            Filter.EmptyFont.Style = [fsItalic]
+                            Filter.ItemIndex = -1
+                            Footers = <>
+                          end                        
+                          item
+                            Title.Alignment = taCenter
+                            Title.Orientation = toHorizontal
+                            Title.Caption = 'Habilitado'
+                            Width = 70
+                            FieldName = 'HABILITADO_F'
+                            EditButtons = <>
+                            Filter.DropDownRows = 0
+                            Filter.EmptyValue = '(Empty)'
+                            Filter.NotEmptyValue = '(Não está vazio)'
+                            Filter.AllValue = '(Todos os valores)'
+                            Filter.EmptyFont.Style = [fsItalic]
+                            Filter.ItemIndex = -1
+                            Footers = <>
+                          end>
+                        KeyStrokes = <                        
+                          item
+                            Command = rxgcShowFindDlg
+                            ShortCut = 16454
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowColumnsDlg
+                            ShortCut = 16471
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowFilterDlg
+                            ShortCut = 16468
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowSortDlg
+                            ShortCut = 16467
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcShowQuickFilter
+                            ShortCut = 16465
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcHideQuickFilter
+                            ShortCut = 16456
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcSelectAll
+                            ShortCut = 16449
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcDeSelectAll
+                            ShortCut = 16429
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcInvertSelection
+                            ShortCut = 16426
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcOptimizeColumnsWidth
+                            ShortCut = 16427
+                            Enabled = True
+                          end                        
+                          item
+                            Command = rxgcCopyCellValue
+                            ShortCut = 16451
+                            Enabled = True
+                          end>
+                        FooterOptions.DrawFullLine = False
+                        SearchOptions.QuickSearchOptions = [loCaseInsensitive, loPartialKey]
+                        SearchOptions.FromStart = False
+                        OptionsRx = [rdgAllowColumnsForm, rdgAllowDialogFind, rdgAllowQuickFilter]
+                        Color = clWindow
+                        DrawFullLine = False
+                        FocusColor = clRed
+                        SelectedColor = clHighlight
+                        DataSource = DSLojaModuloConfFuncao
+                        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                        TabOrder = 1
+                        OnCellClick = TabLojaTabFuncaoDadosGridCellClick
+                      end
+                      object TabLojaConfFuncaoCKSelecionada: TCheckBox
+                        Left = 483
+                        Height = 19
+                        Top = 65
+                        Width = 138
+                        Caption = 'Mostrar Selecionadas'
+                        Font.Style = [fsBold]
+                        OnChange = TabLojaConfFuncaoCKSelecionadaChange
+                        ParentFont = False
+                        TabOrder = 2
+                      end
+                      object TabLojaTabFuncaoDadosLTipoFiltro: TLabel
+                        Left = 4
+                        Height = 15
+                        Top = 45
+                        Width = 128
+                        Caption = 'Filtro da Função da Tag:'
+                        Font.Style = [fsBold]
+                        ParentColor = False
+                        ParentFont = False
+                      end
+                      object TabLojaTabFuncaoDadosETipoFiltro: TComboBox
+                        Left = 4
+                        Height = 23
+                        Top = 65
+                        Width = 224
+                        ItemHeight = 15
+                        Items.Strings = (
+                          'TODOS'
+                          'COMANDO'
+                          'MENU_PDV'
+                          'MENU_OPERACIONAL'
+                          'PINPAD_FUNC'
+                        )
+                        OnChange = TabLojaTabFuncaoDadosETipoFiltroChange
+                        TabOrder = 3
+                        Text = 'TabLojaTabFuncaoDadosETipoFiltro'
+                      end
+                    end
+                  end
+                end
               end
               object Panel2: TPanel
                 Left = 2
@@ -2207,13 +2207,13 @@ object fprincipal: Tfprincipal
               end
               object Panel3: TPanel
                 Left = 7
-                Height = 184
+                Height = 183
                 Top = 33
                 Width = 651
                 Align = alTop
                 BorderSpacing.Around = 5
                 BevelInner = bvLowered
-                ClientHeight = 184
+                ClientHeight = 183
                 ClientWidth = 651
                 TabOrder = 2
                 object TabLojaLID: TLabel
@@ -2707,13 +2707,13 @@ object fprincipal: Tfprincipal
             end
             object TabLojaPnlFiltro: TPanel
               Left = 5
-              Height = 583
+              Height = 576
               Top = 5
               Width = 359
               Align = alLeft
               BorderSpacing.Around = 5
               BevelInner = bvLowered
-              ClientHeight = 583
+              ClientHeight = 576
               ClientWidth = 359
               TabOrder = 0
               object TabLojaLFiltro: TLabel
@@ -2771,7 +2771,7 @@ object fprincipal: Tfprincipal
       end
       object TabPinPad: TTabSheet
         Caption = 'Gerenciador dos PinPads'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         OnShow = TabPinPadShow
         object TabPinPadPnlCadastro: TPanel
@@ -3464,16 +3464,16 @@ object fprincipal: Tfprincipal
       end
       object TabPdv: TTabSheet
         Caption = 'Gerenciador dos PDVs'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         OnShow = TabPdvShow
         object TabPdvPnlCadastro: TPanel
           Left = 400
-          Height = 233
+          Height = 205
           Top = 59
           Width = 600
           BevelInner = bvLowered
-          ClientHeight = 233
+          ClientHeight = 205
           ClientWidth = 600
           TabOrder = 1
           object TabPdvLID: TLabel
@@ -4059,15 +4059,15 @@ object fprincipal: Tfprincipal
         end
         object TabPdvPageModuloFuncao: TPageControl
           Left = 401
-          Height = 320
-          Top = 304
+          Height = 352
+          Top = 272
           Width = 599
           ActivePage = TabPdvTabDadosModulo
           TabIndex = 0
           TabOrder = 5
           object TabPdvTabDadosModulo: TTabSheet
             Caption = 'Configurações Módulo do PDV'
-            ClientHeight = 292
+            ClientHeight = 324
             ClientWidth = 591
             OnShow = TabPdvTabDadosModuloShow
             object TabPDVModuloLFiltro: TLabel
@@ -4420,7 +4420,7 @@ object fprincipal: Tfprincipal
           end
           object TabPdvTabDadosFuncao: TTabSheet
             Caption = 'Funções Módulo do PDV'
-            ClientHeight = 292
+            ClientHeight = 324
             ClientWidth = 591
             OnShow = TabPdvTabDadosFuncaoShow
             object TabPDVFuncaoLTitulo: TLabel
@@ -4633,7 +4633,7 @@ object fprincipal: Tfprincipal
       end
       object TabConf: TTabSheet
         Caption = 'Configurador'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         object TabConfPnlCadastro: TPanel
           Left = 532
@@ -5156,7 +5156,7 @@ object fprincipal: Tfprincipal
       end
       object TabModulo: TTabSheet
         Caption = 'Gerenciador dos Módulos'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         OnContextPopup = TabModuloContextPopup
         OnShow = TabModuloShow
@@ -5453,18 +5453,18 @@ object fprincipal: Tfprincipal
         end
         object TabModuloPnlPesquisaModulo: TPanel
           Left = 5
-          Height = 559
+          Height = 552
           Top = 72
           Width = 219
           Align = alLeft
           BorderSpacing.Left = 5
           BevelInner = bvLowered
-          ClientHeight = 559
+          ClientHeight = 552
           ClientWidth = 219
           TabOrder = 1
           object TabModuloGrid: TRxDBGrid
             Left = 2
-            Height = 485
+            Height = 478
             Top = 72
             Width = 215
             ColumnDefValues.BlobText = '(blob)'
@@ -5589,7 +5589,7 @@ object fprincipal: Tfprincipal
         end
         object TabModuloPnlPrincipal: TPanel
           Left = 229
-          Height = 554
+          Height = 547
           Top = 72
           Width = 804
           Align = alClient
@@ -5597,13 +5597,13 @@ object fprincipal: Tfprincipal
           BorderSpacing.Right = 5
           BorderSpacing.Bottom = 5
           BevelInner = bvLowered
-          ClientHeight = 554
+          ClientHeight = 547
           ClientWidth = 804
           TabOrder = 2
           object TabModuloPagePrincipal: TPageControl
             Left = 2
-            Height = 488
-            Top = 64
+            Height = 473
+            Top = 72
             Width = 800
             ActivePage = TabConfiguracao
             Align = alBottom
@@ -5611,7 +5611,7 @@ object fprincipal: Tfprincipal
             TabOrder = 0
             object TabConfiguracao: TTabSheet
               Caption = 'Configurações do Módulo'
-              ClientHeight = 460
+              ClientHeight = 445
               ClientWidth = 792
               OnContextPopup = TabConfiguracaoContextPopup
               OnShow = TabConfiguracaoShow
@@ -5792,8 +5792,8 @@ object fprincipal: Tfprincipal
                 Height = 288
                 Top = 168
                 Width = 781
-                ActivePage = TabModuloTabDadosModulo
-                TabIndex = 0
+                ActivePage = TabModuloTabDadosFuncao
+                TabIndex = 1
                 TabOrder = 4
                 object TabModuloTabDadosModulo: TTabSheet
                   Caption = 'Dados da Configuração do Módulo'
@@ -6441,7 +6441,7 @@ object fprincipal: Tfprincipal
             end
             object TabModuloFuncao: TTabSheet
               Caption = 'Funções do Módulo'
-              ClientHeight = 460
+              ClientHeight = 445
               ClientWidth = 792
               OnShow = TabModuloFuncaoShow
               object TabFuncaoModuloLTitulo: TLabel
@@ -6655,12 +6655,12 @@ object fprincipal: Tfprincipal
           end
           object TabModuloPnlPrincipal_Topo: TPanel
             Left = 2
-            Height = 62
+            Height = 70
             Top = 2
             Width = 800
             Align = alClient
             BevelOuter = bvNone
-            ClientHeight = 62
+            ClientHeight = 70
             ClientWidth = 800
             TabOrder = 1
             object TabModuloLID: TLabel
@@ -6767,7 +6767,7 @@ object fprincipal: Tfprincipal
       end
       object TabTag: TTabSheet
         Caption = 'Gerenciador de Tags'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         OnShow = TabTagShow
         object TabTagLTitulo: TLabel
@@ -7307,7 +7307,7 @@ object fprincipal: Tfprincipal
       end
       object TabAdquirente: TTabSheet
         Caption = 'Gerenciador de Adquirente'
-        ClientHeight = 631
+        ClientHeight = 624
         ClientWidth = 1038
         object TabAdquirenteLTitulo: TLabel
           Left = 32
@@ -8525,20 +8525,20 @@ object fprincipal: Tfprincipal
   end
   object DSBin: TDataSource
     DataSet = MDBin
-    Left = 736
-    Top = 520
+    Left = 624
+    Top = 512
   end
   object MDBin: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDBinAfterScroll
     PacketRecords = 0
-    Left = 680
-    Top = 520
+    Left = 592
+    Top = 512
   end
   object DSModuloFunc: TDataSource
     DataSet = MDModuloFunc
-    Left = 592
+    Left = 560
     Top = 176
   end
   object MDModuloFunc: TRxMemoryData
@@ -8725,8 +8725,8 @@ object fprincipal: Tfprincipal
   end
   object DSPesquisaModulo: TDataSource
     DataSet = MDPesquisaModulo
-    Left = 589
-    Top = 304
+    Left = 592
+    Top = 320
   end
   object MDMultiLojaFuncao: TRxMemoryData
     Filtered = True

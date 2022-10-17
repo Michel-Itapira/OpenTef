@@ -76,10 +76,10 @@ var
 begin
     case ETipoFuncao.ItemIndex of
         1: F_TagTipo := 'COMANDO';
-        3: F_TagTipo := 'MENU_PDV';
-        4: F_TagTipo := 'MENU_OPERACIONAL';
-        5: F_TagTipo := 'PINPAD_FUNC';
-        6: F_TagTipo := 'MODULO';
+        2: F_TagTipo := 'MENU_PDV';
+        3: F_TagTipo := 'MENU_OPERACIONAL';
+        4: F_TagTipo := 'PINPAD_FUNC';
+        5: F_TagTipo := 'MODULO';
         else
             if F_TagTipo = '' then
                 VL_Filtro := '';

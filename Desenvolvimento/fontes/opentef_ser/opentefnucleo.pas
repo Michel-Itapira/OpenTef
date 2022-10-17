@@ -2297,6 +2297,8 @@ begin
             '00DE': Result := comando00DE(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Permissao);   // INCLUIR ADQUIRENTE
             '00DF': Result := comando00DF(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Permissao);   // ALTERAR ADQUIRENTE
             '00E0': Result := comando00E0(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Permissao);   // EXCLUIR ADQUIRENTE
+            '00FA': Result := comando00FA(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Permissao);   // INCLUIR LOJA EM MULTILOJA(GUARDA-CHUVA)
+            '00FB': Result := comando00FB(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Permissao);   // EXCLUIR LOJA EM MULTILOJA(GUARDA-CHUVA)
             '00F3': Result := comando00F4(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_Tipo,
                     VP_Terminal_ID, VP_DOC, VP_Terminal_Identificacao);
             // SOLICITA SALDO

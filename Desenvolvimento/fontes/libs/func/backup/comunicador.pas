@@ -347,6 +347,7 @@ begin
                 else
                 if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
                     TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('', 0, TDComunicador(f_DComunicador).V_ProcID, 96, PChar(''), TDComunicador(f_DComunicador).V_Modulo);
+            Exit;
             end;
 
 

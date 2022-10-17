@@ -1,13 +1,13 @@
-object FAdquirente: TFAdquirente
-  Left = 771
+object FPesquisaAdquirente: TFPesquisaAdquirente
+  Left = 826
   Height = 590
-  Top = 132
+  Top = 163
   Width = 566
   Caption = 'Pesquisa de Adquirente'
   ClientHeight = 590
   ClientWidth = 566
   OnShow = FormShow
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.2.0'
   object pnlBase: TPanel
     Left = 0
     Height = 590
@@ -38,6 +38,7 @@ object FAdquirente: TFAdquirente
         Caption = 'Pesquisa de Adquirentes'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object LID: TLabel
@@ -46,6 +47,7 @@ object FAdquirente: TFAdquirente
         Top = 49
         Width = 14
         Caption = 'ID:'
+        ParentColor = False
       end
       object LDescricao: TLabel
         Left = 146
@@ -53,14 +55,16 @@ object FAdquirente: TFAdquirente
         Top = 49
         Width = 54
         Caption = 'Descrição:'
+        ParentColor = False
       end
       object EDescricao: TEdit
         Left = 203
         Height = 23
         Top = 46
         Width = 349
+        CharCase = ecUppercase
         TabOrder = 0
-        Text = 'EDescricao'
+        Text = 'EDESCRICAO'
       end
       object BSair: TBitBtn
         Left = 8
@@ -202,6 +206,7 @@ object FAdquirente: TFAdquirente
         Height = 23
         Top = 46
         Width = 104
+        CharCase = ecUppercase
         TabOrder = 4
         Text = 'EID'
       end
@@ -341,6 +346,7 @@ object FAdquirente: TFAdquirente
         SelectedColor = clHighlight
         DataSource = DSAdquirente
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+        ReadOnly = True
         TabOrder = 0
       end
     end

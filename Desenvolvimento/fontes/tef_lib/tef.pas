@@ -773,6 +773,63 @@ begin
                 ftransacao.fMensagem.AddTag('0060', VL_Mensagem.GetTagAsAstring('0060'));
             end
             else
+            if (VL_Mensagem.Comando() = '00FC') then  // MOSTRA IMAGEM PINPAD
+            begin
+
+                if VL_PinPadCarregado then
+                else
+                begin
+
+                    VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib), PChar(F_PinPadModeloPorta), @RespostaPinPad);
+                    if ftransacao.fAbortada then
+                    begin
+                        F_MensagemOperador(PChar('A transação foi abortada'));
+                        Exit;
+                    end;
+                    if VL_Erro <> 0 then
+                    begin
+                        ftransacao.erro := VL_Erro;
+                        ftransacao.STATUS := tsComErro;
+                        Exit;
+                    end;
+                    VL_Erro := F_PinPadConectar(VL_Dados);
+                    if ftransacao.fAbortada then
+                    begin
+                        F_MensagemOperador(PChar('A transação foi abortada'));
+                        Exit;
+                    end;
+                    if VL_Erro <> 0 then
+                    begin
+                        ftransacao.erro := VL_Erro;
+                        ftransacao.STATUS := tsComErro;
+                        VL_Mensagem.CarregaTags(VL_Dados);
+                        ftransacao.erroDescricao := VL_Mensagem.GetTagAsAstring('004A');
+                        Exit;
+                    end;
+                    VL_PinPadCarregado := True;
+                end;
+                F_PinPadMensagem('Aguarde... gerando QRCODE!');
+
+                VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
+                if VL_Erro <> 0 then
+                begin
+                    ftransacao.erro := VL_Erro;
+                    ftransacao.STATUS := tsComErro;
+                    VL_Mensagem.CarregaTags(VL_Dados);
+                    ftransacao.erroDescricao := VL_Mensagem.GetTagAsAstring('004A');
+                    Exit;
+                end;
+                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
+                if VL_Erro <> 0 then
+                begin
+                    ftransacao.erro := VL_Erro;
+                    ftransacao.STATUS := tsComErro;
+                    Exit;
+                end;
+                ftransacao.fMensagem.AddTag('004D', 0);
+                ftransacao.fMensagem.AddTag('00FF', 'T');
+            end
+            else
             if (VL_Mensagem.Comando() = '002C') then  // mensagem ao operador
             begin
                 F_MensagemOperador(PChar(VL_Mensagem.GetTagAsAstring('00DA'))); // mensagem a ser mostrada

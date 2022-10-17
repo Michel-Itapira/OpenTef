@@ -167,7 +167,7 @@
       <Unit>
         <Filename Value="upesquisaadquirentes.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FAdquirente"/>
+        <ComponentName Value="FPesquisaAdquirente"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisaadquirentes"/>
@@ -179,7 +179,7 @@
       <Unit>
         <Filename Value="upesquisamoduloconf.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FModuloConf"/>
+        <ComponentName Value="FPesquisaModuloConf"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisamoduloconf"/>
@@ -195,6 +195,102 @@
         <Filename Value="uconfigopentef.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FConfigOpenTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uinterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FInterface"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ulogin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FLogin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadLoja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisaloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaLoja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadpdv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadPdv"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisapdv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaPdv"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadpinpad.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadPinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisapinpad.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaPinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadadquirente.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadAdquirente"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadmultloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadMultloja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisamultiloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaMultiLoja"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadmodulo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadModulo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisamodulo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaModulo"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="umoduloconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FModuloConfig"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
