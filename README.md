@@ -1,5 +1,5 @@
-# OpenTef
-Desenvolvido 100% em Lazarus, para efeito de compatibilidade serão usdos componentes do prório repositorio do lazarus.
+﻿# OpenTef
+Desenvolvido 100% em Lazarus, para efeito de compatibilidade serão usados componentes do prório repositorio do lazarus.
 
 Se destina a
   
@@ -24,9 +24,15 @@ cartão vale alimentação
 cartão vale refeição
 cartão vale cultura
 
+Pix 
+
 Comunicação com criptografia 
 
-Integração com bibliotecas compartilhadas
+Por favor 
+Deixe sua sugestão, estamos impementando novos recursos.
+michel@opentef.com.br
+
+
 
 
 
