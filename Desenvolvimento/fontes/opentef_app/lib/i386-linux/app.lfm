@@ -1,0 +1,177 @@
+object FApp: TFApp
+  Left = 251
+  Height = 635
+  Top = 190
+  Width = 1248
+  Caption = 'Open Tef'
+  ClientHeight = 635
+  ClientWidth = 1248
+  OnClose = FormClose
+  LCLVersion = '2.2.6.0'
+  object BIniciar: TButton
+    Left = 8
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Iniciar'
+    OnClick = BIniciarClick
+    TabOrder = 0
+  end
+  object BParar: TButton
+    Left = 88
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Parar'
+    OnClick = BPararClick
+    TabOrder = 1
+  end
+  object BMenu: TButton
+    Left = 24
+    Height = 25
+    Top = 86
+    Width = 75
+    Caption = 'Menus'
+    OnClick = BMenuClick
+    TabOrder = 2
+  end
+  object MMenu: TMemo
+    Left = 24
+    Height = 239
+    Top = 120
+    Width = 456
+    Lines.Strings = (
+      'Memo1'
+    )
+    ScrollBars = ssAutoVertical
+    TabOrder = 3
+  end
+  object BBin: TButton
+    Left = 928
+    Height = 25
+    Top = 86
+    Width = 75
+    Caption = 'Bin'
+    OnClick = BBinClick
+    TabOrder = 4
+  end
+  object MBIN: TMemo
+    Left = 928
+    Height = 239
+    Top = 120
+    Width = 304
+    Lines.Strings = (
+      'Memo1'
+    )
+    ScrollBars = ssAutoVertical
+    TabOrder = 5
+  end
+  object BMenuOperaciona: TButton
+    Left = 488
+    Height = 25
+    Top = 88
+    Width = 152
+    Caption = 'Menu Operacional'
+    OnClick = BMenuOperacionaClick
+    TabOrder = 6
+  end
+  object MMenuOperacional: TMemo
+    Left = 488
+    Height = 239
+    Top = 120
+    Width = 432
+    Lines.Strings = (
+      'Memo1'
+    )
+    ScrollBars = ssAutoVertical
+    TabOrder = 7
+  end
+  object Button1: TButton
+    Left = 312
+    Height = 25
+    Top = 408
+    Width = 96
+    Caption = 'Copia qrcode'
+    OnClick = Button1Click
+    TabOrder = 8
+  end
+  object Image2: TImage
+    Left = 488
+    Height = 184
+    Top = 368
+    Width = 200
+    Stretch = True
+  end
+  object BarcodeQR1: TBarcodeQR
+    Left = 80
+    Height = 230
+    Top = 368
+    Width = 230
+    ParentColor = False
+    OnPaint = BarcodeQR1Paint
+    Text = 'http://opentef.com.br'
+    BackgroundColor = clNone
+  end
+  object Button2: TButton
+    Left = 472
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Envia PDV'
+    OnClick = Button2Click
+    TabOrder = 9
+  end
+  object Button3: TButton
+    Left = 185
+    Height = 25
+    Top = 8
+    Width = 99
+    Caption = 'Solicita bin'
+    OnClick = Button3Click
+    TabOrder = 10
+  end
+  object Button4: TButton
+    Left = 312
+    Height = 25
+    Top = 368
+    Width = 115
+    Caption = 'Salvar como arquivo'
+    OnClick = Button4Click
+    TabOrder = 11
+  end
+  object Button5: TButton
+    Left = 308
+    Height = 25
+    Top = 449
+    Width = 111
+    Caption = 'Salva como jpg'
+    OnClick = Button5Click
+    TabOrder = 12
+  end
+  object Button6: TButton
+    Left = 308
+    Height = 25
+    Top = 488
+    Width = 111
+    Caption = 'Salva como png'
+    OnClick = Button6Click
+    TabOrder = 13
+  end
+  object Button7: TButton
+    Left = 712
+    Height = 25
+    Top = 376
+    Width = 112
+    Caption = 'Gera QR Code'
+    OnClick = Button7Click
+    TabOrder = 14
+  end
+  object Edit1: TEdit
+    Left = 712
+    Height = 32
+    Top = 405
+    Width = 400
+    TabOrder = 15
+    Text = '2600020101021226740014br.gov.bcb.pix210812345678220412342308123456782420001122334455667788995204000053039865406123.455802BR5913FULANO DETAL6008BRASILIA62190515RP12345678-201980720014br.gov.bcb.pix2550bx.com.br/spi/U0VHUkVET1RPVEFMTUVOVEVBTEVBVE9SSU8=630434D1'
+  end
+end

@@ -1,0 +1,10 @@
+[Unit]
+Description=Firebird Database Server ( Classic )
+After=local-fs.target
+
+[Service]
+User=firebird
+Group=firebird
+ExecStart=${fb_install_prefix}/bin/firebird
+StandardInput=socket
+StandardError=syslog

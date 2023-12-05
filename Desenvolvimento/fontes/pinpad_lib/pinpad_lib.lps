@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Win64">
+      <Item Name="Linux 64">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\pinpad_lib\linux64\pinpad_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="gertec_ppc930;..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <RelocatableUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dpinpad_lib"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux 32">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\pinpad_lib\linux32\pinpad_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="gertec_ppc930;..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <RelocatableUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dpinpad_lib"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+    </BuildModes>
+    <Units>
+      <Unit>
+        <Filename Value="pinpad_lib.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="8" Y="12"/>
+        <UsageCount Value="178"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pinpad.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DPinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <TopLine Value="79"/>
+        <CursorPos X="21" Y="94"/>
+        <UsageCount Value="178"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="461"/>
+        <CursorPos X="97" Y="467"/>
+        <UsageCount Value="178"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="983"/>
+        <CursorPos X="16" Y="1005"/>
+        <UsageCount Value="177"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="19"/>
+        <UsageCount Value="117"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\components\buildintf\ideoptionsintf.pas"/>
+        <UnitName Value="IDEOptionsIntf"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos X="3" Y="30"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1883"/>
+        <CursorPos X="17" Y="1791"/>
+        <UsageCount Value="66"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
+        <UnitName Value="GpinpadDelphi32"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="149"/>
+        <CursorPos X="34" Y="167"/>
+        <UsageCount Value="29"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\key_lib\key.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="157"/>
+        <CursorPos X="10" Y="55"/>
+        <UsageCount Value="27"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
+        <UnitName Value="GpinpadDelphi32"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="289"/>
+        <CursorPos X="8" Y="115"/>
+        <UsageCount Value="18"/>
+      </Unit>
+    </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="pinpad_lib"/>
+    </OtherDefines>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="pinpad_lib.lpr"/>
+        <Caret Line="12" Column="8"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="70" Column="17" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="189" Column="46" TopLine="175"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad_lib.lpr"/>
+        <Caret Line="12" Column="8"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="70" Column="21" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="214" Column="146" TopLine="138"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="202" Column="20" TopLine="165"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="206" Column="57" TopLine="184"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="71" Column="20" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad_lib.lpr"/>
+        <Caret Line="12" Column="8"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="70" Column="14" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="215" TopLine="184"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="71" Column="16" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="237" Column="30" TopLine="223"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad_lib.lpr"/>
+        <Caret Line="12" Column="8"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="70" Column="16" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="152" Column="5" TopLine="162"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="71" Column="20" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="237" Column="32" TopLine="234"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="293" Column="42" TopLine="258"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="40" Column="32" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="284" Column="50" TopLine="249"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="385" Column="54" TopLine="350"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="40" Column="32" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="284" Column="50" TopLine="249"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="373" Column="99" TopLine="265"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="284" Column="35" TopLine="277"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="101" Column="44" TopLine="85"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="94" Column="21" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
+        <Caret Line="99" Column="26" TopLine="77"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="gertec_ppc930\pinpad.pas"/>
+        <Line Value="49"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>

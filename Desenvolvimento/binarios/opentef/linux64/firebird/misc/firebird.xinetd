@@ -1,0 +1,17 @@
+# default: on
+# description: FirebirdSQL server
+#
+
+service gds_db
+{
+	disable = no
+	flags		= REUSE
+	socket_type	= stream
+	wait		= no
+	user		= root
+# These lines cause problems with Windows XP SP2 clients
+# using default firewall configuration (SF#1065511)
+#	log_on_success	+= USERID
+#	log_on_failure	+= USERID
+	server		= ${fb_install_prefix}/bin/firebird
+}

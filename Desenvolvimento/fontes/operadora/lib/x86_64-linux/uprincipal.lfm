@@ -1,0 +1,322 @@
+object Form1: TForm1
+  Left = 1209
+  Height = 496
+  Top = 281
+  Width = 616
+  Caption = 'Form1'
+  ClientHeight = 496
+  ClientWidth = 616
+  OnCreate = FormCreate
+  LCLVersion = '2.2.6.0'
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 480
+    Top = 0
+    Width = 647
+    ActivePage = TabSheet2
+    TabIndex = 1
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'Sistema'
+      ClientHeight = 446
+      ClientWidth = 643
+      object GroupBox2: TGroupBox
+        Left = 88
+        Height = 193
+        Top = 48
+        Width = 280
+        Caption = 'PDV'
+        ClientHeight = 163
+        ClientWidth = 276
+        TabOrder = 0
+        object Label7: TLabel
+          Left = 8
+          Height = 18
+          Top = 16
+          Width = 168
+          Caption = 'Identificação do Caixa 0108'
+          ParentColor = False
+        end
+        object EIdentificacao: TEdit
+          Left = 168
+          Height = 32
+          Top = 16
+          Width = 96
+          TabOrder = 0
+          Text = 'L01C001'
+        end
+        object Label6: TLabel
+          Left = 47
+          Height = 18
+          Top = 56
+          Width = 120
+          Caption = 'Código da loja 00F9'
+          ParentColor = False
+        end
+        object ECodigoLoja: TEdit
+          Left = 168
+          Height = 32
+          Top = 56
+          Width = 80
+          Align = alCustom
+          HideSelection = False
+          TabOrder = 1
+          Text = '3'
+        end
+        object Label8: TLabel
+          Left = 43
+          Height = 18
+          Top = 96
+          Width = 124
+          Align = alCustom
+          Caption = 'Código do PDV 0107'
+          ParentColor = False
+        end
+        object ECodigoPDV: TEdit
+          Left = 168
+          Height = 32
+          Top = 96
+          Width = 80
+          Align = alCustom
+          HideSelection = False
+          TabOrder = 2
+          Text = '10'
+        end
+        object BConsultarTef: TButton
+          Left = 80
+          Height = 32
+          Top = 136
+          Width = 120
+          Align = alCustom
+          Caption = 'Consultar tef'
+          OnClick = BConsultarTefClick
+          TabOrder = 3
+        end
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Configuaração'
+      ClientHeight = 446
+      ClientWidth = 643
+      object Bevel1: TBevel
+        Left = 24
+        Height = 290
+        Top = 24
+        Width = 314
+        Shape = bsRightLine
+        OnChangeBounds = Bevel1ChangeBounds
+      end
+      object GroupBox1: TGroupBox
+        Left = 352
+        Height = 177
+        Top = 24
+        Width = 241
+        Caption = 'Venda'
+        ClientHeight = 147
+        ClientWidth = 237
+        TabOrder = 0
+        object cbxCPF: TCheckBox
+          Left = 32
+          Height = 22
+          Top = 56
+          Width = 87
+          Caption = 'Pedir CPF'
+          Color = clDefault
+          ParentColor = False
+          TabOrder = 0
+        end
+        object cbxSenha: TCheckBox
+          Left = 32
+          Height = 22
+          Top = 24
+          Width = 102
+          Caption = 'Pedir Senha'
+          Checked = True
+          State = cbChecked
+          TabOrder = 1
+        end
+        object cbxQrcode: TCheckBox
+          Left = 32
+          Height = 22
+          Top = 88
+          Width = 193
+          Caption = 'Pedir Senha Com QRCODE '
+          TabOrder = 2
+        end
+        object cbxQrcodePinPad: TCheckBox
+          Left = 32
+          Height = 22
+          Top = 120
+          Width = 147
+          Caption = 'QRCODE no pinpad'
+          TabOrder = 3
+        end
+      end
+      object GroupBox3: TGroupBox
+        Left = 24
+        Height = 304
+        Top = 16
+        Width = 312
+        Caption = 'Conexão'
+        ClientHeight = 274
+        ClientWidth = 308
+        TabOrder = 1
+        object Label1: TLabel
+          Left = 83
+          Height = 18
+          Top = 8
+          Width = 38
+          Caption = 'Chave'
+          ParentColor = False
+        end
+        object EChave: TEdit
+          Left = 127
+          Height = 32
+          Top = 8
+          Width = 169
+          TabOrder = 0
+          Text = '123'
+        end
+        object Label2: TLabel
+          Left = 57
+          Height = 18
+          Top = 48
+          Width = 70
+          Caption = 'Porta Caixa'
+          ParentColor = False
+        end
+        object EPortaCaixa: TRxSpinEdit
+          Left = 128
+          Height = 32
+          Top = 48
+          Width = 144
+          Value = 555
+          TabOrder = 1
+        end
+        object Label3: TLabel
+          Left = 48
+          Height = 18
+          Top = 80
+          Width = 81
+          Caption = 'Porta Serviço'
+          ParentColor = False
+        end
+        object EPortaServico: TRxSpinEdit
+          Left = 128
+          Height = 32
+          Top = 80
+          Width = 144
+          Value = 556
+          TabOrder = 3
+        end
+        object Label4: TLabel
+          Left = 20
+          Height = 18
+          Top = 120
+          Width = 112
+          Caption = 'IP Caixa Permitido'
+          ParentColor = False
+        end
+        object EIPCaixa: TEdit
+          Left = 127
+          Height = 32
+          Top = 120
+          Width = 169
+          TabOrder = 5
+        end
+        object Label5: TLabel
+          Left = 11
+          Height = 18
+          Top = 160
+          Width = 123
+          Caption = 'IP Servico Permitido'
+          ParentColor = False
+        end
+        object EIPServico: TEdit
+          Left = 127
+          Height = 32
+          Top = 160
+          Width = 169
+          TabOrder = 6
+        end
+        object BAtiva: TButton
+          Left = 56
+          Height = 26
+          Top = 240
+          Width = 75
+          Caption = 'Ativa'
+          OnClick = BAtivaClick
+          TabOrder = 7
+        end
+        object BDesativar: TButton
+          Left = 168
+          Height = 26
+          Top = 240
+          Width = 75
+          Caption = 'Desativar'
+          OnClick = BDesativarClick
+          TabOrder = 8
+        end
+        object BInicializaDll: TButton
+          Left = 104
+          Height = 26
+          Top = 200
+          Width = 105
+          Caption = 'Inicializa DLL'
+          OnClick = BInicializaDllClick
+          TabOrder = 9
+        end
+      end
+      object Image1: TImage
+        Left = 360
+        Height = 230
+        Top = 216
+        Width = 230
+        Picture.Data = {
+          1754506F727461626C654E6574776F726B477261706869630205000089504E47
+          0D0A1A0A0000000D49484452000000E6000000E60803000000F6B40989000000
+          06504C5445FFFFFF00000055C2D37E000004B749444154789CED954B82E43008
+          432BF7BFF46C7A41E42770F5FC3A2EB1E91406A1A7C5CCEB954AA552A9542A95
+          4AA552A9FF5A972F7995855EE3BD8B5F5D33B1ED3698C13C0DD3B7AB06C809FD
+          D75F7D2DFBDEB12C3419EF4304339827609A8B302DB8AB5DD8354B461602F996
+          DB6006F3A330E178D3EA27E0A7C4257E8219CC71515B3255C84BEBDA2E330D7E
+          B6DC0633982762727BD8672F465A401ABC5E631F627B3198E27C960EE6BFC134
+          55F6CBDFD7DAEE7FFEE925EF3698C13C09730E01023151893D99345AC62263FE
+          A50AA64CFD704CB8567EF6AF2F686F17981FE2E26C9AA88219CC2763D66B32CC
+          DE8CE47A5F9F80CB2CCB25B05726F6108319CCC762CA8267523F9EAFB4604AAE
+          81A7C69E970D66304FC4E4E31797BF68E41BFA17062AC3D58FBC06339887628A
+          0EB0F9C3CDFFD2CC631CC3D121DF26D8607E0E261FD667B628D4FBD2125533C5
+          AFDF420D66309F8109C370DCC8F1B36801E600C1F99A6C66C46006F3B198FC53
+          A5575B727883870D280F07217AFB88C10CE6E3301B59B6A98B1E15429165C034
+          D2FE750F3598C17C2C26BB859FB0389FD8F751BED5C0DADA4314B7C1EC17E713
+          FB3ECAB71AF81DCC5E473E5D28F77CAEB508A8B77857BFB8E54E0433980760CA
+          843099961A5825C180716C967C56FC39543083F9484C912ADF46A74EAE10A005
+          8BE69267D29F6B00C10CE64998839604C110E6B87935D24C2E818A164806F303
+          30E104C802971030DE8D91B9FCEB9EE45E0533988FC3844BE55B5B40BCB61A1E
+          E3148CCB126B7E9B3A98C17C06262CF616EBE1FED568F1925C33135E2E98C13C
+          09137CC92BF0343A920B68C1CFDE3540BD8D1ACC5730ADCEB330BFFE5EA227B2
+          32E56507B76B08C6E2602F989F81097A2B8732191FEC45B54A9B3F87FFA17B2F
+          C10CE64998556B2D13843C0FF45E1AB211D9BD0A66300FC39449E3B67CCF1A7B
+          650E0F81F8108219CCC33005665884AEF8B8CBD525635E267C10B5E5978219CC
+          43310D131880297E251FF3D27DBFE6244BC1843A1CF32A253FFB7D98047BBDE3
+          660220DADD6006F3344CB137BCDC8F3697807C3E3AE722ED60EE5D342FC1E4C5
+          9F8629AE45C05CF34CEA690D455AE6B869F56E8319CC9330BFFE4ABB712AAE9B
+          25765B8FF72E41478CEF55304FC28445B00727CC549F4B59F2F99AC3BD8F6006
+          F354CC3B62737CC8888390044D2E20E931DF470C66309F8E3957EFD860FA9646
+          05578C7C30837926A64C0D3A2C6BAC41083E50D5618B104C30837928A6F2DD2F
+          0131F95A27407A4ECE1C6F2CC2B5607E16E6FA39FF341E6A6B0DC1C4A47FFB40
+          EF9FC10CE66998AAE5FD803467D304C1B998FFB8C1806805339807632A2A5B33
+          C77BC7E519AE994BA2A7F2DC0E66300FC5043FA02117CADF666ABB00797FF13D
+          D46006F37198084EFF04490B2E817BB360342E0C547DF1A5601E8E79F9E26995
+          E66199302D30E03534E36DC46006F3B198BE2D2C342C8E572FC325D190C9466B
+          0B6F381E4C6F3198FE9268C8E49FC61410B824F2D7BD60C954E1325ACC344806
+          33981F87A9D3BCD0CB425C3245CBFEF8DB15CCFED249986AF1EE944056399505
+          AB3CA90B6B4B978219CC0331B96D42681C4308FCDC18901664BCE5A191947630
+          83F9FA9998A6E46069197AF934F232D9E3C9923CEDA30633988FC34CA552A954
+          2A954AA552A9FF57BF00BB3F4F69C96240AB0000000049454E44AE426082
+        }
+        Stretch = True
+      end
+    end
+  end
+end

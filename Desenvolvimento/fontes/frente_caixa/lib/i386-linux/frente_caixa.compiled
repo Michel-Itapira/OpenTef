@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="E:\Lazarus_IDE\fpc\bin\i386-win32\fpc.exe" Date="1447272490"/>
+  <Params Value=" -Tlinux -MObjFPC -Scghi -O1 -gw2 -gl -Xg -l -vewnhibq -FiE:\Lazarus\OpenTef\publica\fontes\frente_caixa\lib\i386-linux -FuE:\Lazarus_IDE\lazarus\lcl\units\i386-linux\gtk2 -FuE:\Lazarus_IDE\lazarus\components\datetimectrls\lib\i386-linux\win32 -FuE:\Lazarus_IDE\lazarus\lcl\units\i386-linux -FuE:\Lazarus_IDE\lazarus\components\freetype\lib\i386-linux -FuE:\Lazarus_IDE\lazarus\components\lazutils\lib\i386-linux -FuE:\Lazarus_IDE\lazarus\packager\units\i386-linux -FuE:\Lazarus\OpenTef\publica\fontes\frente_caixa\ -FUE:\Lazarus\OpenTef\publica\fontes\frente_caixa\lib\i386-linux\ -FEE:\Lazarus\OpenTef\publica\binarios\frente_caixa\linux\ -oE:\Lazarus\OpenTef\publica\binarios\frente_caixa\linux\frente_caixa -dLCL -dLCLgtk2 -XS -Xt -XX -CX -Xe -XD -Xi -dFRENTE_CAIXA frente_caixa.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/opt/lazarus/fpc/bin/x86_64-linux/fpc.sh" Date="1680271299"/>
+  <Params Value=" -Tlinux -MObjFPC -Scghi -Cg -O1 -gw2 -gl -Xg -l -vewnhibq -Fi/root/Documentos/opentef/publica/fontes/frente_caixa/lib/x86_64-linux -Fu/opt/lazarus/lazarus/lcl/units/x86_64-linux/qt5 -Fu/opt/lazarus/lazarus/components/datetimectrls/lib/x86_64-linux/qt5 -Fu/opt/lazarus/lazarus/lcl/units/x86_64-linux -Fu/opt/lazarus/lazarus/components/freetype/lib/x86_64-linux -Fu/opt/lazarus/lazarus/components/lazutils/lib/x86_64-linux -Fu/opt/lazarus/lazarus/packager/units/x86_64-linux -Fu/root/Documentos/opentef/publica/fontes/frente_caixa/ -FU/root/Documentos/opentef/publica/fontes/frente_caixa/lib/x86_64-linux/ -FE/root/Documentos/opentef/publica/binarios/frente_caixa/linux/ -o/root/Documentos/opentef/publica/binarios/frente_caixa/linux/frente_caixa -dLCL -dLCLqt5 -XS -Xt -XX -CX -Xe -XD -Xi -dFRENTE_CAIXA frente_caixa.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>

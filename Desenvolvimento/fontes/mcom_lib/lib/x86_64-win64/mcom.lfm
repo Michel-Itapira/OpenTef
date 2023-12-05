@@ -1,0 +1,20 @@
+object DMCom: TDMCom
+  OnCreate = DataModuleCreate
+  OldCreateOrder = False
+  Height = 220
+  HorizontalOffset = 1341
+  VerticalOffset = 252
+  Width = 289
+  object CriptoRsa: TLbRSA
+    PrimeTestIterations = 20
+    KeySize = aks128
+    Left = 32
+    Top = 16
+  end
+  object CriptoAes: TLbRijndael
+    CipherMode = cmECB
+    KeySize = ks256
+    Left = 136
+    Top = 16
+  end
+end

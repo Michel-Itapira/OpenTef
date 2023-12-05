@@ -1,0 +1,13 @@
+object DCom: TDCom
+  OldCreateOrder = False
+  Height = 267
+  HorizontalOffset = 771
+  VerticalOffset = 579
+  Width = 357
+  object CriptoAes: TLbRijndael
+    CipherMode = cmECB
+    KeySize = ks256
+    Left = 140
+    Top = 44
+  end
+end

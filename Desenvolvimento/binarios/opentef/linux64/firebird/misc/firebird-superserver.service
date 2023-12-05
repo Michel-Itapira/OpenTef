@@ -1,0 +1,14 @@
+[Unit]
+Description=Firebird Database Server ( SuperServer )
+After=syslog.target network.target
+Conflicts=firebird-classic.socket
+
+[Service]
+User=firebird
+Group=firebird
+Type=forking
+ExecStart=${fb_install_prefix}/bin/fbguard -daemon -forever
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

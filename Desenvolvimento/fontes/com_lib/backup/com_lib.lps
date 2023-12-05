@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Release">
+      <Item Name="Debug">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\com_lib\win64\com_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <RelocatableUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dCLIENTE
+-dCOM_LIB"/>
+            <OtherDefines Count="2">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux 64">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\com_lib\linux64\com_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <RelocatableUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dCLIENTE
+-dCOM_LIB"/>
+            <OtherDefines Count="2">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux 32">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\com_lib\linux32\com_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <RelocatableUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="linux"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dCLIENTE
+-dCOM_LIB"/>
+            <OtherDefines Count="2">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+    </BuildModes>
+    <Units>
+      <Unit>
+        <Filename Value="com_lib.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="119" Y="21"/>
+        <UsageCount Value="235"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="com.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DCom"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="191"/>
+        <CursorPos X="92" Y="212"/>
+        <UsageCount Value="235"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="201"/>
+        <CursorPos X="51" Y="222"/>
+        <UsageCount Value="211"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DComunicador"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="182"/>
+        <CursorPos X="13" Y="201"/>
+        <UsageCount Value="204"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="37" Y="17"/>
+        <UsageCount Value="103"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\componentes\acbr\trunk2\Fontes\ACBrTCP\ACBrSocket.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="59"/>
+        <CursorPos Y="77"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1942"/>
+        <CursorPos X="17" Y="1959"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\componentes\acbr\trunk2\Fontes\Terceiros\synalist\blcksock.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="180"/>
+        <CursorPos X="17" Y="181"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\teste\Indy10Demo\eliza10\ElizaWeb.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="3"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdComponent.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="53"/>
+        <CursorPos X="3" Y="72"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\comunicador.lfm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos X="24" Y="41"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\opentef.exe"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
+        <HasResources Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_app\app.pas"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\dbc\ZDbcASA.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="867"/>
+        <CursorPos Y="901"/>
+        <UsageCount Value="7"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\components\ideintf\actionseditorstd.pas"/>
+        <UnitName Value="ActionsEditorStd"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="176"/>
+        <CursorPos X="65" Y="187"/>
+        <UsageCount Value="7"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="49"/>
+        <UsageCount Value="7"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="617"/>
+        <CursorPos X="16" Y="635"/>
+        <UsageCount Value="31"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdIOHandler.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="751"/>
+        <CursorPos X="14" Y="768"/>
+        <UsageCount Value="22"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\System\IdGlobal.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1339"/>
+        <CursorPos X="3" Y="1357"/>
+        <UsageCount Value="22"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\objpas.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="8" Y="33"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\backup\comunicador.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="38" Y="15"/>
+        <UsageCount Value="9"/>
+      </Unit>
+    </Units>
+    <OtherDefines Count="2">
+      <Define0 Value="CLIENTE"/>
+      <Define1 Value="COM_LIB"/>
+    </OtherDefines>
+    <JumpHistory HistoryIndex="25">
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="213" TopLine="195"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="38" Column="14" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="41" Column="13" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="140" Column="51" TopLine="124"/>
+      </Position>
+      <Position>
+        <Filename Value="com_lib.lpr"/>
+        <Caret Line="20" Column="28"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="125" Column="28" TopLine="122"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="41" Column="15" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="213" Column="62" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="168" Column="68" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="189" Column="62" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="187" Column="117" TopLine="168"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="194" Column="95" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="194" Column="95" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="243" Column="33" TopLine="218"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="125" Column="45" TopLine="112"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="43" Column="12" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="175" Column="40" TopLine="158"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="188" Column="53" TopLine="169"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="57" Column="50" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="43" Column="13" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="211" Column="51" TopLine="193"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="40" Column="18" TopLine="15"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="58" Column="65" TopLine="38"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="201" Column="32" TopLine="191"/>
+      </Position>
+      <Position>
+        <Filename Value="com.pas"/>
+        <Caret Line="213" Column="83" TopLine="191"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="200" Column="18" TopLine="179"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\libs\func\comunicador.pas"/>
+        <Line Value="906"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Win64"/>
+    <Units>
+      <Unit>
+        <Filename Value="frente_caixa.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="57" Y="17"/>
+        <UsageCount Value="202"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uprincipal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="F_Principal"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="1289"/>
+        <CursorPos X="30" Y="1300"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="umenuvenda.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="F_MenuVenda"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="87" Y="49"/>
+        <UsageCount Value="238"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="13"/>
+        <UsageCount Value="207"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uimpressao.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FImpressao"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="16" Y="16"/>
+        <UsageCount Value="201"/>
+      </Unit>
+      <Unit>
+        <Filename Value="conf.pas"/>
+        <HasResources Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="54" Y="63"/>
+        <UsageCount Value="174"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utestepinpad.pas"/>
+        <ComponentName Value="FTestePinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="157"/>
+        <CursorPos X="50" Y="174"/>
+        <UsageCount Value="95"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\..\teste\unit1.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="4" Y="35"/>
+        <UsageCount Value="126"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="2192"/>
+        <CursorPos Y="2214"/>
+        <UsageCount Value="171"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <ComponentName Value="DTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1673"/>
+        <CursorPos X="21" Y="1705"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32memostrings.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos Y="50"/>
+        <UsageCount Value="98"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <ComponentName Value="DComunicador"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1085"/>
+        <CursorPos X="53" Y="1112"/>
+        <UsageCount Value="98"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3578"/>
+        <CursorPos X="44" Y="3589"/>
+        <UsageCount Value="31"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customedit.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="90"/>
+        <CursorPos Y="109"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <ComponentName Value="DPinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="111"/>
+        <CursorPos X="81" Y="125"/>
+        <UsageCount Value="70"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\pinpad_lib\gertec_ppc930\gertec_ppc930.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="331"/>
+        <CursorPos X="35" Y="341"/>
+        <UsageCount Value="79"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\config_app\backup\uprincipal.pas"/>
+        <UnitName Value="uPrincipal"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4063"/>
+        <CursorPos X="48" Y="4083"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\cadastro.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2693"/>
+        <CursorPos X="45" Y="2705"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\opentef_ser\backup\cadastro.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2687"/>
+        <CursorPos X="45" Y="2705"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lclmessageglue.pas"/>
+        <UnitName Value="LCLMessageGlue"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="98"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbrsa.pas"/>
+        <UnitName Value="LbRSA"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="819"/>
+        <CursorPos Y="842"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\hash\src\md5.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="110"/>
+        <CursorPos X="41" Y="134"/>
+        <UsageCount Value="14"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1471"/>
+        <CursorPos X="29" Y="1480"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\png.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="24"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\sysutils\datih.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="95"/>
+        <CursorPos X="36" Y="115"/>
+        <UsageCount Value="61"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="620"/>
+        <CursorPos X="18" Y="640"/>
+        <UsageCount Value="22"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2149"/>
+        <CursorPos X="3" Y="2157"/>
+        <UsageCount Value="6"/>
+      </Unit>
+    </Units>
+    <OtherDefines Count="2">
+      <Define0 Value="FRENTE_CAIXA"/>
+      <Define1 Value="WIN64"/>
+    </OtherDefines>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1375" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="2214" TopLine="2192"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1376" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1377" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1383" TopLine="1351"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1385" TopLine="1364"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1386" TopLine="1364"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="2214" TopLine="2192"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1387" TopLine="1364"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1389" TopLine="1364"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1360" TopLine="1360"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="171" Column="120" TopLine="153"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1391" TopLine="1372"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1393" TopLine="1372"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1391" TopLine="1652"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1683" Column="83" TopLine="1650"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1397" Column="40" TopLine="1335"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="35" Column="24" TopLine="11"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1406" Column="8" TopLine="1388"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1400" TopLine="1388"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="1402" TopLine="1388"/>
+      </Position>
+      <Position>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <Caret Line="78" Column="13" TopLine="65"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="248" Column="18" TopLine="235"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="199" Column="28" TopLine="177"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1208" Column="30" TopLine="1202"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1310" TopLine="1295"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1308" Column="5" TopLine="1296"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1299" Column="34" TopLine="1296"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1103" TopLine="1068"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1309" Column="48" TopLine="1291"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\pinpad_lib\pinpad.pas"/>
+        <Line Value="273"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\libs\func\comunicador.pas"/>
+        <Line Value="192"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\libs\func\comunicador.pas"/>
+        <Line Value="1241"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\tef_lib\tef.pas"/>
+        <Line Value="174"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\tef_lib\tef.pas"/>
+        <Line Value="1401"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\tef_lib\tef.pas"/>
+        <Line Value="1403"/>
+      </Item>
+    </BreakPoints>
+    <Watches>
+      <Item>
+        <Expression Value="VL_Dados"/>
+      </Item>
+      <Item>
+        <Expression Value="F_Login"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

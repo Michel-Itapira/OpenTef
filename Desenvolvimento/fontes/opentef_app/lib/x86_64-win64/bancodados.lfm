@@ -1,0 +1,50 @@
+object DBancoDados: TDBancoDados
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
+  OldCreateOrder = False
+  Height = 330
+  HorizontalOffset = 1597
+  VerticalOffset = 451
+  Width = 466
+  object ZConexao: TZConnection
+    ControlsCodePage = cCP_UTF8
+    AutoEncodeStrings = True
+    ClientCodepage = 'ISO8859_1'
+    Properties.Strings = (
+      'codepage=ISO8859_1'
+      'controls_cp=GET_ACP'
+      'AutoEncodeStrings=OFF'
+    )
+    AutoCommit = False
+    TransactIsolationLevel = tiReadCommitted
+    Port = 0
+    User = 'SYSDBA'
+    Protocol = 'firebirdd-3.0'
+    Left = 60
+    Top = 47
+  end
+  object ConsultaA: TZQuery
+    Connection = ZConexao
+    Params = <>
+    Left = 156
+    Top = 44
+  end
+  object ConsultaB: TZQuery
+    Connection = ZConexao
+    Params = <>
+    Left = 232
+    Top = 48
+  end
+  object ConsultaC: TZQuery
+    Connection = ZConexao
+    Params = <>
+    Left = 304
+    Top = 44
+  end
+  object ConsultaD: TZQuery
+    Connection = ZConexao
+    Params = <>
+    Left = 160
+    Top = 112
+  end
+end

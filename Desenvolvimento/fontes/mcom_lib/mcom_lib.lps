@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Win64">
+      <Item Name="Linux 64">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dMCOM"/>
+            <OtherDefines Count="1">
+              <Define0 Value="CLIENTE"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux 32">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\mcom_lib\linux32\mcom_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="linux"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dMCOM"/>
+            <OtherDefines Count="1">
+              <Define0 Value="CLIENTE"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Win32">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\mcom_lib\win32\mcom_lib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dMCOM"/>
+            <OtherDefines Count="1">
+              <Define0 Value="CLIENTE"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <SessionEnabledMatrixOptions Count="3">
+        <Item1 Mode="Linux 64" Option="201678388336"/>
+        <Item2 Mode="Linux 32" Option="201678388336"/>
+        <Item3 Mode="Win32" Option="201678388336"/>
+      </SessionEnabledMatrixOptions>
+    </BuildModes>
+    <Units>
+      <Unit>
+        <Filename Value="mcom_lib.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="10"/>
+        <CursorPos X="57" Y="18"/>
+        <UsageCount Value="217"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="mcom.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DMCom"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="284"/>
+        <CursorPos X="138" Y="313"/>
+        <UsageCount Value="217"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="263"/>
+        <CursorPos X="21" Y="284"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DComunicador"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <TopLine Value="1085"/>
+        <CursorPos X="31" Y="1099"/>
+        <UsageCount Value="207"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="43" Y="8"/>
+        <UsageCount Value="245"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="28"/>
+        <CursorPos X="7" Y="33"/>
+        <UsageCount Value="131"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\frente_caixa\uprincipal.pas"/>
+        <ComponentName Value="F_Principal"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="191"/>
+        <CursorPos X="30" Y="203"/>
+        <UsageCount Value="37"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <ComponentName Value="DTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="246"/>
+        <CursorPos X="30" Y="281"/>
+        <UsageCount Value="39"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbasym.pas"/>
+        <UnitName Value="LbAsym"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="6" Y="34"/>
+        <UsageCount Value="36"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\com_lib\com.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\modulo_lib\modulo_padrao\modulo.pas"/>
+        <ComponentName Value="DModulo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="288"/>
+        <CursorPos Y="250"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1173"/>
+        <CursorPos X="13" Y="1204"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\sstrings.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1150"/>
+        <CursorPos X="3" Y="1156"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\threadh.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="72" Y="12"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdGlobal.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="772"/>
+        <CursorPos X="3" Y="783"/>
+        <UsageCount Value="44"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\opt\lazarus\ccr\indy\Lib\Core\IdCustomTCPServer.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="245"/>
+        <CursorPos X="24" Y="263"/>
+        <UsageCount Value="3"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2132"/>
+        <CursorPos X="17" Y="2153"/>
+        <UsageCount Value="25"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbclass.pas"/>
+        <UnitName Value="LbClass"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="197"/>
+        <CursorPos X="39" Y="220"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbcipher.pas"/>
+        <UnitName Value="LbCipher"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="98"/>
+        <CursorPos X="3" Y="120"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="77"/>
+        <CursorPos X="4" Y="99"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="148"/>
+        <CursorPos X="10" Y="122"/>
+        <UsageCount Value="34"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <OtherDefines Count="4">
+      <Define0 Value="CLIENTE"/>
+      <Define1 Value="MCOM"/>
+      <Define2 Value="DEBUG"/>
+      <Define3 Value="WIN"/>
+    </OtherDefines>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="884" Column="15" TopLine="847"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="66" Column="21" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="882" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="52" Column="44" TopLine="42"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="185" Column="133" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="199" Column="129" TopLine="184"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="207" Column="136" TopLine="189"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="218" Column="95" TopLine="204"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="243" Column="83" TopLine="225"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="279" Column="83" TopLine="266"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="308" Column="135" TopLine="295"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="320" Column="137" TopLine="307"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="326" Column="95" TopLine="312"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="330" Column="138" TopLine="317"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="341" Column="95" TopLine="327"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="361" Column="127" TopLine="348"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="367" Column="83" TopLine="353"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="475" Column="133" TopLine="463"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="526" Column="137" TopLine="513"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="545" Column="147" TopLine="531"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="572" Column="135" TopLine="559"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="605" Column="157" TopLine="590"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="633" Column="139" TopLine="620"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="650" Column="149" TopLine="636"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="678" Column="135" TopLine="665"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="708" Column="94" TopLine="699"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="801" Column="94" TopLine="787"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="816" Column="94" TopLine="798"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="76" Column="22" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom_lib.pas"/>
+        <Caret Line="32" Column="43" TopLine="2"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\Windows\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
+</CONFIG>

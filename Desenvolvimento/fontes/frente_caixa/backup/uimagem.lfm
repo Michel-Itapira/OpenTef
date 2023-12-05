@@ -1,0 +1,8 @@
+object FImagem: TFImagem
+  Left = 673
+  Height = 349
+  Top = 283
+  Width = 404
+  Caption = 'Imagem'
+  LCLVersion = '2.2.0.4'
+end
