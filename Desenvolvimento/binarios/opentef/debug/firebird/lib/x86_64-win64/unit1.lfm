@@ -1,0 +1,63 @@
+object Form1: TForm1
+  Left = 681
+  Height = 380
+  Top = 133
+  Width = 598
+  Caption = 'Form1'
+  ClientHeight = 380
+  ClientWidth = 598
+  LCLVersion = '2.2.0.2'
+  object Button1: TButton
+    Left = 184
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object DBGrid1: TDBGrid
+    Left = 80
+    Height = 203
+    Top = 136
+    Width = 392
+    Color = clWindow
+    Columns = <>
+    DataSource = DataSource1
+    TabOrder = 1
+  end
+  object IBConnection1: TIBConnection
+    Connected = False
+    LoginPrompt = False
+    DatabaseName = 'E:\Lazarus\teste\FBEmbutido\employee.fdb'
+    KeepConnection = False
+    Transaction = SQLTransaction1
+    CheckTransactionParams = False
+    UseConnectionCharSetIfNone = False
+    Left = 48
+    Top = 16
+  end
+  object SQLQuery1: TSQLQuery
+    FieldDefs = <>
+    Database = IBConnection1
+    Transaction = SQLTransaction1
+    SQL.Strings = (
+      'select * from country'
+    )
+    Params = <>
+    Macros = <>
+    Left = 136
+    Top = 78
+  end
+  object DataSource1: TDataSource
+    DataSet = SQLQuery1
+    Left = 208
+    Top = 78
+  end
+  object SQLTransaction1: TSQLTransaction
+    Active = False
+    Database = IBConnection1
+    Left = 48
+    Top = 78
+  end
+end
