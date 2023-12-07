@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Win64">
+    <BuildModes Active="Release Win32">
       <Item Name="Linux 64">
         <CompilerOptions>
           <Version Value="11"/>
@@ -81,7 +81,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
         <CursorPos X="8" Y="12"/>
-        <UsageCount Value="172"/>
+        <UsageCount Value="178"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -91,20 +91,19 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="298"/>
-        <CursorPos X="58" Y="317"/>
-        <UsageCount Value="172"/>
+        <TopLine Value="79"/>
+        <CursorPos X="130" Y="111"/>
+        <UsageCount Value="178"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="gertec_ppc930\gertec_ppc930.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="172"/>
-        <CursorPos X="31" Y="173"/>
-        <UsageCount Value="172"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="461"/>
+        <CursorPos X="97" Y="467"/>
+        <UsageCount Value="178"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
@@ -115,7 +114,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="983"/>
         <CursorPos X="16" Y="1005"/>
-        <UsageCount Value="171"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -124,7 +123,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="19"/>
-        <UsageCount Value="111"/>
+        <UsageCount Value="117"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -133,19 +132,19 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos X="3" Y="30"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1883"/>
         <CursorPos X="17" Y="1791"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="66"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\comunicador.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
@@ -153,14 +152,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="149"/>
         <CursorPos X="34" Y="167"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\key_lib\key.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="157"/>
         <CursorPos X="10" Y="55"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="27"/>
       </Unit>
       <Unit>
         <Filename Value="E:\emv\gertec\GpinpadDelphi32_v1_0_0\gpinpaddelphi32.pas"/>
@@ -168,29 +167,10 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="289"/>
         <CursorPos X="8" Y="115"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="18"/>
       </Unit>
     </Units>
-    <OtherDefines Count="1">
-      <Define0 Value="pinpad_lib"/>
-    </OtherDefines>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="69" Column="18" TopLine="47"/>
-      </Position>
-      <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="87" Column="35" TopLine="54"/>
-      </Position>
-      <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="84" Column="161" TopLine="62"/>
-      </Position>
-      <Position>
-        <Filename Value="pinpad.pas"/>
-        <Caret Line="154" Column="38" TopLine="136"/>
-      </Position>
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="pinpad_lib.lpr"/>
         <Caret Line="12" Column="8"/>
@@ -257,10 +237,6 @@
       </Position>
       <Position>
         <Filename Value="pinpad.pas"/>
-        <Caret Line="152" Column="5" TopLine="162"/>
-      </Position>
-      <Position>
-        <Filename Value="pinpad.pas"/>
         <Caret Line="71" Column="20" TopLine="49"/>
       </Position>
       <Position>
@@ -294,6 +270,18 @@
       <Position>
         <Filename Value="pinpad.pas"/>
         <Caret Line="373" Column="99" TopLine="265"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="284" Column="35" TopLine="277"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="101" Column="44" TopLine="85"/>
+      </Position>
+      <Position>
+        <Filename Value="pinpad.pas"/>
+        <Caret Line="94" Column="21" TopLine="79"/>
       </Position>
     </JumpHistory>
     <RunParams>

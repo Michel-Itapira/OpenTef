@@ -8,8 +8,9 @@
       <Unit>
         <Filename Value="config_app.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <CursorPos X="30" Y="25"/>
+        <CursorPos X="146" Y="23"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -107,9 +108,8 @@
         <ComponentName Value="FInterface"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="197"/>
-        <CursorPos X="56" Y="215"/>
+        <TopLine Value="530"/>
+        <CursorPos X="119" Y="565"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -687,14 +687,6 @@
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="ucadpinpad.pas"/>
-        <Caret Line="132" Column="73" TopLine="115"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpinpad.pas"/>
-        <Caret Line="401" Column="3" TopLine="398"/>
-      </Position>
-      <Position>
         <Filename Value="uinterface.pas"/>
         <Caret Line="85" Column="28" TopLine="65"/>
       </Position>
@@ -806,6 +798,14 @@
         <Filename Value="uinterface.pas"/>
         <Caret Line="74" Column="25" TopLine="53"/>
       </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="225" Column="75" TopLine="197"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="565" Column="119" TopLine="530"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -813,6 +813,15 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uinterface.pas"/>
+        <Line Value="535"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="CPinPad.KeyValue"/>

@@ -14,7 +14,7 @@
       </XPManifest>
     </General>
     <BuildModes>
-      <Item Name="Win64" Default="True"/>
+      <Item Name="Debug Win64" Default="True"/>
       <Item Name="Debug">
         <CompilerOptions>
           <Version Value="11"/>
@@ -278,6 +278,10 @@
       <TargetOS Value="win64"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

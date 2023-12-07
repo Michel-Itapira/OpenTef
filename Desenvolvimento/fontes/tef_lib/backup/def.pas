@@ -35,7 +35,7 @@ const
     {$ENDIF}
 
     var
-     F_NivelLog: integer = 4; // 0 = sem log  1 = erro 2 = log informativo  3 = comentario 4 = evento socket;
+     F_NivelLog: integer = 1; // 0 = sem log  1 = erro 2 = log informativo  3 = comentario 4 = evento socket;
      F_AmbienteTeste: integer = 0;
 
 implementation

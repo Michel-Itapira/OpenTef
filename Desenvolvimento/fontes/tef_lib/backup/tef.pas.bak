@@ -1398,7 +1398,7 @@ begin
 
                     GravaLog(F_ArquivoLog, 0, '', 'tef', '091120230947', 'Mensagem enviada no TThProcesso.Execute', VL_Mensagem.TagsAsString, 0, 2);
 
-                    VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
+                    VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, 300000, True);
 
                     if VL_Erro <> 0 then
                     begin
@@ -1704,7 +1704,7 @@ end;
 
 function desconectar(): integer; cdecl;
 begin
-
+    Result := F_DComunicador.DesconectarCliente(F_DComunicador);
 end;
 
 function solicitacao(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; cdecl;

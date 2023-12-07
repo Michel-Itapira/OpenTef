@@ -1295,6 +1295,9 @@ begin
 end;
 
 procedure TF_Principal.BDesconectarClick(Sender: TObject);
+var
+    VL_Codigo: integer;
+    VL_DescricaoErro: PChar;
 begin
     VL_Codigo := F_Desconectar();
 

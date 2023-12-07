@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Win64"/>
+    <Units>
+      <Unit>
+        <Filename Value="modelo_mercado.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="19"/>
+        <UsageCount Value="32"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uinterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FInterface"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <TopLine Value="102"/>
+        <CursorPos X="17" Y="121"/>
+        <UsageCount Value="32"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uprodutos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="37" Y="36"/>
+        <UsageCount Value="29"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uopentef.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="121"/>
+        <CursorPos X="33" Y="89"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="128" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="129" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="130" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="131" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="132" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="133" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="134" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="135" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="137" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="138" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="139" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="140" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="141" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="142" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="144" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="146" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="161" Column="124" TopLine="128"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="133" Column="113" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="132" Column="39" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="109" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="111" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="134" Column="156" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="132" Column="143" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="112" Column="59" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="136" Column="48" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="130" Column="130" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="121" Column="17" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="98" Column="13" TopLine="89"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="144" Column="57" TopLine="135"/>
+      </Position>
+      <Position>
+        <Filename Value="uopentef.pas"/>
+        <Caret Line="90" Column="55" TopLine="71"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
