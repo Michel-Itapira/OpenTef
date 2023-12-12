@@ -200,4 +200,13 @@ object FApp: TFApp
     OnClick = Button10Click
     TabOrder = 18
   end
+  object Button11: TButton
+    Left = 798
+    Height = 25
+    Top = 521
+    Width = 75
+    Caption = 'Teste dll'
+    OnClick = Button11Click
+    TabOrder = 19
+  end
 end

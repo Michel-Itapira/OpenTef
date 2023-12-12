@@ -858,6 +858,15 @@ begin
                     for VL_I := 1 to VL_Mensagem.TagCount do
                     begin
                         VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
+
+                        // corrigir dados invalidos
+                        if fcomando = '000A' then   // impede insersao de dados errados na aprovação da venda
+                        begin
+                            if (VL_Tag = '00F1') or (VL_Tag = '0028') or (VL_Tag = '0023') or (VL_Tag = '0024') or
+                                (VL_Tag = '0036') or (VL_Tag = '010E') or (VL_Tag = '010F') then
+                                continue;
+                        end;
+
                         if VL_TagDados = '' then
                             ftransacao.fMensagem.AddTag(VL_Tag, PChar(#1))
                         else
@@ -1137,6 +1146,8 @@ begin
                     VL_ChaveComunicacao := F_ChaveComunicacao;
                     VL_TransacaoDadosPublicos.AddTag('010E', VL_Rsa.EncryptString(VL_ChaveComunicacao));
                     VL_TransacaoDadosPublicos.AddTag('010F', '');
+
+                    VL_Criptografa := True;
                 end;
 
                 VL_Mensagem.AddComando(fcomando, 'S');
@@ -1152,7 +1163,7 @@ begin
                     VL_TransacaoDadosPublicos.AddComando('000A', ftransacao.fMensagem.ComandoDados());
                     VL_TransacaoDadosPublicos.AddTag('0051', ftransacao.fMensagem.GetTagAsAstring('0051'));  // tempo de espera
                     VL_TransacaoDadosPublicos.AddTag('0036', ftransacao.fMensagem.GetTagAsAstring('0036')); //  bin
-                    VL_TransacaoDadosPublicos.AddTag('00F1', ftransacao.fMensagem.GetTagAsAstring('00F1')); //  chave
+                    VL_TransacaoDadosPublicos.AddTag('00F1', ftransacao.fMensagem.GetTagAsAstring('00F1')); //  chave da transacao
                     VL_Mensagem.AddTag('007D', VL_TransacaoDadosPublicos.TagsAsString);
                 end
                 else

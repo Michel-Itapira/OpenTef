@@ -1,9 +1,8 @@
 object DModulo: TDModulo
-  OnCreate = DataModuleCreate
   OldCreateOrder = False
   Height = 150
-  HorizontalOffset = 1848
-  VerticalOffset = 733
+  HorizontalOffset = 1843
+  VerticalOffset = 799
   Width = 331
   object CriptoAes: TLbRijndael
     CipherMode = cmECB

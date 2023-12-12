@@ -59,7 +59,6 @@ type
         Compilacao: integer;
     end;
 
-
     { TMensagem }
     TMensagem = class
     private
@@ -86,6 +85,11 @@ type
         function AddTag(VP_Posicao: integer; VP_Tag, VP_Dados: string): integer;
         procedure Limpar;
         constructor Create;
+    end;
+
+    TObjeto = class
+        ID: integer;
+        Objeto: Pointer;
     end;
 
 
@@ -211,8 +215,15 @@ type
     { TDFuncoes }
 
     TDFuncoes = class(TDataModule)
+        procedure DataModuleCreate(Sender: TObject);
+        procedure DataModuleDestroy(Sender: TObject);
     private
+        ListaObjetos: TList;
+        indice: integer;
     public
+        function objetoAdd(VP_Objeto: Pointer): integer;
+        function objetoDelete(VP_ID: integer): integer;
+        function objetoGet(VP_ID: integer): Pointer;
     end;
 
 function Formata(Texto, Espaco: string; Tamanho: int64; Alinha_Esquerda: boolean): string;
@@ -270,11 +281,13 @@ function copiaTagPosicao(VP_Posicao: integer; VP_TagEntrada, VO_TagSaida: TMensa
 procedure copiaTag(VP_TagEntrada, VP_TagSaida: TMensagem; VP_LimparTagSaida: boolean);
 procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
 
+function mensagemcreate_id(var VO_ID: integer): integer; cdecl;
 function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
 function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: pansichar): integer; cdecl;
 function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: pansichar): integer; cdecl;
 function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: pansichar): integer; cdecl;
 procedure mensagemfree(VP_Mensagem: Pointer); cdecl;
+function mensagemfree_id(VP_ID: integer): integer; cdecl;
 function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: pansichar): integer; cdecl;
 function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: pansichar): integer; cdecl;
 function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag, VP_Dados: pansichar): integer; cdecl;
@@ -292,6 +305,8 @@ procedure HexToByte(Value: string; var VO_Retorno: TLBytes);
 function CriaChave(Tamanho: int64): string;
 
 var
+    DFuncoes: TDFuncoes;
+
     VF_Sequencia: longint;
     VF_CriticoLog: TRTLCriticalSection;
 
@@ -673,18 +688,40 @@ begin
 end;
 
 
+function mensagemcreate_id(var VO_ID: integer): integer; cdecl;
+var
+    VL_Mensagem: ^TMensagem;
+begin
+    Result := mensagemcreate(VL_Mensagem);
+
+    if Result <> 0 then
+        Exit;
+
+    VO_ID := DFuncoes.objetoAdd(VL_Mensagem);
+end;
+
 function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
 begin
-    GravaLog('E:\Lazarus\OpenTef\publica\fontes\java\FrenteCaixa\funcoes.log', 0, '', 'tef_lib', '271120231102', 'create', '', 1, 1);
     Result := 0;
     Pointer(VP_Mensagem) := pointer(TMensagem.Create);
-
 end;
+
 
 function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: pansichar): integer; cdecl;
 begin
     Result := TMensagem(VP_Mensagem).CarregaTags(VP_Dados);
 end;
+
+{
+function mensagemcarregatagsid(VP_ID: Pointer; VP_Dados: pansichar): integer; cdecl;
+var
+    //VL_RecMensagem: ^TRecMensagem.
+begin
+    //VL_RecMensagem := DFuncoes.get
+
+    Result := TMensagem(VP_Mensagem).CarregaTags(VP_Dados);
+end;
+}
 
 function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: pansichar): integer; cdecl;
 var
@@ -709,15 +746,31 @@ end;
 
 procedure mensagemfree(VP_Mensagem: Pointer); cdecl;
 begin
-    GravaLog('E:\Lazarus\OpenTef\publica\fontes\java\FrenteCaixa\funcoes.log', 0, '', 'tef_lib', '271120231102', 'free', '', 1, 1);
+    if Assigned(VP_Mensagem) then
+    begin
+        TMensagem(VP_Mensagem).Free;
+    end;
+end;
+
+
+function mensagemfree_id(VP_ID: integer): integer; cdecl;
+var
+    VL_Mensagem: ^Tmensagem;
+begin
     try
-        if Assigned(VP_Mensagem) then
-            TMensagem(VP_Mensagem).Free;
-    except
-        on e: EInOutError do
+        VL_Mensagem := DFuncoes.objetoGet(VP_ID);
+        if not Assigned(VL_Mensagem) then
         begin
-            GravaLog('E:\Lazarus\OpenTef\publica\fontes\java\FrenteCaixa\funcoes.log', 0, '', 'tef_lib', '091120231022',
-                'Erro ' + e.ClassName + '/' + e.Message, '', 1, 1);
+            Result := 1;
+            Exit;
+        end;
+
+        VL_Mensagem^.Free;
+        Result := DFuncoes.objetoDelete(VP_ID);
+    except
+        on e: Exception do
+        begin
+            Result := 1;
         end;
     end;
 end;
@@ -949,6 +1002,7 @@ begin
             121: VL_String := 'Não é possível realizar a conciliacao, pois a versão está desatualizada';
             122: VL_String := 'ESSA CONEXAO NÃO PERMITE CONCILIAÇÃO';
             123: VL_String := 'Não é possível enviar mais de uma conciliacao para a mesma operadora';
+            124: VL_String := 'Erro insperado na lib do pinpad';
             else
             begin
                 Result := 1;
@@ -961,6 +1015,85 @@ begin
     end;
 end;
 
+{ TDFuncoes }
+
+procedure TDFuncoes.DataModuleCreate(Sender: TObject);
+begin
+    inherited;
+    ListaObjetos := TList.Create;
+    indice := 0;
+end;
+
+procedure TDFuncoes.DataModuleDestroy(Sender: TObject);
+begin
+    while ListaObjetos.Count > 0 do
+    begin
+        TObject(TObjeto(ListaObjetos.Items[0]).Objeto).Free;
+        TObjeto(ListaObjetos.Items[0]).Free;
+        ListaObjetos.Delete(0);
+    end;
+
+    ListaObjetos.Free;
+    inherited Destroy;
+end;
+
+function TDFuncoes.objetoAdd(VP_Objeto: Pointer): integer;
+var
+    VL_objeto: TObjeto;
+begin
+    Result := -1;
+
+    VL_objeto := TObjeto.Create;
+    VL_objeto.Objeto := VP_Objeto;
+    Inc(indice);
+    VL_objeto.ID := indice;
+    ListaObjetos.Add(VL_objeto);
+
+    Result := indice;
+end;
+
+function TDFuncoes.objetoGet(VP_ID: integer): Pointer;
+var
+    VL_objeto: TObjeto;
+    VL_I: integer;
+begin
+    Result := nil;
+
+    if ListaObjetos.Count = 0 then
+        Exit;
+
+    for VL_I := 0 to ListaObjetos.Count - 1 do
+    begin
+        VL_objeto := TObjeto(ListaObjetos.Items[VL_I]);
+        if VL_objeto.ID = VP_ID then
+        begin
+            Result := VL_objeto.Objeto;
+            Exit;
+        end;
+    end;
+end;
+
+function TDFuncoes.objetoDelete(VP_ID: integer): integer;
+var
+    VL_objeto: TObjeto;
+    VL_I: integer;
+begin
+    Result := 1;
+
+    if ListaObjetos.Count = 0 then
+        Exit;
+
+    for VL_I := 0 to ListaObjetos.Count - 1 do
+    begin
+        VL_objeto := TObjeto(ListaObjetos.Items[VL_I]);
+        if VL_objeto.ID = VP_ID then
+        begin
+            ListaObjetos.Delete(VL_I);
+            Result := 0;
+            Exit;
+        end;
+    end;
+end;
 
 { TTemporizador }
 

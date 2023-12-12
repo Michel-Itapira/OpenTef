@@ -14,7 +14,7 @@ uses
     rxnew,
     funcoes,
     comunicador,
-    def { you can add units after this };
+    def;
 
 exports
     iniciarconexao,

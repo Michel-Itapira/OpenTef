@@ -22,6 +22,7 @@ type
         BBin: TButton;
         Button1: TButton;
         Button10: TButton;
+        Button11: TButton;
         Button2: TButton;
         Button3: TButton;
         Button4: TButton;
@@ -41,6 +42,7 @@ type
         procedure BMenuClick(Sender: TObject);
         procedure BBinClick(Sender: TObject);
         procedure Button10Click(Sender: TObject);
+        procedure Button11Click(Sender: TObject);
         procedure Button1Click(Sender: TObject);
         procedure Button2Click(Sender: TObject);
         procedure Button3Click(Sender: TObject);
@@ -166,9 +168,27 @@ begin
             MBIN.Lines.Add(DateTimeToStr(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Hora));
         end;
     finally
-      DComunicador.IdTCPServidor.Contexts.UnlockList;
+        DComunicador.IdTCPServidor.Contexts.UnlockList;
     end;
 
+end;
+
+procedure TFApp.Button11Click(Sender: TObject);
+var
+    lib: TLibHandle;
+    Finalizar: TFinalizar;
+    Inicializar: TModuloInicializar;
+    PModulo: Pointer;
+begin
+    lib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\0068.dll'));
+
+    Pointer(Finalizar) := GetProcAddress(lib, 'finalizar');
+    Pointer(Inicializar) := GetProcAddress(lib, 'inicializar');
+
+    Inicializar(1, PModulo, nil, 1, PChar(ExtractFilePath(ParamStr(0)) + 'teste.log'));
+    Finalizar(PModulo);
+
+    UnloadLibrary(lib);
 end;
 
 procedure TFApp.Button1Click(Sender: TObject);
@@ -379,10 +399,18 @@ var
     VL_RecDLL: ^TRecDLL;
     i: integer;
 begin
+    MBIN.Lines.Clear;
+
+    if not Assigned(DNucleo) then
+        Exit;
+
+    if DNucleo.VF_DLL.ListaDLL.Count = 0 then
+        Exit;
+
     for i := 0 to DNucleo.VF_DLL.ListaDLL.Count - 1 do
     begin
         VL_RecDLL := DNucleo.VF_DLL.ListaDLL[i];
-        MBIN.Lines.Add(FloatToStr(VL_RecDLL^.handle));
+        MBIN.Lines.Add(IntToStr(VL_RecDLL^.handle));
         MBIN.Lines.Add(VL_RecDLL^.nome);
     end;
 

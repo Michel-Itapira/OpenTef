@@ -660,7 +660,6 @@ begin
     VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
 
     F_MensagemComandoDados(F_Mensagem, VL_Dados);
-    //F_Principal.MStatus.Lines.Add('TransacaoID:' + VL_Dados);
     VL_MenuVenda.ShowModal;
 
     VO_Dados := StrAlloc(Length(VL_MenuVenda.EDados.Text) + 1);
@@ -668,6 +667,7 @@ begin
 
     VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
     StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
+
     VL_MenuVenda.Free;
 
 end;
@@ -1394,7 +1394,7 @@ begin
     end;
 
     MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
-
+    MChave.Lines.Text:=VL_TransacaoID;
     {
     while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < VL_Tempo) do
     begin

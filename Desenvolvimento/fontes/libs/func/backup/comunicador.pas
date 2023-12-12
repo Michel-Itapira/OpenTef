@@ -436,7 +436,7 @@ begin
                 TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
 
         except
-            on e: EInOutError do
+            on e: Exception do
                 GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '120920222118', 'TThServidorProcessaRecebe.Execute ' +
                     e.ClassName + '/' + e.Message, '', 1, 1);
         end;
@@ -667,7 +667,7 @@ begin
                 TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
 
         except
-            on e: EInOutError do
+            on e: Exception do
                 GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
                     e.ClassName + '/' + e.Message, '', 1, 1);
         end;
@@ -854,6 +854,7 @@ begin
             if TDComunicador(VP_DComunicador).idTCPCliente.Connected = False then
             begin
                 Result := 26;
+                GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '081220231450', 'erro ao conectar', '', Result, 1);
                 Exit;
             end;
 
@@ -868,42 +869,22 @@ begin
             Result := ClienteTransmiteDados(VP_DComunicador, VL_Transmissao_ID, VL_DadosO, VL_DadosI, 15000, True);
 
             if Result <> 0 then
+            begin
+                GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '081220231451',
+                    'erro na troca de chave', VL_DadosO, Result, 1);
                 Exit;
+            end;
 
             VL_Mensagem.Limpar;
             VL_Mensagem.CarregaTags(VL_DadosI);
 
             if VL_Mensagem.Comando = '0026' then
             begin
+                GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '081220231452',
+                    'comando recebido com erro', VL_DadosI, Result, 1);
                 Result := StrToInt(VL_Mensagem.ComandoDados);
                 Exit;
             end;
-
-            {
-            if VL_Comando = '0025' then
-            begin
-                VL_Mensagem.GetTag('0008', VL_ModuloPublico);
-                VL_Mensagem.GetTag('0027', VL_ExpoentePublico);
-                VL_Mensagem.GetTag('0009', VL_ChaveComunicacao);
-                VL_Mensagem.GetTag('0022', VL_ChaveComunicacaoIDX);
-                VL_Mensagem.GetTag('0023', VL_OK);
-
-
-                TDComunicador(VP_DComunicador).V_ConexaoCliente.setExpoentePublico(VL_ExpoentePublico);
-                TDComunicador(VP_DComunicador).V_ConexaoCliente.setModuloPublico(VL_ModuloPublico);
-                VL_ChaveComunicacao := TDComunicador(VP_DComunicador).V_ConexaoCliente.Rsa.DecryptString(VL_ChaveComunicacao);
-                TDComunicador(VP_DComunicador).V_ConexaoCliente.setChaveComunicacao(VL_ChaveComunicacao);
-                VL_OK := V_ConexaoCliente.Aes.DecryptString(VL_OK);
-
-
-                if VL_OK <> 'OK' then
-                begin
-                    Result := 32;
-                    Exit;
-                end;
-                TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csChaveado;
-            end;
-            }
         end;
 
     finally
@@ -927,7 +908,7 @@ begin
         end;
 
     except
-        on e: EInOutError do
+        on e: Exception do
         begin
             Result := 83;
             GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'TDComunicador.ClienteVerificaConexao', '160920221056',
@@ -1135,8 +1116,6 @@ begin
     TDComunicador(Sender).V_ServidorRecebimento := nil;
     TDComunicador(Sender).V_TransmissaoComando := nil;
     TDComunicador(Sender).V_ConexaoCliente := TTConexao.Create(Sender);
-    TDComunicador(Sender).V_ThRecebeEscuta := TThRecebe.Create(Sender);
-    TDComunicador(Sender).V_ThRecebeEscuta.Start;
 
 end;
 
@@ -1144,60 +1123,62 @@ procedure TDComunicador.DataModuleDestroy(Sender: TObject);
 var
     V_TEmporizadorTThread: ^TTEmporizadorTThread;
 begin
-    // avisa as threads que vai parar
-    TDComunicador(Sender).V_Parar := True;
+    try
+        GravaLog(TDComunicador(self).V_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231638',
+            'comeco do  TDComunicador.DataModuleDestroy', '', 0, 3);
+        // avisa as threads que vai parar
+        TDComunicador(Sender).V_Parar := True;
 
-    while TDComunicador(Sender).V_ListaThreads.Count > 0 do
-    begin
-        V_TEmporizadorTThread := TDComunicador(Sender).V_ListaThreads.Items[0];
-        if Assigned(V_TEmporizadorTThread) then
+        while TDComunicador(Sender).V_ListaThreads.Count > 0 do
         begin
-            V_TEmporizadorTThread^.Terminate;
+            V_TEmporizadorTThread := TDComunicador(Sender).V_ListaThreads.Items[0];
             if Assigned(V_TEmporizadorTThread) then
-                WaitForThreadTerminate(V_TEmporizadorTThread^.Handle, 5000);
+            begin
+                V_TEmporizadorTThread^.Terminate;
+                if Assigned(V_TEmporizadorTThread) then
+                    WaitForThreadTerminate(V_TEmporizadorTThread^.Handle, 5000);
+            end;
+            TDComunicador(Sender).V_ListaThreads.Remove(V_TEmporizadorTThread);
         end;
-        TDComunicador(Sender).V_ListaThreads.Remove(V_TEmporizadorTThread);
+
+        // aguarda finalizar processamento da lista de solicitações da conexão dos clientes
+        //   if Assigned(TDComunicador(Sender).V_ThClienteProcessaRecebe) then
+        //   begin
+        //      TDComunicador(Sender).V_ThClienteProcessaRecebe.Terminate;
+        //      TDComunicador(Sender).V_ThClienteProcessaRecebe.WaitFor;
+        //     TDComunicador(Sender).V_ThClienteProcessaRecebe.Free;
+        //    TDComunicador(Sender).V_ThClienteProcessaRecebe := nil;
+        // end;
+
+        // aguarda finalizar processamento da lista de solicitações da conexão dos servidores
+
+
+
+
+        // desativa socket
+        desativartodasconexao(Sender);
+
+        if Assigned(TDComunicador(Sender).V_ConexaoCliente) then
+        begin
+            TDComunicador(Sender).V_ConexaoCliente.Free;
+            TDComunicador(Sender).V_ConexaoCliente := nil;
+        end;
+
+        if Assigned(TDComunicador(Sender).V_EventoSocketAguardaResposta) then
+        begin
+            TDComunicador(Sender).V_EventoSocketAguardaResposta.Free;
+            TDComunicador(Sender).V_EventoSocketAguardaResposta := nil;
+        end;
+
+        TDComunicador(Sender).V_ListaThreads.Free;
+
+    except
+        on e: Exception do
+            GravaLog(TDComunicador(self).V_ArquivoLog, 0, '', 'TDComunicador.DataModuleDestroy', '111220231640',
+                ' ' + e.ClassName + '/' + e.Message, '', 1, 1);
     end;
 
-    // aguarda finalizar processamento da lista de solicitações da conexão dos clientes
-    //   if Assigned(TDComunicador(Sender).V_ThClienteProcessaRecebe) then
-    //   begin
-    //      TDComunicador(Sender).V_ThClienteProcessaRecebe.Terminate;
-    //      TDComunicador(Sender).V_ThClienteProcessaRecebe.WaitFor;
-    //     TDComunicador(Sender).V_ThClienteProcessaRecebe.Free;
-    //    TDComunicador(Sender).V_ThClienteProcessaRecebe := nil;
-    // end;
-
-    // aguarda finalizar processamento da lista de solicitações da conexão dos servidores
-
-
-
-    // aguarda finalizar processamento da escuta do socket do cliente
-    if Assigned(TDComunicador(Sender).V_ThRecebeEscuta) then
-    begin
-        TDComunicador(Sender).V_ThRecebeEscuta.Terminate;
-        TDComunicador(Sender).V_ThRecebeEscuta.WaitFor;
-        TDComunicador(Sender).V_ThRecebeEscuta := nil;
-    end;
-
-
-
-    // desativa socket
-    desativartodasconexao(Sender);
-
-    if Assigned(TDComunicador(Sender).V_ConexaoCliente) then
-    begin
-        TDComunicador(Sender).V_ConexaoCliente.Free;
-        TDComunicador(Sender).V_ConexaoCliente := nil;
-    end;
-
-    if Assigned(TDComunicador(Sender).V_EventoSocketAguardaResposta) then
-    begin
-        TDComunicador(Sender).V_EventoSocketAguardaResposta.Free;
-        TDComunicador(Sender).V_EventoSocketAguardaResposta := nil;
-    end;
-
-    TDComunicador(Sender).V_ListaThreads.Free;
+    GravaLog(TDComunicador(self).V_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231639', 'fim do TDComunicador.DataModuleDestroy', '', 0, 3);
 end;
 
 
@@ -1267,12 +1248,34 @@ end;
 
 procedure TDComunicador.IdTCPClienteConnected(Sender: TObject);
 begin
-    Self.V_ConexaoCliente.Status := csLink;
-    self.V_ConexaoCliente.StatusDesejado := csLogado;
+    try
+        Self.V_ConexaoCliente.Status := csLink;
+        self.V_ConexaoCliente.StatusDesejado := csLogado;
+
+        TDComunicador(Self).V_ThRecebeEscuta := TThRecebe.Create(Self);
+        TDComunicador(Self).V_ThRecebeEscuta.FreeOnTerminate := False;
+        TDComunicador(Self).V_ThRecebeEscuta.Start;
+    except
+        on e: Exception do
+        begin
+            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '081220231619', 'IdTCPClienteConnected' + e.ClassName + '/' + e.Message, '', 1, 1);
+        end;
+    end;
 end;
 
 procedure TDComunicador.IdTCPClienteDisconnected(Sender: TObject);
 begin
+
+    // aguarda finalizar processamento da escuta do socket do cliente
+    if Assigned(TDComunicador(Sender).V_ThRecebeEscuta) then
+    begin
+        TDComunicador(Self).V_ThRecebeEscuta.Terminate;
+        TDComunicador(Self).V_ThRecebeEscuta.WaitFor;
+        TDComunicador(Self).V_ThRecebeEscuta.Free;
+        TDComunicador(Self).V_ThRecebeEscuta := nil;
+    end;
+
+
     Self.V_ConexaoCliente.Status := csDesconectado;
     if Self.V_ConexaoCliente.StatusDesejado = csLogado then
     begin
@@ -1291,7 +1294,17 @@ begin
         TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
     end;
     if TDComunicador(VP_DComunicador).idTCPCliente.Connected then
+    begin
+        if not TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBufferIsEmpty then
+            TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBuffer.Clear;
+        if not TDComunicador(VP_DComunicador).idTCPCliente.Socket.InputBufferIsEmpty then
+            TDComunicador(VP_DComunicador).idTCPCliente.Socket.InputBuffer.Clear;
+
         TDComunicador(VP_DComunicador).idTCPCliente.Disconnect;
+
+        if TDComunicador(VP_DComunicador).idTCPCliente.Socket.Connected then
+            TDComunicador(VP_DComunicador).idTCPCliente.Socket.Close;
+    end;
 end;
 
 function TDComunicador.DesconectarClienteID(VP_DComunicador: Pointer; VP_Conexao_ID: integer): integer;
@@ -1342,13 +1355,19 @@ begin
         try
             VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
+            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '11122023214800', 'TransmissaoID:'+VP_Transmissao_ID+ ' procurando Conexao_ID:'+IntToStr(VP_Conexao_ID), '', 0, 2);
+
             for VL_I := 0 to VL_Clientes.Count - 1 do
+            begin
+            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '11122023214801', 'TransmissaoID:'+VP_Transmissao_ID+ 'registrada Conexao_ID:'+IntToStr(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID), '', 0, 2);
                 if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
                 begin
                     VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
                     Result := 0;
                     Break;
                 end;
+
+            end;
         finally
             TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.UnlockList;
         end;
@@ -1443,7 +1462,7 @@ begin
         end;
 
     except
-        on e: EInOutError do
+        on e: Exception do
         begin
             Result := 1;
             GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090620221846', 'ServidorTransmiteSolicitacaoID' + e.ClassName + '/' + e.Message, '', 1, 1);
@@ -1578,7 +1597,7 @@ begin
         end;
 
     except
-        on e: EInOutError do
+        on e: Exception do
         begin
             Result := 1;
             GravaLog(V_ArquivoLog, 0, '', 'comunicador', '260820220820', 'ServidorTransmiteSolicitacaoIdentificacao' +
@@ -1604,7 +1623,7 @@ begin
         end;
 
     except
-        on e: EInOutError do
+        on e: Exception do
             GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920220835', 'Erro na TDComunicador.desativartodasconexao ' +
                 e.ClassName + '/' + e.Message, '', 1, 1);
 
@@ -1626,9 +1645,10 @@ var
 begin
     VL_Mensagem := TMensagem.Create;
     try
-        try
-            while not Terminated do
-            begin
+
+        while not Terminated do
+        begin
+            try
                 if not Assigned(TDComunicador(f_DComunicador)) then
                     Exit;
 
@@ -1646,21 +1666,32 @@ begin
                 if TDComunicador(f_DComunicador).V_Parar then
                     Exit;
 
+
+                VL_Linha := '08122023153900';
+
                 if TDComunicador(f_DComunicador).IdTCPCliente.Connected then
-                    TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.CheckForDisconnect
+                begin
+                    VL_Linha := '08122023153910';
+                    TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.CheckForDisconnect;
+                    VL_Linha := '08122023153905';
+                end
                 else
                 if ((TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado) and
                     (TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csLogado)) then
                 begin
+                    VL_Linha := '08122023153906';
                     TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csDesconectado;
                     TThClienteProcessaRecebe.Create(f_DComunicador, VL_Dados);
                 end;
 
+                VL_Linha := '08122023153901';
                 if TDComunicador(f_DComunicador).V_Parar then
                     Exit;
 
+                VL_Linha := '08122023153902';
                 if TDComunicador(f_DComunicador).IdTCPCliente.Connected then
                 begin
+                    VL_Linha := '08122023153903';
                     if not TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.InputBufferIsEmpty then
                     begin
                         VL_Linha := '090520221747';
@@ -1684,16 +1715,20 @@ begin
                         end;
 
                     end;
+                    VL_Linha := '08122023153904';
                 end;
                 sleep(10);
+
+
+
+            except
+                on e: Exception do
+                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
+                        e.ClassName + '/' + e.Message, '', 1, 1);
             end;
 
-
-        except
-            on e: EInOutError do
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
-                    e.ClassName + '/' + e.Message, '', 1, 1);
         end;
+
     finally
         begin
             VL_Mensagem.Free;
@@ -1814,7 +1849,7 @@ begin
 
 
         except
-            on e: EInOutError do
+            on e: Exception do
             begin
                 Result := 83;
                 GravaLog(V_ArquivoLog, 0, '', 'comunicador', '0109202219:09', 'Erro na TDComunicador.ClienteTransmiteDados' +
@@ -1891,7 +1926,7 @@ begin
                     VP_Procedimento(PChar(VO_Transmissao_ID), V_ProcID, Result, PChar(VL_Dados));
             end;
         except
-            on e: EInOutError do
+            on e: Exception do
             begin
                 Result := 24;
                 GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090520221723', 'Erro na TDComunicador.ClienteTransmiteSolicitacao ' +

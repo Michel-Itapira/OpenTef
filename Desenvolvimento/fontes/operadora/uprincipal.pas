@@ -17,8 +17,8 @@ type
     TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
         VP_ID: integer; VP_Chave: pansichar): integer; cdecl;
 
-    Tiniciarconexao = function(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
-        VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib; VP_Identificacao: PChar): integer; cdecl;
+    Tiniciarconexao = function(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PAnsiChar; VP_PortaCaixa, VP_PortaServico: integer;
+        VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib; VP_Identificacao: PAnsiChar): integer; cdecl;
     Tfinalizaconexao = function(): integer; cdecl;
     TResponde = function(VP_Transmissao_ID, VP_Mensagem: pansichar; VP_ID: integer): integer; cdecl;
 

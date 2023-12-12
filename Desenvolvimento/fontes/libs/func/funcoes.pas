@@ -122,15 +122,14 @@ type
     // pmA permissao de administrador pode gerenciar as transacao e fazer cadastros
     // pmU permissao de usuario consulta e visualizacao das transacoes
 
-    TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
-    TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
+    TRetornoModulo = procedure(VP_Transmissao_ID: PAnsiChar; VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: PAnsiChar; VP_Modulo: Pointer); cdecl;
+    TRetorno = procedure(VP_Transmissao_ID: PAnsiChar; VP_ProcID, VP_Erro: integer; VP_Dados: PAnsiChar); cdecl;
 
-    TRetornoDoCliente = function(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+    TRetornoDoCliente = function(VP_DadosEntrada: PAnsiChar; var VO_DadosSaida: PAnsiChar): integer; cdecl;
     TServidorRecebimento = procedure(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
         VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
         VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
-    TServidorRecebimentoLib = function(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: pansichar;
-        VP_Conexao_ID: integer; VP_Chave: PChar): integer; cdecl;
+    TServidorRecebimentoLib = function(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PAnsiChar; VP_IP: pansichar; VP_Conexao_ID: integer; VP_Chave: PAnsiChar): integer; cdecl;
     TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada,
         tsComErro, tsAbortada, tsAguardandoDadosPDV);
 
@@ -234,7 +233,7 @@ procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; va
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
     VP_CodigoErro: integer; VP_NivelLog: integer);
-function versao(var VO_Dados: PChar): integer; cdecl;
+function versao(var VO_Dados: PAnsiChar): integer; cdecl;
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): ansistring;

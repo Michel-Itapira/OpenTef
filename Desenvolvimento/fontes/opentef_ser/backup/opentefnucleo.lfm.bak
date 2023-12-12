@@ -3,8 +3,8 @@ object DNucleo: TDNucleo
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 1690
-  VerticalOffset = 517
+  HorizontalOffset = 1683
+  VerticalOffset = 669
   Width = 416
   object CriptoAes: TLbRijndael
     CipherMode = cmECB

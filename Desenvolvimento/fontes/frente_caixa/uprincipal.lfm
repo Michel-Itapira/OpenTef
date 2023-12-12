@@ -1,10 +1,10 @@
 object F_Principal: TF_Principal
-  Left = 863
-  Height = 670
-  Top = 146
+  Left = 835
+  Height = 618
+  Top = 0
   Width = 943
   Caption = 'Caixa'
-  ClientHeight = 670
+  ClientHeight = 618
   ClientWidth = 943
   OnCreate = FormCreate
   OnShow = FormShow
@@ -1134,8 +1134,8 @@ object F_Principal: TF_Principal
         Size = 100
       end>
     PacketRecords = 0
-    Left = 40
-    Top = 432
+    Left = 336
+    Top = 376
     object MDConciliacaoS_NSU: TStringField
       FieldKind = fkData
       FieldName = 'S_NSU'
@@ -1189,7 +1189,7 @@ object F_Principal: TF_Principal
   end
   object DConciliacao: TDataSource
     DataSet = MDConciliacao
-    Left = 144
-    Top = 432
+    Left = 424
+    Top = 392
   end
 end

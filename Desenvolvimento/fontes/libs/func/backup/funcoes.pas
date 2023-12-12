@@ -1002,6 +1002,7 @@ begin
             121: VL_String := 'Não é possível realizar a conciliacao, pois a versão está desatualizada';
             122: VL_String := 'ESSA CONEXAO NÃO PERMITE CONCILIAÇÃO';
             123: VL_String := 'Não é possível enviar mais de uma conciliacao para a mesma operadora';
+            124: VL_String := 'Erro insperado na lib do pinpad';
             else
             begin
                 Result := 1;

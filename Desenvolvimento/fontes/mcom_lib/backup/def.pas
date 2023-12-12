@@ -14,7 +14,7 @@ const
 
 var
     C_Debug: boolean = True;
-    F_NivelLog: integer = 0;
+    F_NivelLog: integer = 3;
 
 
 implementation

@@ -1,5 +1,5 @@
 object F_MenuVenda: TF_MenuVenda
-  Left = 1755
+  Left = 1756
   Height = 451
   Top = 261
   Width = 485

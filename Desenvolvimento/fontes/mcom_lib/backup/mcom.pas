@@ -30,7 +30,7 @@ type
     TDMCom = class(TDataModule)
         CriptoAes: TLbRijndael;
         CriptoRsa: TLbRSA;
-        procedure DataModuleCreate(Sender: TObject);
+
     private
 
     public
@@ -93,11 +93,18 @@ implementation
 function iniciarconexao(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: pansichar; VP_PortaCaixa, VP_PortaServico: integer;
     VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib; VP_Identificacao: pansichar): integer; cdecl;
 begin
-    F_ArquivoLog := VP_ArquivoLog;
+
+    F_ArquivoLog := string(VP_ArquivoLog);
+
+    GravaLog(VP_ArquivoLog, 0, '', 'mcom', '11122023214806', 'f_arquivo:' + F_ArquivoLog + ' vparquivo:' + VP_ArquivoLog + ' vp_chave:' +
+        VP_Chave + ' identificacao:' + VP_Identificacao, '', 0, 2);
+
+
     DMCom := TDMCom.Create(nil);
     Result := DMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico, VP_PortaCaixa, VP_PortaServico, VP_Identificacao);
     F_ServidorRecebimentoLibCaixa := VO_RetornoCaixa;
     F_ServidorRecebimentoLibServico := VO_RetornoServico;
+
 end;
 
 function finalizaconexao: integer; cdecl;
@@ -182,7 +189,7 @@ begin
             VL_Aes.CipherMode := F_ComunicadorServico.CriptoAes.CipherMode;
             VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
-            GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230937', 'mensagem enviada descriptografada', VL_TagDados, 0,2);
+            GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230937', 'mensagem enviada descriptografada', VL_TagDados, 0, 2);
 
             VL_TagDados := VL_Aes.EncryptString(VL_TagDados);
             VL_Mensagem.AddTag('00E3', VL_TagDados);        // mensagem criptografada
@@ -194,17 +201,17 @@ begin
                     VL_Chaves.AddComando('0111', 'S');
                     VL_Chaves.AddTag('00F1', VL_Mensagem.GetTagAsAstring('00F1'));
 
-                    GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230936', 'mensagem enviada', VL_Chaves.TagsAsString, 0,2);
+                    GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230936', 'mensagem enviada', VL_Chaves.TagsAsString, 0, 2);
 
                     Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(F_ComunicadorServico, 30000, True, nil, '', VL_Chaves, VL_Chaves, VP_ID);
 
                     if Result <> 0 then
                     begin
-                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result,1);
+                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result, 1);
                         Exit;
                     end;
 
-                    GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230935', 'mensagem recebida', VL_Chaves.TagsAsString, 0,2);
+                    GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230935', 'mensagem recebida', VL_Chaves.TagsAsString, 0, 2);
 
                     VL_Chaves.GetTag('0028', VL_TamanhoPublico);        //tamanho chave
                     VL_Chaves.GetTag('0023', VL_ExpoentePublico);        //expoente
@@ -215,7 +222,7 @@ begin
 
                     if Result <> 0 then
                     begin
-                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result,1);
+                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result, 1);
                         Exit;
                     end;
                 end;
@@ -235,12 +242,12 @@ begin
         VL_Mensagem.AddTag('0023', DMCom.ExpoentePublico);        //expoente
         VL_Mensagem.AddTag('0024', DMCom.ModuloPublico);        //modulos
 
-        GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230934', 'mensagem enviada', VL_Mensagem.TagsAsString, 0,2);
+        GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230934', 'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
         Result := F_ComunicadorCaixa.ServidorTransmiteSolicitacaoID(F_ComunicadorCaixa, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_ID);
         if Result <> 0 then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221311', '', '', Result,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221311', '', '', Result, 1);
             Exit;
         end;
     finally
@@ -257,6 +264,7 @@ function respondeservico(VP_Transmissao_ID, VP_Dados: pansichar; VP_ID: integer)
 var
     VL_Mensagem, VL_Chaves: TMensagem;
     VL_TagDados: string;
+    VL_Transmissao_ID: string;
     VL_ModuloPublico: ansistring;
     VL_ExpoentePublico: ansistring;
     VL_TamanhoPublico: int64;
@@ -269,6 +277,7 @@ begin
         VL_Aes := nil;
         VL_ChaveComunicacao := '';
         VL_TagDados := '';
+        VL_Transmissao_ID := VP_Transmissao_ID;
         VL_Mensagem := TMensagem.Create;
         VL_Chaves := TMensagem.Create;
 
@@ -276,7 +285,7 @@ begin
 
         if Result <> 0 then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '290820221350', '', '', Result,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '290820221350', '', '', Result, 1);
             Exit;
         end;
 
@@ -305,7 +314,7 @@ begin
             VL_Aes.CipherMode := F_ComunicadorServico.CriptoAes.CipherMode;
             VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
-            GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230933', 'mensagem enviada descriptografada', VL_TagDados, 0,2);
+            GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230933', 'mensagem enviada descriptografada', VL_TagDados, 0, 2);
 
             VL_TagDados := VL_Aes.EncryptString(VL_TagDados);
             VL_Mensagem.AddTag('00E3', VL_TagDados);        // mensagem criptografada
@@ -317,17 +326,17 @@ begin
                     VL_Chaves.AddComando('0111', 'S');
                     VL_Chaves.AddTag('00F1', VL_Mensagem.GetTagAsAstring('00F1'));
 
-                    GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230931', 'mensagem enviada', VL_Chaves.TagsAsString, 0,2);
+                    GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230931', 'mensagem enviada', VL_Chaves.TagsAsString, 0, 2);
 
                     Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(F_ComunicadorServico, 30000, True, nil, '', VL_Chaves, VL_Chaves, VP_ID);
 
                     if Result <> 0 then
                     begin
-                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result,1);
+                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result, 1);
                         Exit;
                     end;
 
-                    GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230932', 'mensagem recebida', VL_Chaves.TagsAsString, 0,2);
+                    GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230932', 'mensagem recebida', VL_Chaves.TagsAsString, 0, 2);
 
                     VL_Chaves.GetTag('0028', VL_TamanhoPublico);        //tamanho chave
                     VL_Chaves.GetTag('0023', VL_ExpoentePublico);        //expoente
@@ -338,7 +347,7 @@ begin
 
                     if Result <> 0 then
                     begin
-                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result,1);
+                        GravaLog(F_ArquivoLog, 0, '', 'mcom', '310820221737', '', '', Result, 1);
                         Exit;
                     end;
                 end;
@@ -358,13 +367,13 @@ begin
         VL_Mensagem.AddTag('0023', DMCom.ExpoentePublico);        //expoente
         VL_Mensagem.AddTag('0024', DMCom.ModuloPublico);        //modulos
 
-        GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230930', 'mensagem enviada', VL_Mensagem.TagsAsString, 0,2);
+        GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230930', 'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
-        Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(F_ComunicadorServico, 3000, False, nil, VP_Transmissao_ID,
+        Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(F_ComunicadorServico, 3000, False, nil, VL_Transmissao_ID,
             VL_Mensagem, F_Mensagem, VP_ID);
         if Result <> 0 then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221312', '', '', Result,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221312', '', '', Result, 1);
             Exit;
         end;
     finally
@@ -408,10 +417,6 @@ begin
     DMCom.RecebeComandoServico(VP_Erro, VP_Transmissao_ID, VP_DadosRecebidos, VP_Conexao_ID, VP_ClienteIP, VP_Terminal_Status);
 end;
 
-procedure TDMCom.DataModuleCreate(Sender: TObject);
-begin
-
-end;
 
 function TDMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string; VP_PortaCaixa, VP_PortaServico: integer; VP_Identificacao: string): integer;
 begin
@@ -472,7 +477,7 @@ begin
     VL_Mensagem := nil;
     try
         try
-           GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '131120230927', 'mensagem recebida', VP_DadosRecebidos, VP_Erro,2);
+            GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '131120230927', 'mensagem recebida', VP_DadosRecebidos, VP_Erro, 2);
 
             if VP_Erro = 96 then
             begin
@@ -519,11 +524,11 @@ begin
                 VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
                 VL_DadosCriptografados := VL_Aes.DecryptString(VL_DadosCriptografados);
-                VL_Mensagem.AddTag('007D', VL_DadosCriptografados);
+                VL_Mensagem.AddTag('00E3', VL_DadosCriptografados); // mensagem criptografada
 
                 VP_DadosRecebidos := VL_Mensagem.TagsAsString;
 
-                GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '131120230928', 'dados descriptografado', VP_DadosRecebidos, 0,2);
+                GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '131120230928', 'dados descriptografado', VP_DadosRecebidos, 0, 2);
             end;
 
 
@@ -542,7 +547,7 @@ begin
             on e: Exception do
             begin
                 Result := 1;
-                GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '080820231603', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result,1);
+                GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '080820231603', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result, 1);
             end;
         end;
     finally
@@ -569,7 +574,7 @@ begin
     VL_Mensagem := nil;
     try
         try
-           GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '131120230926', 'mensagem recebida', VP_DadosRecebidos, VP_Erro,2);
+            GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '131120230926', 'mensagem recebida', VP_DadosRecebidos, VP_Erro, 2);
 
             if VP_Erro = 96 then
             begin
@@ -602,7 +607,7 @@ begin
                     on e: Exception do
                     begin
                         Result := 1;
-                        GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '080820231605', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result,1);
+                        GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '080820231605', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result, 1);
                     end;
                 end;
             end
@@ -630,7 +635,7 @@ begin
 
                 VP_DadosRecebidos := VL_Mensagem.TagsAsString;
 
-                GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '131120230929', 'dados descriptografado', VP_DadosRecebidos, 0,2);
+                GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '131120230929', 'dados descriptografado', VP_DadosRecebidos, 0, 2);
             end;
 
             case VL_Mensagem.Comando() of
@@ -647,7 +652,7 @@ begin
             on e: Exception do
             begin
                 Result := 1;
-                GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '080820231605', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result,1);
+                GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '080820231605', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result, 1);
             end;
         end;
     finally
@@ -675,7 +680,7 @@ begin
         //inicio do processo
         if not VP_DComunicador.V_ConexaoCliente.GetSocketServidor(VP_DComunicador, VP_Conexao_ID, VL_AContext) then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '130920221654', 'Erro no comando0001 conexão do cliente não encontrada ', '', 99,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '130920221654', 'Erro no comando0001 conexão do cliente não encontrada ', '', 99, 1);
             Result := 99;
             Exit;
         end;
@@ -700,12 +705,12 @@ begin
         else
             VL_Mensagem.AddComando('004D', IntToStr(Result));
 
-        GravaLog(F_ArquivoLog, 0, 'comando0001', 'mcom', '131120230925', 'mensagem enviada', VL_Mensagem.TagsAsString, 0,2);
+        GravaLog(F_ArquivoLog, 0, 'comando0001', 'mcom', '131120230925', 'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
         Result := VP_DComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_Conexao_ID);
         if Result <> 0 then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221313', '', 'comando0001', Result,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221313', '', 'comando0001', Result, 1);
             Exit;
         end;
 
@@ -798,7 +803,7 @@ begin
 
         if Result <> 0 then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221314', '', 'comando0111', Result,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221314', '', 'comando0111', Result, 1);
             Exit;
         end;
 
@@ -808,12 +813,12 @@ begin
         VL_Mensagem.AddTag('0023', CriptoRsa.PublicKey.ExponentAsString);
         VL_Mensagem.AddTag('0028', Ord(CriptoRsa.PublicKey.KeySize));
 
-        GravaLog(F_ArquivoLog, 0, 'comando0111', 'mcom', '131120230924', 'mensagem enviada', VL_Mensagem.TagsAsString, 0,2);
+        GravaLog(F_ArquivoLog, 0, 'comando0111', 'mcom', '131120230924', 'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
         Result := VP_DComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem, F_Mensagem, VP_Conexao_ID);
         if Result <> 0 then
         begin
-            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221314', '', 'comando0111', Result,1);
+            GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221314', '', 'comando0111', Result, 1);
             Exit;
         end;
     finally
@@ -830,8 +835,7 @@ begin
     VO_Dados := '';
     Result := 0;
     try
-        if F_NivelLog >= 1 then
-            GravaLog(F_ArquivoLog, 0, 'TransmissaoComando', 'mcom', '131120230947', 'mensagem recebida', VP_Comando, 0);
+        GravaLog(F_ArquivoLog, 0, 'TransmissaoComando', 'mcom', '131120230947', 'mensagem recebida', VP_Comando, 0, 2);
 
         VL_Mensagem := TMensagem.Create;
 

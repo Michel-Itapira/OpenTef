@@ -43,7 +43,6 @@ type
     { TThModulo }
     TThModulo = class(TThread)
     private
-        VF_LibCarregada: boolean;
         VF_Rodando: boolean;
         VF_ConexaoTipo: TConexaoTipo;
         VF_ArquivoLog: string;
@@ -161,7 +160,7 @@ type
 
     TRecDLL = record
         nome: string;
-        ativa: boolean;
+        instancia: integer;
         handle: TLibHandle;
     end;
 
@@ -437,9 +436,16 @@ begin
             end;
 
             if Assigned(VL_Tarefa) then
+            begin
                 DComunicador.ServidorTransmiteSolicitacaoID(DComunicador,
                     3000, False, nil, VL_Tarefa^.VF_TransmissaoID, VL_Mensagem,
                     VL_Mensagem, VL_Tarefa^.VF_ConexaoID);
+            end
+            else
+            begin
+                GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo',
+                    '111220231010', 'ModuloCaixaRetorno, tarefa não encontrada', 'Dados: ' + VP_Dados + ' Tarefa: ' + IntToStr(VP_Tarefa_ID), VP_Erro, 1);
+            end;
 
 
         finally
@@ -677,16 +683,11 @@ begin
                     if VF_Sair then
                         Exit;
 
-                    if VF_LibCarregada = False then
+                    if TRegModulo(VF_RegModulo^).Handle = 0 then
                     begin
-                    {$IFDEF UNIX}
-                    // TRegModulo(VF_RegModulo^).Handle := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca));
-                    TRegModulo(VF_RegModulo^).Handle := DNucleo.VF_DLL.carregarDLL(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca);
-                    {$ELSE}
-                        // TRegModulo(VF_RegModulo^).Handle :=  LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\' + TRegModulo(VF_RegModulo^).Biblioteca));
-                        TRegModulo(VF_RegModulo^).Handle := DNucleo.VF_DLL.carregarDLL(ExtractFilePath(ParamStr(0)) + 'modulo\' +
-                            TRegModulo(VF_RegModulo^).Biblioteca);
-                    {$ENDIF}
+                        TRegModulo(VF_RegModulo^).Handle :=
+                            DNucleo.VF_DLL.carregarDLL(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca);
+
                         if TRegModulo(VF_RegModulo^).Handle = 0 then
                         begin
                             GravaLog(VF_ArquivoLog,
@@ -696,6 +697,7 @@ begin
                                 TRegModulo(VF_RegModulo^).Biblioteca, '', 0, 1);
                             Exit;
                         end;
+
                         Pointer(TRegModulo(VF_RegModulo^).Login) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'login');
                         Pointer(TRegModulo(VF_RegModulo^).Finalizar) := GetProcAddress(TRegModulo(VF_RegModulo^).Handle, 'finalizar');
                         Pointer(TRegModulo(VF_RegModulo^).Inicializar) :=
@@ -712,7 +714,7 @@ begin
                             TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag,
                             'opentefnucleo',
                             '12082022154300', 'Carregando funções da dll' +
-                            TRegModulo(VF_RegModulo^).Biblioteca, '', 0, 1);
+                            TRegModulo(VF_RegModulo^).Biblioteca, '', 0, 3);
 
                         if VF_Sair then
                             Exit;
@@ -735,7 +737,7 @@ begin
                             TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag,
                             'opentefnucleo',
                             '12082022154301 modulo' + IntToStr(TRegModulo(VF_RegModulo^).Handle),
-                            'Iniciando Mudulo' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0, 1);
+                            'Iniciando Mudulo' + TRegModulo(VF_RegModulo^).Biblioteca, '', 0, 3);
 
 
                         if VL_Erro <> 0 then
@@ -747,7 +749,7 @@ begin
                                 TRegModulo(VF_RegModulo^).Biblioteca, '', VL_Erro, 1);
                             Exit;
                         end;
-                        VF_LibCarregada := True;
+
                         if (VF_ConexaoTipo = cnServico) then
                             DNucleo.AtualizaBIN(TRegModulo(VF_RegModulo^), nil);
                     end
@@ -954,11 +956,20 @@ begin
         end;
     finally
         try
-            if VF_LibCarregada then
+            if TRegModulo(VF_RegModulo^).Handle <> 0 then
             begin
-                TRegModulo(VF_RegModulo^).Finalizar(TRegModulo(VF_RegModulo^).PModulo);
-                TRegModulo(VF_RegModulo^).PModulo := nil;
+                VL_Erro := TRegModulo(VF_RegModulo^).Finalizar(TRegModulo(VF_RegModulo^).PModulo);
 
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID,
+                        '', 'opentefnucleo', '111220231702', 'Erro no finalizar', '', VL_Erro, 1);
+                end;
+
+                Sleep(500);
+
+                TRegModulo(VF_RegModulo^).PModulo := nil;
+                DNucleo.VF_DLL.descarregarDLL(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca);
             end;
             VF_Rodando := False;
         except
@@ -1133,8 +1144,11 @@ begin
     DComunicador := nil;
 
     ZConexao.Disconnect;
+
     DNucleo.Free;
     DNucleo := nil;
+
+    GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231650', 'fim do TDNucleo.parar', '', 0, 3);
 end;
 
 function TDNucleo.ModuloCarrega(VP_ModuloConfig_ID: integer): integer;
@@ -1177,6 +1191,7 @@ begin
                 VL_RegModulo^.Bin_Estatico := VL_BancoDados.ConsultaA.FieldByName('BIN_ESTATICO').AsBoolean;
                 VL_RegModulo^.Menu_Estatico := VL_BancoDados.ConsultaA.FieldByName('MENU_ESTATICO').AsBoolean;
                 VL_RegModulo^.Identificador := VL_BancoDados.ConsultaA.FieldByName('IDENTIFICADOR').AsString;
+                VL_RegModulo^.Handle := 0;
                 VL_RegModulo^.Menu_Operacional_estatico :=
                     VL_BancoDados.ConsultaA.FieldByName('MENU_ESTATICO_OPERACIONAL').AsBoolean;
                 VL_RegModulo^.ThModulo :=
@@ -1202,6 +1217,7 @@ begin
                 VL_RegModulo^.Descricao := VL_BancoDados.ConsultaA.FieldByName('DESCRICAO').AsString;
                 VL_RegModulo^.Bin_Estatico := VL_BancoDados.ConsultaA.FieldByName('BIN_ESTATICO').AsBoolean;
                 VL_RegModulo^.Menu_Estatico := VL_BancoDados.ConsultaA.FieldByName('MENU_ESTATICO').AsBoolean;
+                VL_RegModulo^.Handle := 0;
                 VL_RegModulo^.Menu_Operacional_estatico :=
                     VL_BancoDados.ConsultaA.FieldByName('MENU_ESTATICO_OPERACIONAL').AsBoolean;
                 VL_RegModulo^.ThModulo :=
@@ -1210,6 +1226,9 @@ begin
                     'TAG_NUMERO').AsString + '_caixa.txt'), DNucleo);
                 VF_ListaTRegModulo.Add(VL_RegModulo);
                 VL_RegModulo^.ThModulo.Start;
+
+
+
                 VL_BancoDados.ConsultaA.Next;
 
             end;
@@ -1232,95 +1251,108 @@ var
     VL_RegModulo: ^TRegModulo;
 begin
     Result := 0;
-    DNucleo.VF_Bin.RemovePorModuloConf(VP_ModuloConfig_ID);
-    if VP_ModuloConfig_ID = 0 then
-    begin
-        if Assigned(VF_ListaTRegModulo) then
-        begin
-            while VF_ListaTRegModulo.Count > 0 do
-            begin
-                if Assigned(VF_ListaTRegModulo.Items[0]) then
-                begin
-                    VL_RegModulo := VF_ListaTRegModulo.Items[0];
-                    VL_RegModulo^.ThModulo.VF_Sair := True;
-                    if VL_RegModulo^.ThModulo.VF_Rodando then
-                        VL_RegModulo^.ThModulo.WaitFor;
-                    VL_RegModulo^.ThModulo.Free;
-                    Dispose(VL_RegModulo);
-                end;
-                VF_ListaTRegModulo.Delete(0);
-            end;
-        end;
 
-    end
-    else
-    if VP_ModuloConfig_ID > 0 then
-    begin
-        if Assigned(VF_ListaTRegModulo) then
+    try
+        GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231631', 'comeco do  ModuloDescarrega', '', 0, 3);
+
+        DNucleo.VF_Bin.RemovePorModuloConf(VP_ModuloConfig_ID);
+        if VP_ModuloConfig_ID = 0 then
         begin
-            for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
+            if Assigned(VF_ListaTRegModulo) then
             begin
-                if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
+                while VF_ListaTRegModulo.Count > 0 do
                 begin
-                    VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
-                    if VL_RegModulo^.ModuloConfig_ID = VP_ModuloConfig_ID then
+                    if Assigned(VF_ListaTRegModulo.Items[0]) then
                     begin
+                        VL_RegModulo := VF_ListaTRegModulo.Items[0];
                         VL_RegModulo^.ThModulo.VF_Sair := True;
                         if VL_RegModulo^.ThModulo.VF_Rodando then
                             VL_RegModulo^.ThModulo.WaitFor;
                         VL_RegModulo^.ThModulo.Free;
                         Dispose(VL_RegModulo);
-                        VF_ListaTRegModulo.Delete(VL_I);
-                        Break;
+                    end;
+                    VF_ListaTRegModulo.Delete(0);
+                end;
+            end;
+
+        end
+        else
+        if VP_ModuloConfig_ID > 0 then
+        begin
+            if Assigned(VF_ListaTRegModulo) then
+            begin
+                for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
+                begin
+                    if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
+                    begin
+                        VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
+                        if VL_RegModulo^.ModuloConfig_ID = VP_ModuloConfig_ID then
+                        begin
+                            VL_RegModulo^.ThModulo.VF_Sair := True;
+                            if VL_RegModulo^.ThModulo.VF_Rodando then
+                                VL_RegModulo^.ThModulo.WaitFor;
+                            VL_RegModulo^.ThModulo.Free;
+                            Dispose(VL_RegModulo);
+                            VF_ListaTRegModulo.Delete(VL_I);
+                            Break;
+                        end;
+                    end;
+                end;
+            end;
+
+            if Assigned(VF_ListaTRegModulo) then
+            begin
+                for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
+                begin
+                    if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
+                    begin
+                        VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
+                        if VL_RegModulo^.ModuloConfig_ID = VP_ModuloConfig_ID then
+                        begin
+                            VL_RegModulo^.ThModulo.VF_Sair := True;
+                            VL_RegModulo^.ThModulo.WaitFor;
+                            VL_RegModulo^.ThModulo.Free;
+                            Dispose(VL_RegModulo);
+                            VF_ListaTRegModulo.Delete(VL_I);
+                            Break;
+                        end;
+                    end;
+                end;
+            end;
+        end
+        else
+        if VP_ModuloProcID > 0 then
+        begin
+            if Assigned(VF_ListaTRegModulo) then
+            begin
+                for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
+                begin
+                    if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
+                    begin
+                        VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
+                        if VL_RegModulo^.ModuloProcID = VP_ModuloProcID then
+                        begin
+                            VL_RegModulo^.ThModulo.VF_Sair := True;
+                            VL_RegModulo^.ThModulo.WaitFor;
+                            VL_RegModulo^.ThModulo.Free;
+                            VF_ListaTRegModulo.Remove(VL_RegModulo);
+                            Dispose(VL_RegModulo);
+                            Break;
+                        end;
                     end;
                 end;
             end;
         end;
 
-        if Assigned(VF_ListaTRegModulo) then
+        GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231632', 'fim do ModuloDescarrega', '', 0, 3);
+
+    except
+        on e: Exception do
         begin
-            for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
-            begin
-                if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
-                begin
-                    VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
-                    if VL_RegModulo^.ModuloConfig_ID = VP_ModuloConfig_ID then
-                    begin
-                        VL_RegModulo^.ThModulo.VF_Sair := True;
-                        VL_RegModulo^.ThModulo.WaitFor;
-                        VL_RegModulo^.ThModulo.Free;
-                        Dispose(VL_RegModulo);
-                        VF_ListaTRegModulo.Delete(VL_I);
-                        Break;
-                    end;
-                end;
-            end;
-        end;
-    end
-    else
-    if VP_ModuloProcID > 0 then
-    begin
-        if Assigned(VF_ListaTRegModulo) then
-        begin
-            for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
-            begin
-                if Assigned(VF_ListaTRegModulo.Items[VL_I]) then
-                begin
-                    VL_RegModulo := VF_ListaTRegModulo.Items[VL_I];
-                    if VL_RegModulo^.ModuloProcID = VP_ModuloProcID then
-                    begin
-                        VL_RegModulo^.ThModulo.VF_Sair := True;
-                        VL_RegModulo^.ThModulo.WaitFor;
-                        VL_RegModulo^.ThModulo.Free;
-                        VF_ListaTRegModulo.Remove(VL_RegModulo);
-                        Dispose(VL_RegModulo);
-                        Break;
-                    end;
-                end;
-            end;
+            GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231631',
+                'excecao ' + e.ClassName + '/' + e.Message, '', 1, 1);
         end;
     end;
-
 end;
 
 function TDNucleo.ModuloValida(VP_RegModulo: TRegModulo): integer;
@@ -1336,7 +1368,7 @@ begin
     VL_VersaoModulo := '';
     VL_VersaoMensagem := 0;
 
-    if not VP_RegModulo.ThModulo.VF_LibCarregada then
+    if not VP_RegModulo.ThModulo.Handle = 0 then
     begin
         Result := 110;
         Exit;
@@ -2683,16 +2715,29 @@ destructor TDLL.Destroy;
 var
     VL_RecDLL: ^TRecDLL;
 begin
-    while ListaDLL.Count > 0 do
-    begin
-        VL_RecDLL := ListaDLL[0];
-        if VL_RecDLL^.ativa then
-            FreeLibrary(VL_RecDLL^.handle);
-        Dispose(VL_RecDLL);
-        ListaDLL.Delete(0);
+    try
+
+        while ListaDLL.Count > 0 do
+        begin
+            VL_RecDLL := ListaDLL[0];
+            if VL_RecDLL^.instancia <= 0 then
+            begin
+                UnloadLibrary(VL_RecDLL^.handle);
+                Dispose(VL_RecDLL);
+            end;
+            ListaDLL.Delete(0);
+        end;
+
+        ListaDLL.Free;
+
+    except
+        on e: Exception do
+            GravaLog(F_ArquivoLog, 0,
+                '', 'opentefnucleo', '111220231624', 'Erro no TDLL.Destroy ' +
+                e.ClassName + '/' + e.Message, '', 1, 1);
+
     end;
 
-    ListaDLL.Free;
     inherited Destroy;
 end;
 
@@ -2702,6 +2747,11 @@ var
     VL_I: integer;
 begin
     Result := 0;
+
+    {$IFDEF WIN}
+    VP_DLL_Nome := StringReplace(VP_DLL_Nome,'/','\',[rfReplaceAll]);
+    {$ENDIF}
+
     try
         try
             F_BloqueiaDLL.Beginread;
@@ -2710,6 +2760,7 @@ begin
                 VL_RecDLL := ListaDLL.Items[VL_I];
                 if VL_RecDLL^.nome = VP_DLL_Nome then
                 begin
+                    VL_RecDLL^.instancia := VL_RecDLL^.instancia + 1;
                     Result := VL_RecDLL^.handle;
                     Exit;
                 end;
@@ -2729,7 +2780,7 @@ begin
                 Exit;
             end;
             Result := VL_RecDLL^.handle;
-            VL_RecDLL^.ativa := True;
+            VL_RecDLL^.instancia := 1;
             VL_RecDLL^.nome := VP_DLL_Nome;
             ListaDLL.Add(VL_RecDLL);
 
@@ -2750,23 +2801,42 @@ var
 begin
     Result := -1;
 
-    if ListaDLL.Count = 0 then
-        exit;
+    {$IFDEF WIN}
+      VP_DLL_Nome := StringReplace(VP_DLL_Nome,'/','\',[rfReplaceAll]);
+    {$ENDIF}
 
-    for VL_I := 0 to ListaDLL.Count - 1 do
-    begin
-        VL_RecDLL := ListaDLL.Items[VL_I];
-        if VL_RecDLL^.nome = VP_DLL_Nome then
-        begin
-            if VL_RecDLL^.ativa then
+    try
+        try
+            F_BloqueiaDLL.Beginread;
+
+            if ListaDLL.Count = 0 then
+                exit;
+
+            for VL_I := 0 to ListaDLL.Count - 1 do
             begin
-                UnloadLibrary(VL_RecDLL^.handle);
+                VL_RecDLL := ListaDLL.Items[VL_I];
+                if VL_RecDLL^.nome = VP_DLL_Nome then
+                begin
+                    VL_RecDLL^.instancia := VL_RecDLL^.instancia - 1;
+                    if VL_RecDLL^.instancia <= 0 then
+                    begin
+                        VL_RecDLL^.instancia := 0;
+                        UnloadLibrary(VL_RecDLL^.handle);
+                        ListaDLL.Delete(VL_I);
+                        Dispose(VL_RecDLL);
+                    end;
+                    Result := 0;
+                    Exit;
+                end;
             end;
-            ListaDLL.Delete(VL_I);
-            Dispose(VL_RecDLL);
-            Result := 0;
-            Exit;
+        except
+            on e: Exception do
+                GravaLog(F_ArquivoLog, 0,
+                    '', 'opentefnucleo', '111220231623', 'Erro ao descarregar a dll ' +
+                    e.ClassName + '/' + e.Message, '', 1, 1);
         end;
+    finally
+        F_BloqueiaDLL.Endread;
     end;
 end;
 
@@ -3029,7 +3099,6 @@ begin
     FreeOnTerminate := False;
     VF_RegModulo := VP_RegModulo;
     VF_DNucleo := VP_DNucleo;
-    VF_LibCarregada := False;
     VF_Rodando := False;
     VF_ConexaoTipo := VP_ConexaoTipo;
     V_ListaTarefas := TList.Create;
@@ -3038,12 +3107,23 @@ end;
 
 destructor TThModulo.Destroy;
 begin
-    V_ListaTarefas.Free;
-    V_ListaTarefas := nil;
-    if ((Assigned(VF_DNucleo)) and (VF_ConexaoTipo = cnServico)) then
-        TDNucleo(VF_DNucleo).VF_Bin.RemovePorModuloConf(
-            TRegModulo(VF_RegModulo^).ModuloConfig_ID);
-    //DNucleo.VF_Bin.RemovePorModuloConf(TRegModulo(VF_RegModulo^).ModuloConfig_ID);
+    try
+        if Assigned(V_ListaTarefas) then
+        begin
+            V_ListaTarefas.Free;
+            V_ListaTarefas := nil;
+        end;
+        if ((Assigned(VF_DNucleo)) and (VF_ConexaoTipo = cnServico)) then
+            TDNucleo(VF_DNucleo).VF_Bin.RemovePorModuloConf(
+                TRegModulo(VF_RegModulo^).ModuloConfig_ID);
+    except
+        on e: Exception do
+            GravaLog(F_ArquivoLog, 0,
+                '', 'opentefnucleo', '111220231625', 'Erro no TThModulo.Destroy ' +
+                e.ClassName + '/' + e.Message, '', 1, 1);
+
+    end;
+
     inherited Destroy;
 end;
 
@@ -3063,13 +3143,25 @@ end;
 
 procedure TDNucleo.DataModuleDestroy(Sender: TObject);
 begin
-    VF_ListaTRegModulo.Free;
-    VF_ListaTRegModulo := nil;
-    VF_Bin.Free;
-    VF_Menu.Free;
-    VF_MenuOperacional.Free;
-    VF_DLL.Free;
-    F_BloqueiaDLL.Free;
+    try
+        GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231641', 'comeco do  TDNucleo.DataModuleDestroy', '', 0, 3);
+
+        VF_ListaTRegModulo.Free;
+        VF_ListaTRegModulo := nil;
+        VF_Bin.Free;
+        VF_Menu.Free;
+        VF_MenuOperacional.Free;
+        VF_DLL.Free;
+        F_BloqueiaDLL.Free;
+
+        GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231642', 'fim do TDNucleo.DataModuleDestroy', '', 0, 3);
+    except
+        on e: Exception do
+            GravaLog(F_ArquivoLog, 0,
+                '', 'opentefnucleo', '111220231627', 'Erro no TDNucleo.DataModuleDestroy ' +
+                e.ClassName + '/' + e.Message, '', 1, 1);
+
+    end;
 end;
 
 

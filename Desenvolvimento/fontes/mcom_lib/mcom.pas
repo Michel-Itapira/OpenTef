@@ -30,7 +30,7 @@ type
     TDMCom = class(TDataModule)
         CriptoAes: TLbRijndael;
         CriptoRsa: TLbRSA;
-        procedure DataModuleCreate(Sender: TObject);
+
     private
 
     public
@@ -93,11 +93,18 @@ implementation
 function iniciarconexao(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: pansichar; VP_PortaCaixa, VP_PortaServico: integer;
     VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib; VP_Identificacao: pansichar): integer; cdecl;
 begin
-    F_ArquivoLog := VP_ArquivoLog;
+
+    F_ArquivoLog := string(VP_ArquivoLog);
+
+    GravaLog(VP_ArquivoLog, 0, '', 'mcom', '11122023214806', 'f_arquivo:' + F_ArquivoLog + ' vparquivo:' + VP_ArquivoLog + ' vp_chave:' +
+        VP_Chave + ' identificacao:' + VP_Identificacao, '', 0, 2);
+
+
     DMCom := TDMCom.Create(nil);
     Result := DMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico, VP_PortaCaixa, VP_PortaServico, VP_Identificacao);
     F_ServidorRecebimentoLibCaixa := VO_RetornoCaixa;
     F_ServidorRecebimentoLibServico := VO_RetornoServico;
+
 end;
 
 function finalizaconexao: integer; cdecl;
@@ -257,6 +264,7 @@ function respondeservico(VP_Transmissao_ID, VP_Dados: pansichar; VP_ID: integer)
 var
     VL_Mensagem, VL_Chaves: TMensagem;
     VL_TagDados: string;
+    VL_Transmissao_ID: string;
     VL_ModuloPublico: ansistring;
     VL_ExpoentePublico: ansistring;
     VL_TamanhoPublico: int64;
@@ -269,6 +277,7 @@ begin
         VL_Aes := nil;
         VL_ChaveComunicacao := '';
         VL_TagDados := '';
+        VL_Transmissao_ID := VP_Transmissao_ID;
         VL_Mensagem := TMensagem.Create;
         VL_Chaves := TMensagem.Create;
 
@@ -360,7 +369,7 @@ begin
 
         GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230930', 'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
-        Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(F_ComunicadorServico, 3000, False, nil, VP_Transmissao_ID,
+        Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(F_ComunicadorServico, 3000, False, nil, VL_Transmissao_ID,
             VL_Mensagem, F_Mensagem, VP_ID);
         if Result <> 0 then
         begin
@@ -408,10 +417,6 @@ begin
     DMCom.RecebeComandoServico(VP_Erro, VP_Transmissao_ID, VP_DadosRecebidos, VP_Conexao_ID, VP_ClienteIP, VP_Terminal_Status);
 end;
 
-procedure TDMCom.DataModuleCreate(Sender: TObject);
-begin
-
-end;
 
 function TDMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string; VP_PortaCaixa, VP_PortaServico: integer; VP_Identificacao: string): integer;
 begin
@@ -519,7 +524,7 @@ begin
                 VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
                 VL_DadosCriptografados := VL_Aes.DecryptString(VL_DadosCriptografados);
-                VL_Mensagem.AddTag('007D', VL_DadosCriptografados);
+                VL_Mensagem.AddTag('00E3', VL_DadosCriptografados); // mensagem criptografada
 
                 VP_DadosRecebidos := VL_Mensagem.TagsAsString;
 
@@ -626,7 +631,7 @@ begin
                 VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
                 VL_DadosCriptografados := VL_Aes.DecryptString(VL_DadosCriptografados);
-                VL_Mensagem.AddTag('007D', VL_DadosCriptografados);
+                VL_Mensagem.AddTag('00E3', VL_DadosCriptografados);
 
                 VP_DadosRecebidos := VL_Mensagem.TagsAsString;
 

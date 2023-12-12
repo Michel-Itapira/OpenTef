@@ -1290,7 +1290,7 @@ begin
         Exit;
     end;
 
-    VL_Erro := iniciarconexao(PChar(ExtractFilePath(ParamStr(0)) + 'operadora.log'), PChar(EChave.Text), PChar(EIPCaixa.Text), PChar(EIPServico.Text),
+    VL_Erro := iniciarconexao(PansiChar(ExtractFilePath(ParamStr(0)) + 'operadora.log'), PChar(EChave.Text), PChar(EIPCaixa.Text), PChar(EIPServico.Text),
         EPortaCaixa.AsInteger, EPortaServico.AsInteger, @ServidorRecebimentoCaixa, @ServidorRecebimentoServico, PChar(EIdentificacao.Text));
 
     if VL_Erro <> 0 then
