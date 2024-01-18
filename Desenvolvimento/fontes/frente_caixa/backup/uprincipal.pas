@@ -740,7 +740,7 @@ begin
             F_MensagemAddTag(VL_TagConciliacao, '0119', '1'); // quantidade
 
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '0036', ''); // bin
-            F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000C', '14/11/2023'); // data da venda
+            F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000C', '12/12/2023'); // data da venda
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000F', ''); // quantidade de parcela
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000B', ''); // nsu
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000E', ''); // valor da parcela
@@ -1394,7 +1394,7 @@ begin
     end;
 
     MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
-
+    MChave.Lines.Text := VL_TransacaoID;
     {
     while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < VL_Tempo) do
     begin
@@ -1771,6 +1771,96 @@ begin
 
     F_MensagemFree(VL_Mensagem);
     F_MensagemFree(VL_Venda);
+end;
+
+function TF_Principal.CLNValoresS(Dinheiro: boolean; Decimal, LetraNumero: string): string;
+var
+    DigitoDecimal, SinalNegativo: boolean;
+    LocalLetraFuncao, i: int64;
+    ResultadoFuncao: string;
+    TextoFuncao: string;
+
+    function Tiraletra(DeixaZero: boolean; LetraNumero: string; RetornaEspaco: boolean = False): string;
+    var
+        LocalLetraFuncao, i: int64;
+        ResultadoFuncao: string;
+        TextoFuncao: string;
+    begin
+        TextoFuncao := '';
+        LocalLetraFuncao := 0;
+        ResultadoFuncao := '';
+        for i := 0 to Length(LetraNumero) do
+            if ((TextoFuncao >= '0') and (TextoFuncao <= '9')) then
+            begin
+                if (TextoFuncao = '0') and (DeixaZero = False) then
+                begin
+                    if CLNNumeros(ResultadoFuncao) > 0 then
+                        ResultadoFuncao := ResultadoFuncao + Copy(LetraNumero, LocalLetraFuncao, 1);
+                end
+                else
+                    ResultadoFuncao := ResultadoFuncao + Copy(LetraNumero, LocalLetraFuncao, 1);
+                LocalLetraFuncao := LocalLetraFuncao + 1;
+                TextoFuncao := Copy(LetraNumero, LocalLetraFuncao, 1);
+            end
+            else
+            begin
+                LocalLetraFuncao := LocalLetraFuncao + 1;
+                TextoFuncao := Copy(LetraNumero, LocalLetraFuncao, 1);
+            end;
+        if (ResultadoFuncao = '') and (RetornaEspaco = False) then
+            ResultadoFuncao := '0';
+        Result := ResultadoFuncao;
+    end;
+
+begin
+    try
+        if Tiraletra(False, LetraNumero) <> '0' then
+            LetraNumero := FloatToStr(FloatDecimal(CLNValoresD(FormatSettings.DecimalSeparator, LetraNumero), 02, True));
+    except
+    end;
+    if Decimal = '' then
+        Decimal := FormatSettings.DecimalSeparator;
+    TextoFuncao := '';
+    LocalLetraFuncao := 0;
+    SinalNegativo := False;
+    DigitoDecimal := False;
+    ResultadoFuncao := '';
+    for i := 0 to Length(LetraNumero) do
+        if ((TextoFuncao >= '0') and (TextoFuncao <= '9')) or (((TextoFuncao = FormatSettings.DecimalSeparator)) and (DigitoDecimal = False)) or
+            ((TextoFuncao = '-') and (SinalNegativo = False)) then
+        begin
+            if TextoFuncao = FormatSettings.DecimalSeparator then
+            begin
+                DigitoDecimal := True;
+                if Length(ResultadoFuncao) = 0 then
+                    ResultadoFuncao := '0' + Decimal
+                else
+                    ResultadoFuncao := ResultadoFuncao + Decimal;
+            end
+            else if TextoFuncao = '-' then
+                SinalNegativo := True
+            else
+                ResultadoFuncao := ResultadoFuncao + Copy(LetraNumero, LocalLetraFuncao, 1);
+            LocalLetraFuncao := LocalLetraFuncao + 1;
+            TextoFuncao := Copy(LetraNumero, LocalLetraFuncao, 1);
+        end
+        else
+        begin
+            LocalLetraFuncao := LocalLetraFuncao + 1;
+            TextoFuncao := Copy(LetraNumero, LocalLetraFuncao, 1);
+        end;
+    if ResultadoFuncao = '' then
+        ResultadoFuncao := '0'
+    else
+    if SinalNegativo = True then
+        ResultadoFuncao := '-' + ResultadoFuncao;
+    Result := ResultadoFuncao;
+    if Pos(Decimal, Result) = 0 then
+        Result := Result + Decimal + '00';
+    for i := 1 to 2 - Length(Copy(Result, Pos(Decimal, Result) + 1, 2)) do
+        Result := Result + '0';
+    if Dinheiro then
+        Result := Format('%m', [StrToFloat(Result)]);
 end;
 
 

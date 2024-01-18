@@ -5,7 +5,7 @@ unit modulo;
 interface
 
 uses
-    Classes, SysUtils, comunicador, funcoes, def, LbClass, MD5;
+    Classes, SysUtils, comunicador, funcoes, def, LbClass;
 
 { TDModulo }
 type
@@ -37,8 +37,8 @@ type
 
     private
         V_ModuloProcID: integer;
-        V_ChaveComunicacao: ansistring;
-        V_Identificacao: ansistring;
+        //V_ChaveComunicacao: ansistring;
+        //V_Identificacao: ansistring;
         V_ModuloConf_ID: integer;
         V_ArquivoLog: ansistring;
         V_DComunicador: TDComunicador;

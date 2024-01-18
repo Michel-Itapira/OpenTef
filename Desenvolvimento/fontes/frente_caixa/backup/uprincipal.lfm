@@ -1,10 +1,10 @@
 object F_Principal: TF_Principal
   Left = 835
-  Height = 618
+  Height = 688
   Top = 0
   Width = 943
   Caption = 'Caixa'
-  ClientHeight = 618
+  ClientHeight = 688
   ClientWidth = 943
   OnCreate = FormCreate
   OnShow = FormShow
@@ -833,7 +833,7 @@ object F_Principal: TF_Principal
           Top = 16
           Width = 288
           TabOrder = 0
-          Text = '127.0.0.1'
+          Text = 'opentef.ioiosoftware.com.br'
         end
         object EPorta: TEdit
           Left = 88
@@ -841,7 +841,7 @@ object F_Principal: TF_Principal
           Top = 50
           Width = 72
           TabOrder = 1
-          Text = '1000'
+          Text = '39001'
         end
         object Label5: TLabel
           Left = 46

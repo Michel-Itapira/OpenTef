@@ -740,7 +740,7 @@ begin
             F_MensagemAddTag(VL_TagConciliacao, '0119', '1'); // quantidade
 
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '0036', ''); // bin
-            F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000C', '14/11/2023'); // data da venda
+            F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000C', '12/12/2023'); // data da venda
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000F', ''); // quantidade de parcela
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000B', ''); // nsu
             F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000E', ''); // valor da parcela
@@ -1394,7 +1394,7 @@ begin
     end;
 
     MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
-    MChave.Lines.Text:=VL_TransacaoID;
+    MChave.Lines.Text := VL_TransacaoID;
     {
     while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < VL_Tempo) do
     begin

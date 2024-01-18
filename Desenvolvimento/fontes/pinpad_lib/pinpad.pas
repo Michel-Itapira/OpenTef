@@ -76,7 +76,7 @@ implementation
 {$R *.lfm}
 
 uses
-    gertec_ppc930;
+    gertec_ppc930,ingenico_lane3000;
 
 { TPinPad }
 
@@ -91,6 +91,16 @@ begin
         Exit;
     Result := 77;
     if VP_PinPadModelo = pGERTEC_PPC930 then
+    begin
+        F_PinPad := TGertec_ppc930.Create;
+        F_PinPad.SetConfig(VP_PinPadModelo, VP_PinPadModeloLib, VP_PinPadModeloPorta);
+        F_PinPad.fRespostaPinPad := VP_RespostaPinPad;
+        Result := F_PinPad.CarregaLib();
+        F_PinPaExecutando := False;
+        if Result = 0 then
+            F_PinPadCarregado := True;
+    end;
+    if VP_PinPadModelo = pINGENICO_LANE3000 then
     begin
         F_PinPad := TGertec_ppc930.Create;
         F_PinPad.SetConfig(VP_PinPadModelo, VP_PinPadModeloLib, VP_PinPadModeloPorta);

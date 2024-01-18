@@ -1,0 +1,26 @@
+- explicar que e o opentef
+- explicar oque precisa ser feito pelo pdv para integar no opentef(criacao das 6 funcoes)
+- explicar as 6 funcoes
+(fazer a integarcao)
+- entrar no github e baixar a dll tef
+- criar funcao de inicializar
+- adicionar as constantes do inicializar
+- criar funcao de login
+- adicionar as constantes do login
+- chamar a funcao inicializar e login no formCreate
+- criar as seis funcoes de intergacoes com o opentef mas somente com o cabecalho
+- adicionar o corpo da funcao retorno
+- explicar rapidamente que nessa funcao vai ser recebida quando a aprovacao for negada ou aprovada
+- adicionar o corpo da funcao impressao
+- adicionar o corpo da funcao mensagemoperador
+- adicionar o corpo da funcao solicitadadostransacao
+- explicar que essa funcao devolve as informacoes como quantidade de parcela, valor da venda
+- adicionar o corpo da funcao mostramenu
+- adicionar o evento de clique de uma opcao
+- adicionar o o corpo da funcao solicitadadospdv
+- explicar que essa funcao vai perguntar as informações para o cliente, como numero do cartao, senha
+- adicionar o botao opentef e no evento de clique chamar a transacaocreate
+- fazer uma venda pelo opentef
+- explicar que a intergração com pinpad já está pronta, basta informar os dados no inicializar
+- explicar que tambem e possivel mostrar qrcode ou imagem
+- explicar que a dll

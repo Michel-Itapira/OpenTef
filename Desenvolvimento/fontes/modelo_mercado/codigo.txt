@@ -1,0 +1,569 @@
+-- link do github
+https://github.com/Michel-Itapira/OpenTef/tree/main/Desenvolvimento/binarios/tef_lib/win64
+
+-- codigo do inicializar
+
+procedure incializar;
+var
+    VL_Codigo: integer;
+    VL_DescricaoErro: PChar;
+begin
+    VL_DescricaoErro := '';
+
+    F_TefLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'tef_lib.dll'));
+
+    if F_TefLib = 0 then
+    begin
+        ShowMessage('Não foi possível carregar a lib');
+        Application.Terminate;
+    end;
+
+    Pointer(F_TefInicializar) := GetProcAddress(F_TefLib, 'inicializar');
+    Pointer(F_Login) := GetProcAddress(F_TefLib, 'login');
+
+    Pointer(F_MensagemCreate) := GetProcAddress(F_TefLib, 'mensagemcreate');
+    Pointer(F_MensagemCarregaTags) := GetProcAddress(F_TefLib, 'mensagemcarregatags');
+    Pointer(F_MensagemComando) := GetProcAddress(F_TefLib, 'mensagemcomando');
+    Pointer(F_MensagemComandoDados) := GetProcAddress(F_TefLib, 'mensagemcomandodados');
+    Pointer(F_MensagemFree) := GetProcAddress(F_TefLib, 'mensagemfree');
+    Pointer(F_MensagemLimpar) := GetProcAddress(F_TefLib, 'mensagemlimpar');
+    Pointer(F_Mensagemaddtag) := GetProcAddress(F_TefLib, 'mensagemaddtag');
+    Pointer(F_Mensagemaddcomando) := GetProcAddress(F_TefLib, 'mensagemaddcomando');
+    Pointer(F_MensagemTagAsString) := GetProcAddress(F_TefLib, 'mensagemtagasstring');
+    Pointer(F_MensagemTagCount) := GetProcAddress(F_TefLib, 'mensagemtagcount');
+    Pointer(F_MensagemGetTag) := GetProcAddress(F_TefLib, 'mensagemgettag');
+    Pointer(F_MensagemGetTagIdx) := GetProcAddress(F_TefLib, 'mensagemgettagidx');
+    Pointer(F_MensagemTagToStr) := GetProcAddress(F_TefLib, 'mensagemtagtostr');
+    Pointer(F_Erro) := GetProcAddress(F_TefLib, 'mensagemerro');
+    Pointer(F_MensagemGetTagPosicao) := GetProcAddress(F_TefLib, 'mensagemgettagposicao');
+    Pointer(F_MensagemAddTagPosicao) := GetProcAddress(F_TefLib, 'mensagemaddtagposicao');
+
+    Pointer(F_TransacaoCancela) := GetProcAddress(F_TefLib, 'transacaocancela');
+    Pointer(F_TransacaoCreate) := GetProcAddress(F_TefLib, 'transacaocreate');
+    Pointer(F_TransacaoFree) := GetProcAddress(F_TefLib, 'transacaofree');
+    Pointer(F_TransacaoStatus) := GetProcAddress(F_TefLib, 'transacaostatus');
+    Pointer(F_TransacaoStatusDescricao) := GetProcAddress(F_TefLib, 'transacaostatusdescricao');
+    Pointer(F_TransacaoGetTag) := GetProcAddress(F_TefLib, 'transacaogettag');
+
+    VL_Codigo := F_TefInicializar(PINPAD_MODELO, PChar(PINPAD_MODELO_LIB), PINPAD_PORTA, PINPAD_LIB,
+        PChar(ExtractFilePath(ParamStr(0)) + 'logs.log'), @uinterface.Retorno, @uinterface.solicitadadostransacao,
+        @uinterface.solicitadadospdv, @uinterface.imprime, @uinterface.mostramenu, @uinterface.mensagemoperador, AMBIENTE_TESTE);
+
+    if VL_Codigo <> 0 then
+    begin
+        F_Erro(VL_Codigo, VL_DescricaoErro);
+        ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' + VL_DescricaoErro);
+        exit;
+    end;
+end;  
+
+-- constantes do incializar
+
+    PINPAD_MODELO: integer = 0;
+    PINPAD_PORTA: PChar = '';
+    PINPAD_MODELO_LIB: PChar = '';
+    PINPAD_LIB: PChar = '';
+    AMBIENTE_TESTE: integer = 0;          
+	
+-- codigo do login 
+
+procedure login;
+var
+    VL_Codigo: integer;
+    VL_DescricaoErro: PChar;
+begin
+    VL_DescricaoErro := '';
+
+    VL_Codigo := F_Login(PChar(OPENTEF_HOST), OPENTEF_PORTA, OPENTEF_ID, PChar(OPENTEF_CHAVE),
+        OPENTEF_VERSAO_MENSAGEM, PChar(OPENTEF_IDENTIFICADOR));
+
+    if VL_Codigo <> 0 then
+    begin
+        F_Erro(VL_Codigo, VL_DescricaoErro);
+        ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' + VL_DescricaoErro);
+        exit;
+    end;
+end;       
+
+-- constantes do login
+
+    OPENTEF_HOST: string = 'opentef.ioiosoftware.com.br';
+    OPENTEF_PORTA: integer = 39001;
+    OPENTEF_ID: integer = 12;
+    OPENTEF_CHAVE: string = '123';
+    OPENTEF_IDENTIFICADOR: string = '313311';
+    OPENTEF_VERSAO_MENSAGEM: integer = 1;     
+	
+-- incializar o opentef quando ao ser criado a aplicacao
+
+procedure TFInterface.FormCreate(Sender: TObject);
+begin
+    uopentef.incializar;
+    uopentef.login;
+end;     
+
+-- criar o cabecalho das 6 funcoes 
+
+function Retorno(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+function solicitadadospdv(VP_Mensagem: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+function imprime(VP_Dados: PChar): integer; cdecl;
+function mostramenu(VP_Menu: PChar; var VO_Botao: PChar): integer; cdecl;
+function mensagemoperador(VP_Dados: PChar): integer; cdecl;    
+
+-- codigo do retorno
+
+function Retorno(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+var
+    VL_Dados: PChar;
+    VL_Comando: PChar;
+    VL_ComandoDados: PChar;
+    VL_Mensagem: Pointer;
+    VL_String: string;
+    VL_Erro: integer;
+    VL_DescricaoErro: PChar;
+    VL_TransacaoID: PChar;
+    VL_DescricaoErroTransacao: PChar;
+    VL_TransacaoChave: PChar;
+    VL_Bin: PChar;
+    VL_TransacaoStatus: integer; //  numerador  (tsEfetivada,tsNegada,tsCancelada,tsProcessando,tsNaoLocalizada,tsInicializada);
+begin
+    Result := 0;
+    VL_Erro := 0;
+    VL_String := '';
+    VL_Mensagem := nil;
+    F_MensagemCreate(VL_Mensagem);
+    VL_Dados := '';
+    VL_DescricaoErro := '';
+    VL_Comando := '';
+    VL_ComandoDados := '';
+    VL_Comando := '';
+    VL_TransacaoID := '';
+    VL_DescricaoErroTransacao := '';
+    VL_TransacaoChave := '';
+    VL_Bin := '';
+
+    VL_Erro := F_MensagemCarregaTags(VL_Mensagem, PChar(VP_DadosEntrada));
+    if VL_Erro <> 0 then
+    begin
+        F_MensagemAddComando(VL_Mensagem, '0026', PChar(IntToStr(VL_Erro))); // retorno com erro
+        F_MensagemTagAsString(VL_Mensagem, VL_Dados);
+        VL_String := VL_Dados;
+
+        VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+        StrPCopy(VO_DadosSaida, VL_String);
+        Exit;
+    end;
+
+
+    F_MensagemComando(VL_Mensagem, VL_Comando);
+    F_MensagemComandoDados(VL_Mensagem, VL_ComandoDados);
+
+    if VL_Comando = '00A4' then // status da transacao
+    begin
+        VL_TransacaoStatus := StrToInt(VL_ComandoDados);
+        F_MensagemGetTag(VL_Mensagem, '0034', VL_TransacaoID);  // transacao id
+        F_MensagemGetTag(VL_Mensagem, '00F1', VL_TransacaoChave); // chave da transacao
+
+        if Ord(tsComErro) = VL_TransacaoStatus then
+        begin
+            VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            ShowMessage('Transação com erro ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsCancelada) = VL_TransacaoStatus then
+        begin
+            VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            ShowMessage('Transação cancelada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsNegada) = VL_TransacaoStatus then
+        begin
+            VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            ShowMessage('Transação negada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+
+        if Ord(tsNaoLocalizada) = VL_TransacaoStatus then
+        begin
+            VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            ShowMessage('Transação não localizada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsEfetivada) = VL_TransacaoStatus then
+        begin
+            ShowMessage('Transação aprovada ' + VL_TransacaoID);
+            F_TransacaoGetTag(VL_TransacaoID, '0036', VL_Bin);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsAbortada) = VL_TransacaoStatus then
+        begin
+            VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            ShowMessage('Transação abortada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+    end;
+end;    
+
+-- codigo da impressao
+
+function imprime(VP_Dados: PChar): integer; cdecl;
+var
+    VL_Texto: string;
+begin
+    Result := 0;
+    VL_Texto := VP_Dados;
+    VL_Texto := ReplaceStr(VL_Texto, '<br>', #13); // quebra de linha
+
+    Application.CreateForm(TFImpressao, FImpressao);
+
+    FImpressao.MImpressao.Lines.Text := VL_Texto;
+    FImpressao.ShowModal;
+    FImpressao.Free;
+end;       
+
+-- codigo da mensagemoperador
+
+function mensagemoperador(VP_Dados: PChar): integer; cdecl;
+var
+    VL_String: string;
+begin
+    Result := 0;
+    VL_String := VP_Dados;
+    VL_String := ReplaceStr(VL_String, '<br>', #13); // quebra de linha
+
+    ShowMessage(VL_String);
+end;          
+
+-- codigo da solicitadadostransacao
+
+function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+var
+    VL_I: integer;
+    VL_Tag: PChar;
+    VL_Dados: PChar;
+    VL_PChar: PChar;
+    VL_Resposta: Pointer;
+    VL_Mensagem: Pointer;
+begin
+    Result := 0;
+    VL_Tag := '';
+    VL_Dados := '';
+    VL_PChar := '';
+    VL_Resposta := nil;
+    VL_Mensagem := nil;
+
+    F_MensagemCreate(VL_Resposta);
+    F_MensagemCreate(VL_Mensagem);
+    F_MensagemAddComando(VL_Resposta, '00E1', 'R');
+    F_MensagemCarregaTags(VL_Mensagem, VP_Mensagem);
+
+    for vl_i := 1 to F_MensagemTagCount(VL_Mensagem) do                // A OPERADORA DE CARTÃO POR SOLICITAR OS DADOS PARA APROVAÇÃO
+    begin                                                             // DEVE TESTAR TODOS OS POSSIVEIS DADOS SOLICITADOS PARA RESPONDER A OPERADORA
+        F_MensagemGetTagIdx(VL_Mensagem, VL_I, VL_Tag, VL_Dados);
+        // SE ALGUM DADO SOLICITADO NÃO FOR RESPONDIDO PODE HAVER A NEGAÇÃO DA TRANSAÇÃO PELA OPERADORA
+        if VL_Tag = '0011' then                                                         // IDENTIFICAÇÃO DO CAIXA
+            F_MensagemAddTag(VL_Resposta, '0011', PChar('CX10'));
+        if VL_Tag = '0012' then                                                         // IDENTIFICAÇÃO DO OPERADOR DO CAIXA
+            F_MensagemAddTag(VL_Resposta, '0012', PChar('NOME DO OPERADOR'));
+        if VL_Tag = '0010' then                                                         // NUMERO DO CUPOM FISCAL
+            F_MensagemAddTag(VL_Resposta, '0010', PChar('123'));
+        if VL_Tag = '000E' then                                                         // VALOR DA PARCELA
+            F_MensagemAddTag(VL_Resposta, '000E', PChar(FInterface.EValorTotal.Text));
+        if VL_Tag = '000F' then                                                         // NUMERO DE PARCELAS
+            F_MensagemAddTag(VL_Resposta, '000F', PChar('1'));
+        if VL_Tag = '0017' then                                                          // XML DO CUPOM FISCAL NÃO PRECISA ASSINAR E A FORMATAÇÃO É LIVRE
+            F_MensagemAddTag(VL_Resposta, '0017', PChar(''));
+        if VL_Tag = '000B' then                                                          // NSU OU IDENTIFICADOR DA TRANSAÇÃO GERADO PELO PDV
+            F_MensagemAddTag(VL_Resposta, '000B', PChar('123654'));
+        if VL_Tag = '000C' then                                                          // DATA DA VENDA
+            F_MensagemAddTag(VL_Resposta, '000C', PChar(DateToStr(now)));
+        if VL_Tag = '000D' then                                                          // HORA DA VENDA
+            F_MensagemAddTag(VL_Resposta, '000D', PChar(TimeToStr(now)));
+        if VL_Tag = '00E5' then                                                          // LINK DA VALIDAÇÃO DA NOTA/CUPOM FISCAL
+            F_MensagemAddTag(VL_Resposta, '00E5', PChar('ADICIONE O XML DA VENDA'));
+        if VL_Tag = '00E6' then                                                          // VALOR DO DESCONTO
+            F_MensagemAddTag(VL_Resposta, '00E6', PChar('0'));
+        if VL_Tag = '0040' then                                                          // OBSERVAÇÃO SOBRE A VENDA
+            F_MensagemAddTag(VL_Resposta, '0040', PChar('VENDA PELO OPENTEF'));   // VERSAO DA CONCILIACAO
+    end;
+
+    F_MensagemTagAsString(VL_Resposta, VL_PChar);
+    F_MensagemFree(VL_Resposta);
+
+    VO_Dados := StrAlloc(Length(VL_PChar) + 1);
+    StrPCopy(VO_Dados, VL_PChar);
+
+    F_MensagemFree(VL_Mensagem);
+end;                        
+
+-- codigo do mostramenu 
+
+function mostramenu(VP_Menu: PChar; var VO_Botao: PChar): integer; cdecl;
+var
+    VL_btn: TMButton;
+    VL_I: integer;
+    VL_Tag: PChar;
+    VL_Dados: PChar;
+    VL_MenuVenda: TFMenuVenda;
+    VL_Mensagem: Pointer;
+begin
+    Result := 0;
+    VL_Tag := '';
+    VL_Dados := '';
+    VL_Mensagem := nil;
+
+    F_MensagemCreate(VL_Mensagem);
+
+    F_MensagemCarregaTags(VL_Mensagem, VP_Menu);
+    VL_MenuVenda := TFMenuVenda.Create(FInterface);
+    VL_MenuVenda.Height := 170;
+    VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+    VL_btn.V_tag := '0030';
+    VL_btn.Caption := 'Cancela';
+    VL_btn.Align := alTop;
+    VL_btn.Height := 20;
+    VL_btn.BorderSpacing.Around := 20;
+    VL_btn.Parent := VL_MenuVenda.PBotao;
+    VL_btn.TabOrder := 0;
+    VL_btn.OnClick := @FInterface.CliqueDoBotao;
+
+    for VL_I := 1 to F_MensagemTagCount(VL_Mensagem) do
+    begin
+        F_MensagemGetTagIdx(VL_Mensagem, VL_i, VL_Tag, VL_Dados);
+        if VL_Tag <> '0030' then      //pula se tiver tag 0030 que é de cancelamento pois ja foi criada acima
+        begin
+            VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+            F_MensagemGetTagIdx(VL_Mensagem, VL_i, VL_Tag, VL_Dados);
+            VL_btn.V_tag := VL_tag;
+            VL_btn.Caption := VL_Dados;
+            VL_btn.Align := alTop;
+            VL_btn.Height := 20;
+            VL_btn.BorderSpacing.Around := 20;
+            VL_btn.Parent := VL_MenuVenda.PBotao;
+            VL_btn.TabOrder := 0;
+            VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+            VL_btn.OnClick := @FInterface.CliqueDoBotao;
+        end;
+    end;
+    VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+    F_MensagemComandoDados(VL_Mensagem, VL_Dados);
+    VL_MenuVenda.ShowModal;
+
+    VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
+    StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
+    VL_MenuVenda.Free;
+
+    F_MensagemFree(VL_Mensagem);
+end;      
+
+-- codigo do solicitadadospdv
+
+function solicitadadospdv(VP_Mensagem: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+var
+    VL_btn: TMButton;
+    VL_I: integer;
+    VL_Tag: PChar;
+    VL_Dados: PChar;
+    VL_String: string;
+    VL_MenuVenda: TFMenuVenda;
+    VL_Imagem: string;
+    VL_Mensagem: Pointer;
+
+    procedure StrToImagem(Dados: string; var Imagem: Timage);
+    var
+        JP: TJPEGImage;
+        PNG: TPortableNetworkGraphic;
+        BPM: TBitmap;
+        Sm: TStringStream;
+        i: integer;
+        Tipo_Imagem, S, L: string;
+
+    begin
+        s := '';
+        L := '';
+        Tipo_Imagem := 'TI_JPG';
+        if Dados = '' then
+        begin
+            Imagem.Picture.Graphic := nil;
+            exit;
+        end;
+
+        //for i := 0 to Length(Dados) div 2 - 1 do
+        //begin
+        //    L := copy(Dados, ((1 + i) * 2) - 1, 2);
+        //    s := s + char(Hex2Dec(L));
+        //end;
+
+
+        s := DecodeStringBase64(Dados);
+
+        Sm := TStringStream.Create(s);
+
+
+        if Length(s) > 5 then
+        begin
+            if ((char(s[2]) = 'P') and (char(s[3]) = 'N') and (char(s[4]) = 'G')) then
+                Tipo_Imagem := 'TI_Png';
+            if ((char(s[1]) = 'B') and (char(s[2]) = 'M')) then
+                Tipo_Imagem := 'TI_BMP';
+        end;
+
+
+        if Tipo_Imagem = 'TI_JPG' then
+        begin
+            JP := TJPEGImage.Create;
+            JP.LoadFromStream(Sm);
+            Imagem.Picture.Assign(JP);
+            JP.Free;
+            Sm.Free;
+        end
+        else
+        if Tipo_Imagem = 'TI_Png' then
+        begin
+            PNG := TPortableNetworkGraphic.Create;
+            PNG.LoadFromStream(Sm);
+            Imagem.Picture.Assign(PNG);
+            PNG.Free;
+            Sm.Free;
+        end
+        else
+        if Tipo_Imagem = 'TI_BMP' then
+        begin
+            BPM := TBitmap.Create;
+            BPM.LoadFromStream(Sm);
+            Imagem.Picture.Assign(BPM);
+            BPM.Free;
+            Sm.Free;
+        end;
+
+    end;
+
+begin
+
+    Result := 0;
+    VL_Tag := '';
+    VL_Dados := '';
+    VL_String := '';
+    VL_Mensagem := nil;
+
+    F_MensagemCreate(VL_Mensagem);
+
+    F_MensagemCarregaTags(VL_Mensagem, VP_Mensagem);
+
+    VL_MenuVenda := TFMenuVenda.Create(FInterface);
+
+    VL_MenuVenda.Height := 120;
+
+    F_MensagemGetTag(VL_Mensagem, '00DA', VL_Dados);   // verifica se veio mensagem a ser mostrada
+    if VL_Dados <> '' then
+    begin
+        VL_MenuVenda.PMensagem.Visible := True;
+        VL_MenuVenda.LMensagem.Caption := VL_Dados;
+        VL_MenuVenda.Height := VL_MenuVenda.Height + 100;
+    end;
+
+    VL_Dados := '';
+    VL_I := F_MensagemGetTag(VL_Mensagem, '0033', VL_Dados);  // VERIFICA SE É PARA CAPTURAR ALGUMA INFORMAÇÃO
+    if VL_I = 0 then
+    begin
+        if VL_Dados = 'M' then                              // VERIFICA SE É PARA ESCONDER A DIGITAÇÃO "SENHA POR EXEMPLO"
+            VL_MenuVenda.EDados.PasswordChar := '*';
+        VL_MenuVenda.PDados.Visible := True;
+        VL_MenuVenda.Height := VL_MenuVenda.Height + 80;
+    end;
+
+    VL_Dados := '';
+    VL_I := F_MensagemGetTag(VL_Mensagem, '002E', VL_Dados);  // VERIFICA SE VEIO IMAGEM A SER MOSTRADA "QR CODE, FOTO..."
+    if VL_I = 0 then
+    begin
+        VL_Imagem := VL_Dados;
+        StrToImagem(VL_Imagem, VL_MenuVenda.Imagem);
+        VL_MenuVenda.PImagem.Visible := True;
+        VL_MenuVenda.Height := VL_MenuVenda.Height + 300;
+    end;
+
+    VL_Dados := '';
+    F_MensagemGetTag(VL_Mensagem, '00DD', VL_Dados);    // CONTEM A LISTA DE BOTOES
+    F_MensagemCarregaTags(VL_Mensagem, VL_Dados);
+
+    VL_btn := TMButton.Create(VL_MenuVenda.PBotao);    // SEMPRE COLOCAR BOTAO DE CANCELAMENTO
+    VL_btn.V_tag := '0030';
+    VL_btn.Caption := 'Cancela';
+    VL_btn.Align := alTop;
+    VL_btn.Height := 20;
+    VL_btn.BorderSpacing.Around := 20;
+    VL_btn.Parent := VL_MenuVenda.PBotao;
+    VL_btn.TabOrder := 0;
+    VL_btn.OnClick := @FInterface.CliqueDoBotao;
+
+    for VL_I := 1 to F_MensagemTagCount(VL_Mensagem) do
+    begin
+        F_MensagemGetTagIdx(VL_Mensagem, VL_i, VL_Tag, VL_Dados);
+        if VL_Tag <> '0030' then                                     //PULA SE TIVER BOTAO DE CANCELAMENTO POIS JA FOI COLOCADO ACIMA
+        begin
+            VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+            F_MensagemGetTagIdx(VL_Mensagem, VL_i, VL_Tag, VL_Dados);
+            VL_btn.V_tag := VL_tag;
+            VL_btn.Caption := VL_Dados;
+            VL_btn.Align := alTop;
+            VL_btn.Height := 20;
+            VL_btn.BorderSpacing.Around := 20;
+            VL_btn.Parent := VL_MenuVenda.PBotao;
+            VL_btn.TabOrder := 0;
+            VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+            VL_btn.OnClick := @FInterface.CliqueDoBotao;
+        end;
+    end;
+    VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+
+    F_MensagemComandoDados(VL_Mensagem, VL_Dados);
+    VL_MenuVenda.ShowModal;
+
+    VO_Dados := StrAlloc(Length(VL_MenuVenda.EDados.Text) + 1);
+    StrPCopy(VO_Dados, VL_MenuVenda.EDados.Text);
+
+    VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
+    StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
+
+    VL_MenuVenda.Free;
+
+    F_MensagemFree(VL_Mensagem);
+end;                 
+
+-- inciar a venda no click do botao
+
+procedure TFInterface.BOpentefClick(Sender: TObject);
+var
+    VL_Erro: integer;
+    VL_TransacaoID: PChar;
+    VL_DescricaoErro: PChar;
+begin
+    VL_TransacaoID := '';
+    VL_DescricaoErro := '';
+
+    VL_Erro := F_TransacaoCreate(PChar('000A'), PChar('CX10'), VL_TransacaoID, 60000);
+
+    if VL_Erro <> 0 then
+    begin
+        F_Erro(VL_Erro, VL_DescricaoErro);
+        ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro);
+        Exit;
+    end;
+end;     

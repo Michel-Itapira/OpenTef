@@ -163,7 +163,6 @@
       <Unit>
         <Filename Value="mcom_lib.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
         <TopLine Value="9"/>
         <CursorPos X="37" Y="40"/>
@@ -177,7 +176,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="616"/>
+        <TopLine Value="837"/>
         <CursorPos X="78" Y="653"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
@@ -202,8 +201,9 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="1442"/>
-        <CursorPos Y="1360"/>
+        <CursorPos X="72" Y="1466"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>

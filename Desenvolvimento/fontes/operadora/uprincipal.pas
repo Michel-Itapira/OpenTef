@@ -1248,9 +1248,9 @@ var
     VL_Resultado: string;
 begin
     VL_Resultado := '';
-    VL_Pan := '6298678684258440386';
+    VL_Pan := '0000600000051015000';
     VL_WK := '';
-    VL_Senha := '82CCA12CE2903004';
+    VL_Senha := '4C4A33FFF0B1A57B';
 
     VL_Resultado := F_DescriptaSenha3Des(VL_WK,VL_Pan,VL_Senha);
 

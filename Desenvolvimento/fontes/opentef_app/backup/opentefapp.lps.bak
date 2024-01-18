@@ -65,8 +65,8 @@
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="4656"/>
-        <CursorPos X="53" Y="4687"/>
+        <TopLine Value="4274"/>
+        <CursorPos X="26" Y="4350"/>
         <UsageCount Value="223"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -113,8 +113,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="9"/>
-        <TopLine Value="74"/>
-        <CursorPos Y="93"/>
+        <CursorPos X="52" Y="332"/>
         <UsageCount Value="131"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -342,7 +341,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="892"/>
         <CursorPos X="3" Y="897"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\zeosdbo\src\component\ZDataset.pas"/>
@@ -491,10 +490,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
-        <Caret Line="4698" TopLine="4667"/>
-      </Position>
-      <Position>
-        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
         <Caret Line="4700" TopLine="4669"/>
       </Position>
       <Position>
@@ -609,6 +604,10 @@
         <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
         <Caret Line="3911" Column="53" TopLine="3888"/>
       </Position>
+      <Position>
+        <Filename Value="..\opentef_ser\opentefnucleo.pas"/>
+        <Caret Line="4686" Column="37" TopLine="4656"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -630,13 +629,6 @@
         <WatchKind Value="wpkWrite"/>
         <Source Value="..\opentef_ser\opentefnucleo.pas"/>
         <Line Value="2725"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\modulo_lib\modulo_padrao\modulo.pas"/>
-        <Line Value="331"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>

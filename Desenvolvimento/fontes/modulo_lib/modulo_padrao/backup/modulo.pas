@@ -37,8 +37,8 @@ type
 
     private
         V_ModuloProcID: integer;
-        V_ChaveComunicacao: ansistring;
-        V_Identificacao: ansistring;
+        //V_ChaveComunicacao: ansistring;
+        //V_Identificacao: ansistring;
         V_ModuloConf_ID: integer;
         V_ArquivoLog: ansistring;
         V_DComunicador: TDComunicador;
@@ -138,7 +138,6 @@ begin
     except
         on e: Exception do
         begin
-            Result := 1;
             GravaLog(TDModulo(VP_Modulo).V_ArquivoLog, 0, '', 'modulo', '111220230916', 'Erro de Retorno ' +
                 e.ClassName + '/' + e.Message, '', 1, 1);
         end;

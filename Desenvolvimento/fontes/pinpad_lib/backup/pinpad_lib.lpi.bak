@@ -25,7 +25,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="gertec_ppc930;..\libs\func"/>
+            <OtherUnitFiles Value="gertec_ppc930;..\libs\func;ingenico_Lane3000"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -50,7 +50,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="gertec_ppc930;..\libs\func"/>
+            <OtherUnitFiles Value="gertec_ppc930;..\libs\func;ingenico_Lane3000"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -83,12 +83,13 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="gertec_ppc930;..\libs\func"/>
+            <OtherUnitFiles Value="gertec_ppc930;..\libs\func;ingenico_Lane3000"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
             <RelocatableUnit Value="True"/>
+            <TargetCPU Value="i386"/>
             <TargetOS Value="win32"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
@@ -169,6 +170,10 @@
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="ingenico_Lane3000\ingenico_lane3000.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -179,7 +184,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="gertec_ppc930;..\libs\func"/>
+      <OtherUnitFiles Value="gertec_ppc930;..\libs\func;ingenico_Lane3000"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

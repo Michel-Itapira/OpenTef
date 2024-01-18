@@ -802,12 +802,13 @@ end;
 function TDComunicador.ConectarCliente(VP_DComunicador: Pointer): integer;
 var
     VL_Mensagem: TMensagem;
-    VL_Comando: ansistring;
-    VL_Dados, VL_DadosO, VL_DadosI: ansistring;
-    VL_ChaveComunicacao: ansistring;
-    VL_ExpoentePublico, VL_ModuloPublico: ansistring;
+    //VL_Comando: ansistring;
+    //VL_Dados,
+    VL_DadosO, VL_DadosI: ansistring;
+    //VL_ChaveComunicacao: ansistring;
+    //VL_ExpoentePublico, VL_ModuloPublico: ansistring;
     VL_Transmissao_ID: string;
-    VL_Desafio: ansistring;
+    //VL_Desafio: ansistring;
 begin
     VL_Mensagem := TMensagem.Create;
     VL_ModuloPublico := '';
@@ -1355,11 +1356,8 @@ begin
         try
             VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
-            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '11122023214800', 'TransmissaoID:'+VP_Transmissao_ID+ ' procurando Conexao_ID:'+IntToStr(VP_Conexao_ID), '', 0, 2);
-
             for VL_I := 0 to VL_Clientes.Count - 1 do
             begin
-            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '11122023214801', 'TransmissaoID:'+VP_Transmissao_ID+ 'registrada Conexao_ID:'+IntToStr(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID), '', 0, 2);
                 if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
                 begin
                     VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);

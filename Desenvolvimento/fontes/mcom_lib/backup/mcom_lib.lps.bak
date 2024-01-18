@@ -166,7 +166,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
         <TopLine Value="9"/>
-        <CursorPos X="136" Y="39"/>
+        <CursorPos X="37" Y="40"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -177,7 +177,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="627"/>
+        <TopLine Value="616"/>
         <CursorPos X="78" Y="653"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
@@ -352,18 +352,6 @@
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="96" Column="42" TopLine="90"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="216" Column="47" TopLine="198"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="235" Column="12" TopLine="216"/>
-      </Position>
-      <Position>
         <Filename Value="..\libs\func\comunicador.pas"/>
         <Caret Line="154" Column="30" TopLine="134"/>
       </Position>
@@ -470,6 +458,18 @@
       <Position>
         <Filename Value="mcom_lib.pas"/>
         <Caret Line="47" TopLine="9"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom_lib.pas"/>
+        <Caret Line="39" Column="136" TopLine="9"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom_lib.pas"/>
+        <Caret Line="47" TopLine="9"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom_lib.pas"/>
+        <Caret Line="37" Column="69" TopLine="9"/>
       </Position>
     </JumpHistory>
     <RunParams>

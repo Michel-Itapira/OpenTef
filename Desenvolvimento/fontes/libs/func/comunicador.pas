@@ -802,23 +802,24 @@ end;
 function TDComunicador.ConectarCliente(VP_DComunicador: Pointer): integer;
 var
     VL_Mensagem: TMensagem;
-    VL_Comando: ansistring;
-    VL_Dados, VL_DadosO, VL_DadosI: ansistring;
-    VL_ChaveComunicacao: ansistring;
-    VL_ExpoentePublico, VL_ModuloPublico: ansistring;
+    //VL_Comando: ansistring;
+    //VL_Dados,
+    VL_DadosO, VL_DadosI: ansistring;
+    //VL_ChaveComunicacao: ansistring;
+    //VL_ExpoentePublico, VL_ModuloPublico: ansistring;
     VL_Transmissao_ID: string;
-    VL_Desafio: ansistring;
+    //VL_Desafio: ansistring;
 begin
     VL_Mensagem := TMensagem.Create;
-    VL_ModuloPublico := '';
-    VL_ExpoentePublico := '';
-    VL_ChaveComunicacao := '';
-    VL_Dados := '';
+    //VL_ModuloPublico := '';
+    //VL_ExpoentePublico := '';
+    //VL_ChaveComunicacao := '';
+    //VL_Dados := '';
     VL_DadosO := '';
     VL_DadosI := '';
-    VL_Comando := '';
+    //VL_Comando := '';
     VL_Transmissao_ID := '';
-    VL_Desafio := '';
+    //VL_Desafio := '';
     try
         begin
             if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or

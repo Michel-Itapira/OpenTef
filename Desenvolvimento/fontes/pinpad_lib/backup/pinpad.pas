@@ -314,7 +314,7 @@ begin
         begin
             Result := 124;
             GravaLog(F_ArquivoLog, 0, '', 'pinpad_lib', VL_Linha, 'Erro de excecao na PinPadExecutaComando ' + e.ClassName +
-                '/' + e.Message, VP_Mensagem, 124, 1);
+                '/' + e.Message, VP_Mensagem.TagsAsString, 124, 1);
         end;
     end;
 end;

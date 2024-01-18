@@ -66,8 +66,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="692"/>
-        <CursorPos Y="724"/>
+        <TopLine Value="1228"/>
+        <CursorPos X="32" Y="1253"/>
         <UsageCount Value="244"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -85,8 +85,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="11"/>
-        <TopLine Value="1504"/>
-        <CursorPos Y="1542"/>
+        <TopLine Value="274"/>
+        <CursorPos X="24" Y="295"/>
         <UsageCount Value="135"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -104,8 +104,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="338"/>
-        <CursorPos X="59" Y="346"/>
+        <TopLine Value="160"/>
+        <CursorPos X="5" Y="150"/>
         <UsageCount Value="119"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -171,7 +171,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="817"/>
         <CursorPos Y="842"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -201,7 +201,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="466"/>
         <CursorPos Y="487"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="67"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -209,7 +209,7 @@
         <EditorIndex Value="10"/>
         <TopLine Value="510"/>
         <CursorPos Y="533"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
@@ -218,7 +218,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="1935"/>
         <CursorPos Y="1958"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
@@ -270,7 +270,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="98"/>
         <CursorPos X="34" Y="120"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="67"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -278,7 +278,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="29"/>
         <CursorPos X="13" Y="52"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -286,7 +286,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="61"/>
         <CursorPos Y="63"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -294,103 +294,7 @@
       <Define0 Value="DEBUG"/>
       <Define1 Value="WIN"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="28">
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="492" Column="67" TopLine="469"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1334"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="1122" TopLine="1103"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" Column="16" TopLine="1334"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1512" TopLine="1502"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1513" TopLine="1502"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1516" TopLine="1502"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1512" TopLine="1502"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1334"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1363"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1362"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1362"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1362"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1362"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1362"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1381" TopLine="1362"/>
-      </Position>
-      <Position>
-        <Filename Value="uprincipal.pas"/>
-        <Caret Line="487" TopLine="469"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="1358" TopLine="1339"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="uprincipal.pas"/>
         <Caret Line="487" TopLine="469"/>
@@ -410,6 +314,106 @@
       <Position>
         <Filename Value="uprincipal.pas"/>
         <Caret Line="157" Column="5" TopLine="138"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="725" Column="49" TopLine="708"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1517" Column="12" TopLine="1504"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="79" Column="20" TopLine="55"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="412" Column="14" TopLine="408"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="79" Column="17" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="412" Column="5" TopLine="408"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="69" Column="5" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="46" Column="25" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="..\mcom_lib\mcom.pas"/>
+        <Caret Line="64" Column="14" TopLine="37"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="696" Column="51" TopLine="842"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="714" Column="94" TopLine="696"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="773" Column="30" TopLine="761"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="775" Column="60" TopLine="761"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="777" Column="29" TopLine="761"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="778" Column="39" TopLine="761"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="783" Column="103" TopLine="767"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="799" Column="69" TopLine="787"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="814" Column="86" TopLine="787"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="837" Column="38" TopLine="828"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="839" Column="107" TopLine="828"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="842" Column="94" TopLine="828"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1002" Column="110" TopLine="981"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1003" Column="79" TopLine="981"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1160" Column="74" TopLine="1130"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="1161" Column="72" TopLine="1131"/>
       </Position>
     </JumpHistory>
     <RunParams>
