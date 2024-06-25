@@ -1,5 +1,5 @@
 object FCadPdv: TFCadPdv
-  Left = 354
+  Left = 355
   Height = 607
   Top = 125
   Width = 1163
@@ -946,10 +946,10 @@ object FCadPdv: TFCadPdv
     Height = 284
     Top = 318
     Width = 1153
-    ActivePage = TabPdvModulo
+    ActivePage = TabPdvFuncao
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     object TabPdvModulo: TTabSheet
       Caption = 'Módulo do Pdv'
@@ -1439,8 +1439,8 @@ object FCadPdv: TFCadPdv
           item
             Title.Alignment = taCenter
             Title.Orientation = toHorizontal
-            Title.Caption = 'X'
-            Width = 40
+            Title.Caption = 'Configurado'
+            Width = 100
             FieldName = 'VALIDADO_F'
             EditButtons = <>
             Filter.DropDownRows = 0
@@ -1455,7 +1455,7 @@ object FCadPdv: TFCadPdv
             Title.Alignment = taCenter
             Title.Orientation = toHorizontal
             Title.Caption = 'Tag'
-            Width = 200
+            Width = 100
             FieldName = 'TAG_NUMERO'
             EditButtons = <>
             Filter.DropDownRows = 0

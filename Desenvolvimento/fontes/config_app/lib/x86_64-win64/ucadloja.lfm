@@ -1,27 +1,28 @@
 object FCadLoja: TFCadLoja
-  Left = 577
-  Height = 531
-  Top = 210
-  Width = 776
+  Left = 275
+  Height = 530
+  Top = 179
+  Width = 1109
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Formulário de Cadastro de Lojas'
-  ClientHeight = 531
-  ClientWidth = 776
+  ClientHeight = 530
+  ClientWidth = 1109
+  FormStyle = fsMDIChild
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
     Top = 5
-    Width = 766
+    Width = 1099
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
     ClientHeight = 75
-    ClientWidth = 766
+    ClientWidth = 1099
     TabOrder = 0
     object LTitulo: TLabel
       Left = 7
@@ -45,14 +46,14 @@ object FCadLoja: TFCadLoja
       Left = 250
       Height = 51
       Top = 12
-      Width = 514
+      Width = 847
       Align = alClient
       BorderSpacing.Left = 10
       BorderSpacing.Top = 10
       BorderSpacing.Bottom = 10
       BevelOuter = bvNone
       ClientHeight = 51
-      ClientWidth = 514
+      ClientWidth = 847
       TabOrder = 0
       object BPesquisar: TBitBtn
         Left = 10
@@ -527,12 +528,12 @@ object FCadLoja: TFCadLoja
     Left = 5
     Height = 174
     Top = 85
-    Width = 766
+    Width = 1099
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
     ClientHeight = 174
-    ClientWidth = 766
+    ClientWidth = 1099
     TabOrder = 1
     object LID: TLabel
       Left = 16
@@ -558,6 +559,7 @@ object FCadLoja: TFCadLoja
       Height = 23
       Top = 32
       Width = 177
+      EnableSets = False
       MaxLength = 18
       TabOrder = 1
       EditMask = '99.999.999/9999-99;0;_'
@@ -567,7 +569,7 @@ object FCadLoja: TFCadLoja
       Left = 401
       Height = 19
       Top = 32
-      Width = 155
+      Width = 153
       Caption = 'Habilitar Loja Cadastrada'
       Font.Style = [fsBold]
       ParentFont = False
@@ -664,12 +666,12 @@ object FCadLoja: TFCadLoja
       Left = 296
       Height = 19
       Top = 32
-      Width = 89
+      Width = 87
       Caption = 'Pessoa Física'
       Font.Style = [fsBold]
-      OnClick = CkPessoaClick
       ParentFont = False
       TabOrder = 6
+      OnClick = CkPessoaClick
     end
     object BFuncaoLoja: TBitBtn
       Left = 400
@@ -689,9 +691,9 @@ object FCadLoja: TFCadLoja
   end
   object PagePrincipal: TPageControl
     Left = 5
-    Height = 262
+    Height = 261
     Top = 264
-    Width = 766
+    Width = 1099
     ActivePage = TabModuloFuncao
     Align = alClient
     BorderSpacing.Around = 5
@@ -699,24 +701,24 @@ object FCadLoja: TFCadLoja
     TabOrder = 2
     object TabLojaModulo: TTabSheet
       Caption = 'Módulo da Loja'
-      ClientHeight = 234
-      ClientWidth = 758
+      ClientHeight = 233
+      ClientWidth = 1091
       object Panel4: TPanel
         Left = 3
-        Height = 228
+        Height = 227
         Top = 3
         Width = 413
         Align = alLeft
         BorderSpacing.Around = 3
         BevelInner = bvLowered
-        ClientHeight = 228
+        ClientHeight = 227
         ClientWidth = 413
         TabOrder = 0
         object TabLojaModuloCkHabilitar: TCheckBox
           Left = 217
           Height = 19
           Top = 30
-          Width = 184
+          Width = 182
           Caption = 'Habilitar Configuração da Loja'
           Font.Style = [fsBold]
           ParentFont = False
@@ -909,13 +911,13 @@ object FCadLoja: TFCadLoja
       end
       object Panel5: TPanel
         Left = 419
-        Height = 228
+        Height = 227
         Top = 3
         Width = 335
         Align = alLeft
         BorderSpacing.Around = 3
         BevelInner = bvLowered
-        ClientHeight = 228
+        ClientHeight = 227
         ClientWidth = 335
         TabOrder = 1
         object TabLojaModuloLFiltro: TLabel
@@ -934,16 +936,16 @@ object FCadLoja: TFCadLoja
           Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
           Top = 29
           Width = 272
-          OnChange = TabLojaModuloEFiltroChange
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
           Text = 'TabLojaModuloEFiltro'
+          OnChange = TabLojaModuloEFiltroChange
         end
         object TabLojaModuloGrid: TRxDBGrid
           Left = 2
           Height = 163
-          Top = 63
+          Top = 62
           Width = 331
           ColumnDefValues.BlobText = '(blob)'
           TitleButtons = False
@@ -1048,14 +1050,15 @@ object FCadLoja: TFCadLoja
           Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
           ReadOnly = True
           TabOrder = 1
+          OnColEnter = TabLojaModuloGridColEnter
           OnMouseDown = TabLojaModuloGridMouseDown
         end
       end
     end
     object TabLojaFuncao: TTabSheet
       Caption = 'Funções Cadastradas para Loja'
-      ClientHeight = 234
-      ClientWidth = 758
+      ClientHeight = 233
+      ClientWidth = 1091
       object TabLojaFuncaoLTipoFiltro: TLabel
         Left = 4
         Height = 15
@@ -1079,9 +1082,9 @@ object FCadLoja: TFCadLoja
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabLojaFuncaoETipoFiltroChange
         TabOrder = 0
         Text = 'TabLojaFuncaoETipoFiltro'
+        OnChange = TabLojaFuncaoETipoFiltroChange
       end
       object TabLojaFuncaoLFiltro: TLabel
         Left = 237
@@ -1099,26 +1102,26 @@ object FCadLoja: TFCadLoja
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabLojaFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO'
+        OnChange = TabLojaFuncaoEFiltroChange
       end
       object TabLojaFuncaoCKSelecionada: TCheckBox
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabLojaFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabLojaFuncaoCKSelecionadaChange
       end
       object TabLojaFuncaoGrid: TRxDBGrid
         Left = 4
         Height = 165
         Top = 64
-        Width = 844
+        Width = 764
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True
@@ -1270,8 +1273,8 @@ object FCadLoja: TFCadLoja
     end
     object TabModuloFuncao: TTabSheet
       Caption = 'Funções do Módulo'
-      ClientHeight = 234
-      ClientWidth = 758
+      ClientHeight = 233
+      ClientWidth = 1091
       object TabModuloFuncaoLTipoFiltro: TLabel
         Left = 4
         Height = 15
@@ -1295,9 +1298,9 @@ object FCadLoja: TFCadLoja
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabModuloFuncaoETipoFiltroChange
         TabOrder = 0
         Text = 'TabModuloFuncaoETipoFiltro'
+        OnChange = TabModuloFuncaoETipoFiltroChange
       end
       object TabModuloFuncaoLFiltro: TLabel
         Left = 237
@@ -1315,26 +1318,26 @@ object FCadLoja: TFCadLoja
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabModuloFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO1'
+        OnChange = TabModuloFuncaoEFiltroChange
       end
       object TabModuloFuncaoCKSelecionada: TCheckBox
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabModuloFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabModuloFuncaoCKSelecionadaChange
       end
       object TabModuloFuncaoGrid: TRxDBGrid
         Left = 4
         Height = 165
         Top = 64
-        Width = 844
+        Width = 756
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True
@@ -1488,42 +1491,42 @@ object FCadLoja: TFCadLoja
   object MDLoja: TRxMemoryData
     FieldDefs = <>
     PacketRecords = 0
-    Left = 576
-    Top = 96
+    Left = 888
+    Top = 112
   end
   object DSLoja: TDataSource
     DataSet = MDLoja
-    Left = 616
-    Top = 96
+    Left = 992
+    Top = 104
   end
   object MDMultiLojaLoja: TRxMemoryData
     FieldDefs = <>
     PacketRecords = 0
-    Left = 240
-    Top = 200
+    Left = 888
+    Top = 184
   end
   object DSMultiLojaLoja: TDataSource
     DataSet = MDMultiLojaLoja
-    Left = 288
-    Top = 208
+    Left = 992
+    Top = 184
   end
   object MDLojaModuloConf: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     AfterScroll = MDLojaModuloConfAfterScroll
     PacketRecords = 0
-    Left = 24
-    Top = 256
+    Left = 864
+    Top = 304
   end
   object DSLojaModuloConf: TDataSource
     DataSet = MDLojaModuloConf
-    Left = 56
-    Top = 256
+    Left = 1024
+    Top = 304
   end
   object DSLojaFuncao: TDataSource
     DataSet = MDLojaFuncao
-    Left = 192
-    Top = 272
+    Left = 1024
+    Top = 352
   end
   object MDLojaFuncao: TRxMemoryData
     Filtered = True
@@ -1581,8 +1584,8 @@ object FCadLoja: TFCadLoja
     OnCalcFields = MDLojaFuncaoCalcFields
     OnFilterRecord = MDLojaFuncaoFilterRecord
     PacketRecords = 0
-    Left = 152
-    Top = 272
+    Left = 864
+    Top = 352
     object MDLojaFuncaoVALIDADO: TStringField
       FieldKind = fkData
       FieldName = 'VALIDADO'
@@ -1728,8 +1731,8 @@ object FCadLoja: TFCadLoja
     OnCalcFields = MDLojaModuloConfFuncaoCalcFields
     OnFilterRecord = MDLojaModuloConfFuncaoFilterRecord
     PacketRecords = 0
-    Left = 320
-    Top = 280
+    Left = 864
+    Top = 464
     object MDLojaModuloConfFuncaoVALIDADO: TStringField
       FieldKind = fkData
       FieldName = 'VALIDADO'
@@ -1821,19 +1824,19 @@ object FCadLoja: TFCadLoja
   end
   object DSLojaModuloConfFuncao: TDataSource
     DataSet = MDLojaModuloConfFuncao
-    Left = 368
-    Top = 280
+    Left = 1024
+    Top = 464
   end
   object MDPesquisaModulo: TRxMemoryData
     FieldDefs = <>
     OnFilterRecord = MDPesquisaModuloFilterRecord
     PacketRecords = 0
-    Left = 336
-    Top = 392
+    Left = 864
+    Top = 400
   end
   object DSPesquisaModulo: TDataSource
     DataSet = MDPesquisaModulo
-    Left = 376
-    Top = 392
+    Left = 1024
+    Top = 400
   end
 end

@@ -3,8 +3,8 @@ object DNucleo: TDNucleo
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 1690
-  VerticalOffset = 517
+  HorizontalOffset = 1683
+  VerticalOffset = 669
   Width = 416
   object CriptoAes: TLbRijndael
     CipherMode = cmECB
@@ -14,7 +14,6 @@ object DNucleo: TDNucleo
   end
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
-    AutoEncodeStrings = True
     ClientCodepage = 'ISO8859_1'
     Properties.Strings = (
       'codepage=ISO8859_1'
@@ -23,9 +22,10 @@ object DNucleo: TDNucleo
     )
     AutoCommit = False
     TransactIsolationLevel = tiReadCommitted
+    DisableSavepoints = False
     Port = 0
     User = 'SYSDBA'
-    Protocol = 'firebirdd-3.0'
+    Protocol = 'firebird'
     Left = 32
     Top = 19
   end

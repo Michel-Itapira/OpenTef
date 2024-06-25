@@ -1,31 +1,34 @@
 object FCadPdv: TFCadPdv
-  Left = 585
-  Height = 580
-  Top = 214
-  Width = 776
+  Left = 355
+  Height = 607
+  Top = 125
+  Width = 1163
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Formulário de Cadastro de PDV'
-  ClientHeight = 580
-  ClientWidth = 776
+  ClientHeight = 607
+  ClientWidth = 1163
+  FormStyle = fsMDIChild
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
   object PTitulo: TPanel
     Left = 5
-    Height = 67
-    Top = 69
-    Width = 766
+    Height = 57
+    Top = 71
+    Width = 1153
     Align = alTop
+    BorderSpacing.Top = 2
+    BorderSpacing.Bottom = 2
     BorderSpacing.Around = 5
     BevelInner = bvLowered
-    ClientHeight = 67
-    ClientWidth = 766
+    ClientHeight = 57
+    ClientWidth = 1153
     TabOrder = 0
     object LTitulo: TLabel
       Left = 7
-      Height = 43
+      Height = 33
       Top = 12
       Width = 233
       Align = alLeft
@@ -43,26 +46,26 @@ object FCadPdv: TFCadPdv
     end
     object PBotoes: TPanel
       Left = 250
-      Height = 43
+      Height = 33
       Top = 12
-      Width = 514
+      Width = 901
       Align = alClient
       BorderSpacing.Left = 10
       BorderSpacing.Top = 10
       BorderSpacing.Bottom = 10
       BevelOuter = bvNone
-      ClientHeight = 43
-      ClientWidth = 514
+      ClientHeight = 33
+      ClientWidth = 901
       TabOrder = 0
       object BPesquisar: TBitBtn
         Left = 10
-        Height = 33
-        Top = 5
+        Height = 29
+        Top = 2
         Width = 95
         Align = alLeft
         BorderSpacing.Left = 10
-        BorderSpacing.Top = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
         Caption = 'Pesquisar'
         Font.Style = [fsBold]
         Glyph.Data = {
@@ -150,13 +153,13 @@ object FCadPdv: TFCadPdv
       end
       object BAdicionar: TBitBtn
         Left = 220
-        Height = 33
-        Top = 5
+        Height = 29
+        Top = 2
         Width = 95
         Align = alLeft
         BorderSpacing.Left = 20
-        BorderSpacing.Top = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
         Caption = 'Adicionar'
         Font.Style = [fsBold]
         Glyph.Data = {
@@ -244,12 +247,12 @@ object FCadPdv: TFCadPdv
       end
       object BModificar: TBitBtn
         Left = 315
-        Height = 33
-        Top = 5
+        Height = 29
+        Top = 2
         Width = 95
         Align = alLeft
-        BorderSpacing.Top = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
         Caption = 'Alterar'
         Font.Style = [fsBold]
         Glyph.Data = {
@@ -337,12 +340,12 @@ object FCadPdv: TFCadPdv
       end
       object BExcluir: TBitBtn
         Left = 410
-        Height = 33
-        Top = 5
+        Height = 29
+        Top = 2
         Width = 95
         Align = alLeft
-        BorderSpacing.Top = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
         Caption = 'Excluir'
         Font.Style = [fsBold]
         Glyph.Data = {
@@ -430,12 +433,12 @@ object FCadPdv: TFCadPdv
       end
       object BLimpar: TBitBtn
         Left = 105
-        Height = 33
-        Top = 5
+        Height = 29
+        Top = 2
         Width = 95
         Align = alLeft
-        BorderSpacing.Top = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Top = 2
+        BorderSpacing.Bottom = 2
         Caption = 'Limpar'
         Font.Style = [fsBold]
         Glyph.Data = {
@@ -525,14 +528,14 @@ object FCadPdv: TFCadPdv
   end
   object PPdv: TPanel
     Left = 5
-    Height = 151
-    Top = 141
-    Width = 766
+    Height = 178
+    Top = 135
+    Width = 1153
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
-    ClientHeight = 151
-    ClientWidth = 766
+    ClientHeight = 178
+    ClientWidth = 1153
     TabOrder = 1
     object LID: TLabel
       Left = 11
@@ -575,7 +578,7 @@ object FCadPdv: TFCadPdv
     object LChave: TLabel
       Left = 11
       Height = 15
-      Top = 96
+      Top = 91
       Width = 37
       Caption = 'Chave:'
       Font.Style = [fsBold]
@@ -585,7 +588,7 @@ object FCadPdv: TFCadPdv
     object LIP: TLabel
       Left = 11
       Height = 15
-      Top = 50
+      Top = 48
       Width = 14
       Caption = 'I.P'
       Font.Style = [fsBold]
@@ -595,7 +598,7 @@ object FCadPdv: TFCadPdv
     object EIP: TEdit
       Left = 11
       Height = 23
-      Top = 66
+      Top = 64
       Width = 205
       CharCase = ecUppercase
       TabOrder = 1
@@ -604,7 +607,7 @@ object FCadPdv: TFCadPdv
     object BGeraChave: TSpeedButton
       Left = 484
       Height = 27
-      Top = 111
+      Top = 104
       Width = 40
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -645,11 +648,12 @@ object FCadPdv: TFCadPdv
       Images = FInterface.ListaImg
       ImageIndex = 11
       ImageWidth = 16
+      OnClick = BGeraChaveClick
     end
     object EChave: TMemo
       Left = 11
       Height = 25
-      Top = 112
+      Top = 105
       Width = 471
       CharCase = ecUppercase
       Lines.Strings = (
@@ -661,7 +665,7 @@ object FCadPdv: TFCadPdv
     object LPinPad: TLabel
       Left = 227
       Height = 15
-      Top = 50
+      Top = 48
       Width = 40
       Caption = 'PinPad:'
       Font.Style = [fsBold]
@@ -671,7 +675,7 @@ object FCadPdv: TFCadPdv
     object CPinPad: TRxDBLookupCombo
       Left = 227
       Height = 27
-      Top = 66
+      Top = 64
       Width = 314
       AutoSize = True
       BorderStyle = bsSingle
@@ -701,7 +705,7 @@ object FCadPdv: TFCadPdv
     object LPinPadCom: TLabel
       Left = 552
       Height = 15
-      Top = 50
+      Top = 48
       Width = 63
       Alignment = taRightJustify
       Caption = 'Porta COM:'
@@ -713,7 +717,7 @@ object FCadPdv: TFCadPdv
     object EPinPadCom: TEdit
       Left = 552
       Height = 23
-      Top = 66
+      Top = 64
       Width = 200
       CharCase = ecUppercase
       TabOrder = 5
@@ -723,7 +727,7 @@ object FCadPdv: TFCadPdv
       Left = 652
       Height = 19
       Top = 25
-      Width = 100
+      Width = 98
       Caption = 'Habilitar P.D.V'
       Font.Style = [fsBold]
       ParentFont = False
@@ -732,7 +736,7 @@ object FCadPdv: TFCadPdv
     object BFuncaoPdv: TBitBtn
       Left = 552
       Height = 32
-      Top = 106
+      Top = 99
       Width = 200
       Caption = 'Gerencia Funções do PDV'
       Font.Style = [fsBold]
@@ -744,35 +748,53 @@ object FCadPdv: TFCadPdv
       ParentFont = False
       TabOrder = 7
     end
-    object LIdentificacao: TLabel
-      Left = 389
+    object LIdentificador: TLabel
+      Left = 11
       Height = 15
-      Top = 7
-      Width = 102
-      Caption = 'Identificação PDV:'
+      Top = 133
+      Width = 75
+      Caption = 'Identificador:'
       Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False
     end
-    object EIdentificacao: TEdit
+    object EIdentificador: TEdit
+      Left = 11
+      Height = 23
+      Top = 149
+      Width = 511
+      TabOrder = 8
+      Text = 'Edit1'
+    end
+    object EIdentificadorPdv: TEdit
       Left = 389
       Height = 23
       Top = 23
       Width = 256
-      TabOrder = 8
+      TabOrder = 9
       Text = 'Edit1'
+    end
+    object LIdentificacaoPdv: TLabel
+      Left = 389
+      Height = 15
+      Top = 7
+      Width = 206
+      Caption = 'Identificação PDV (número do Caixa):'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
     end
   end
   object PLoja: TPanel
     Left = 5
     Height = 59
     Top = 5
-    Width = 766
+    Width = 1153
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
     ClientHeight = 59
-    ClientWidth = 766
+    ClientWidth = 1153
     TabOrder = 2
     object LSelecioneLoja: TLabel
       Left = 7
@@ -826,7 +848,7 @@ object FCadPdv: TFCadPdv
       LookupSource = DSLoja
     end
     object BVinculo: TBitBtn
-      Left = 616
+      Left = 1003
       Height = 45
       Top = 7
       Width = 143
@@ -922,9 +944,9 @@ object FCadPdv: TFCadPdv
   end
   object PagePrincipal: TPageControl
     Left = 5
-    Height = 278
-    Top = 297
-    Width = 766
+    Height = 284
+    Top = 318
+    Width = 1153
     ActivePage = TabPdvFuncao
     Align = alClient
     BorderSpacing.Around = 5
@@ -932,25 +954,25 @@ object FCadPdv: TFCadPdv
     TabOrder = 3
     object TabPdvModulo: TTabSheet
       Caption = 'Módulo do Pdv'
-      ClientHeight = 250
-      ClientWidth = 758
+      ClientHeight = 256
+      ClientWidth = 1145
       object Panel4: TPanel
         Left = 3
-        Height = 244
+        Height = 250
         Top = 3
         Width = 413
         Align = alLeft
         BorderSpacing.Around = 3
         BevelInner = bvLowered
-        ClientHeight = 244
+        ClientHeight = 250
         ClientWidth = 413
         TabOrder = 0
         object TabPdvModuloCkHabilitar: TCheckBox
-          Left = 217
+          Left = 210
           Height = 19
           Top = 28
-          Width = 184
-          Caption = 'Habilitar Configuração do Pdv'
+          Width = 190
+          Caption = 'Habilitar Config do Modulo Pdv'
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
@@ -1009,7 +1031,7 @@ object FCadPdv: TFCadPdv
         object TabPdvModuloBModificar: TBitBtn
           Left = 61
           Height = 28
-          Top = 199
+          Top = 200
           Width = 130
           Caption = 'Alterar Módulo'
           Font.Style = [fsBold]
@@ -1023,7 +1045,7 @@ object FCadPdv: TFCadPdv
         object TabPdvModuloBExcluir: TBitBtn
           Left = 229
           Height = 28
-          Top = 199
+          Top = 200
           Width = 130
           Caption = 'Excluir Módulo'
           Font.Style = [fsBold]
@@ -1112,7 +1134,7 @@ object FCadPdv: TFCadPdv
         object TabPdvModuloBLimpar: TBitBtn
           Left = 229
           Height = 28
-          Top = 160
+          Top = 161
           Width = 130
           Caption = 'Limpar Cadastro'
           Font.Style = [fsBold]
@@ -1202,13 +1224,13 @@ object FCadPdv: TFCadPdv
       end
       object Panel5: TPanel
         Left = 419
-        Height = 244
+        Height = 250
         Top = 3
         Width = 335
         Align = alLeft
         BorderSpacing.Around = 3
         BevelInner = bvLowered
-        ClientHeight = 244
+        ClientHeight = 250
         ClientWidth = 335
         TabOrder = 1
         object TabPdvModuloLFiltro: TLabel
@@ -1222,21 +1244,21 @@ object FCadPdv: TFCadPdv
           ParentFont = False
         end
         object TabPdvModuloEFiltro: TEdit
-          Left = 9
+          Left = 48
           Height = 23
           Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
-          Top = 29
-          Width = 272
-          OnChange = TabPdvModuloEFiltroChange
+          Top = 10
+          Width = 275
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
           Text = 'TabPdvModuloEFiltro'
+          OnChange = TabPdvModuloEFiltroChange
         end
         object TabPdvModuloGrid: TRxDBGrid
           Left = 2
-          Height = 178
-          Top = 64
+          Height = 188
+          Top = 60
           Width = 331
           ColumnDefValues.BlobText = '(blob)'
           TitleButtons = False
@@ -1346,8 +1368,8 @@ object FCadPdv: TFCadPdv
     end
     object TabPdvFuncao: TTabSheet
       Caption = 'Funções Cadastradas para Pdv'
-      ClientHeight = 250
-      ClientWidth = 758
+      ClientHeight = 256
+      ClientWidth = 1145
       object TabPdvFuncaoLTipoFiltro: TLabel
         Left = 4
         Height = 15
@@ -1371,9 +1393,9 @@ object FCadPdv: TFCadPdv
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabPdvFuncaoETipoFiltroChange
         TabOrder = 0
         Text = 'TabPdvFuncaoETipoFiltro'
+        OnChange = TabPdvFuncaoETipoFiltroChange
       end
       object TabPdvFuncaoLFiltro: TLabel
         Left = 237
@@ -1391,26 +1413,26 @@ object FCadPdv: TFCadPdv
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabPdvFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO'
+        OnChange = TabPdvFuncaoEFiltroChange
       end
       object TabPdvFuncaoCKSelecionada: TCheckBox
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabPdvFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabPdvFuncaoCKSelecionadaChange
       end
       object TabPdvFuncaoGrid: TRxDBGrid
         Left = 4
         Height = 165
         Top = 64
-        Width = 844
+        Width = 764
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True
@@ -1418,8 +1440,8 @@ object FCadPdv: TFCadPdv
           item
             Title.Alignment = taCenter
             Title.Orientation = toHorizontal
-            Title.Caption = 'X'
-            Width = 40
+            Title.Caption = 'Configurado'
+            Width = 100
             FieldName = 'VALIDADO_F'
             EditButtons = <>
             Filter.DropDownRows = 0
@@ -1434,7 +1456,7 @@ object FCadPdv: TFCadPdv
             Title.Alignment = taCenter
             Title.Orientation = toHorizontal
             Title.Caption = 'Tag'
-            Width = 200
+            Width = 100
             FieldName = 'TAG_NUMERO'
             EditButtons = <>
             Filter.DropDownRows = 0
@@ -1617,8 +1639,8 @@ object FCadPdv: TFCadPdv
     OnCalcFields = MDPdvFuncaoCalcFields
     OnFilterRecord = MDPdvFuncaoFilterRecord
     PacketRecords = 0
-    Left = 184
-    Top = 296
+    Left = 944
+    Top = 336
     object MDPdvFuncaoVALIDADO: TStringField
       FieldKind = fkData
       FieldName = 'VALIDADO'
@@ -1710,78 +1732,78 @@ object FCadPdv: TFCadPdv
   end
   object DSPdvFuncao: TDataSource
     DataSet = MDPdvFuncao
-    Left = 232
-    Top = 296
+    Left = 992
+    Top = 336
   end
   object MDLoja: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 472
+    Left = 912
     Top = 16
   end
   object DSLoja: TDataSource
     DataSet = MDLoja
-    Left = 520
+    Left = 960
     Top = 16
   end
   object MDPdvModulo: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 544
-    Top = 456
+    Left = 944
+    Top = 512
   end
   object DSPdvModulo: TDataSource
     DataSet = MDPdvModulo
-    Left = 584
-    Top = 456
+    Left = 1032
+    Top = 512
   end
   object MDPdv: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 32
-    Top = 144
+    Left = 888
+    Top = 152
   end
   object DSPdv: TDataSource
     DataSet = MDPdv
-    Left = 88
-    Top = 144
+    Left = 944
+    Top = 152
   end
   object MDPesquisaModulo: TRxMemoryData
     FieldDefs = <>
     PacketRecords = 0
-    Left = 256
-    Top = 440
+    Left = 944
+    Top = 456
   end
   object DSPesquisaModulo: TDataSource
     DataSet = MDPesquisaModulo
-    Left = 296
-    Top = 440
+    Left = 984
+    Top = 456
   end
   object MDTags: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 280
+    Left = 936
     Top = 392
   end
   object DSTags: TDataSource
     DataSet = MDTags
-    Left = 336
+    Left = 992
     Top = 392
   end
   object MDPinPad: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 408
-    Top = 208
+    Left = 1000
+    Top = 152
   end
   object DSPinPad: TDataSource
     DataSet = MDPinPad
-    Left = 472
-    Top = 208
+    Left = 1064
+    Top = 152
   end
 end

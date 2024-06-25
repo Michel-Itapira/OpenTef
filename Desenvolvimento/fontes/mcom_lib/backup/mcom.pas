@@ -631,7 +631,7 @@ begin
                 VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
                 VL_DadosCriptografados := VL_Aes.DecryptString(VL_DadosCriptografados);
-                VL_Mensagem.AddTag('007D', VL_DadosCriptografados);
+                VL_Mensagem.AddTag('00E3', VL_DadosCriptografados);
 
                 VP_DadosRecebidos := VL_Mensagem.TagsAsString;
 

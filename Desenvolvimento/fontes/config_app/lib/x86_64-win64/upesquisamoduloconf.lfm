@@ -11,7 +11,7 @@ object FPesquisaModuloConf: TFPesquisaModuloConf
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object pnlBase: TPanel
     Left = 0
     Height = 656

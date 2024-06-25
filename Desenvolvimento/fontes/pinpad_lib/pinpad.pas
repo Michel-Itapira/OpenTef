@@ -115,6 +115,9 @@ end;
 
 function PinPadDescarrega(): integer; stdcall;
 begin
+    if not F_PinPadCarregado then
+        Exit;
+
     F_PinPadCarregado := False;
     Result := F_PinPad.DescarregaLib();
     F_PinPad.Free;

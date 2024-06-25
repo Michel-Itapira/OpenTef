@@ -1,15 +1,15 @@
 object FLogin: TFLogin
-  Left = 791
+  Left = 792
   Height = 137
   Top = 383
   Width = 364
   BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
   Caption = 'Login Open-Tef'
   ClientHeight = 137
   ClientWidth = 364
   OnClose = FormClose
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object LTipo: TLabel
     Left = 16
     Height = 15
@@ -149,7 +149,7 @@ object FLogin: TFLogin
     ParentFont = False
     TabOrder = 2
   end
-  object BConectar1: TBitBtn
+  object BDesconectar: TBitBtn
     Left = 192
     Height = 48
     Top = 80
@@ -235,7 +235,7 @@ object FLogin: TFLogin
     Images = FInterface.ListaImg
     ImageIndex = 4
     ImageWidth = 32
-    OnClick = BConectar1Click
+    OnClick = BDesconectarClick
     ParentBidiMode = False
     ParentFont = False
     TabOrder = 3

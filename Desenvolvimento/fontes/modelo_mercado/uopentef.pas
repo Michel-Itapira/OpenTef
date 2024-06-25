@@ -26,6 +26,7 @@ type
         VP_RetornoCliente: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
         VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; cdecl;
     TTLogin = function(VP_Host: PChar; VP_Porta, VP_ID: integer; VP_Chave: PChar; VP_Versao_Comunicacao: integer; VP_Identificador: PChar): integer; cdecl;
+    TTFinalizar = function():integer;cdecl;
 
     TTMensagemCreate = function(var VO_Mensagem: Pointer): integer; cdecl;
     TTMensagemCarregaTags = function(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
@@ -55,6 +56,7 @@ type
 var
     F_TefLib: THandle;
     F_TefInicializar: TTefInicializar;
+    F_Finalizar:TTFinalizar;
     F_Login: TTLogin;
     F_MensagemCreate: TTMensagemcreate;
     F_MensagemCarregaTags: TTMensagemCarregaTags;
@@ -82,14 +84,14 @@ var
     F_Erro: TTMensagemerro;
 
 const
-    PINPAD_MODELO: integer = 0;
-    PINPAD_PORTA: PChar = '';
-    PINPAD_MODELO_LIB: PChar = '';
-    PINPAD_LIB: PChar = '';
+    PINPAD_MODELO: integer = 1;
+    PINPAD_PORTA: PChar = 'COM4';
+    PINPAD_MODELO_LIB: PChar = '..\..\pinpad_lib\win64\';
+    PINPAD_LIB: PChar = '..\..\pinpad_lib\win64\pinpad_lib.dll';
     AMBIENTE_TESTE: integer = 0;
 
-    OPENTEF_HOST: string = 'opentef.ioiosoftware.com.br';
-    OPENTEF_PORTA: integer = 39001;
+    OPENTEF_HOST: string = '127.0.0.1';
+    OPENTEF_PORTA: integer = 1000;
     OPENTEF_ID: integer = 12;
     OPENTEF_CHAVE: string = '123';
     OPENTEF_IDENTIFICADOR: string = '313311';
@@ -99,6 +101,7 @@ const
     TEMPO_ESPERA: integer = 60000;
 
 procedure incializar;
+procedure finalizar;
 procedure login;
 
 implementation
@@ -112,7 +115,7 @@ var
 begin
     VL_DescricaoErro := '';
 
-    F_TefLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'tef_lib.dll'));
+    F_TefLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\tef_lib.dll'));
 
     if F_TefLib = 0 then
     begin
@@ -121,6 +124,7 @@ begin
     end;
 
     Pointer(F_TefInicializar) := GetProcAddress(F_TefLib, 'inicializar');
+    Pointer(F_Finalizar) := GetProcAddress(F_TefLib, 'finalizar');
     Pointer(F_Login) := GetProcAddress(F_TefLib, 'login');
 
     Pointer(F_MensagemCreate) := GetProcAddress(F_TefLib, 'mensagemcreate');
@@ -157,6 +161,11 @@ begin
         ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' + VL_DescricaoErro);
         exit;
     end;
+end;
+
+procedure finalizar;
+begin
+  F_Finalizar;
 end;
 
 procedure login;

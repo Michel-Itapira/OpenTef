@@ -12,7 +12,8 @@ const
     C_Programa : String ='config_app';
     C_Mensagem = 1;
 
-
+VAR
+  F_NivelLog:integer=1;
 
 implementation
 

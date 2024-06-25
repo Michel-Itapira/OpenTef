@@ -3,12 +3,11 @@ object DBancoDados: TDBancoDados
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 330
-  HorizontalOffset = 1597
-  VerticalOffset = 451
+  HorizontalOffset = 1589
+  VerticalOffset = 546
   Width = 466
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
-    AutoEncodeStrings = True
     ClientCodepage = 'ISO8859_1'
     Properties.Strings = (
       'codepage=ISO8859_1'
@@ -17,9 +16,10 @@ object DBancoDados: TDBancoDados
     )
     AutoCommit = False
     TransactIsolationLevel = tiReadCommitted
+    DisableSavepoints = False
     Port = 0
     User = 'SYSDBA'
-    Protocol = 'firebirdd-3.0'
+    Protocol = 'firebird'
     Left = 60
     Top = 47
   end

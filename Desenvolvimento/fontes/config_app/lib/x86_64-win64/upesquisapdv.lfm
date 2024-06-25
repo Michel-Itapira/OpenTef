@@ -10,7 +10,7 @@ object FPesquisaPdv: TFPesquisaPdv
   ClientWidth = 489
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object PnlBase: TPanel
     Left = 0
     Height = 663
@@ -284,7 +284,7 @@ object FPesquisaPdv: TFPesquisaPdv
         item
           Title.Caption = 'Identificação'
           Width = 130
-          FieldName = 'IDENTIFICACAO'
+          FieldName = 'IDENTIFICADOR_PDV'
         end      
         item
           Title.Caption = 'Descrição PDV'

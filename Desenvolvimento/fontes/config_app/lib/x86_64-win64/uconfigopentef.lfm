@@ -1,5 +1,5 @@
 object FConfigOpenTef: TFConfigOpenTef
-  Left = 691
+  Left = 692
   Height = 309
   Top = 222
   Width = 437
@@ -8,7 +8,7 @@ object FConfigOpenTef: TFConfigOpenTef
   Caption = 'Configurador porta de acesso Open-Tef'
   ClientHeight = 309
   ClientWidth = 437
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.4.0'
   object BGravar: TSpeedButton
     Left = 128
     Height = 40
@@ -100,9 +100,9 @@ object FConfigOpenTef: TFConfigOpenTef
     Height = 239
     Top = 0
     Width = 437
-    ActivePage = TabOpenTef
+    ActivePage = TabConfigurador
     Align = alTop
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabOpenTef: TTabSheet
       Caption = 'OpenTef'
@@ -116,6 +116,7 @@ object FConfigOpenTef: TFConfigOpenTef
         Caption = 'Arquivo de Config do Servidor Open-Tef'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
         WordWrap = True
       end
@@ -149,6 +150,7 @@ object FConfigOpenTef: TFConfigOpenTef
         Caption = 'Porta:'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
         WordWrap = True
       end
@@ -165,6 +167,7 @@ object FConfigOpenTef: TFConfigOpenTef
         Caption = 'Host:'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object TabConfiguradorEHost: TEdit
@@ -197,6 +200,7 @@ object FConfigOpenTef: TFConfigOpenTef
         Caption = 'Porta:'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object TabConfiguradorLChave: TLabel
@@ -207,6 +211,7 @@ object FConfigOpenTef: TFConfigOpenTef
         Caption = 'Chave:'
         Font.Height = -16
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
       object TabConfiguradorEChave: TMemo

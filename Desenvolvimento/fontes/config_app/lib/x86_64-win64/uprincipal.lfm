@@ -1,7 +1,7 @@
 object fprincipal: Tfprincipal
-  Left = 368
+  Left = 459
   Height = 726
-  Top = 228
+  Top = 197
   Width = 1048
   Caption = 'Administrador OpenTef'
   ClientHeight = 726
@@ -9,7 +9,7 @@ object fprincipal: Tfprincipal
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object PTopo: TPanel
     Left = 0
     Height = 72
@@ -215,9 +215,9 @@ object fprincipal: Tfprincipal
       Height = 652
       Top = 1
       Width = 1046
-      ActivePage = TabModulo
+      ActivePage = TabCadastro
       Align = alClient
-      TabIndex = 4
+      TabIndex = 0
       TabOrder = 0
       object TabCadastro: TTabSheet
         Caption = 'Gerenciador das Lojas'
@@ -658,13 +658,13 @@ object fprincipal: Tfprincipal
                     Height = 340
                     Top = 5
                     Width = 622
-                    ActivePage = TabMultLojaTabFuncaoDados
+                    ActivePage = TabMultLojaTabModuloDados
                     Align = alClient
                     BorderSpacing.Left = 3
                     BorderSpacing.Top = 5
                     BorderSpacing.Right = 3
                     BorderSpacing.Bottom = 5
-                    TabIndex = 1
+                    TabIndex = 0
                     TabOrder = 0
                     object TabMultLojaTabModuloDados: TTabSheet
                       Caption = 'Configuração do Módulo da MultiLoja'

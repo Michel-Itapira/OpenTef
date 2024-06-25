@@ -109,6 +109,7 @@ type
         procedure BModificarClick(Sender: TObject);
         procedure BPesquisarClick(Sender: TObject);
         procedure CkPessoaClick(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure MDLojaFuncaoCalcFields(DataSet: TDataSet);
@@ -181,7 +182,7 @@ begin
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-        finterface.Desconectar;
+        finterface.Desconecta;
         Exit;
     end;
     if MDLoja.Active = False then
@@ -218,7 +219,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -299,6 +300,11 @@ begin
     end;
 end;
 
+procedure TFCadLoja.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  CloseAction:=cafree;
+end;
+
 procedure TFCadLoja.BFuncaoLojaClick(Sender: TObject);
 begin
     if ((F_Navegar) and (F_Permissao) and (MDLoja.RecordCount > 0)) then
@@ -334,7 +340,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDLoja.Active = False then
@@ -448,7 +454,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDLoja.Active = False then
@@ -474,7 +480,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -525,7 +531,7 @@ begin
     MDLojaFuncao.Open;
     MDLojaModuloConfFuncao.Open;
     CarregarLoja(0, 0);
-    Width := 776;
+    Width := 782;
     Height := 530;
 end;
 
@@ -653,7 +659,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            FInterface.Desconectar;
+            FInterface.Desconecta;
             Exit;
         end;
         if (MDLoja.Active = False) then
@@ -872,7 +878,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDLojaModuloConf.Active = False then
@@ -976,7 +982,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            FINTERFACE.Desconectar;
+            FINTERFACE.Desconecta;
             Exit;
         end;
         if MDLojaModuloConf.Active = False then
@@ -994,7 +1000,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            FINTERFACE.Desconectar;
+            FINTERFACE.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1090,7 +1096,7 @@ begin
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-        finterface.Desconectar;
+        finterface.Desconecta;
         Exit;
     end;
     if MDLojaModuloConf.Active = False then
@@ -1111,7 +1117,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1272,7 +1278,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if (MDLojaModuloConf.Active = False) then

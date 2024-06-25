@@ -1,21 +1,20 @@
 object FApp: TFApp
-  Left = 736
+  Left = 887
   Height = 618
-  Top = 0
+  Top = 182
   Width = 1248
   Caption = 'Open Tef'
   ClientHeight = 618
   ClientWidth = 1248
   OnClose = FormClose
-  LCLVersion = '2.2.4.0'
   object BIniciar: TButton
     Left = 8
     Height = 25
     Top = 8
     Width = 75
     Caption = 'Iniciar'
-    OnClick = BIniciarClick
     TabOrder = 0
+    OnClick = BIniciarClick
   end
   object BParar: TButton
     Left = 88
@@ -23,8 +22,8 @@ object FApp: TFApp
     Top = 8
     Width = 75
     Caption = 'Parar'
-    OnClick = BPararClick
     TabOrder = 1
+    OnClick = BPararClick
   end
   object BMenu: TButton
     Left = 24
@@ -32,8 +31,8 @@ object FApp: TFApp
     Top = 86
     Width = 75
     Caption = 'Menus'
-    OnClick = BMenuClick
     TabOrder = 2
+    OnClick = BMenuClick
   end
   object MMenu: TMemo
     Left = 24
@@ -52,8 +51,8 @@ object FApp: TFApp
     Top = 86
     Width = 75
     Caption = 'Bin'
-    OnClick = BBinClick
     TabOrder = 4
+    OnClick = BBinClick
   end
   object MBIN: TMemo
     Left = 928
@@ -72,8 +71,8 @@ object FApp: TFApp
     Top = 88
     Width = 152
     Caption = 'Menu Operacional'
-    OnClick = BMenuOperacionaClick
     TabOrder = 6
+    OnClick = BMenuOperacionaClick
   end
   object MMenuOperacional: TMemo
     Left = 488
@@ -92,8 +91,8 @@ object FApp: TFApp
     Top = 408
     Width = 96
     Caption = 'Copia qrcode'
-    OnClick = Button1Click
     TabOrder = 8
+    OnClick = Button1Click
   end
   object Image2: TImage
     Left = 488
@@ -103,13 +102,13 @@ object FApp: TFApp
     Stretch = True
   end
   object BarcodeQR1: TBarcodeQR
-    Left = 80
+    Left = 40
     Height = 230
     Top = 368
     Width = 230
-    StrictSize = True
+    ParentColor = False
+    Text = 'https://www.seicon.com.br/aplicativo.html'
     BackgroundColor = clNone
-    Text = 'http://opentef.com.br'
   end
   object Button2: TButton
     Left = 472
@@ -117,8 +116,8 @@ object FApp: TFApp
     Top = 8
     Width = 75
     Caption = 'Envia PDV'
-    OnClick = Button2Click
     TabOrder = 9
+    OnClick = Button2Click
   end
   object Button3: TButton
     Left = 185
@@ -126,8 +125,8 @@ object FApp: TFApp
     Top = 8
     Width = 99
     Caption = 'Solicita bin'
-    OnClick = Button3Click
     TabOrder = 10
+    OnClick = Button3Click
   end
   object Button4: TButton
     Left = 312
@@ -135,8 +134,8 @@ object FApp: TFApp
     Top = 368
     Width = 115
     Caption = 'Salvar como arquivo'
-    OnClick = Button4Click
     TabOrder = 11
+    OnClick = Button4Click
   end
   object Button5: TButton
     Left = 308
@@ -144,8 +143,8 @@ object FApp: TFApp
     Top = 449
     Width = 111
     Caption = 'Salva como jpg'
-    OnClick = Button5Click
     TabOrder = 12
+    OnClick = Button5Click
   end
   object Button6: TButton
     Left = 308
@@ -153,8 +152,8 @@ object FApp: TFApp
     Top = 488
     Width = 111
     Caption = 'Salva como png'
-    OnClick = Button6Click
     TabOrder = 13
+    OnClick = Button6Click
   end
   object Button7: TButton
     Left = 712
@@ -162,8 +161,8 @@ object FApp: TFApp
     Top = 376
     Width = 112
     Caption = 'Gera QR Code'
-    OnClick = Button7Click
     TabOrder = 14
+    OnClick = Button7Click
   end
   object Edit1: TEdit
     Left = 712
@@ -179,8 +178,8 @@ object FApp: TFApp
     Top = 80
     Width = 75
     Caption = 'Button8'
-    OnClick = Button8Click
     TabOrder = 16
+    OnClick = Button8Click
   end
   object Button9: TButton
     Left = 1120
@@ -188,8 +187,8 @@ object FApp: TFApp
     Top = 86
     Width = 75
     Caption = 'DLL'
-    OnClick = Button9Click
     TabOrder = 17
+    OnClick = Button9Click
   end
   object Button10: TButton
     Left = 1023
@@ -197,8 +196,8 @@ object FApp: TFApp
     Top = 86
     Width = 75
     Caption = 'Conexao'
-    OnClick = Button10Click
     TabOrder = 18
+    OnClick = Button10Click
   end
   object Button11: TButton
     Left = 798
@@ -206,7 +205,16 @@ object FApp: TFApp
     Top = 521
     Width = 75
     Caption = 'Teste dll'
-    OnClick = Button11Click
     TabOrder = 19
+    OnClick = Button11Click
+  end
+  object Button12: TButton
+    Left = 112
+    Height = 25
+    Top = 86
+    Width = 75
+    Caption = 'Codificacao'
+    TabOrder = 20
+    OnClick = Button12Click
   end
 end

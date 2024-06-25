@@ -14,14 +14,20 @@
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
+    <MacroValues Count="1">
+      <Macro1 Name="LCLWidgetType" Value="nogui"/>
+    </MacroValues>
     <BuildModes>
-      <Item Name="Default" Default="True"/>
-      <Item Name="Debug Win 64">
+      <Item Name="Win64 Debug" Default="True"/>
+      <Item Name="Win64 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\tef_lib\win64\tef_lib"/>
+            <Filename Value="..\..\binarios\tef_lib\win64\tef_lib.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -29,32 +35,42 @@
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
             <TargetCPU Value="x86_64"/>
             <TargetOS Value="win64"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <UseExternalDbgSyms Value="True"/>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
             </Debugging>
+            <LinkSmart Value="True"/>
             <Options>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dTEF_LIB
--dWIN64"/>
+            <CustomOptions Value="-dWIN
+-dOPEN_TEF"/>
             <OtherDefines Count="1">
               <Define0 Value="CLIENTE"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="Linux 64">
+      <Item Name="Win32 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\tef_lib\linux64\tef_lib"/>
+            <Filename Value="..\..\binarios\tef_lib\win32\tef_lib.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -62,36 +78,100 @@
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <RelocatableUnit Value="True"/>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dWIN
+-dOPEN_TEF"/>
+            <OtherDefines Count="4">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="TEF_LIB"/>
+              <Define2 Value="WIN64"/>
+              <Define3 Value="WIN32"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux64 Debug">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\tef_lib\linux64\tef_lib.so" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
             <TargetCPU Value="x86_64"/>
             <TargetOS Value="linux"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
               <DebugInfoType Value="dsDwarf3"/>
-              <UseExternalDbgSyms Value="True"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
             </Debugging>
             <Options>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dTEF_LIB
--dLINUX64"/>
-            <OtherDefines Count="3">
+            <CustomOptions Value="-dLINUX
+-dOPEN_TEF
+-dDEBUG"/>
+            <OtherDefines Count="4">
               <Define0 Value="CLIENTE"/>
               <Define1 Value="TEF_LIB"/>
               <Define2 Value="LINUX64"/>
+              <Define3 Value="DEBUG"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="Linux 32">
+      <Item Name="Linux64 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\tef_lib\linux32\tef_lib"/>
+            <Filename Value="..\..\binarios\tef_lib\linux64\tef_lib.so" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -99,22 +179,29 @@
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <RelocatableUnit Value="True"/>
-            <TargetCPU Value="i386"/>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
             <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf3"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
+            <LinkSmart Value="True"/>
             <Options>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dTEF_LIB
--dLINUX32"/>
+            <CustomOptions Value="-dLINUX
+-dOPEN_TEF"/>
             <OtherDefines Count="3">
               <Define0 Value="CLIENTE"/>
               <Define1 Value="TEF_LIB"/>
@@ -123,6 +210,56 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="Linux32 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\tef_lib\linux32\tef_lib.so" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dLINUX
+-dOPEN_TEF"/>
+            <OtherDefines Count="3">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="TEF_LIB"/>
+              <Define2 Value="LINUX32"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="470107578545" Modes="Win64 Debug,Win64 Release,Win32 Release,Linux64 Debug,Linux64 Release,Linux32 Release" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -193,27 +330,46 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\binarios\tef_lib\win64\tef_lib"/>
+      <Filename Value="..\..\binarios\tef_lib\win64\tef_lib.dll" ApplyConventions="False"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\libs\func"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
-      <RelocatableUnit Value="True"/>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+      <TargetCPU Value="x86_64"/>
+      <TargetOS Value="win64"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf3"/>
-        <UseExternalDbgSyms Value="True"/>
+        <UseHeaptrc Value="True"/>
+        <TrashVariables Value="True"/>
       </Debugging>
       <Options>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dTEF_LIB"/>
+      <CompilerMessages>
+        <IgnoredMessages idx3218="True" idx3149="True"/>
+      </CompilerMessages>
+      <CustomOptions Value="-dWIN
+-dOPEN_TEF
+-dDEBUG"/>
       <OtherDefines Count="1">
         <Define0 Value="CLIENTE"/>
       </OtherDefines>

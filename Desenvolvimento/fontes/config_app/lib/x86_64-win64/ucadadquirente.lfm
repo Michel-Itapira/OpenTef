@@ -1,26 +1,28 @@
 object FCadAdquirente: TFCadAdquirente
-  Left = 708
-  Height = 268
-  Top = 352
-  Width = 771
+  Left = 709
+  Height = 267
+  Top = 306
+  Width = 1083
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Cadastro de Adquirente'
-  ClientHeight = 268
-  ClientWidth = 771
+  ClientHeight = 267
+  ClientWidth = 1083
+  FormStyle = fsMDIChild
+  OnClose = FormClose
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
     Top = 5
-    Width = 761
+    Width = 1073
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
     ClientHeight = 75
-    ClientWidth = 761
+    ClientWidth = 1073
     TabOrder = 0
     object LTitulo: TLabel
       Left = 7
@@ -44,14 +46,14 @@ object FCadAdquirente: TFCadAdquirente
       Left = 250
       Height = 51
       Top = 12
-      Width = 509
+      Width = 821
       Align = alClient
       BorderSpacing.Left = 10
       BorderSpacing.Top = 10
       BorderSpacing.Bottom = 10
       BevelOuter = bvNone
       ClientHeight = 51
-      ClientWidth = 509
+      ClientWidth = 821
       TabOrder = 0
       object BPesquisar: TBitBtn
         Left = 10
@@ -524,14 +526,14 @@ object FCadAdquirente: TFCadAdquirente
   end
   object PPrincipal: TPanel
     Left = 5
-    Height = 171
+    Height = 172
     Top = 85
-    Width = 761
+    Width = 1073
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
-    ClientHeight = 171
-    ClientWidth = 761
+    ClientHeight = 172
+    ClientWidth = 1073
     TabOrder = 1
     object LID: TLabel
       Left = 12
@@ -564,7 +566,7 @@ object FCadAdquirente: TFCadAdquirente
       ParentFont = False
     end
     object LDescricao: TLabel
-      Left = 111
+      Left = 108
       Height = 15
       Top = 14
       Width = 57
@@ -574,10 +576,10 @@ object FCadAdquirente: TFCadAdquirente
       ParentFont = False
     end
     object EDescricao: TEdit
-      Left = 111
+      Left = 104
       Height = 23
       Top = 32
-      Width = 447
+      Width = 328
       CharCase = ecUppercase
       TabOrder = 1
       Text = 'EDIT4'
@@ -595,36 +597,104 @@ object FCadAdquirente: TFCadAdquirente
       ParentFont = False
       TabOrder = 2
     end
-    object LIdentificacao: TLabel
-      Left = 567
+    object LTag: TLabel
+      Left = 455
       Height = 15
       Top = 14
-      Width = 75
-      Caption = 'Identificação:'
+      Width = 186
+      Caption = 'Tag Identificadora do Adquirente:'
       Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False
     end
-    object EIdentificacao: TEdit
-      Left = 567
+    object ETagID: TEdit
+      Left = 443
       Height = 23
       Top = 32
-      Width = 184
-      CharCase = ecUppercase
+      Width = 54
       TabOrder = 3
-      Text = 'EDIT1'
+      Text = 'ETagID'
+    end
+    object ETag: TEdit
+      Left = 499
+      Height = 23
+      Top = 32
+      Width = 219
+      TabOrder = 4
+      Text = 'ETag'
+    end
+    object BPesquisaTag: TBitBtn
+      Left = 721
+      Height = 26
+      Top = 31
+      Width = 30
+      Font.Style = [fsBold]
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000003C3A
+        37D52A2825D52A29261500000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000C19A74FF5E55
+        4DFF2E2C28FF413930FFB48D69FFBF956EFFBF946CFFBE936BFFBE936AFFBE92
+        6AFFBD9269FFBD9169FFBD9169FFBC9169FFBC9169FFBC9169FFC39B75FFE0E0
+        E0FF62615FFF2E2C28FF484744FFDCDCDCFFEBEBEBFFEBEBEBFFEBEBEBFFEAEA
+        EAFFEAEAEAFFE9E9E9FFE8E8E8FFE8E8E8FFE7E7E7FFBC9169FFC59C76FFEEEE
+        EEFFE2E2E2FF62625EFF2E2C28FF494844FF6B6B68FF3F3D3AFF403E3BFF6B6A
+        67FFD2D2D1FFEBEBEBFFEAEAEAFFE9E9E9FFE8E8E8FFBC9169FFC79E77FFF1F1
+        F1FFF1F1F1FFE5E5E5FF5F5E5BFF35342FFF948F88FFC6BDB4FFC3BAB1FF958F
+        88FF4E4C49FFD3D2D2FFEBEBEBFFEAEAEAFFE9E9E9FFBC9169FFC9A079FFF3F3
+        F3FFF4F4F4FFF4F4F4FF767573FF958F89FFDBD2C9FFDBD0C6FFD5CAC0FFCCC2
+        B8FF958F88FF6B6B68FFECECECFFEAEAEAFFE9E9E9FFBD9269FFCBA17AFFF6F6
+        F6FFF7F7F7FFF7F7F7FF42413DFFDBD2C9FFE9DED4FFE8DDD2FFE1D6CCFFD6CB
+        C1FFC4BBB1FF403E3BFFEEEEEEFFEBEBEBFFEAEAEAFFBE936AFFCDA37BFFF9F9
+        F9FFF9F9F9FFF9F9F9FF43423FFFE1D8CFFFF0E5DBFFEFE3D9FFE8DDD3FFDCD1
+        C7FFC7BEB5FF3F3D3AFFEFEFEFFFEDEDEDFFEAEAEAFFBE936BFFCFA47CFFFBFB
+        FBFFFBFBFBFFFBFBFBFF807F7CFF9E9892FFF1E7DEFFF0E6DCFFEAE0D6FFDDD3
+        CAFF958F89FF6F6F6CFFF0F0F0FFEDEDEDFFEBEBEBFFBF946CFFD0A57DFFFCFC
+        FCFFFDFDFDFFFDFDFDFFE7E7E6FF555451FF9E9892FFE2D8D0FFDCD3CAFF9691
+        8AFF4D4C49FFDADADAFFF0F0F0FFEDEDEDFFEBEBEBFFBF956EFFD1A67DFFFDFD
+        FDFFFEFEFEFFFEFEFEFFFEFEFEFFE8E7E7FF807F7CFF43423FFF42413DFF7877
+        75FFDEDEDDFFF3F3F3FFF1F1F1FFEEEEEEFFECECECFFC0966FFFD1A67EFFFEFE
+        FEFFFEFEFEFFFEFEFEFFFEFEFEFFFEFEFEFFFDFDFDFFFDFDFDFFFBFBFBFFF9F9
+        F9FFF7F7F7FFF4F4F4FFF1F1F1FFEEEEEEFFEBEBEBFFC09770FFD1A67EFFD2A7
+        7EFFD2A77EFFD3A77EFFD2A67DFFD2A67CFFD1A57CFFD0A47BFFCFA37AFFCDA2
+        79FFCBA077FFC99E76FFC79C75FFC49B74FFC29973FFC19872FFD1A67EFFD2A7
+        7EFFD2A77EFFD2A77EFFD2A77EFFD2A67DFFD1A67DFFD0A57CFFCFA47BFFCEA2
+        7AFFCCA179FFC99F77FFC79D76FFC59C75FFC39A74FFC19973FFD0A67EFFD1A6
+        7EFFD2A67EFFD2A67EFFD2A67EFFD1A67DFFD1A67DFFD0A57CFFCFA47CFFCDA3
+        7BFFCBA17AFFC9A079FFC79E77FFC59C76FFC39B75FFC19A74FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
+      Images = FInterface.ListaImg
+      ImageIndex = 6
+      ImageWidth = 16
+      OnClick = BPesquisaTagClick
+      ParentFont = False
+      TabOrder = 5
     end
   end
   object MDAdquirente: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 520
-    Top = 144
+    Left = 936
+    Top = 96
   end
   object DSAdquirente: TDataSource
     DataSet = MDAdquirente
-    Left = 616
-    Top = 144
+    Left = 1008
+    Top = 104
+  end
+  object MDTags: TRxMemoryData
+    Filtered = True
+    FieldDefs = <>
+    PacketRecords = 0
+    Left = 952
+    Top = 200
+  end
+  object DSTags: TDataSource
+    DataSet = MDTags
+    Left = 1000
+    Top = 200
   end
 end

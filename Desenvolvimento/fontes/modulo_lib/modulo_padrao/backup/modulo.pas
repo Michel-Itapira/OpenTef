@@ -5,7 +5,7 @@ unit modulo;
 interface
 
 uses
-    Classes, SysUtils, comunicador, funcoes, def, LbClass, MD5;
+    Classes, SysUtils, comunicador, funcoes, def, LbClass;
 
 { TDModulo }
 type

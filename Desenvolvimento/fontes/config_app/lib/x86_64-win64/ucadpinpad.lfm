@@ -1,27 +1,28 @@
 object FCadPinPad: TFCadPinPad
-  Left = 688
+  Left = 383
   Height = 473
-  Top = 290
-  Width = 774
+  Top = 261
+  Width = 1170
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Cadastro de Pin-Pad'
   ClientHeight = 473
-  ClientWidth = 774
+  ClientWidth = 1170
+  FormStyle = fsMDIChild
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
     Top = 5
-    Width = 764
+    Width = 1160
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
     ClientHeight = 75
-    ClientWidth = 764
+    ClientWidth = 1160
     TabOrder = 0
     object LTitulo: TLabel
       Left = 7
@@ -45,14 +46,14 @@ object FCadPinPad: TFCadPinPad
       Left = 250
       Height = 51
       Top = 12
-      Width = 512
+      Width = 908
       Align = alClient
       BorderSpacing.Left = 10
       BorderSpacing.Top = 10
       BorderSpacing.Bottom = 10
       BevelOuter = bvNone
       ClientHeight = 51
-      ClientWidth = 512
+      ClientWidth = 908
       TabOrder = 0
       object BPesquisar: TBitBtn
         Left = 10
@@ -527,12 +528,12 @@ object FCadPinPad: TFCadPinPad
     Left = 5
     Height = 111
     Top = 85
-    Width = 764
+    Width = 1160
     Align = alTop
     BorderSpacing.Around = 5
     BevelInner = bvLowered
     ClientHeight = 111
-    ClientWidth = 764
+    ClientWidth = 1160
     ParentFont = False
     TabOrder = 1
     object LID: TLabel
@@ -654,7 +655,7 @@ object FCadPinPad: TFCadPinPad
     Left = 5
     Height = 268
     Top = 200
-    Width = 764
+    Width = 1160
     ActivePage = TabPinPadFuncao
     Align = alBottom
     BorderSpacing.Around = 5
@@ -663,7 +664,7 @@ object FCadPinPad: TFCadPinPad
     object TabPinPadFuncao: TTabSheet
       Caption = 'Função do PinPad'
       ClientHeight = 240
-      ClientWidth = 756
+      ClientWidth = 1152
       OnShow = TabPinPadFuncaoShow
       object TabPinPadFuncaoLTitulo: TLabel
         Left = 11
@@ -691,15 +692,15 @@ object FCadPinPad: TFCadPinPad
         Height = 23
         Top = 59
         Width = 391
-        OnChange = TabPinPadFuncaoEFiltroChange
         TabOrder = 0
         Text = 'TabPinPadFuncaoEFiltro'
+        OnChange = TabPinPadFuncaoEFiltroChange
       end
       object TabPinPadFuncaoGrid: TRxDBGrid
         Left = 0
         Height = 151
         Top = 89
-        Width = 756
+        Width = 1152
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True
@@ -840,12 +841,12 @@ object FCadPinPad: TFCadPinPad
         Left = 612
         Height = 19
         Top = 61
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabPinPadFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabPinPadFuncaoCKSelecionadaChange
       end
       object TabPinPadFuncaoLTipoFiltro: TLabel
         Left = 4
@@ -867,9 +868,9 @@ object FCadPinPad: TFCadPinPad
           'TODOS'
           'PINPAD_FUNC'
         )
-        OnChange = TabPinPadFuncaoETipoFiltroChange
         TabOrder = 3
         Text = 'TabPinPadFuncaoETipoFiltro'
+        OnChange = TabPinPadFuncaoETipoFiltroChange
       end
     end
   end
@@ -877,13 +878,14 @@ object FCadPinPad: TFCadPinPad
     Filtered = True
     FieldDefs = <>
     PacketRecords = 0
-    Left = 544
-    Top = 176
+    Left = 1000
+    Top = 152
   end
   object DSPinPad: TDataSource
     DataSet = MDPinPad
-    Left = 600
-    Top = 176
+    OnDataChange = DSPinPadDataChange
+    Left = 1056
+    Top = 152
   end
   object MDPinPadFuncao: TRxMemoryData
     Filtered = True
@@ -941,8 +943,8 @@ object FCadPinPad: TFCadPinPad
     OnCalcFields = MDPinPadFuncaoCalcFields
     OnFilterRecord = MDPinPadFuncaoFilterRecord
     PacketRecords = 0
-    Left = 344
-    Top = 320
+    Left = 992
+    Top = 248
     object MDPinPadFuncaoVALIDADO: TStringField
       FieldKind = fkData
       FieldName = 'VALIDADO'
@@ -1034,20 +1036,20 @@ object FCadPinPad: TFCadPinPad
   end
   object DSPinPadFuncao: TDataSource
     DataSet = MDPinPadFuncao
-    Left = 408
-    Top = 328
+    Left = 1056
+    Top = 256
   end
   object MDTags: TRxMemoryData
     Filtered = True
     FieldDefs = <>
     OnFilterRecord = MDTagsFilterRecord
     PacketRecords = 0
-    Left = 632
-    Top = 112
+    Left = 1000
+    Top = 96
   end
   object DSTags: TDataSource
     DataSet = MDTags
-    Left = 688
-    Top = 112
+    Left = 1056
+    Top = 96
   end
 end

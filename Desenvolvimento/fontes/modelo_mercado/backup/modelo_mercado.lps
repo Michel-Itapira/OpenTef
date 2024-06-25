@@ -8,10 +8,9 @@
       <Unit>
         <Filename Value="modelo_mercado.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <CursorPos Y="19"/>
-        <UsageCount Value="45"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="15" Y="10"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="uinterface.pas"/>
@@ -19,30 +18,26 @@
         <ComponentName Value="FInterface"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="397"/>
-        <CursorPos X="10" Y="475"/>
-        <UsageCount Value="45"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="580"/>
+        <CursorPos X="64" Y="600"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="uprodutos.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="4"/>
-        <CursorPos X="12" Y="17"/>
-        <UsageCount Value="42"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="16"/>
+        <UsageCount Value="59"/>
       </Unit>
       <Unit>
         <Filename Value="uopentef.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="82"/>
-        <CursorPos X="32" Y="89"/>
-        <UsageCount Value="37"/>
-        <Loaded Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="145"/>
+        <CursorPos Y="178"/>
+        <UsageCount Value="54"/>
       </Unit>
       <Unit>
         <Filename Value="umenuvenda.pas"/>
@@ -50,11 +45,9 @@
         <ComponentName Value="FMenuVenda"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="3"/>
-        <CursorPos X="53" Y="19"/>
-        <UsageCount Value="32"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="19"/>
+        <UsageCount Value="49"/>
       </Unit>
       <Unit>
         <Filename Value="uimpressao.pas"/>
@@ -62,143 +55,137 @@
         <ComponentName Value="FImpressao"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="30"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="47"/>
       </Unit>
       <Unit>
         <Filename Value="umenuvenda.lfm"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="52"/>
         <CursorPos X="29" Y="67"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="18"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\tef_lib\tef.pas"/>
+        <ComponentName Value="DTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1743"/>
+        <CursorPos X="38" Y="1751"/>
+        <UsageCount Value="14"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\components\lazutils\laztracer.pas"/>
+        <UnitName Value="LazTracer"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos Y="50"/>
+        <UsageCount Value="11"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\pinpad_lib\pinpad.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="175"/>
+        <CursorPos Y="144"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="115"/>
+        <CursorPos Y="143"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3969"/>
+        <CursorPos X="34" Y="3983"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\scrollingwincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="334"/>
+        <CursorPos Y="355"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\customcontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="21"/>
+        <CursorPos Y="41"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\controlcanvas.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="44"/>
+        <CursorPos Y="61"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\wincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6627"/>
+        <CursorPos Y="6655"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <ComponentName Value="DComunicador"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="911"/>
+        <CursorPos X="29" Y="927"/>
+        <UsageCount Value="12"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1510"/>
+        <CursorPos Y="1541"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\application.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1062"/>
+        <CursorPos Y="1085"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1942"/>
+        <CursorPos Y="1959"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\lazarus\components\lazutils\compwriterpas.pas"/>
+        <UnitName Value="CompWriterPas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1584"/>
+        <CursorPos Y="1617"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="backup\uinterface.pas"/>
+        <ComponentName Value="FInterface"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="424" TopLine="392"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="426" TopLine="394"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="428" TopLine="396"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="430" TopLine="398"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="404" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="406" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="408" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="410" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="412" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="414" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="416" TopLine="397"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="547" Column="9" TopLine="529"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="582" Column="51" TopLine="557"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="37" Column="20" TopLine="17"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="410" Column="116" TopLine="390"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="415" Column="95" TopLine="390"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="402" Column="179" TopLine="381"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="581" Column="19" TopLine="569"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="575" TopLine="567"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="408" TopLine="405"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="438" TopLine="406"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="440" TopLine="408"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="575" TopLine="555"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="392" TopLine="408"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="438" TopLine="409"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="440" TopLine="409"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="392" TopLine="410"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="438" TopLine="411"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="392" TopLine="404"/>
-      </Position>
-      <Position>
-        <Filename Value="uinterface.pas"/>
-        <Caret Line="438" TopLine="407"/>
-      </Position>
-    </JumpHistory>
+    <General>
+      <ActiveWindowIndexAtStart Value="-1"/>
+    </General>
+    <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
@@ -210,15 +197,8 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="uinterface.pas"/>
-        <Line Value="392"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="uinterface.pas"/>
-        <Line Value="481"/>
+        <Source Value="..\libs\func\comunicador.pas"/>
+        <Line Value="1952"/>
       </Item>
     </BreakPoints>
   </Debugging>

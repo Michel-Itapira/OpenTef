@@ -92,6 +92,7 @@ procedure SolicitaParaCliente(VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: inte
 
 procedure RespostaPinPad(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
 procedure TransacaoStatusAtualizarPDV(VP_TTransacao: TTransacao);
+function getVersao: string;
 
 var
     DTef: TDTef;
@@ -140,7 +141,7 @@ var
     VL_Erro: integer;
     VL_I: integer;
     VL_DiretoOpeTef: boolean;
-    VL_Mensagem, VL_TransacaoDadosPublicos, VL_Chave: TMensagem;
+    VL_Mensagem, VL_TransacaoDadosPublicos, VL_Chave, VL_MensagemAuxiliar: TMensagem;
     VL_Tag, VL_TagDados, VL_String: string;
     VL_PinPadCarregado: boolean;
     VL_Criptografa: boolean;
@@ -183,11 +184,14 @@ begin
             VL_TagDados := '';
             VL_Comando := '';
             VL_ChaveComunicacao := '';
+            VL_Erro := 0;
+            VL_PinPadCarregado := False;
+
             VL_Mensagem := TMensagem.Create;
             VL_Chave := TMensagem.Create;
             VL_TransacaoDadosPublicos := TMensagem.Create;
-            VL_Erro := 0;
-            VL_PinPadCarregado := False;
+            VL_MensagemAuxiliar := TMensagem.Create;
+
             VL_Rsa := TLbRSA.Create(nil);
 
             VL_Aes := TLbRijndael.Create(nil);
@@ -267,6 +271,11 @@ begin
 
             VL_Comando := VL_Mensagem.Comando();
             VL_Chave_00F1 := VL_Mensagem.GetTagAsAstring('00F1'); //chave da transacao
+            VL_Chave.CarregaTags(VL_Chave_00F1);
+
+            VL_TransacaoDadosPublicos.AddTag('0051', VL_Mensagem.GetTagAsAstring('0051'));  // tempo de espera
+            VL_TransacaoDadosPublicos.AddTag('0036', VL_Chave.GetTagAsAstring('0036')); //  bin
+            VL_TransacaoDadosPublicos.AddTag('00F1', VL_Chave_00F1); //  chave da transacao
 
             if not VL_DiretoOpeTef then
             begin
@@ -319,9 +328,97 @@ begin
                     VL_Mensagem.TagsAsString, VP_Erro, 2);
             end;
 
-            if Assigned(F_RetornoCliente) then
+            if (VL_Mensagem.Comando = '002C') and (VL_Mensagem.ComandoDados = 'S') then  // mensagem ao operador
             begin
-                VL_Erro := F_RetornoCliente(PChar(VL_Mensagem.TagsAsString()), VL_Dados);
+                F_MensagemOperador(PChar(VL_Mensagem.GetTagAsAstring('00DA'))); // mensagem a ser mostrada
+                Exit;
+            end;
+
+            if (VL_Mensagem.Comando = '00FC') and (VL_Mensagem.ComandoDados = 'S') then  // mostra imagem no pinpad
+            begin
+                F_PinPadDescarrega;
+                VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib), PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
+
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '190120241743', 'SolicitaParaCliente erro no F_PinPadCarrega', '', VL_Erro, 1);
+                    Exit;
+                end;
+
+                VL_Erro := F_PinPadConectar(VL_Dados);
+
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '190120241744', 'SolicitaParaCliente recebeu comando com F_PinPadConectar', '', VL_Erro, 1);
+                    Exit;
+                end;
+
+                F_PinPadMensagem('Aguarde... gerando IMAGEM!');
+
+                VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
+
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '190120241745', 'SolicitaParaCliente recebeu comando com F_PinPadComando', '', VL_Erro, 1);
+                    Exit;
+                end;
+
+                Exit;
+            end;
+
+
+            if (VL_Mensagem.Comando = '0104') and (VL_Mensagem.ComandoDados = 'S') then  // solicitacao de tags para o pdv
+            begin
+                for VL_I := 1 to VL_Mensagem.TagCount do
+                begin
+                    VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
+
+                    if VL_Tag = '0005' then  // versao do tef
+                        VL_Mensagem.AddTag('0005', getVersao);
+
+                end;
+                VL_Mensagem.AddComando('0104', 'R');
+            end
+            else
+            if (VL_Mensagem.Comando() = '005A') and (VL_Mensagem.ComandoDados = 'S') then  // SOLICITACAO DE CAPTURA DE SENHA
+            begin
+                F_PinPadDescarrega;
+                VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib), PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '220120240857', 'SolicitaParaCliente recebeu comando com F_PinPadComando', '', VL_Erro, 1);
+                    Exit;
+                end;
+                VL_Erro := F_PinPadConectar(VL_Dados);
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '220120240858', 'SolicitaParaCliente recebeu comando com F_PinPadComando', '', VL_Erro, 1);
+                    Exit;
+                end;
+
+
+                VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '220120240859', 'SolicitaParaCliente recebeu comando com F_PinPadComando', '', VL_Erro, 1);
+                    Exit;
+                end;
+
+                F_PinPadMensagem('    OpenTef    ');
+                VL_Erro := VL_MensagemAuxiliar.CarregaTags(VL_Dados);
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '220120240900', 'SolicitaParaCliente recebeu comando com F_PinPadComando', '', VL_Erro, 1);
+                    Exit;
+                end;
+
+                VL_Mensagem.AddComando('005A', 'R');
+                VL_Mensagem.AddTag('0060', VL_MensagemAuxiliar.GetTagAsAstring('0060'));
+            end
+            else
+            begin
+                VL_Erro := F_RetornoCliente(PChar(VL_Mensagem.TagsAsString), VL_Dados);
+
                 if VL_Erro <> 0 then
                     VL_Mensagem.AddComando('0026', PChar(IntToStr(VL_Erro))) // retorno com erro
                 else
@@ -329,41 +426,40 @@ begin
                     VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
                 if VL_Erro <> 0 then
                     VL_Mensagem.AddComando('0026', PChar(IntToStr(VL_Erro))); // retorno com erro
+            end;
 
-                if VL_Mensagem.Comando() <> '' then
+            if VL_Mensagem.Comando <> '' then
+            begin
+                VL_String := '';
+
+                if VL_Criptografa then
                 begin
-                    VL_String := '';
-
-                    if VL_Criptografa then
-                    begin
-                        GravaLog(F_ArquivoLog, 0, '', 'tef', '091120231038', 'Mensagem descriptografada enviada no SolicitaParaCliente',
-                            VL_Mensagem.TagsAsString, VP_Erro, 2);
-                        VL_String := VL_Aes.EncryptString(VL_Mensagem.TagsAsString);
-                    end;
-
-                    VL_Mensagem.Limpar;
-
-                    VL_Comando := VL_Mensagem.Comando();
-                    VL_Mensagem.AddComando(VL_Comando, 'R');
-                    VL_Mensagem.AddTag('00E3', VL_String);
-                    VL_Mensagem.AddTag('0028', F_TamanhoPublico);        //tamanho chave
-                    VL_Mensagem.AddTag('0023', F_ExpoentePublico);        //expoente
-                    VL_Mensagem.AddTag('0024', F_ModuloPublico);        //modulos
-                    VL_Mensagem.AddTag('00F1', VL_Chave_00F1);        // chave da transacao
-                    VL_Mensagem.AddTag('010E', VL_TransacaoDadosPublicos.GetTagAsAstring('010E')); // chave de comunicacao solicitacao
-                    VL_Mensagem.AddTag('010F', VL_TransacaoDadosPublicos.GetTagAsAstring('010F')); // chave de comunicacao reposta
-
-                    GravaLog(F_ArquivoLog, 0, '', 'tef', '091120230944', 'Mensagem enviada no SolicitaParaCliente', VL_Mensagem.TagsAsString, 0, 2);
-
-                    VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 30000, False);
-
-                    if VL_Erro <> 0 then
-                    begin
-                        GravaLog(F_ArquivoLog, 0, '', 'tef', '230820221732', 'Erro na SolicitaParaCliente ', '', VL_Erro, 1);
-                        Exit;
-                    end;
-
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '091120231038', 'Mensagem descriptografada enviada no SolicitaParaCliente',
+                        VL_Mensagem.TagsAsString, VP_Erro, 2);
+                    VL_String := VL_Aes.EncryptString(VL_Mensagem.TagsAsString);
                 end;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando(VL_Comando, 'R');
+                VL_Mensagem.AddTag('00E3', VL_String);
+                VL_Mensagem.AddTag('0028', F_TamanhoPublico);        //tamanho chave
+                VL_Mensagem.AddTag('0023', F_ExpoentePublico);        //expoente
+                VL_Mensagem.AddTag('0024', F_ModuloPublico);        //modulos
+                VL_Mensagem.AddTag('00F1', VL_Chave_00F1);        // chave da transacao
+                VL_Mensagem.AddTag('010E', VL_TransacaoDadosPublicos.GetTagAsAstring('010E')); // chave de comunicacao solicitacao
+                VL_Mensagem.AddTag('010F', VL_TransacaoDadosPublicos.GetTagAsAstring('010F')); // chave de comunicacao reposta
+                VL_Mensagem.AddTag('007D', VL_TransacaoDadosPublicos.TagsAsString); // dados publicos da transacao
+
+                GravaLog(F_ArquivoLog, 0, '', 'tef', '091120230944', 'Mensagem enviada no SolicitaParaCliente', VL_Mensagem.TagsAsString, 0, 2);
+
+                VL_Erro := F_DComunicador.ClienteTransmiteSolicitacao(F_DComunicador, VL_Transmissao_ID, VL_Mensagem, VL_Mensagem, nil, 30000, False);
+
+                if VL_Erro <> 0 then
+                begin
+                    GravaLog(F_ArquivoLog, 0, '', 'tef', '230820221732', 'Erro na SolicitaParaCliente ', '', VL_Erro, 1);
+                    Exit;
+                end;
+
             end;
 
         except
@@ -379,9 +475,9 @@ begin
             VL_Chave.Free;
             VL_Aes.Free;
             VL_Rsa.Free;
+            VL_MensagemAuxiliar.Free;
         end;
     end;
-
 end;
 
 procedure RespostaPinPad(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
@@ -411,6 +507,11 @@ begin
     finally
         VL_Mensagem.Free;
     end;
+end;
+
+function getVersao: string;
+begin
+    Result := IntToStr(C_versao[0]) + '.' + IntToStr(C_versao[1]) + '.' + IntToStr(C_versao[2]);
 end;
 
 { TDTef }
@@ -597,14 +698,17 @@ begin
                     begin
                         VL_TagDados := VL_Aes.DecryptString(VL_TagDados);
 
-                        VL_Erro := VL_Mensagem.CarregaTags(VL_TagDados);
-
-                        if VL_Erro <> 0 then
+                        if VL_TagDados <> '' then
                         begin
-                            GravaLog(F_ArquivoLog, 0, '', 'tef', '241120231548', 'Erro ao carregar a mensagem descriptografada', VL_TagDados, VL_Erro, 1);
-                            ftransacao.erro := VL_Erro;
-                            ftransacao.STATUS := tsComErro;
-                            Exit;
+                            VL_Erro := VL_Mensagem.CarregaTags(VL_TagDados);
+
+                            if VL_Erro <> 0 then
+                            begin
+                                GravaLog(F_ArquivoLog, 0, '', 'tef', '241120231548', 'Erro ao carregar a mensagem descriptografada', VL_TagDados, VL_Erro, 1);
+                                ftransacao.erro := VL_Erro;
+                                ftransacao.STATUS := tsComErro;
+                                Exit;
+                            end;
                         end;
                     end;
 
@@ -858,6 +962,15 @@ begin
                     for VL_I := 1 to VL_Mensagem.TagCount do
                     begin
                         VL_Mensagem.GetTag(VL_I, VL_Tag, VL_TagDados);
+
+                        // corrigir dados invalidos
+                        if fcomando = '000A' then   // impede insersao de dados errados na aprovação da venda
+                        begin
+                            if (VL_Tag = '00F1') or (VL_Tag = '0028') or (VL_Tag = '0023') or (VL_Tag = '0024') or
+                                (VL_Tag = '0036') or (VL_Tag = '010E') or (VL_Tag = '010F') then
+                                continue;
+                        end;
+
                         if VL_TagDados = '' then
                             ftransacao.fMensagem.AddTag(VL_Tag, PChar(#1))
                         else
@@ -997,8 +1110,7 @@ begin
                 else
                 if (VL_Mensagem.Comando() = '00FC') then  // MOSTRA IMAGEM PINPAD
                 begin
-                    if VL_PinPadCarregado then
-                    else
+                    if not VL_PinPadCarregado then
                     begin
                         VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib), PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
                         if ftransacao.fAbortada then
@@ -1028,7 +1140,7 @@ begin
                         end;
                         VL_PinPadCarregado := True;
                     end;
-                    F_PinPadMensagem('Aguarde... gerando QRCODE!');
+                    F_PinPadMensagem('Aguarde... gerando IMAGEM!');
 
                     VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
                     if VL_Erro <> 0 then
@@ -1046,8 +1158,8 @@ begin
                         ftransacao.STATUS := tsComErro;
                         Exit;
                     end;
-                    ftransacao.fMensagem.AddTag('004D', 0);
-                    ftransacao.fMensagem.AddTag('00FF', 'T');
+                    ftransacao.fMensagem.AddTag('004D', 0);  // retorno com o numero do erro
+
                 end
                 else
                 if (VL_Mensagem.Comando() = '002C') then  // mensagem ao operador
@@ -1137,6 +1249,8 @@ begin
                     VL_ChaveComunicacao := F_ChaveComunicacao;
                     VL_TransacaoDadosPublicos.AddTag('010E', VL_Rsa.EncryptString(VL_ChaveComunicacao));
                     VL_TransacaoDadosPublicos.AddTag('010F', '');
+
+                    VL_Criptografa := True;
                 end;
 
                 VL_Mensagem.AddComando(fcomando, 'S');
@@ -1152,7 +1266,7 @@ begin
                     VL_TransacaoDadosPublicos.AddComando('000A', ftransacao.fMensagem.ComandoDados());
                     VL_TransacaoDadosPublicos.AddTag('0051', ftransacao.fMensagem.GetTagAsAstring('0051'));  // tempo de espera
                     VL_TransacaoDadosPublicos.AddTag('0036', ftransacao.fMensagem.GetTagAsAstring('0036')); //  bin
-                    VL_TransacaoDadosPublicos.AddTag('00F1', ftransacao.fMensagem.GetTagAsAstring('00F1')); //  chave
+                    VL_TransacaoDadosPublicos.AddTag('00F1', ftransacao.fMensagem.GetTagAsAstring('00F1')); //  chave da transacao
                     VL_Mensagem.AddTag('007D', VL_TransacaoDadosPublicos.TagsAsString);
                 end
                 else

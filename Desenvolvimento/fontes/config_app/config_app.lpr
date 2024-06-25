@@ -32,7 +32,7 @@ uses
     ucadadquirente,
     ucadmultloja,
     upesquisamultiloja,
-    ucadmodulo, upesquisamodulo, umoduloconfig;
+    ucadmodulo, upesquisamodulo, umoduloconfig, com;
 
 {$R *.res}
 begin

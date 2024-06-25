@@ -3,15 +3,9 @@ object DNucleo: TDNucleo
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 900
-  VerticalOffset = 285
+  HorizontalOffset = 1683
+  VerticalOffset = 669
   Width = 416
-  object ZConsulta: TZQuery
-    Connection = ZConexao
-    Params = <>
-    Left = 128
-    Top = 16
-  end
   object CriptoAes: TLbRijndael
     CipherMode = cmECB
     KeySize = ks256
@@ -20,14 +14,15 @@ object DNucleo: TDNucleo
   end
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
-    AutoEncodeStrings = True
     ClientCodepage = 'ISO8859_1'
     Properties.Strings = (
       'codepage=ISO8859_1'
-      'AutoEncodeStrings=ON'
+      'controls_cp=GET_ACP'
+      'AutoEncodeStrings=OFF'
     )
     AutoCommit = False
     TransactIsolationLevel = tiReadCommitted
+    DisableSavepoints = False
     Port = 0
     User = 'SYSDBA'
     Protocol = 'firebird'

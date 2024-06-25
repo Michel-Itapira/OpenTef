@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectGroup FileVersion="2">
+    <Targets>
+      <Target FileName="fontes\opentef_ser\opentef.lpi">
+        <BuildModes>
+          <Mode Name="Linux64"/>
+          <Mode Name="Win64"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\opentef_app\opentefapp.lpi">
+        <BuildModes>
+          <Mode Name="Win32 Debug"/>
+          <Mode Name="Linux64 Debug"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\modulo_lib\modulo_padrao\modulo_padrao.lpi">
+        <BuildModes>
+          <Mode Name="Linux64 Debug"/>
+          <Mode Name="Linux64 Release"/>
+          <Mode Name="Win64 Debug"/>
+          <Mode Name="Win64 Release"/>
+          <Mode Name="Win32 Debug"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\mcom_lib\mcom_lib.lpi">
+        <BuildModes>
+          <Mode Name="Win64 Debug"/>
+          <Mode Name="Win64 Release"/>
+          <Mode Name="Win32 Release"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\tef_lib\tef_lib.lpi">
+        <BuildModes>
+          <Mode Name="Win64 Debug"/>
+          <Mode Name="Win64 Release"/>
+          <Mode Name="Win32 Release"/>
+          <Mode Name="Linux64 Debug"/>
+          <Mode Name="Linux64 Release"/>
+          <Mode Name="Linux32 Release"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\pinpad_lib\pinpad_lib.lpi">
+        <BuildModes>
+          <Mode Name="Win32 Release"/>
+          <Mode Name="Win64 Debug"/>
+          <Mode Name="Win64 Release"/>
+          <Mode Name="Linux64 Debug"/>
+          <Mode Name="Linux64 Release"/>
+          <Mode Name="Linux32 Release"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\config_app\config_app.lpi">
+        <BuildModes>
+          <Mode Name="Win64 Debug"/>
+          <Mode Name="Win64 Release"/>
+          <Mode Name="Linux64 Release"/>
+          <Mode Name="Linux64 Debug"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="fontes\com_lib\com_lib.lpi">
+        <BuildModes>
+          <Mode Name="Linux64 Debug"/>
+          <Mode Name="Win64 Debug"/>
+        </BuildModes>
+      </Target>
+    </Targets>
+  </ProjectGroup>
+</CONFIG>

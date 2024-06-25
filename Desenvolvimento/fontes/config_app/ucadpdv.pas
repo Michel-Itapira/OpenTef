@@ -108,6 +108,7 @@ type
         procedure BModificarClick(Sender: TObject);
         procedure BPesquisarClick(Sender: TObject);
         procedure BVinculoClick(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure MDPdvFuncaoCalcFields(DataSet: TDataSet);
@@ -166,6 +167,11 @@ begin
         vincular(False);
 end;
 
+procedure TFCadPdv.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  CloseAction:=cafree;
+end;
+
 procedure TFCadPdv.BLimparClick(Sender: TObject);
 begin
     LimpaTela;
@@ -187,7 +193,7 @@ begin
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-        finterface.Desconectar;
+        finterface.Desconecta;
         Exit;
     end;
     if MDPdv.Active = False then
@@ -228,7 +234,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -332,7 +338,7 @@ begin
                 ShowMessage('SEM PERMISSÃO PARA ALTERAR CHAVE');
                 Exit;
             end;
-        CriarChaveTerminal(tcPDV, 'LKJUYREQXM', VL_Chave);
+        CriarChaveTerminal(tcC30, '5893488', VL_Chave);
 
         VL_Codigo := FInterface.ValidarChave('003B', VL_Chave, '0045', 'S', VL_Retorno);
 
@@ -392,7 +398,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDLoja.Active = False then
@@ -518,7 +524,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDPdv.Active = False then
@@ -537,7 +543,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
 
@@ -681,7 +687,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if ((MDPdv.Active = False) or (MDPdv.RecordCount < 1)) then
@@ -895,7 +901,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            FInterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDPdvModulo.Active = False then
@@ -1004,7 +1010,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDPdvModulo.Active = False then
@@ -1022,7 +1028,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -1099,7 +1105,7 @@ begin
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-        finterface.Desconectar;
+        finterface.Desconecta;
         Exit;
     end;
     if MDPdvModulo.Active = False then
@@ -1120,7 +1126,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;

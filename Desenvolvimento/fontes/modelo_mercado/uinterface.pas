@@ -20,49 +20,53 @@ uses
     ComCtrls,
     rxmemds,
     RxDBGrid,
-    StrUtils;
+    StrUtils,
+    LCLType;
 
 type
 
     { TFInterface }
 
     TFInterface = class(TForm)
-        BDinheiro: TBitBtn;
-        BDinheiro1: TBitBtn;
-        BOpentef: TBitBtn;
-        DProdutos: TDataSource;
-        ECodigo: TEdit;
-        EDescricao: TEdit;
-        EQuantidade: TEdit;
-        EValorTotal: TEdit;
-        EValorTotalProduto: TEdit;
-        EValorUnitario: TEdit;
-        IFundo: TImage;
-        LCodigo: TLabel;
-        LDescricao: TLabel;
-        LQuantidade: TLabel;
-        LTitulo1: TLabel;
-        LTitulo: TLabel;
-        LValorTotal: TLabel;
-        LValorTotal1: TLabel;
-        LValorTotalProduto: TLabel;
-        LValorUnitario: TLabel;
-        MDProdutos: TRxMemoryData;
-        GProdutos: TRxDBGrid;
-        MDProdutosDESCRICAO: TStringField;
-        MDProdutosQUANTIDADE: TLongintField;
-        MDProdutosVALOR_TOTAL: TCurrencyField;
-        Panel1: TPanel;
-        Panel2: TPanel;
-        BAdicionar: TSpeedButton;
-        UpQuantidade: TUpDown;
-        procedure BDinheiroClick(Sender: TObject);
+      BDinheiro: TBitBtn;
+      BDinheiro1: TBitBtn;
+      BOpentef: TBitBtn;
+      GProdutos: TDBGrid;
+      DProdutos: TDataSource;
+      ECodigo: TEdit;
+      EDescricao: TEdit;
+      EQuantidade: TEdit;
+      EValorTotal: TEdit;
+      EValorTotalProduto: TEdit;
+      EValorUnitario: TEdit;
+      IFundo: TImage;
+      LCodigo: TLabel;
+      LDescricao: TLabel;
+      LQuantidade: TLabel;
+      LTitulo: TLabel;
+      LValorTotal: TLabel;
+      LValorTotal1: TLabel;
+      LValorTotalProduto: TLabel;
+      LValorUnitario: TLabel;
+      MDProdutos: TRxMemoryData;
+      MDProdutosDESCRICAO: TStringField;
+      MDProdutosDESCRICAO1: TStringField;
+      MDProdutosQUANTIDADE: TLongintField;
+      MDProdutosQUANTIDADE1: TLongintField;
+      MDProdutosVALOR_TOTAL: TCurrencyField;
+      MDProdutosVALOR_TOTAL1: TCurrencyField;
+      Panel1: TPanel;
+      Panel2: TPanel;
+      BAdicionar: TSpeedButton;
+      Panel3: TPanel;
+      SpeedButton1: TSpeedButton;
+      UpQuantidade: TUpDown;
+        procedure FormDestroy(Sender: TObject);
         procedure BOpentefClick(Sender: TObject);
         procedure ECodigoExit(Sender: TObject);
         procedure EQuantidadeChange(Sender: TObject);
         procedure FormCreate(Sender: TObject);
-        procedure FormDestroy(Sender: TObject);
-        procedure MDProdutosAfterPost(DataSet: TDataSet);
+        procedure FormShow(Sender: TObject);
         procedure BAdicionarClick(Sender: TObject);
     private
         procedure CliqueDoBotao(VP_Botao: TObject);
@@ -70,12 +74,18 @@ type
 
     end;
 
-function Retorno(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
-function solicitadadospdv(VP_Mensagem: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
-function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+function Retorno(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer;
+    cdecl;                         //quando o opentef envia alguma solicitação ao PDV
+function solicitadadospdv(VP_Mensagem: PChar; var VO_Botao, VO_Dados: PChar): integer;
+    cdecl;               //quando o opentef pede informação ao operador do caixa
+function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer;
+    cdecl;                   //quando o opentef pede dados da venda para concluir a transação
 function imprime(VP_Dados: PChar): integer; cdecl;
-function mostramenu(VP_Menu: PChar; var VO_Botao: PChar): integer; cdecl;
+//quando o opentef solicita que seja impresso alguma coisa
+function mostramenu(VP_Menu: PChar; var VO_Botao: PChar): integer;
+    cdecl;                                   //quando o opentef quer que seja exibido o menu dinâmico
 function mensagemoperador(VP_Dados: PChar): integer; cdecl;
+//quando o opentef quer exibir alguma informação ao operador do caixa
 
 
 function formataDinheiro(VP_Dados: string): string;
@@ -85,7 +95,11 @@ var
 
 implementation
 
-uses uprodutos, uopentef, umenuvenda, uimpressao;
+uses
+    uprodutos,
+    uopentef,
+    umenuvenda,
+    uimpressao;
 
 {$R *.lfm}
 
@@ -104,6 +118,7 @@ var
     VL_DescricaoErroTransacao: PChar;
     VL_TransacaoChave: PChar;
     VL_Bin: PChar;
+    VL_Estilos: integer;
     VL_TransacaoStatus: integer; //  numerador  (tsEfetivada,tsNegada,tsCancelada,tsProcessando,tsNaoLocalizada,tsInicializada);
 begin
     Result := 0;
@@ -120,6 +135,7 @@ begin
     VL_DescricaoErroTransacao := '';
     VL_TransacaoChave := '';
     VL_Bin := '';
+    VL_Estilos := MB_ICONQUESTION + MB_YESNO;
 
     VL_Erro := F_MensagemCarregaTags(VL_Mensagem, PChar(VP_DadosEntrada));
     if VL_Erro <> 0 then
@@ -196,6 +212,42 @@ begin
             F_TransacaoFree(VL_TransacaoID);
             Exit;
         end;
+    end
+    else
+    if VL_Comando = '010C' then // solicitacao de atualizacao do tef
+    begin
+        VL_Dados := '';
+        F_MensagemGetTag(VL_Mensagem, '00FD', VL_Dados);  // atualizacao obrigatoria
+
+        if VL_Dados = 'S' then
+        begin
+            F_MensagemAddComando(VL_Mensagem, '010C', PChar(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\')); // comando de retorno com o caminho
+
+            F_MensagemTagAsString(VL_Mensagem, VL_Dados);
+            VL_String := VL_Dados;
+
+            VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+            StrPCopy(VO_DadosSaida, VL_String);
+        end;
+
+        VL_Dados := '';
+        F_MensagemGetTag(VL_Mensagem, '010A', VL_Dados); // atualizacao opcional
+        if VL_Dados = 'S' then
+        begin
+
+            if Application.MessageBox('Nova atualização do tef, deseja atualizar?', 'PDV', VL_Estilos) = idYes then
+            begin
+                F_MensagemAddComando(VL_Mensagem, '010C', PChar(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\')); // comando de retorno com o caminho
+
+                F_MensagemTagAsString(VL_Mensagem, VL_Dados);
+                VL_String := VL_Dados;
+
+                VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+                StrPCopy(VO_DadosSaida, VL_String);
+            end;
+
+        end;
+
     end;
 end;
 
@@ -228,13 +280,6 @@ var
             Imagem.Picture.Graphic := nil;
             exit;
         end;
-
-        //for i := 0 to Length(Dados) div 2 - 1 do
-        //begin
-        //    L := copy(Dados, ((1 + i) * 2) - 1, 2);
-        //    s := s + char(Hex2Dec(L));
-        //end;
-
 
         s := DecodeStringBase64(Dados);
 
@@ -280,7 +325,6 @@ var
     end;
 
 begin
-
     Result := 0;
     VL_Tag := '';
     VL_Dados := '';
@@ -307,7 +351,7 @@ begin
     VL_I := F_MensagemGetTag(VL_Mensagem, '0033', VL_Dados);  // VERIFICA SE É PARA CAPTURAR ALGUMA INFORMAÇÃO
     if VL_I = 0 then
     begin
-        if VL_Dados = 'M' then                              // VERIFICA SE É PARA ESCONDER A DIGITAÇÃO "SENHA POR EXEMPLO"
+        if VL_Dados = 'M' then                              // VERIFICA SE É PARA ESCONDER A DIGITAÇÃO "SENHA POR EXEMPLO"  "mascara a digitação"
             VL_MenuVenda.EDados.PasswordChar := '*';
         VL_MenuVenda.PDados.Visible := True;
         VL_MenuVenda.Height := VL_MenuVenda.Height + 80;
@@ -324,7 +368,7 @@ begin
     end;
 
     VL_Dados := '';
-    F_MensagemGetTag(VL_Mensagem, '00DD', VL_Dados);    // CONTEM A LISTA DE BOTOES
+    F_MensagemGetTag(VL_Mensagem, '00DD', VL_Dados);    // CONTEM A LISTA DE BOTOES e CARREGA EM VL_Mensagem
     F_MensagemCarregaTags(VL_Mensagem, VL_Dados);
 
     VL_btn := TMButton.Create(VL_MenuVenda.PBotao);    // SEMPRE COLOCAR BOTAO DE CANCELAMENTO
@@ -369,6 +413,7 @@ begin
     VL_MenuVenda.Free;
 
     F_MensagemFree(VL_Mensagem);
+
 end;
 
 procedure TFInterface.CliqueDoBotao(VP_Botao: TObject);
@@ -415,7 +460,8 @@ begin
             F_MensagemAddTag(VL_Resposta, '000E', PChar(FormataDinheiro(FInterface.EValorTotal.Text)));
         if VL_Tag = '0013' then                                                         // VALOR TOTAL
             F_MensagemAddTag(VL_Resposta, '0013', PChar(FormataDinheiro(FInterface.EValorTotal.Text)));
-        if VL_Tag = '0014' then                                                         // VALOR TOTAL REFERENTE A PRODUTOS PERTECENTES AO PAT ALIMENTO IN NATURA
+        if VL_Tag = '0014' then
+            // VALOR TOTAL REFERENTE A PRODUTOS PERTECENTES AO PAT ALIMENTO IN NATURA
             F_MensagemAddTag(VL_Resposta, '0014', PChar('0'));
         if VL_Tag = '0015' then                                                         // VALOR TOTAL REFERENTE A PRODUTOS PERTECENTES AO PAT ALIMENTO PRONTO
             F_MensagemAddTag(VL_Resposta, '0015', PChar('0'));
@@ -532,24 +578,36 @@ begin
     ShowMessage(VL_String);
 end;
 
+
 procedure TFInterface.FormCreate(Sender: TObject);
 begin
     uopentef.incializar;
-    uopentef.login;
 end;
 
 procedure TFInterface.FormDestroy(Sender: TObject);
 begin
-    if F_TefLib <> 0 then
-        UnloadLibrary(F_TefLib);
+   uopentef.finalizar;
 end;
 
-procedure TFInterface.MDProdutosAfterPost(DataSet: TDataSet);
+
+procedure TFInterface.FormShow(Sender: TObject);
+begin
+    uopentef.login;
+end;
+
+procedure TFInterface.BAdicionarClick(Sender: TObject);
 var
     total: double;
-begin
-    total := 0;
 
+begin
+    MDProdutos.Insert;
+    MDProdutos.FieldByName('DESCRICAO').AsString := EDescricao.Text;
+    MDProdutos.FieldByName('QUANTIDADE').AsString := EQuantidade.Text;
+    MDProdutos.FieldByName('VALOR_TOTAL').AsString := EValorTotalProduto.Text;
+    MDProdutos.Post;
+
+    total := 0;
+    DProdutos.Enabled := False;
     MDProdutos.First;
     while not MDProdutos.EOF do
     begin
@@ -558,21 +616,10 @@ begin
     end;
 
     EValorTotal.Text := CurrToStrF(total, ffCurrency, 2);
+    DProdutos.Enabled := True;
 end;
 
-procedure TFInterface.BAdicionarClick(Sender: TObject);
-begin
-    MDProdutos.Insert;
-    MDProdutos.FieldByName('DESCRICAO').AsString := EDescricao.Text;
-    MDProdutos.FieldByName('QUANTIDADE').AsString := EQuantidade.Text;
-    MDProdutos.FieldByName('VALOR_TOTAL').AsString := EValorTotalProduto.Text;
-    MDProdutos.Post;
-end;
 
-procedure TFInterface.BDinheiroClick(Sender: TObject);
-begin
-
-end;
 
 procedure TFInterface.BOpentefClick(Sender: TObject);
 var
@@ -617,5 +664,6 @@ begin
     Result := StringReplace(Result, ',', '.', [rfReplaceAll]);
     Result := StringReplace(Result, 'R$', '', [rfReplaceAll]);
 end;
+
 
 end.

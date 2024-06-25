@@ -52,7 +52,7 @@ var
     V_Inicializado: boolean = False;
     F_Comunicacao: ansistring;
     F_Versao_Comunicacao: integer;
-    DComunicador: TDComunicador;
+    F_Comunicador: TDComunicador;
     F_ArquivoLog: string;
 
 implementation
@@ -85,7 +85,7 @@ begin
     VL_Mensagem := TMensagem.Create;
     try
         VL_Mensagem.CarregaTags(fdados);
-        VL_Erro := DComunicador.ClienteTransmiteSolicitacao(DComunicador, ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
+        VL_Erro := F_Comunicador.ClienteTransmiteSolicitacao(F_Comunicador, ftransmissaoID, VL_Mensagem, VL_Mensagem, nil, ftempo, True);
         fprocedimento(PChar(ftransmissaoID), 0, VL_Erro, PChar(VL_Mensagem.TagsAsString));
     finally
         VL_Mensagem.Free;
@@ -97,10 +97,10 @@ begin
 
     DCom := TDCom.Create(nil);
 
-    if not Assigned(DComunicador) then
-        DComunicador := TDComunicador.Create(nil);
+    if not Assigned(F_Comunicador) then
+        F_Comunicador := TDComunicador.Create(nil);
 
-    DComunicador.V_ClienteRecebimento := VP_Procedimento;
+    F_Comunicador.V_ClienteRecebimento := VP_Procedimento;
     F_ArquivoLog := VP_ArquivoLog;
 
     Result := 0;
@@ -110,16 +110,16 @@ end;
 function finalizar(): integer; cdecl;
 begin
 
-    DComunicador.Free;
+    F_Comunicador.Free;
     DCom.Free;
 
     Result := 0;
 end;
 
-function desconectar: integer; cdecl;
+function desconectar(): integer; cdecl;
 begin
     Result := 0;
-    DComunicador.desativartodasconexao(DComunicador);
+    F_Comunicador.DesconectarCliente(F_Comunicador);
 end;
 
 function login(VP_Host: PChar; VP_Porta: integer; VP_ChaveComunicacao: PChar; VP_Versao_Comunicacao: integer; VP_Senha: PChar;
@@ -160,33 +160,33 @@ begin
             Result := 42;
             Exit;
         end;
-        if ((DComunicador.V_ConexaoCliente.ServidorHost <> VP_Host) or
-            (DComunicador.V_ConexaoCliente.ServidorPorta <> VP_Porta) or
+        if ((F_Comunicador.V_ConexaoCliente.ServidorHost <> VP_Host) or
+            (F_Comunicador.V_ConexaoCliente.ServidorPorta <> VP_Porta) or
             (F_Comunicacao <> VP_ChaveComunicacao) or
-            (DComunicador.V_ConexaoCliente.Identificacao <> VP_Identificacao) or
+            (F_Comunicador.V_ConexaoCliente.Identificacao <> VP_Identificacao) or
             (F_Versao_Comunicacao <> VP_Versao_Comunicacao)) then
         begin
-            DComunicador.DesconectarCliente(DComunicador);
-            DComunicador.V_ConexaoCliente.ServidorHost := VP_Host;
-            DComunicador.V_ConexaoCliente.ServidorPorta := VP_Porta;
-            DComunicador.V_ConexaoCliente.Identificacao := VP_Identificacao;
+            F_Comunicador.DesconectarCliente(F_Comunicador);
+            F_Comunicador.V_ConexaoCliente.ServidorHost := VP_Host;
+            F_Comunicador.V_ConexaoCliente.ServidorPorta := VP_Porta;
+            F_Comunicador.V_ConexaoCliente.Identificacao := VP_Identificacao;
             F_Comunicacao := VP_ChaveComunicacao;
         end;
 
-        DComunicador.V_ConexaoCliente.Aes.GenerateKey(F_Comunicacao);
+        F_Comunicador.V_ConexaoCliente.Aes.GenerateKey(F_Comunicacao);
 
-        Result := DComunicador.ConectarCliente(DComunicador);
+        Result := F_Comunicador.ConectarCliente(F_Comunicador);
 
         if Result <> 0 then
             Exit;
 
-        if DComunicador.V_ConexaoCliente.Status = csLogado then
+        if F_Comunicador.V_ConexaoCliente.Status = csLogado then
         begin
             Result := 0;
             Exit;
         end;
 
-        if DComunicador.V_ConexaoCliente.Status > csLink then
+        if F_Comunicador.V_ConexaoCliente.Status > csLink then
         begin
             VL_Mensagem.Limpar;
 
@@ -201,7 +201,7 @@ begin
             GravaLog(F_ArquivoLog, 0, 'login', 'com_lib', '171120231101', 'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
             //envia ao cliente
-            Result := DComunicador.ClienteTransmiteSolicitacao(DComunicador, VL_Transmissao_id, VL_Mensagem, VL_Mensagem, nil, 10000, True);
+            Result := F_Comunicador.ClienteTransmiteSolicitacao(F_Comunicador, VL_Transmissao_id, VL_Mensagem, VL_Mensagem, nil, 10000, True);
 
             if Result <> 0 then
             begin
@@ -214,9 +214,11 @@ begin
             if VL_Erro <> '0' then
             begin
                 Result := StrToInt(VL_Erro);
+                GravaLog(F_ArquivoLog, 0, 'login', 'com_lib', '171120231104', 'Mensagem recebida com erro', VL_Mensagem.TagsAsString, Result, 1);
+                Exit;
             end;
 
-            DComunicador.V_ConexaoCliente.Status := csLogado;
+            F_Comunicador.V_ConexaoCliente.Status := csLogado;
 
         end;
 
@@ -250,7 +252,7 @@ begin
 
         GravaLog(F_ArquivoLog, 0, 'solicitacaoblocante', 'com_lib', '171120231059', 'Mensagem  enviada', VL_String, 0, 2);
 
-        Result := DComunicador.ClienteTransmiteSolicitacao(DComunicador, VL_Transamissao_ID, VL_Mensagens, VL_Mensagens, nil, VP_TempoAguarda, True);
+        Result := F_Comunicador.ClienteTransmiteSolicitacao(F_Comunicador, VL_Transamissao_ID, VL_Mensagens, VL_Mensagens, nil, VP_TempoAguarda, True);
 
         if Result <> 0 then
             GravaLog(F_ArquivoLog, 0, 'solicitacaoblocante', 'com_lib', '171120231059', 'Erro ao enviar mensagem', VL_String, Result, 1);

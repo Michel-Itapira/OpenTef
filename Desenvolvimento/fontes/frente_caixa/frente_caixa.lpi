@@ -100,6 +100,7 @@
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
+            <TargetCPU Value="i386"/>
             <TargetOS Value="win32"/>
             <Optimizations>
               <OptimizationLevel Value="0"/>
@@ -108,6 +109,7 @@
           <Linking>
             <Debugging>
               <DebugInfoType Value="dsDwarf2"/>
+              <UseHeaptrc Value="True"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
@@ -150,23 +152,19 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-XS
--Xt
--XX
--CX
--Xe
--XD
--Xi
--dFRENTE_CAIXA
--dLINUX64"/>
-            <OtherDefines Count="2">
+            <CustomOptions Value="-dFRENTE_CAIXA
+-dLINUX64
+-dDEBUG"/>
+            <OtherDefines Count="4">
               <Define0 Value="FRENTE_CAIXA"/>
-              <Define1 Value="LINUX64"/>
+              <Define1 Value="WIN64"/>
+              <Define2 Value="LINUX64"/>
+              <Define3 Value="DEBUG"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -209,6 +207,9 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="755527249129" Modes="Debug Win64,Linux32,Linux64,Win32,Release,Debug" Value="-dDisableUTF8RTL"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -279,6 +280,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
         <UseHeaptrc Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
@@ -289,14 +291,7 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-XS
--Xt
--XX
--CX
--Xe
--XD
--Xi
--dFRENTE_CAIXA
+      <CustomOptions Value="-dFRENTE_CAIXA
 -dWIN64"/>
       <OtherDefines Count="2">
         <Define0 Value="FRENTE_CAIXA"/>

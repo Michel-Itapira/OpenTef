@@ -7,7 +7,7 @@ interface
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
     ExtCtrls, StdCtrls, DBGrids, DBCtrls,
-    funcoes, IniFiles, DB, rxmemds, RxDBGrid,
+    funcoes, IniFiles, DB, rxmemds, RxDBGrid,def,
     {telas}
     ulogin,
     ucadloja,
@@ -16,6 +16,11 @@ uses
     ucadadquirente,
     ucadmultloja,
     ucadmodulo,
+    {$IFDEF USADLL}
+    com,
+    {$ENDIF}
+
+
     umoduloconfig;
 
 type
@@ -58,6 +63,7 @@ type
         procedure ComboBox1Click(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
+        procedure FormDestroy(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure MCadAdquirenteClick(Sender: TObject);
         procedure MCadClick(Sender: TObject);
@@ -75,7 +81,7 @@ type
     public
         V_Erro: PChar;
         procedure Conectar(VP_Tipo, VP_Senha: string);
-        procedure Desconectar;
+        procedure Desconecta;
         function SolicitacaoBloc(VP_Dados: ansistring; var VO_Retorno: ansistring; VP_Tempo: integer): integer;
         function PesquisaTabelas(VP_TagComando, VP_DadosComando, VP_Tag: ansistring; VP_ID: integer; VP_TagLote: ansistring): ansistring;
         function FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
@@ -89,11 +95,12 @@ type
 
     TTefInicializar = function(VP_Procedimento: TRetorno; VP_ArquivoLog: PChar): integer; cdecl;
     TTefFinalizar = function(): integer; cdecl;
-    TTefDesconectar = function(): integer; cdecl;
+    TTDesconectar = function(): integer; cdecl;
     TTLogin = function(VP_Host: PChar; VP_Porta: integer; VP_ChaveComunicacao: PChar; VP_Versao_Comunicacao: integer;
         VP_Senha: PChar; VP_Tipo: PChar; VP_Terminal_ID: integer; VP_Identificacao: PChar): integer; cdecl;
     TTOpenTefStatus = function(var VO_StatusRetorno: integer): integer; cdecl;
     TTSolicitacaoBlocante = function(VP_Dados: PChar; var VO_Retorno: PChar; VP_Tempo: integer): integer; cdecl;
+    TTMensagemerro = function(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 
 procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 
@@ -102,7 +109,7 @@ var
     F_ComLib: THandle;
     F_Inicializar: TTefInicializar;
     F_Finalizar: TTefFinalizar;
-    F_Desconectar: TTefDesconectar;
+    F_Desconectar: TTDesconectar;
     F_Login: TTLogin;
     F_OpenTefStatus: TTOpenTefStatus;
     F_SolicitacaoBlocante: TTSolicitacaoBlocante;
@@ -117,10 +124,10 @@ var
     F_Navegar: boolean;
     F_TipoConfigurador: TPermissao;
     F_TipoTag: TTipoTag;
+    F_Erro: TTMensagemerro;
 
 const
-    C_Versao_TefLib = '1.1.1';
-    C_Versao_Mensagem = 1;
+    C_Versao_ConfTef = '1.1.1';
     C_PermissaoFormatado = 'NDF' + #13 + 'Configurador' + #13 + 'Administrador' + #13 + 'Usuario';
     {$IFDEF DEBUG}
     C_TempoSolicitacao=200000;
@@ -133,7 +140,7 @@ implementation
 procedure Retorno(VP_Tranmissao_ID: PChar; VP_PrcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 begin
     if VP_Erro = 96 then
-        FInterface.Desconectar;
+        FInterface.Desconecta;
 end;
 
 {$R *.lfm}
@@ -202,8 +209,11 @@ begin
     Memo1.Lines.Text := RETORNO;
 end;
 
+
 procedure TFInterface.IniciarLib;
 begin
+    {$IFDEF USADLL}
+
     {$IFDEF DEBUG}
     F_ComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\com_lib\win64\com_lib.dll'));
     {$ELSE}
@@ -213,7 +223,6 @@ begin
     if F_ComLib = 0 then
     begin
         ShowMessage('Não foi possível carregar a lib');
-        Close();
         Application.terminate;
         Exit;
     end;
@@ -225,6 +234,18 @@ begin
     Pointer(F_SolicitacaoBlocante) := GetProcAddress(F_ComLib, 'solicitacaoblocante');
     Pointer(F_OpenTefStatus) := GetProcAddress(F_ComLib, 'opentefstatus');
     F_Inicializar(@Retorno, PChar(ExtractFilePath(ParamStr(0)) + 'config_app_com_lib.log'));
+
+    {$ELSE}
+    F_Inicializar :=@inicializar;
+    F_Finalizar := @finalizar;
+    F_Login := @login;
+    F_Desconectar := @desconectar;
+    F_SolicitacaoBlocante := @solicitacaoblocante;
+    F_OpenTefStatus := @opentefstatus;
+    F_Inicializar(@Retorno, PChar(ExtractFilePath(ParamStr(0)) + 'config_app_com_lib.log'));
+
+    {$ENDIF}
+
 end;
 
 procedure TFInterface.Conectar(VP_Tipo, VP_Senha: string);
@@ -257,7 +278,7 @@ begin
     end;
     try
         //conecta
-        VL_Codigo := F_Login(PChar(F_Host), F_Porta, PChar(F_Chave), C_Versao_Mensagem, PChar(VP_Senha), PChar(VP_Tipo),
+        VL_Codigo := F_Login(PChar(F_Host), F_Porta, PChar(F_Chave), C_Mensagem, PChar(VP_Senha), PChar(VP_Tipo),
             F_Terminal_ID, PChar(F_Identificador));
 
         if VL_Codigo > 0 then
@@ -287,9 +308,20 @@ begin
     end;
 end;
 
-procedure TFInterface.Desconectar;
+procedure TFInterface.Desconecta;
+var
+   VL_Codigo : integer;
+   VL_DescricaoErro : pchar;
 begin
-    F_Desconectar();
+   VL_Codigo:= F_Desconectar();
+
+   if VL_Codigo <> 0 then
+  begin
+    F_Erro(VL_Codigo, VL_DescricaoErro);
+    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' +
+      VL_DescricaoErro);
+    exit;
+  end;
     EStatus.Caption := 'Desconectado';
     EStatus.Font.Color := clRed;
     F_Permissao := False;
@@ -431,7 +463,7 @@ begin
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-        finterface.Desconectar;
+        finterface.Desconecta;
         Exit;
     end;
     VL_Mensagem := TMensagem.Create;
@@ -520,12 +552,18 @@ procedure TFInterface.MConectarClick(Sender: TObject);
 var
     VL_FLogin: TFLogin;
 begin
-    VL_FLogin := TFLogin.Create(self, C_PermissaoFormatado);
-    VL_FLogin.ShowModal;
-    if VL_FLogin.V_Conectar then
-        Conectar(VL_FLogin.V_Tipo, VL_FLogin.ESenha.Text)
-    else
-        Desconectar;
+    VL_FLogin := nil;
+    try
+       VL_FLogin := TFLogin.Create(self, C_PermissaoFormatado);
+       VL_FLogin.ShowModal;
+       if VL_FLogin.V_Conectar then
+          Conectar(VL_FLogin.V_Tipo, VL_FLogin.ESenha.Text)
+       else
+           Desconecta;
+    finally
+        VL_FLogin.free;
+    end;
+
 end;
 
 procedure TFInterface.MCadPdvClick(Sender: TObject);
@@ -547,7 +585,7 @@ begin
     end;
 
     VL_FCadPdv := TFCadPdv.Create(self);
-    VL_FCadPdv.ShowModal;
+    VL_FCadPdv.Show;
 
 end;
 
@@ -557,7 +595,12 @@ begin
     F_Permissao := False;
     F_TipoConfigurador := pmS;
     IniciarLib;
-    F_Titulo := 'Configurador OpenTef versão ' + C_Versao_TefLib;
+    F_Titulo := 'Configurador OpenTef versão ' + C_Versao_ConfTef;
+
+end;
+
+procedure TFInterface.FormDestroy(Sender: TObject);
+begin
 
 end;
 
@@ -596,7 +639,7 @@ begin
     end;
 
     VL_FCadAdquirente := TFCadAdquirente.Create(self);
-    VL_FCadAdquirente.ShowModal;
+    VL_FCadAdquirente.Show;
 
 end;
 
@@ -624,7 +667,7 @@ begin
     end;
 
     VL_FCadLoja := TFCadLoja.Create(self);
-    VL_FCadLoja.ShowModal;
+    VL_FCadLoja.Show;
 
 end;
 
@@ -647,7 +690,7 @@ begin
     end;
 
     VL_FCadMultiLoja := TFCadMultloja.Create(self);
-    VL_FCadMultiLoja.ShowModal;
+    VL_FCadMultiLoja.Show;
 
 end;
 

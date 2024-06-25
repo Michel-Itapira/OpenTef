@@ -157,7 +157,7 @@ type
 
         function ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer; VP_TempoAguarda: integer;
             VP_AguardaRetorno: boolean; VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-            var VO_Mensagem: TMensagem; VP_TipoTerminal, VP_TerminalIdentificacao: string): integer;
+            var VO_Mensagem: TMensagem;  VP_TerminalIdentificacao: string): integer;
 
         procedure desativartodasconexao(VP_DComunicador: Pointer);
 
@@ -180,271 +180,272 @@ uses
 { TThServidorConclui }
 
 procedure TThServidorProcessaRecebe.Execute;
-var
-    VL_Mensagem: TMensagem;
-    VL_Erro: integer;
-    VL_TransmissaoID: string;
-    VL_AContext: TIdContext;
-    VL_Dados: string;
-    VL_Desafio: string;
-    VL_Identificacao: string;
 begin
-    VL_Erro := 0;
-    VL_TransmissaoID := '';
-    VL_Desafio := '';
-    VL_Identificacao := '';
-    VL_Mensagem := TMensagem.Create;
-    VL_AContext := nil;
-    try
-        try
+    //var
+    //    VL_Mensagem: TMensagem;
+    //    VL_Erro: integer;
+    //    VL_TransmissaoID: string;
+    //    VL_AContext: TIdContext;
+    //    VL_Dados: string;
+    //    VL_Desafio: string;
+    //    VL_Identificacao: string;
+    //begin
+    //    VL_Erro := 0;
+    //    VL_TransmissaoID := '';
+    //    VL_Desafio := '';
+    //    VL_Identificacao := '';
+    //    VL_Mensagem := TMensagem.Create;
+    //    VL_AContext := nil;
+    //    try
+    //        try
 
-            GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '141120231415', 'TThServidorProcessaRecebe.Execute', f_Dados, 0, 4);
+    //            GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '141120231415', 'TThServidorProcessaRecebe.Execute', f_Dados, 0, 4);
 
-            if Terminated then
-                Exit;
+    //            if Terminated then
+    //                Exit;
 
-            if TDComunicador(f_DComunicador).V_Parar then
-                Exit;
+    //            if TDComunicador(f_DComunicador).V_Parar then
+    //                Exit;
 
-            if (f_Dados = '') then
-            begin
-                Exit;
-            end;
+    //            if (f_Dados = '') then
+    //            begin
+    //                Exit;
+    //            end;
 
-            if not Assigned(f_TConexao) then
-            begin
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221152',
-                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
-                Exit;
-            end
-            else
-            if not f_TConexao.GetSocketServidor(f_DComunicador, f_TConexao.ID, VL_AContext) then
-            begin
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221153',
-                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
-                Exit;
-            end;
+    //            if not Assigned(f_TConexao) then
+    //            begin
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221152',
+    //                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
+    //                Exit;
+    //            end
+    //            else
+    //            if not f_TConexao.GetSocketServidor(f_DComunicador, f_TConexao.ID, VL_AContext) then
+    //            begin
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221153',
+    //                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
+    //                Exit;
+    //            end;
 
-            if VL_AContext = nil then
-            begin
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221154',
-                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
-                Exit;
-            end;
-
-
-
-            VL_Erro := VL_Mensagem.CarregaTags(f_Dados);
-            if VL_Erro <> 0 then
-            begin
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221716',
-                    'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
-                Exit;
-            end;
-
-
-            if VL_Mensagem.Comando <> '00D1' then
-            begin
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221717',
-                    'TThServidorProcessaRecebe.Execute; ', '', 68, 1);
-
-                Exit;
-            end;
+    //            if VL_AContext = nil then
+    //            begin
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221154',
+    //                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
+    //                Exit;
+    //            end;
 
 
-            VL_TransmissaoID := VL_Mensagem.ComandoDados;
-            VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
 
-            if (f_TConexao.Status = csChaveado) or (f_TConexao.Status = csLogado) then
-                VL_Dados := Copy(VL_Dados, 1, 5) + f_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
-
-
-            if VL_Dados = '00002161400E311S' then  // comando de eco
-            begin
-                VL_Mensagem.CarregaTags('00002161400E311R');
-                TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                    VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-
-                Exit;
-            end;
+    //            VL_Erro := VL_Mensagem.CarregaTags(f_Dados);
+    //            if VL_Erro <> 0 then
+    //            begin
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221716',
+    //                    'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
+    //                Exit;
+    //            end;
 
 
-            if (VL_TransmissaoID = '') then
-            begin
+    //            if VL_Mensagem.Comando <> '00D1' then
+    //            begin
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221717',
+    //                    'TThServidorProcessaRecebe.Execute; ', '', 68, 1);
 
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221718',
-                    'ID da transmissao vazia', '', 0, 1);
-                Exit;
-
-            end;
-
-            VL_Mensagem.Limpar;
-            VL_Mensagem.CarregaTags(VL_Dados);
-
-            if ((VL_Mensagem.Comando = '0021') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita conexao(troca de chave rsa)
-            begin
-                if Assigned(f_TConexao) then
-                begin
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.setModuloPublico(VL_Mensagem.GetTagAsAstring('0008'));  // CHAVE PUBLICA MODULO
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.setExpoentePublico(VL_Mensagem.GetTagAsAstring('0027')); // CHAVE PUBLICA EXPOENTE
-
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0021', 'R'); // troca de chave rsa aceita
-                    VL_Mensagem.AddTag('0008', f_TConexao.ModuloPublico); // CHAVE PUBLICA MODULO
-                    VL_Mensagem.AddTag('0027', f_TConexao.ExpoentePublico); // CHAVE PUBLICA EXPOENTE
-
-                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-
-                    exit;
-                end;
-            end;
-
-            if ((VL_Mensagem.Comando = '0103') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita desafio de chave
-            begin
-                if VL_Mensagem.GetTagAsAstring('00E3') = '' then // transacao criptografada
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                    Exit;
-                end;
-
-                VL_Dados := f_TConexao.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
-
-                VL_Mensagem.Limpar;
-                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-                if VL_Erro <> 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                    Exit;
-                end;
-
-                VL_Mensagem.GetTag('0106', VL_Desafio); // desafio
-                VL_Mensagem.GetTag('0108', VL_Identificacao); // identificacao
-
-                if VL_Identificacao = '' then // identificacao
-                begin
-                    f_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0009')); // chave simetrica aes
-                end
-                else
-                begin
-                    if not Assigned(TDComunicador(f_DComunicador).V_TransmissaoComando) then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '105');
-
-                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                        Exit;
-                    end;
-
-                    VL_Mensagem.GetTag('0108', VL_Identificacao); // identificador
-
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0022', 'S'); // SOLICITA DADOS DA IDENTIFICACAO
-                    VL_Mensagem.AddTag('0108', VL_Identificacao); // IDENTIFICADOR
-
-                    VL_Erro := TDComunicador(f_DComunicador).V_TransmissaoComando(TDComunicador(f_DComunicador), f_TConexao.ID,
-                        VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
-
-                    if VL_Erro <> 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                        Exit;
-                    end;
-
-                    VL_Mensagem.Limpar;
-                    VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-                    if VL_Erro <> 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                        Exit;
-                    end;
-
-                    f_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0023')); // chave de comunicacao
-                end;
+    //                Exit;
+    //            end;
 
 
-                VL_Desafio := f_TConexao.Aes.DecryptString(VL_Desafio);
+    //            VL_TransmissaoID := VL_Mensagem.ComandoDados;
+    //            VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
 
-                if Copy(VL_Desafio, 1, 2) <> 'OK' then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                    Exit;
-                end;
-
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0103', 'R'); // retorno do desafio da chave
-                VL_Mensagem.AddTag('0106', f_TConexao.Aes.EncryptString(Formata('OKOK' +
-                    DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True))); // desafio
-
-                VL_Dados := VL_Mensagem.TagsAsString;
-
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0103', 'R'); // RETORNO DO DESAFIO DE CHAVE
-                VL_Mensagem.AddTag('00E3', TDComunicador(f_DComunicador).V_ConexaoCliente.Rsa.EncryptString(VL_Dados)); // transacao criptografada
-
-                TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-                    VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-                if Assigned(f_TConexao) then
-                    if VL_Identificacao = '' then // identificacao
-                        F_Tconexao.Status := csChaveado
-                    else
-                        F_Tconexao.Status := csChaveadoAssinado;
+    //            if (f_TConexao.Status = csChaveado) or (f_TConexao.Status = csLogado) then
+    //                VL_Dados := Copy(VL_Dados, 1, 5) + f_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
 
 
-                Exit;
+    //            if VL_Dados = '00002161400E311S' then  // comando de eco
+    //            begin
+    //                VL_Mensagem.CarregaTags('00002161400E311R');
+    //                TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                    VL_Mensagem, VL_Mensagem, f_TConexao.ID);
 
-            end;
-
-            VL_Erro := TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
-
-            if VL_Erro <> 0 then
-            begin
-                if Assigned(TDComunicador(f_DComunicador).V_ServidorRecebimento) then
-                    TDComunicador(f_DComunicador).V_ServidorRecebimento(0, VL_TransmissaoID, VL_Dados,
-                        f_TConexao.ID, f_TConexao.Terminal_Tipo,
-                        f_TConexao.Terminal_ID, f_TConexao.DOC,
-                        f_TConexao.Status, f_TConexao.Identificacao,
-                        f_TConexao.Permissao, f_TConexao.ClienteIp)
-                else
-                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221719',
-                        'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
-            end
-            else
-                TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
-
-        except
-            on e: Exception do
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '120920222118', 'TThServidorProcessaRecebe.Execute ' +
-                    e.ClassName + '/' + e.Message, '', 1, 1);
-        end;
+    //                Exit;
+    //            end;
 
 
-    finally
-        VL_Mensagem.Free;
-    end;
+    //            if (VL_TransmissaoID = '') then
+    //            begin
+
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221718',
+    //                    'ID da transmissao vazia', '', 0, 1);
+    //                Exit;
+
+    //            end;
+
+    //            VL_Mensagem.Limpar;
+    //            VL_Mensagem.CarregaTags(VL_Dados);
+
+    //            if ((VL_Mensagem.Comando = '0021') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita conexao(troca de chave rsa)
+    //            begin
+    //                if Assigned(f_TConexao) then
+    //                begin
+    //                    TDComunicador(f_DComunicador).V_ConexaoCliente.setModuloPublico(VL_Mensagem.GetTagAsAstring('0008'));  // CHAVE PUBLICA MODULO
+    //                    TDComunicador(f_DComunicador).V_ConexaoCliente.setExpoentePublico(VL_Mensagem.GetTagAsAstring('0027')); // CHAVE PUBLICA EXPOENTE
+
+    //                    VL_Mensagem.Limpar;
+    //                    VL_Mensagem.AddComando('0021', 'R'); // troca de chave rsa aceita
+    //                    VL_Mensagem.AddTag('0008', f_TConexao.ModuloPublico); // CHAVE PUBLICA MODULO
+    //                    VL_Mensagem.AddTag('0027', f_TConexao.ExpoentePublico); // CHAVE PUBLICA EXPOENTE
+
+    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+
+    //                    exit;
+    //                end;
+    //            end;
+
+    //            if ((VL_Mensagem.Comando = '0103') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita desafio de chave
+    //            begin
+    //                if VL_Mensagem.GetTagAsAstring('00E3') = '' then // transacao criptografada
+    //                begin
+    //                    VL_Mensagem.Limpar;
+    //                    VL_Mensagem.AddComando('0026', '92');
+
+    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                    Exit;
+    //                end;
+
+    //                VL_Dados := f_TConexao.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
+
+    //                VL_Mensagem.Limpar;
+    //                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
+
+    //                if VL_Erro <> 0 then
+    //                begin
+    //                    VL_Mensagem.Limpar;
+    //                    VL_Mensagem.AddComando('0026', '92');
+
+    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                    Exit;
+    //                end;
+
+    //                VL_Mensagem.GetTag('0106', VL_Desafio); // desafio
+    //                VL_Mensagem.GetTag('0108', VL_Identificacao); // identificacao
+
+    //                if VL_Identificacao = '' then // identificacao
+    //                begin
+    //                    f_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0009')); // chave simetrica aes
+    //                end
+    //                else
+    //                begin
+    //                    if not Assigned(TDComunicador(f_DComunicador).V_TransmissaoComando) then
+    //                    begin
+    //                        VL_Mensagem.Limpar;
+    //                        VL_Mensagem.AddComando('0026', '105');
+
+    //                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                        Exit;
+    //                    end;
+
+    //                    VL_Mensagem.GetTag('0108', VL_Identificacao); // identificador
+
+    //                    VL_Mensagem.Limpar;
+    //                    VL_Mensagem.AddComando('0022', 'S'); // SOLICITA DADOS DA IDENTIFICACAO
+    //                    VL_Mensagem.AddTag('0108', VL_Identificacao); // IDENTIFICADOR
+
+    //                    VL_Erro := TDComunicador(f_DComunicador).V_TransmissaoComando(TDComunicador(f_DComunicador), f_TConexao.ID,
+    //                        VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
+
+    //                    if VL_Erro <> 0 then
+    //                    begin
+    //                        VL_Mensagem.Limpar;
+    //                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
+
+    //                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                        Exit;
+    //                    end;
+
+    //                    VL_Mensagem.Limpar;
+    //                    VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
+
+    //                    if VL_Erro <> 0 then
+    //                    begin
+    //                        VL_Mensagem.Limpar;
+    //                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
+
+    //                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                        Exit;
+    //                    end;
+
+    //                    f_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0023')); // chave de comunicacao
+    //                end;
+
+
+    //                VL_Desafio := f_TConexao.Aes.DecryptString(VL_Desafio);
+
+    //                if Copy(VL_Desafio, 1, 2) <> 'OK' then
+    //                begin
+    //                    VL_Mensagem.Limpar;
+    //                    VL_Mensagem.AddComando('0026', '92');
+
+    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                    Exit;
+    //                end;
+
+    //                VL_Mensagem.Limpar;
+    //                VL_Mensagem.AddComando('0103', 'R'); // retorno do desafio da chave
+    //                VL_Mensagem.AddTag('0106', f_TConexao.Aes.EncryptString(Formata('OKOK' +
+    //                    DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True))); // desafio
+
+    //                VL_Dados := VL_Mensagem.TagsAsString;
+
+    //                VL_Mensagem.Limpar;
+    //                VL_Mensagem.AddComando('0103', 'R'); // RETORNO DO DESAFIO DE CHAVE
+    //                VL_Mensagem.AddTag('00E3', TDComunicador(f_DComunicador).V_ConexaoCliente.Rsa.EncryptString(VL_Dados)); // transacao criptografada
+
+    //                TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
+    //                    VL_Mensagem, VL_Mensagem, f_TConexao.ID);
+    //                if Assigned(f_TConexao) then
+    //                    if VL_Identificacao = '' then // identificacao
+    //                        F_Tconexao.Status := csChaveado
+    //                    else
+    //                        F_Tconexao.Status := csChaveadoAssinado;
+
+
+    //                Exit;
+
+    //            end;
+
+    //            VL_Erro := TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
+
+    //            if VL_Erro <> 0 then
+    //            begin
+    //                if Assigned(TDComunicador(f_DComunicador).V_ServidorRecebimento) then
+    //                    TDComunicador(f_DComunicador).V_ServidorRecebimento(0, VL_TransmissaoID, VL_Dados,
+    //                        f_TConexao.ID, f_TConexao.Terminal_Tipo,
+    //                        f_TConexao.Terminal_ID, f_TConexao.DOC,
+    //                        f_TConexao.Status, f_TConexao.Identificacao,
+    //                        f_TConexao.Permissao, f_TConexao.ClienteIp)
+    //                else
+    //                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221719',
+    //                        'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
+    //            end
+    //            else
+    //                TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
+
+    //        except
+    //            on e: Exception do
+    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '120920222118', 'TThServidorProcessaRecebe.Execute ' +
+    //                    e.ClassName + '/' + e.Message, '', 1, 1);
+    //        end;
+
+
+    //    finally
+    //        VL_Mensagem.Free;
+    //    end;
 
 end;
 
@@ -473,7 +474,6 @@ begin
     VL_Mensagem := TMensagem.Create;
     try
         try
-
             GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '141120231417',
                 'TThClienteProcessaRecebe.Execute', f_Dados, 0, 4);
 
@@ -1224,25 +1224,259 @@ end;
 procedure TDComunicador.IdTCPServidorExecute(AContext: TIdContext);
 var
     VL_DadosRecebidos: string;
-    VL_ThServidorProcessaRecebe: TThServidorProcessaRecebe;
+    VL_Mensagem: TMensagem;
+    VL_Erro: integer;
+    VL_TransmissaoID: string;
+    VL_Dados: string;
+    VL_Desafio: string;
+    VL_Identificacao: string;
+    VL_TConexao: TTConexao;
+
 begin
-    sleep(10);
+    VL_Erro := 0;
+    VL_TransmissaoID := '';
+    VL_Desafio := '';
+    VL_Identificacao := '';
+    VL_Mensagem := nil;
 
-    VL_DadosRecebidos := AContext.Connection.IOHandler.ReadLn(LF, 100, -1, nil);
-    if VL_DadosRecebidos = '' then
-        Exit;
+    try
+        try
+            VL_DadosRecebidos := AContext.Connection.IOHandler.ReadLn(LF, 100, -1, nil);
+            if VL_DadosRecebidos = '' then
+                Exit;
 
-    if AContext.Data = nil then
-        Exit;
+            VL_DadosRecebidos := base64.DEcodeStringBase64(VL_DadosRecebidos);
 
-    if self.V_Parar then
-        Exit;
+            if AContext.Data = nil then
+                Exit;
+
+            if V_Parar then
+                Exit;
+
+            VL_TConexao := TTConexao(AContext.Data);
+
+            if not Assigned(VL_TConexao) then
+                Exit;
 
 
-    //AContext.Connection.IOHandler.Write('0' + LFL);
+            GravaLog(TDComunicador(Self).V_ArquivoLog, 0, '', 'comunicador', '141120231415', 'TThServidorProcessaRecebe.Execute', VL_DadosRecebidos, 0, 4);
 
-    VL_ThServidorProcessaRecebe := TThServidorProcessaRecebe.Create(self.V_DComunicador, VL_DadosRecebidos, TTConexao(AContext.Data));
-    VL_ThServidorProcessaRecebe.Start;
+
+            if V_Parar then
+                Exit;
+
+
+            VL_Mensagem:= TMensagem.Create;
+
+
+            VL_Erro := VL_Mensagem.CarregaTags(VL_DadosRecebidos);
+            if VL_Erro <> 0 then
+            begin
+                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221716',
+                    'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
+                Exit;
+            end;
+
+
+            if VL_Mensagem.Comando <> '00D1' then
+            begin
+                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221717',
+                    'TThServidorProcessaRecebe.Execute; ', '', 68, 1);
+
+                Exit;
+            end;
+
+
+            VL_TransmissaoID := VL_Mensagem.ComandoDados;
+            VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
+
+            if (VL_TConexao.Status = csChaveado) or (VL_TConexao.Status = csLogado) then
+                VL_Dados := Copy(VL_Dados, 1, 5) + VL_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
+
+
+            if VL_Dados = '00002161400E311S' then  // comando de eco
+            begin
+                VL_Mensagem.CarregaTags('00002161400E311R');
+                ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+
+                Exit;
+            end;
+
+
+            if (VL_TransmissaoID = '') then
+            begin
+
+                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221718',
+                    'ID da transmissao vazia', '', 0, 1);
+                Exit;
+
+            end;
+
+            VL_Mensagem.Limpar;
+            VL_Mensagem.CarregaTags(VL_Dados);
+
+            if ((VL_Mensagem.Comando = '0021') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita conexao(troca de chave rsa)
+            begin
+                V_ConexaoCliente.setModuloPublico(VL_Mensagem.GetTagAsAstring('0008'));  // CHAVE PUBLICA MODULO
+                V_ConexaoCliente.setExpoentePublico(VL_Mensagem.GetTagAsAstring('0027')); // CHAVE PUBLICA EXPOENTE
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0021', 'R'); // troca de chave rsa aceita
+                VL_Mensagem.AddTag('0008', VL_TConexao.ModuloPublico); // CHAVE PUBLICA MODULO
+                VL_Mensagem.AddTag('0027', VL_TConexao.ExpoentePublico); // CHAVE PUBLICA EXPOENTE
+
+                ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                    VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+
+                exit;
+            end;
+
+
+            if ((VL_Mensagem.Comando = '0103') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita desafio de chave
+            begin
+                if VL_Mensagem.GetTagAsAstring('00E3') = '' then // transacao criptografada
+                begin
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0026', '92');
+
+                    ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                        VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                    Exit;
+                end;
+
+                VL_Dados := VL_TConexao.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
+
+                VL_Mensagem.Limpar;
+                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
+
+                if VL_Erro <> 0 then
+                begin
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0026', '92');
+
+                    ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                        VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                    Exit;
+                end;
+
+                VL_Mensagem.GetTag('0106', VL_Desafio); // desafio
+                VL_Mensagem.GetTag('0108', VL_Identificacao); // identificacao
+
+                if VL_Identificacao = '' then // identificacao
+                begin
+                    VL_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0009')); // chave simetrica aes
+                end
+                else
+                begin
+                    if not Assigned(V_TransmissaoComando) then
+                    begin
+                        VL_Mensagem.Limpar;
+                        VL_Mensagem.AddComando('0026', '105');
+
+                        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                        Exit;
+                    end;
+
+                    VL_Mensagem.GetTag('0108', VL_Identificacao); // identificador
+
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0022', 'S'); // SOLICITA DADOS DA IDENTIFICACAO
+                    VL_Mensagem.AddTag('0108', VL_Identificacao); // IDENTIFICADOR
+
+                    VL_Erro := V_TransmissaoComando(TDComunicador(Self), VL_TConexao.ID,
+                        VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
+
+                    if VL_Erro <> 0 then
+                    begin
+                        VL_Mensagem.Limpar;
+                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
+
+                        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                        Exit;
+                    end;
+
+                    VL_Mensagem.Limpar;
+                    VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
+
+                    if VL_Erro <> 0 then
+                    begin
+                        VL_Mensagem.Limpar;
+                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
+
+                        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                        Exit;
+                    end;
+
+                    VL_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0023')); // chave de comunicacao
+                end;
+
+
+                VL_Desafio := VL_TConexao.Aes.DecryptString(VL_Desafio);
+
+                if Copy(VL_Desafio, 1, 2) <> 'OK' then
+                begin
+                    VL_Mensagem.Limpar;
+                    VL_Mensagem.AddComando('0026', '92');
+
+                    ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                        VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                    Exit;
+                end;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0103', 'R'); // retorno do desafio da chave
+                VL_Mensagem.AddTag('0106', VL_TConexao.Aes.EncryptString(Formata('OKOK' +
+                    DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True))); // desafio
+
+                VL_Dados := VL_Mensagem.TagsAsString;
+
+                VL_Mensagem.Limpar;
+                VL_Mensagem.AddComando('0103', 'R'); // RETORNO DO DESAFIO DE CHAVE
+                VL_Mensagem.AddTag('00E3', V_ConexaoCliente.Rsa.EncryptString(VL_Dados)); // transacao criptografada
+
+                ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
+                    VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+                if Assigned(VL_TConexao) then
+                    if VL_Identificacao = '' then // identificacao
+                        VL_TConexao.Status := csChaveado
+                    else
+                        VL_TConexao.Status := csChaveadoAssinado;
+
+
+                Exit;
+
+            end;
+
+            VL_Erro := V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
+
+            if VL_Erro <> 0 then
+            begin
+                if Assigned(V_ServidorRecebimento) then
+                    V_ServidorRecebimento(0, VL_TransmissaoID, VL_Dados,
+                        VL_TConexao.ID, VL_TConexao.Terminal_Tipo,
+                        VL_TConexao.Terminal_ID, VL_TConexao.DOC,
+                        VL_TConexao.Status, VL_TConexao.Identificacao,
+                        VL_TConexao.Permissao, VL_TConexao.ClienteIp)
+                else
+                    GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221719',
+                        'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
+            end
+            else
+                V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
+
+        except
+            on e: Exception do
+                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920222118', 'TThServidorProcessaRecebe.Execute ' +
+                    e.ClassName + '/' + e.Message, '', 1, 1);
+        end;
+
+
+    finally
+        VL_Mensagem.Free;
+    end;
 
 end;
 
@@ -1268,7 +1502,7 @@ procedure TDComunicador.IdTCPClienteDisconnected(Sender: TObject);
 begin
 
     // aguarda finalizar processamento da escuta do socket do cliente
-    if Assigned(TDComunicador(Sender).V_ThRecebeEscuta) then
+    if Assigned(TDComunicador(SELF.V_DComunicador).V_ThRecebeEscuta) then
     begin
         TDComunicador(Self).V_ThRecebeEscuta.Terminate;
         TDComunicador(Self).V_ThRecebeEscuta.WaitFor;
@@ -1289,7 +1523,7 @@ end;
 function TDComunicador.DesconectarCliente(VP_DComunicador: Pointer): integer;
 begin
     Result := 0;
-    if Assigned(TDComunicador(VP_DComunicador).V_ConexaoCliente) then
+    if Assigned(TDComunicador(self.V_DComunicador).V_ConexaoCliente) then
     begin
         TDComunicador(VP_DComunicador).V_ConexaoCliente.StatusDesejado := csDesconectado;
         TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
@@ -1398,7 +1632,7 @@ begin
                 VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
 
                 TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.add(VL_Temporizador);
-                VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
 
                 {
                 VL_Dados := '';
@@ -1446,7 +1680,7 @@ begin
             else
             begin
 
-                VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
                 {
                 VL_Dados := '';
                 VL_Dados := VL_AContext.Connection.IOHandler.ReadLn(LFL, VP_TempoAguarda, -1, nil);
@@ -1472,7 +1706,7 @@ end;
 
 function TDComunicador.ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer; VP_TempoAguarda: integer;
     VP_AguardaRetorno: boolean; VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-    var VO_Mensagem: TMensagem; VP_TipoTerminal, VP_TerminalIdentificacao: string): integer;
+    var VO_Mensagem: TMensagem;  VP_TerminalIdentificacao: string): integer;
 var
     VL_I: integer;
     VL_Clientes: TIdContextList;
@@ -1496,8 +1730,7 @@ begin
             VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
             for VL_I := 0 to VL_Clientes.Count - 1 do
-                if (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_Tipo = VP_TipoTerminal) and
-                    (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificacao = VP_TerminalIdentificacao) then
+                if  (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificacao = VP_TerminalIdentificacao) then
                 begin
                     VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
                     Result := 0;
@@ -1533,7 +1766,7 @@ begin
                 VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
 
                 TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.add(VL_Temporizador);
-                VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
 
                 {
                 VL_Dados := '';
@@ -1581,7 +1814,7 @@ begin
             end
             else
             begin
-                VL_AContext.Connection.Socket.WriteLn(VP_Mensagem.TagsAsString);
+                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
                 {
                 VL_Dados := '';
                 VL_Dados := VL_AContext.Connection.IOHandler.ReadLn(LFL, VP_TempoAguarda, -1, nil);
@@ -1650,10 +1883,6 @@ begin
                 if not Assigned(TDComunicador(f_DComunicador)) then
                     Exit;
 
-                VL_Linha := '090520221728';
-                if TDComunicador(f_DComunicador).V_Parar then
-                    Exit;
-
                 VL_Linha := '090520221729';
                 if not Assigned(f_DComunicador) then
                     Exit;
@@ -1695,6 +1924,7 @@ begin
                         VL_Linha := '090520221747';
                         try
                             VL_Dados := TDComunicador(f_DComunicador).IdTCPCliente.Socket.ReadLn;
+                            VL_Dados := base64.DEcodeStringBase64(VL_Dados);
                         except
                             VL_Linha := '090520221750';
                         end;
@@ -1795,7 +2025,7 @@ begin
 
                 TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.add(VL_Temporizador);
 
-                TDComunicador(VP_DComunicador).IdTCPCliente.Socket.WriteLn(VL_Mensagem.TagsAsString);
+                TDComunicador(VP_DComunicador).IdTCPCliente.Socket.WriteLn(base64.EncodeStringBase64(VL_Mensagem.TagsAsString));
 
                 {
                 VL_DadosEnviar := '';
@@ -1834,7 +2064,7 @@ begin
             end
             else
             begin
-                TDComunicador(VP_DComunicador).IdTCPCliente.Socket.WriteLn(VL_Mensagem.TagsAsString);
+                TDComunicador(VP_DComunicador).IdTCPCliente.Socket.WriteLn(base64.EncodeStringBase64(VL_Mensagem.TagsAsString));
                 {
                 VL_DadosEnviar := '';
                 VL_DadosEnviar := TDComunicador(VP_DComunicador).IdTCPCliente.Socket.ReadLn(LFL, VP_TempoAguarda, -1, nil);

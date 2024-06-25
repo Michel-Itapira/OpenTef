@@ -15,7 +15,45 @@
       <Icon Value="0"/>
     </General>
     <BuildModes>
-      <Item Name="Default" Default="True"/>
+      <Item Name="Win64 Debug" Default="True"/>
+      <Item Name="Win64 Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\config_app\win64\release\config_app"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func;..\com_lib"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dRELEASE"/>
+            <OtherDefines Count="2">
+              <Define0 Value="DEBUG"/>
+              <Define1 Value="RELEASE"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -25,6 +63,9 @@
       <FormatVersion Value="2"/>
     </RunParams>
     <RequiredPackages>
+      <Item>
+        <PackageName Value="lazbarcodes"/>
+      </Item>
       <Item>
         <PackageName Value="pl_LockBox"/>
       </Item>
@@ -76,13 +117,6 @@
         <UnitName Value="uPrincipal"/>
       </Unit>
       <Unit>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DFuncoes"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
-      </Unit>
-      <Unit>
         <Filename Value="upesquisatags.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FTags"/>
@@ -93,7 +127,7 @@
       <Unit>
         <Filename Value="upesquisaadquirentes.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FAdquirente"/>
+        <ComponentName Value="FPesquisaAdquirente"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisaadquirentes"/>
@@ -105,22 +139,126 @@
       <Unit>
         <Filename Value="upesquisamoduloconf.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FModuloConf"/>
+        <ComponentName Value="FPesquisaModuloConf"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisamoduloconf"/>
       </Unit>
       <Unit>
-        <Filename Value="..\com_lib\com.pas"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="DCom"/>
+        <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
       </Unit>
       <Unit>
-        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Filename Value="uconfigopentef.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="DComunicador"/>
+        <ComponentName Value="FConfigOpenTef"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uinterface.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FInterface"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ulogin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FLogin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadLoja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisaloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaLoja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadpdv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadPdv"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisapdv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaPdv"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadpinpad.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadPinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisapinpad.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaPinPad"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadadquirente.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadAdquirente"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadmultloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadMultloja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisamultiloja.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaMultiLoja"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucadmodulo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FCadModulo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upesquisamodulo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPesquisaModulo"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="umoduloconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FModuloConfig"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\com_lib\com.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DCom"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
       </Unit>
@@ -137,9 +275,26 @@
       <OtherUnitFiles Value="..\libs\func;..\com_lib"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+    </CodeGeneration>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf2Set"/>
+        <UseHeaptrc Value="True"/>
+        <TrashVariables Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>
@@ -148,7 +303,9 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dDEBUG"/>
+      <CustomOptions Value="-dDEBUG
+-dUSADLL
+-dOPEN_TEF"/>
     </Other>
   </CompilerOptions>
   <Debugging>

@@ -15,6 +15,8 @@ const
 var
     C_Debug: boolean = True;
     F_NivelLog: integer = 0;
+    F_Comunicacao: pchar;
+    F_Versao_Comunicacao: integer = 0;
 
 implementation
 

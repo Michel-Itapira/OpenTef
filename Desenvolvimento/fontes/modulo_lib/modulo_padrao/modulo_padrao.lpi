@@ -18,8 +18,8 @@
       <Macro1 Name="LCLWidgetType" Value="nogui"/>
     </MacroValues>
     <BuildModes>
-      <Item Name="Windows Debug" Default="True"/>
-      <Item Name="Release">
+      <Item Name="Linux64 Debug" Default="True"/>
+      <Item Name="Linux64 Release">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="nogui"/>
         </MacroValues>
@@ -27,7 +27,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068"/>
+            <Filename Value="..\..\..\binarios\opentef\linux64\modulo\0068.so" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -35,27 +35,32 @@
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <RelocatableUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <SmallerCode Value="True"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
-            <LinkSmart Value="True"/>
             <Options>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dTEF_LIB"/>
+            <CustomOptions Value="-dLINUX
+-dOPEN_TEF"/>
+            <OtherDefines Count="2">
+              <Define0 Value="LINUX"/>
+              <Define1 Value="MODULO_LIB"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="Linux">
+      <Item Name="Win64 Debug">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="nogui"/>
         </MacroValues>
@@ -63,78 +68,58 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\binarios\opentef\linux64\\modulo\0068.so" ApplyConventions="False"/>
+            <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
             <OtherUnitFiles Value="..\..\libs\func"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
           <CodeGeneration>
-            <RelocatableUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
             <TargetCPU Value="x86_64"/>
-            <TargetOS Value="linux"/>
+            <TargetOS Value="win64"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
-              <UseExternalDbgSyms Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
             </Debugging>
             <Options>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dTEF_LIB
--dLINUX"/>
-            <OtherDefines Count="2">
-              <Define0 Value="TEF_LIB"/>
-              <Define1 Value="LINUX"/>
-            </OtherDefines>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Win32">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\libs\func"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <RelocatableUnit Value="True"/>
-            <TargetOS Value="win32"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
-              <UseExternalDbgSyms Value="True"/>
-            </Debugging>
-            <Options>
-              <ExecutableType Value="Library"/>
-            </Options>
-          </Linking>
-          <Other>
-            <CustomOptions Value="-dTEF_LIB
+            <CustomOptions Value="-dDEBUG
 -dWIN
--dDEBUG"/>
+-dOPEN_TEF"/>
             <OtherDefines Count="1">
               <Define0 Value="TEF_LIB"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="Win64">
+      <Item Name="Win64 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068"/>
+            <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -144,16 +129,68 @@
           <CodeGeneration>
             <TargetCPU Value="x86_64"/>
             <TargetOS Value="win64"/>
+            <SmallerCode Value="True"/>
           </CodeGeneration>
           <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+            </Debugging>
             <Options>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dTEF_LIB
+            <CustomOptions Value="-dWIN
+-dOPEN_TEF"/>
+            <OtherDefines Count="1">
+              <Define0 Value="TEF_LIB"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Win32 Debug">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\binarios\opentef\win32\modulo\0068.dll" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+            </Debugging>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dDEBUG
 -dWIN
--dDEBUG"/>
+-dOPEN_TEF"/>
             <OtherDefines Count="1">
               <Define0 Value="TEF_LIB"/>
             </OtherDefines>
@@ -161,7 +198,7 @@
         </CompilerOptions>
       </Item>
       <SharedMatrixOptions Count="1">
-        <Item1 ID="592077647640" Modes="Linux,Windows Debug,Release" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+        <Item1 ID="592077647640" Modes="Win64 Release,Win64 Debug,Linux64 Release,Linux64 Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -220,25 +257,43 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\binarios\opentef\win64\modulo\0068"/>
+      <Filename Value="..\..\..\binarios\opentef\linux64\modulo\0068.so" ApplyConventions="False"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\..\libs\func"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+      <TargetCPU Value="x86_64"/>
+      <TargetOS Value="linux"/>
+    </CodeGeneration>
     <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+        <UseHeaptrc Value="True"/>
+        <TrashVariables Value="True"/>
+      </Debugging>
       <Options>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dTEF_LIB
--dWIN
--dDEBUG"/>
-      <OtherDefines Count="1">
-        <Define0 Value="TEF_LIB"/>
-      </OtherDefines>
+      <CustomOptions Value="-dDEBUG
+-dLINUX
+-dOPEN_TEF"/>
     </Other>
   </CompilerOptions>
   <Debugging>

@@ -1,5 +1,5 @@
 object FPesquisaAdquirente: TFPesquisaAdquirente
-  Left = 814
+  Left = 815
   Height = 590
   Top = 236
   Width = 566
@@ -7,7 +7,7 @@ object FPesquisaAdquirente: TFPesquisaAdquirente
   ClientHeight = 590
   ClientWidth = 566
   OnShow = FormShow
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object pnlBase: TPanel
     Left = 0
     Height = 590

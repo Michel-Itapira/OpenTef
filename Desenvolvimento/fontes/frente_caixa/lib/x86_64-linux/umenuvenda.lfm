@@ -1,13 +1,13 @@
 object F_MenuVenda: TF_MenuVenda
-  Left = 507
+  Left = 1759
   Height = 451
-  Top = 248
+  Top = 265
   Width = 485
   Caption = 'OpenTef'
   ClientHeight = 451
   ClientWidth = 485
   OnClose = FormClose
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object PMensagem: TPanel
     Left = 50
     Height = 50

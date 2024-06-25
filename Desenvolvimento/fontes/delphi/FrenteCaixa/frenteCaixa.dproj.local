@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2024/06/12 13:45:53.000.683,C:\Users\thiago\Documents\Embarcadero\Studio\Projects\Unit2.dfm=E:\Lazarus\OpenTef\publica\fontes\delphi\uprincipal.dfm</Transaction>
+    <Transaction>2024/06/12 13:58:44.000.239,C:\Users\thiago\Documents\Embarcadero\Studio\Projects\Project2.dproj=E:\Lazarus\OpenTef\publica\fontes\delphi\FrenteCaixa\frenteCaixa.dproj</Transaction>
+    <Transaction>2024/06/12 16:26:45.000.515,E:\Lazarus\OpenTef\publica\fontes\delphi\FrenteCaixa\Unit1.dfm=E:\Lazarus\OpenTef\publica\fontes\delphi\FrenteCaixa\umenu_venda.dfm</Transaction>
+    <Transaction>2024/06/12 16:49:18.000.122,E:\Lazarus\OpenTef\publica\fontes\delphi\FrenteCaixa\Unit1.dfm=E:\Lazarus\OpenTef\publica\fontes\delphi\FrenteCaixa\uimpressao.dfm</Transaction>
+  </Transactions>
+	<ActiveMobileDevice>
+		<NoProfile Android64="192.168.1.45:5555" Android="192.168.1.45:5555"/>
+	</ActiveMobileDevice>
+</BorlandProject>

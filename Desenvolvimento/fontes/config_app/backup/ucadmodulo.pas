@@ -122,7 +122,7 @@ begin
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-        finterface.Desconectar;
+        finterface.Desconecta;
         Exit;
     end;
     if MDModulo.Active = False then
@@ -142,7 +142,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;
@@ -260,7 +260,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            FInterface.Desconectar;
+            FInterface.Desconecta;
             Exit;
         end;
         if MDModulo.Active = False then
@@ -376,7 +376,7 @@ begin
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-            finterface.Desconectar;
+            finterface.Desconecta;
             Exit;
         end;
         if MDModulo.Active = False then
@@ -394,7 +394,7 @@ begin
         if mensagemerro(VL_Codigo, V_Erro) <> 0 then
         begin
             ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + V_Erro);
-            finterface.Desconectar;
+            finterface.Desconecta;
             exit;
         end;
         VL_Mensagem.Limpar;

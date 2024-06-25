@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2024/06/24 16:38:53.047.pas,C:\Users\thiago\Documents\RAD Studio\Projects\Unit1.pas=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\uprincipal.pas</Transaction>
+    <Transaction>2024/06/24 16:38:53.047.dfm,C:\Users\thiago\Documents\RAD Studio\Projects\Unit1.dfm=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\uprincipal.dfm</Transaction>
+    <Transaction>2024/06/24 16:39:19.312.dproj,C:\Users\thiago\Documents\RAD Studio\Projects\Project1.dproj=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\frenteCaixa.dproj</Transaction>
+    <Transaction>2024/06/24 16:56:31.758.pas,E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\Unit1.pas=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\umenu_venda.pas</Transaction>
+    <Transaction>2024/06/24 16:56:31.758.dfm,E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\Unit1.dfm=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\umenu_venda.dfm</Transaction>
+    <Transaction>2024/06/24 16:58:59.741.pas,E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\Unit1.pas=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\uimpressao.pas</Transaction>
+    <Transaction>2024/06/24 16:58:59.741.dfm,E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\Unit1.dfm=E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\fontes\delphi7\FrenteCaixa\uimpressao.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

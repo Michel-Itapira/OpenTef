@@ -45,9 +45,11 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dCLIENTE"/>
-            <OtherDefines Count="1">
+            <CustomOptions Value="-dCLIENTE
+-dCOM_LIB"/>
+            <OtherDefines Count="2">
               <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>

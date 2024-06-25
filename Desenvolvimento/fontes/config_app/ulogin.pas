@@ -14,14 +14,13 @@ type
 
     TFLogin = class(TForm)
         BConectar: TBitBtn;
-        BConectar1: TBitBtn;
+        BDesconectar: TBitBtn;
         CTipo: TComboBox;
         ESenha: TEdit;
         LSenha: TLabel;
         LTipo: TLabel;
-        procedure BConectar1Click(Sender: TObject);
+        procedure BDesconectarClick(Sender: TObject);
         procedure BConectarClick(Sender: TObject);
-        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     private
 
     public
@@ -36,6 +35,9 @@ var
     FLogin: TFLogin;
 
 implementation
+
+uses
+    uinterface;
 
 {$R *.lfm}
 
@@ -74,15 +76,10 @@ begin
     close;
 end;
 
-procedure TFLogin.BConectar1Click(Sender: TObject);
+procedure TFLogin.BDesconectarClick(Sender: TObject);
 begin
-  V_Conectar:=false;
+    V_Conectar:=false;
   close;
-end;
-
-procedure TFLogin.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-
 end;
 
 constructor TFLogin.Create(AOwner: TComponent; VP_PermissaoFormatada: string);

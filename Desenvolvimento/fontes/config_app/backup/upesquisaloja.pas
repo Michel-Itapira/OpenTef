@@ -32,6 +32,7 @@ type
         procedure BCarregarClick(Sender: TObject);
         procedure BPesquisarClick(Sender: TObject);
         procedure BSairClick(Sender: TObject);
+        procedure CKPessoaClick(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure MDPesquisaLojaFilterRecord(DataSet: TDataSet;
           var Accept: Boolean);
@@ -70,8 +71,21 @@ begin
     Close;
 end;
 
+procedure TFPesquisaLoja.CKPessoaClick(Sender: TObject);
+begin
+ if CKPessoa.Checked then
+    Edoc.EditMask:='999.999.999-99;0;_'
+ else
+    Edoc.EditMask:=:='99.999.999/9999-99;0;_';
+end;
+
 procedure TFPesquisaLoja.BCarregarClick(Sender: TObject);
 begin
+        IF MDPesquisaLoja.RecordCount=0 THEN
+    BEGIN
+       ShowMessage('Nenhum registro foi pesquisado');
+       EXIT;
+    end;
     F_Carregado := True;
     Close;
 end;

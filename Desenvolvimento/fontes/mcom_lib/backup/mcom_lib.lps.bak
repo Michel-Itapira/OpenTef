@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="12"/>
     <BuildModes Active="Win64">
-      <Item Name="Linux 64">
+      <Item Name="Linux64">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="nogui"/>
         </MacroValues>
@@ -12,7 +12,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib"/>
+            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -25,7 +25,6 @@
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
             <Checks>
               <IOChecks Value="True"/>
               <RangeChecks Value="True"/>
@@ -38,107 +37,7 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2Set"/>
-              <UseExternalDbgSyms Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <ExecutableType Value="Library"/>
-            </Options>
-          </Linking>
-          <Other>
-            <CustomOptions Value="-dMCOM"/>
-            <OtherDefines Count="1">
-              <Define0 Value="CLIENTE"/>
-            </OtherDefines>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Linux 32">
-        <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="nogui"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="..\..\binarios\mcom_lib\linux32\mcom_lib"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\libs\func"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <Parsing>
-            <SyntaxOptions>
-              <IncludeAssertionCode Value="True"/>
-            </SyntaxOptions>
-          </Parsing>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
-            <VerifyObjMethodCallValidity Value="True"/>
-            <TargetCPU Value="i386"/>
-            <TargetOS Value="linux"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf2Set"/>
-              <UseExternalDbgSyms Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <ExecutableType Value="Library"/>
-            </Options>
-          </Linking>
-          <Other>
-            <CustomOptions Value="-dMCOM"/>
-            <OtherDefines Count="1">
-              <Define0 Value="CLIENTE"/>
-            </OtherDefines>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Win32">
-        <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="nogui"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="..\..\binarios\mcom_lib\win32\mcom_lib"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\libs\func"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <Parsing>
-            <SyntaxOptions>
-              <IncludeAssertionCode Value="True"/>
-            </SyntaxOptions>
-          </Parsing>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
-            <VerifyObjMethodCallValidity Value="True"/>
-            <TargetCPU Value="i386"/>
-            <TargetOS Value="win32"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf2Set"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
@@ -146,17 +45,17 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dMCOM"/>
+            <CustomOptions Value="-dOPEN_TEF
+-dLINUX
+-dDEBUG"/>
             <OtherDefines Count="1">
               <Define0 Value="CLIENTE"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
-      <SessionEnabledMatrixOptions Count="3">
-        <Item1 Mode="Linux 64" Option="201678388336"/>
-        <Item2 Mode="Linux 32" Option="201678388336"/>
-        <Item3 Mode="Win32" Option="201678388336"/>
+      <SessionEnabledMatrixOptions Count="1">
+        <Item1 Mode="Linux64" Option="201678388336"/>
       </SessionEnabledMatrixOptions>
     </BuildModes>
     <Units>
@@ -165,8 +64,7 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
-        <TopLine Value="9"/>
-        <CursorPos X="37" Y="40"/>
+        <CursorPos X="8" Y="19"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -176,9 +74,9 @@
         <ComponentName Value="DMCom"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="616"/>
-        <CursorPos X="78" Y="653"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="244"/>
+        <CursorPos X="20" Y="70"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -189,9 +87,9 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="1506"/>
-        <CursorPos X="20" Y="1515"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="123"/>
+        <CursorPos Y="309"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -202,17 +100,16 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <TopLine Value="1442"/>
-        <CursorPos Y="1360"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1224"/>
+        <CursorPos X="133" Y="1244"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="8"/>
-        <CursorPos X="28" Y="17"/>
+        <CursorPos Y="10"/>
         <UsageCount Value="245"/>
         <Loaded Value="True"/>
       </Unit>
@@ -222,7 +119,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="28"/>
         <CursorPos X="7" Y="33"/>
-        <UsageCount Value="130"/>
+        <UsageCount Value="128"/>
       </Unit>
       <Unit>
         <Filename Value="..\frente_caixa\uprincipal.pas"/>
@@ -232,7 +129,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="191"/>
         <CursorPos X="30" Y="203"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="34"/>
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
@@ -242,19 +139,19 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="246"/>
         <CursorPos X="30" Y="281"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="36"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbasym.pas"/>
         <UnitName Value="LbAsym"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="6" Y="34"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="33"/>
       </Unit>
       <Unit>
         <Filename Value="..\com_lib\com.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="..\modulo_lib\modulo_padrao\modulo.pas"/>
@@ -264,34 +161,33 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="288"/>
         <CursorPos Y="250"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1173"/>
         <CursorPos X="13" Y="1204"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\sstrings.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1150"/>
         <CursorPos X="3" Y="1156"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\threadh.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="72" Y="12"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdGlobal.pas"/>
-        <EditorIndex Value="1"/>
         <TopLine Value="772"/>
-        <CursorPos X="3" Y="783"/>
-        <UsageCount Value="50"/>
+        <CursorPos Y="785"/>
+        <UsageCount Value="61"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
@@ -300,31 +196,31 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="245"/>
         <CursorPos X="24" Y="263"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2132"/>
         <CursorPos X="17" Y="2153"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="22"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbclass.pas"/>
         <UnitName Value="LbClass"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="197"/>
         <CursorPos X="39" Y="220"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="54"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbcipher.pas"/>
         <UnitName Value="LbCipher"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="98"/>
         <CursorPos X="3" Y="120"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="54"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -332,7 +228,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="77"/>
         <CursorPos X="4" Y="99"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="52"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -340,7 +236,15 @@
         <EditorIndex Value="6"/>
         <TopLine Value="148"/>
         <CursorPos X="10" Y="122"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="51"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\rtl-objpas\src\inc\strutils.pp"/>
+        <UnitName Value="StrUtils"/>
+        <EditorIndex Value="5"/>
+        <CursorPos X="14" Y="18"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -350,126 +254,118 @@
       <Define2 Value="DEBUG"/>
       <Define3 Value="WIN"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="27">
       <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="154" Column="30" TopLine="134"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="102" Column="135" TopLine="90"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Line="93" Column="27" TopLine="83"/>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="577" Column="28" TopLine="563"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="125" Column="124" TopLine="113"/>
+        <Caret Line="1392" Column="34" TopLine="1367"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="126" Column="104" TopLine="113"/>
+        <Caret Line="1886" Column="26" TopLine="1861"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="128" Column="90" TopLine="113"/>
+        <Caret Line="1910" Column="26" TopLine="1885"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="236" Column="40" TopLine="204"/>
+        <Caret Line="1935" Column="91" TopLine="1911"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1504" Column="80" TopLine="1489"/>
+        <Caret Line="1936" Column="71" TopLine="1912"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="5" Column="56"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom.pas"/>
-        <Caret Column="33"/>
+        <Caret Line="1938" Column="51" TopLine="1914"/>
       </Position>
       <Position>
         <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="234" Column="17" TopLine="218"/>
+        <Caret Line="1941" Column="93" TopLine="1917"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1942" Column="73" TopLine="1918"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1938" Column="47" TopLine="1920"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1924" Column="25" TopLine="1920"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="2072" Column="41" TopLine="2046"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="79" Column="20" TopLine="63"/>
+        <Caret Line="61" Column="17" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="441" Column="27" TopLine="431"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="295" Column="15" TopLine="275"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="234" Column="15" TopLine="210"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="412" Column="5" TopLine="408"/>
+        <Caret Line="61" Column="20" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="234" Column="17" TopLine="226"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <Caret Line="1518" Column="36" TopLine="1513"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="46" Column="18" TopLine="27"/>
+        <Caret Line="110" Column="23" TopLine="95"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="634" Column="41" TopLine="624"/>
+        <Caret Line="142" Column="10" TopLine="117"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="653" Column="78" TopLine="627"/>
+        <Caret Line="161" Column="15" TopLine="136"/>
       </Position>
       <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="41" Column="66" TopLine="9"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="165" Column="14" TopLine="141"/>
       </Position>
       <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="42" Column="81" TopLine="9"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="7" Column="128"/>
       </Position>
       <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="15" Column="50" TopLine="9"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="21" Column="22"/>
       </Position>
       <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="37" Column="88" TopLine="9"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="397" Column="25" TopLine="372"/>
       </Position>
       <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="47" TopLine="9"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="21" Column="22" TopLine="6"/>
       </Position>
       <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="40" Column="26" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="47" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="17" Column="8" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="47" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="35" Column="23" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="47" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="39" Column="136" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="47" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="mcom_lib.pas"/>
-        <Caret Line="37" Column="69" TopLine="9"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="397" Column="25" TopLine="372"/>
       </Position>
     </JumpHistory>
     <RunParams>

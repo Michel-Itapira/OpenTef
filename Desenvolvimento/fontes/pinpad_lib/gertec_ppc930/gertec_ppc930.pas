@@ -176,7 +176,13 @@ end;
 function TGertec_ppc930.CarregaLib(): integer;
 begin
     VF_PinpadExecption := False;
-    fPinPadLib := LoadLibrary(fCaminhoLib + 'gpinpad3.dll');
+
+    {$IFDEF LINUX}
+      fPinPadLib := LoadLibrary(fCaminhoLib + 'libgpinpad3.so');
+    {$ELSE}
+      fPinPadLib := LoadLibrary(fCaminhoLib + 'gpinpad3.dll');
+    {$ENDIF}
+
     if fPinPadLib <= 0 then
     begin
         Result := 50;

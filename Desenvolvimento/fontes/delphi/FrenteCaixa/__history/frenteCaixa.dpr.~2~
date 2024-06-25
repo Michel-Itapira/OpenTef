@@ -1,0 +1,20 @@
+program frenteCaixa;
+
+uses
+  {$R}
+  {$R}
+  Vcl.Forms {$R *.res},
+  uprincipal in 'uprincipal.pas' {FPrincipal};
+
+uses
+  Vcl.Forms
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFPrincipal, FPrincipal);
+  Application.CreateForm(TForm2, Form2);
+  Application.Run;
+end.

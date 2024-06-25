@@ -10,7 +10,7 @@ object FPesquisaMultiLoja: TFPesquisaMultiLoja
   ClientWidth = 502
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object pnlTopo: TPanel
     Left = 3
     Height = 192

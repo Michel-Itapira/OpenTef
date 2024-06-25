@@ -8,10 +8,10 @@
       <Unit>
         <Filename Value="config_app.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <CursorPos X="30" Y="25"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos Y="38"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uprincipal.pas"/>
@@ -38,11 +38,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisaTags"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="112"/>
-        <CursorPos X="14" Y="122"/>
+        <CursorPos Y="122"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisaadquirentes.pas"/>
@@ -51,20 +50,17 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uPesquisaadquirentes"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="71"/>
-        <CursorPos X="39" Y="80"/>
+        <CursorPos X="13" Y="80"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="def.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
-        <CursorPos X="31" Y="15"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="15"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisamoduloconf.pas"/>
@@ -84,11 +80,9 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="3"/>
-        <CursorPos X="56" Y="54"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="9"/>
         <UsageCount Value="201"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uconfigopentef.pas"/>
@@ -108,8 +102,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="530"/>
-        <CursorPos X="119" Y="565"/>
+        <TopLine Value="279"/>
+        <CursorPos Y="294"/>
+        <ComponentState Value="2"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -120,9 +115,9 @@
         <ComponentName Value="FLogin"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="53"/>
-        <CursorPos X="5" Y="90"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="69"/>
+        <CursorPos X="25" Y="82"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -155,10 +150,9 @@
         <ComponentName Value="FCadPdv"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="311"/>
-        <CursorPos X="25" Y="334"/>
-        <UsageCount Value="192"/>
+        <EditorIndex Value="5"/>
+        <CursorPos X="20" Y="181"/>
+        <UsageCount Value="199"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -171,7 +165,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="79"/>
         <CursorPos X="21" Y="81"/>
-        <UsageCount Value="184"/>
+        <UsageCount Value="191"/>
       </Unit>
       <Unit>
         <Filename Value="ucadpinpad.pas"/>
@@ -179,12 +173,10 @@
         <ComponentName Value="FCadPinPad"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="810"/>
-        <CursorPos X="86" Y="851"/>
-        <UsageCount Value="176"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <CursorPos X="33" Y="851"/>
+        <UsageCount Value="183"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisapinpad.pas"/>
@@ -192,11 +184,10 @@
         <ComponentName Value="FPesquisaPinPad"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="74"/>
         <CursorPos X="8" Y="76"/>
-        <UsageCount Value="174"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="181"/>
       </Unit>
       <Unit>
         <Filename Value="ucadadquirente.pas"/>
@@ -204,12 +195,10 @@
         <ComponentName Value="FCadAdquirente"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="75"/>
         <CursorPos X="26" Y="96"/>
-        <UsageCount Value="170"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="177"/>
       </Unit>
       <Unit>
         <Filename Value="ucadmultloja.pas"/>
@@ -220,7 +209,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1760"/>
         <CursorPos X="5" Y="1764"/>
-        <UsageCount Value="166"/>
+        <UsageCount Value="173"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisamultiloja.pas"/>
@@ -231,7 +220,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="58"/>
         <CursorPos X="29" Y="60"/>
-        <UsageCount Value="163"/>
+        <UsageCount Value="170"/>
       </Unit>
       <Unit>
         <Filename Value="ucadmodulo.pas"/>
@@ -242,7 +231,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="347"/>
         <CursorPos X="5" Y="351"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="142"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisamodulo.pas"/>
@@ -251,7 +240,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="49" Y="8"/>
-        <UsageCount Value="132"/>
+        <UsageCount Value="139"/>
       </Unit>
       <Unit>
         <Filename Value="umoduloconfig.pas"/>
@@ -259,29 +248,29 @@
         <ComponentName Value="FModuloConfig"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1215"/>
-        <CursorPos X="9" Y="1222"/>
-        <UsageCount Value="128"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <CursorPos Y="1222"/>
+        <UsageCount Value="135"/>
       </Unit>
       <Unit>
         <Filename Value="..\com_lib\com.pas"/>
         <ComponentName Value="DCom"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="181"/>
-        <CursorPos Y="201"/>
-        <UsageCount Value="95"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="79"/>
+        <CursorPos Y="103"/>
+        <UsageCount Value="96"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\lclmessageglue.pas"/>
         <UnitName Value="LCLMessageGlue"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="423"/>
-        <CursorPos Y="119"/>
+        <TopLine Value="103"/>
+        <CursorPos Y="118"/>
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
@@ -303,10 +292,10 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="202"/>
-        <CursorPos X="8" Y="204"/>
-        <UsageCount Value="80"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="892"/>
+        <CursorPos Y="907"/>
+        <UsageCount Value="83"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -387,9 +376,9 @@
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\application.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="1142"/>
-        <CursorPos X="22" Y="1060"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="401"/>
+        <CursorPos X="28" Y="453"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\systemh.inc"/>
@@ -557,9 +546,9 @@
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="2593"/>
-        <CursorPos Y="2610"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="2210"/>
+        <CursorPos Y="2225"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\win32\win32wsbuttons.pp"/>
@@ -636,10 +625,11 @@
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\menuitem.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="61"/>
-        <CursorPos X="34" Y="68"/>
-        <UsageCount Value="2"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="70"/>
+        <CursorPos Y="87"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="..\opentef_ser\cadastro.pas"/>
@@ -673,9 +663,9 @@
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="752"/>
-        <CursorPos X="17" Y="771"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="56"/>
+        <CursorPos X="3" Y="72"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\components\lazreport\source\lr_dbset.pas"/>
@@ -684,127 +674,148 @@
         <CursorPos X="34" Y="9"/>
         <UsageCount Value="6"/>
       </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Protocols\IdSSLOpenSSLHeaders.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="26953"/>
+        <CursorPos Y="26966"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdBuffer.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="686"/>
+        <CursorPos X="123" Y="697"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\Core\IdReply.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="226"/>
+        <CursorPos Y="242"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="28">
       <Position>
-        <Filename Value="ucadpinpad.pas"/>
-        <Caret Line="401" Column="3" TopLine="398"/>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="274" TopLine="253"/>
       </Position>
       <Position>
         <Filename Value="uinterface.pas"/>
-        <Caret Line="85" Column="28" TopLine="65"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpinpad.pas"/>
-        <Caret Line="76" Column="31" TopLine="56"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="1384" Column="77" TopLine="1375"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="335" Column="17" TopLine="323"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="222" Column="17" TopLine="204"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1301" Column="5" TopLine="1288"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="222" Column="26" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="335" Column="17" TopLine="323"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="324" Column="5" TopLine="316"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="222" Column="22" TopLine="218"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="321" Column="62" TopLine="311"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="222" Column="15" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1330" Column="42" TopLine="1310"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="298" Column="50" TopLine="272"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="332" Column="59" TopLine="311"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="222" Column="17" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="301" Column="21" TopLine="269"/>
-      </Position>
-      <Position>
-        <Filename Value="ucadpdv.pas"/>
-        <Caret Line="334" Column="25" TopLine="311"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="222" Column="21" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1335" Column="90" TopLine="1308"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1353" Column="73" TopLine="1326"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1342" Column="91" TopLine="1313"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1333" Column="68" TopLine="1307"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1330" Column="51" TopLine="1307"/>
-      </Position>
-      <Position>
-        <Filename Value="config_app.lpr"/>
-        <Caret Line="25" Column="30"/>
+        <Caret Line="275" TopLine="253"/>
       </Position>
       <Position>
         <Filename Value="uinterface.pas"/>
-        <Caret Line="101" Column="5"/>
+        <Caret Line="283" TopLine="268"/>
       </Position>
       <Position>
         <Filename Value="uinterface.pas"/>
-        <Caret Line="544" Column="30" TopLine="540"/>
+        <Caret Line="284" TopLine="268"/>
       </Position>
       <Position>
         <Filename Value="uinterface.pas"/>
-        <Caret Line="74" Column="25" TopLine="53"/>
+        <Caret Line="258" TopLine="243"/>
       </Position>
       <Position>
         <Filename Value="uinterface.pas"/>
-        <Caret Line="225" Column="75" TopLine="197"/>
+        <Caret Line="286" TopLine="271"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="287" TopLine="271"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="234" TopLine="218"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="288" TopLine="274"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="533" TopLine="517"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="540" TopLine="517"/>
+      </Position>
+      <Position>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\menuitem.inc"/>
+        <Caret Line="85" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="E:\Lazarus_IDE\lazarus\lcl\include\menuitem.inc"/>
+        <Caret Line="87" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="122" Column="42" TopLine="116"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="121" TopLine="115"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="122" TopLine="115"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="123" Column="4" TopLine="103"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="144" Column="31" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="123" Column="4" TopLine="103"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="907" TopLine="896"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="121" TopLine="103"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="907" TopLine="892"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="121" TopLine="112"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="122" TopLine="112"/>
+      </Position>
+      <Position>
+        <Filename Value="uinterface.pas"/>
+        <Caret Line="294" TopLine="279"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="122" TopLine="112"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="124" TopLine="112"/>
+      </Position>
+      <Position>
+        <Filename Value="..\libs\func\comunicador.pas"/>
+        <Caret Line="907" TopLine="892"/>
+      </Position>
+      <Position>
+        <Filename Value="..\com_lib\com.pas"/>
+        <Caret Line="121" TopLine="100"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -818,8 +829,15 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="uinterface.pas"/>
-        <Line Value="535"/>
+        <Source Value="..\libs\func\comunicador.pas"/>
+        <Line Value="1550"/>
+      </Item>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\com_lib\com.pas"/>
+        <Line Value="103"/>
       </Item>
     </BreakPoints>
     <Watches>

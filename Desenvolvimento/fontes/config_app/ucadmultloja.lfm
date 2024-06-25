@@ -8,10 +8,11 @@ object FCadMultloja: TFCadMultloja
   Caption = 'Cadastro de Mult-Lojas'
   ClientHeight = 552
   ClientWidth = 1184
+  FormStyle = fsMDIChild
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
@@ -570,6 +571,7 @@ object FCadMultloja: TFCadMultloja
       Top = 28
       Width = 177
       Color = clMenuBar
+      EnableSets = False
       MaxLength = 18
       ReadOnly = True
       TabOrder = 1
@@ -652,7 +654,7 @@ object FCadMultloja: TFCadMultloja
       Left = 67
       Height = 19
       Top = 113
-      Width = 215
+      Width = 213
       Caption = 'Habilitar MultiLoja para o Open-Tef'
       Font.Style = [fsBold]
       ParentFont = False
@@ -679,10 +681,10 @@ object FCadMultloja: TFCadMultloja
     Height = 308
     Top = 239
     Width = 1174
-    ActivePage = TabGuarda
+    ActivePage = TabMultiLojaModulo
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 2
     object TabMultiLojaModulo: TTabSheet
       Caption = 'Módulo da MultiLoja'
@@ -703,7 +705,7 @@ object FCadMultloja: TFCadMultloja
           Left = 160
           Height = 19
           Top = 44
-          Width = 184
+          Width = 182
           Caption = 'Habilitar Configuração da Loja'
           Font.Style = [fsBold]
           ParentFont = False
@@ -903,11 +905,11 @@ object FCadMultloja: TFCadMultloja
           Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
           Top = 37
           Width = 272
-          OnChange = TabMultiLojaModuloEFiltroChange
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
           Text = 'TabMultiLojaModuloEFiltro'
+          OnChange = TabMultiLojaModuloEFiltroChange
         end
         object TabMultiLojaModuloGrid: TRxDBGrid
           Left = 2
@@ -1047,8 +1049,8 @@ object FCadMultloja: TFCadMultloja
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabMultiLojaFuncaoETipoFiltroChange
         TabOrder = 0
+        OnChange = TabMultiLojaFuncaoETipoFiltroChange
       end
       object TabMultiLojaFuncaoLFiltro: TLabel
         Left = 237
@@ -1066,26 +1068,26 @@ object FCadMultloja: TFCadMultloja
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabMultiLojaFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO'
+        OnChange = TabMultiLojaFuncaoEFiltroChange
       end
       object TabMultiLojaFuncaoCKSelecionada: TCheckBox
         Left = 510
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabMultiLojaFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabMultiLojaFuncaoCKSelecionadaChange
       end
       object TabMultiLojaFuncaoGrid: TRxDBGrid
         Left = 4
         Height = 200
         Top = 64
-        Width = 844
+        Width = 756
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True
@@ -1262,8 +1264,8 @@ object FCadMultloja: TFCadMultloja
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabModuloFuncaoETipoFiltroChange
         TabOrder = 0
+        OnChange = TabModuloFuncaoETipoFiltroChange
       end
       object TabModuloFuncaoLFiltro: TLabel
         Left = 237
@@ -1281,26 +1283,26 @@ object FCadMultloja: TFCadMultloja
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabModuloFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO1'
+        OnChange = TabModuloFuncaoEFiltroChange
       end
       object TabModuloFuncaoCKSelecionada: TCheckBox
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabModuloFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabModuloFuncaoCKSelecionadaChange
       end
       object TabModuloFuncaoGrid: TRxDBGrid
         Left = 4
         Height = 200
         Top = 64
-        Width = 844
+        Width = 772
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True

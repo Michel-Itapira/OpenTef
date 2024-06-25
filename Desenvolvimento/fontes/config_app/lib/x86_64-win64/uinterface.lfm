@@ -1,28 +1,28 @@
 object FInterface: TFInterface
-  Left = 673
-  Height = 520
-  Top = 312
-  Width = 785
+  Left = -8
+  Height = 1027
+  Top = -8
+  Width = 993
   Caption = 'Configurador Open-Tef'
-  ClientHeight = 500
-  ClientWidth = 785
+  ClientHeight = 1024
+  ClientWidth = 993
   FormStyle = fsMDIForm
   Menu = MMenu
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
   WindowState = wsMaximized
   object PStatus: TPanel
     Left = 0
     Height = 26
-    Top = 474
-    Width = 785
+    Top = 998
+    Width = 993
     Align = alBottom
     BevelInner = bvLowered
     ClientHeight = 26
-    ClientWidth = 785
+    ClientWidth = 993
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
@@ -30,7 +30,7 @@ object FInterface: TFInterface
       Left = 2
       Height = 19
       Top = 5
-      Width = 647
+      Width = 773
       Align = alLeft
       Alignment = taRightJustify
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -39,10 +39,10 @@ object FInterface: TFInterface
       ParentColor = False
     end
     object EStatus: TLabel
-      Left = 649
+      Left = 904
       Height = 19
       Top = 5
-      Width = 134
+      Width = 87
       Align = alClient
       Alignment = taCenter
       BorderSpacing.Top = 3
@@ -52,6 +52,49 @@ object FInterface: TFInterface
       ParentColor = False
       ParentFont = False
     end
+    object LUsuario: TLabel
+      Left = 777
+      Height = 19
+      Top = 5
+      Width = 127
+      Align = alLeft
+      BorderSpacing.Left = 2
+      BorderSpacing.Top = 3
+      Caption = 'Usuário: Administrador'
+      ParentColor = False
+    end
+  end
+  object Memo1: TMemo
+    Left = 185
+    Height = 90
+    Top = 176
+    Width = 150
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 1
+    Visible = False
+  end
+  object ToggleBox1: TToggleBox
+    Left = 185
+    Height = 25
+    Top = 288
+    Width = 75
+    Caption = '50'
+    TabOrder = 2
+    Visible = False
+    OnChange = ToggleBox1Change
+  end
+  object ToggleBox2: TToggleBox
+    Left = 264
+    Height = 25
+    Top = 288
+    Width = 75
+    Caption = 'PDV'
+    TabOrder = 3
+    Visible = False
+    OnChange = ToggleBox1Change
+    OnClick = ToggleBox2Click
   end
   object MMenu: TMainMenu
     Images = fprincipal.ListaImg

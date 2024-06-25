@@ -10,15 +10,20 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, DateTimeCtrls, uprincipal, umenuvenda, def, uimpressao, rxnew;
+  Forms,
+  DateTimeCtrls,
+  uprincipal,
+  umenuvenda,
+  def,
+  uimpressao,
+  rxnew;
 
-{$R *.res}
+  {$R *.res}
 
 begin
-  RequireDerivedFormResource:=True;
+  RequireDerivedFormResource := True;
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TF_Principal, F_Principal);
   Application.Run;
 end.
-

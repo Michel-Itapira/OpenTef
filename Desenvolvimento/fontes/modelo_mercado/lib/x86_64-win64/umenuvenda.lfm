@@ -6,6 +6,7 @@ object FMenuVenda: TFMenuVenda
   Caption = 'OpenTef'
   ClientHeight = 451
   ClientWidth = 485
+  Position = poMainFormCenter
   LCLVersion = '2.2.4.0'
   object PMensagem: TPanel
     Left = 50
