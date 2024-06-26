@@ -48,6 +48,7 @@ type
     VF_Host: string;
     VF_ArquivoLog: string;
 
+    VF_Aplicacao: string;
     VF_AplicacaoTela: string;
     VF_Estabelecimento: string;
     VF_Loja: string;
@@ -61,7 +62,7 @@ type
       var VO_DadosRecebidos: TTagVBI): TVBIRetorno;
   public
     constructor Create(VP_ArquivoLog: string; VP_Host: string;
-      VP_Porta: integer; VP_AplicacaoTela, VP_Estabelecimento, VP_Loja,
+      VP_Porta: integer; VP_Aplicacao: string; VP_AplicacaoTela, VP_Estabelecimento, VP_Loja,
       VP_Terminal: string);
     destructor Destroy; override;
 
@@ -72,7 +73,6 @@ type
 procedure limparVBIRetorno(var VO_Retorno: TVBIRetorno);
 
 const
-
   C_Comunicacao_Terminacao: string =
     char($0D) + char($0A) + char($09) + char($09) + char($0D) + char($0A) +
     char($09) + char($09) + char($09) + char($0D) + char($0A) + char($09) +
@@ -306,8 +306,8 @@ begin
     VL_Mensagem := Copy(VL_Mensagem, VL_Posicao + 2, length(VL_Mensagem) - 3);
 
     VL_Dados := formatarDadosMensagemLimite(VL_Mensagem);
-    VL_Mensagem := Copy(VL_Mensagem, length(VL_Dados) + 2,
-      length(VL_Mensagem) - length(VL_Dados) - 1);
+    VL_Mensagem := Copy(VL_Mensagem, length(VL_Dados) + 2, length(VL_Mensagem) -
+      length(VL_Dados) - 1);
 
     VL_Dados := StringReplace(VL_Dados, '""', '"', [rfReplaceAll]);
     self.addTag(VL_Campo, VL_Dados);
@@ -315,7 +315,7 @@ begin
 end;
 
 constructor TVBIIntergrador.Create(VP_ArquivoLog: string; VP_Host: string;
-  VP_Porta: integer; VP_AplicacaoTela, VP_Estabelecimento, VP_Loja, VP_Terminal: string);
+  VP_Porta: integer; VP_Aplicacao, VP_AplicacaoTela, VP_Estabelecimento, VP_Loja, VP_Terminal: string);
 begin
   VF_IdTCPCliente := nil;
 
@@ -327,6 +327,7 @@ begin
   VF_Porta := VP_Porta;
   VF_ArquivoLog := VP_ArquivoLog;
 
+  VF_Aplicacao := VP_Aplicacao;
   VF_AplicacaoTela := VP_AplicacaoTela;
   VF_Estabelecimento := VP_Estabelecimento;
   VF_Loja := VP_Loja;
@@ -336,7 +337,6 @@ begin
 
   VF_IdTCPCliente.Host := VP_Host;
   VF_IdTCPCliente.Port := VP_Porta;
-
 
   inherited Create;
 end;
@@ -412,8 +412,8 @@ begin
 
   if VP_DadosEnviados.automacaoColeta then
   begin
-    VP_DadosEnviados.addTag('automacao_coleta_sequencial',
-      IntToStr(VF_SequenciaAutomacaoColeta));
+    VP_DadosEnviados.addTag('automacao_coleta_sequencial', IntToStr(
+      VF_SequenciaAutomacaoColeta));
     VP_DadosEnviados.addTag('automacao_coleta_timeout', IntToStr(C_TempoAgurde));
   end
   else
@@ -489,6 +489,7 @@ begin
   begin
     Result.descricao := VO_DadosRecebidos.getTag('mensagem');
     Result.erro := 1;
+    Exit;
   end;
 
 end;
@@ -509,7 +510,7 @@ begin
     VL_DadosEnviados.addTag('versao', VL_Versao);
     VL_DadosEnviados.addTag('retorno', '1');
     VL_DadosEnviados.addTag('servico', 'iniciar');
-    VL_DadosEnviados.addTag('aplicacao', 'V$PagueClient');
+    VL_DadosEnviados.addTag('aplicacao', VF_Aplicacao);
     VL_DadosEnviados.addTag('aplicacao_tela', VF_AplicacaoTela);
     VL_DadosEnviados.addTag('estabelecimento', VF_Estabelecimento);
     VL_DadosEnviados.addTag('loja', VF_Loja);
@@ -530,6 +531,8 @@ end;
 function TVBIIntergrador.venderCartaoCredito: TVBIRetorno;
 begin
   limparVBIRetorno(Result);
+
+  // consultar dados da venda valor,parcela
 end;
 
 end.

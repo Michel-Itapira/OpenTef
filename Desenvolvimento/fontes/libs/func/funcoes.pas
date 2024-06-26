@@ -1,6 +1,6 @@
 unit funcoes;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}{$H+}{$RANGECHECKS OFF}
 
 interface
 
@@ -2694,3 +2694,4 @@ initialization
 finalization
   DoneCriticalSection(VF_CriticoLog);
 end.
+

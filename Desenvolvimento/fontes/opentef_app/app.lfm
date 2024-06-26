@@ -7,6 +7,7 @@ object FApp: TFApp
   ClientHeight = 618
   ClientWidth = 1248
   OnClose = FormClose
+  LCLVersion = '3.4.0.0'
   object BIniciar: TButton
     Left = 8
     Height = 25
@@ -216,5 +217,14 @@ object FApp: TFApp
     Caption = 'Codificacao'
     TabOrder = 20
     OnClick = Button12Click
+  end
+  object Button13: TButton
+    Left = 717
+    Height = 25
+    Top = 418
+    Width = 75
+    Caption = 'crc16'
+    TabOrder = 21
+    OnClick = Button13Click
   end
 end

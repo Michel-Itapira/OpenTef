@@ -1,14 +1,14 @@
 unit app;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+} {$RANGECHECKS OFF}
 
 interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, opentefnucleo, ubarcodes, funcoes,
+  ExtCtrls, opentefnucleo, ubarcodes, funcoes,fcrc16,
   ZConnection, ZDataset,
-  rxmemds, IdContext, cadastro, LbClass, md5, base64, FMTBcd, DB, comunicador;
+  rxmemds, IdContext, cadastro, LbClass, md5, base64, FMTBcd, DB, comunicador,bancodados;
 
 type
 
@@ -24,6 +24,8 @@ type
     Button1: TButton;
     Button10: TButton;
     Button11: TButton;
+    Button12: TButton;
+    Button13: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -44,6 +46,8 @@ type
     procedure BBinClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
+    procedure Button13Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -196,6 +200,43 @@ begin
   Finalizar(PModulo);
 
   UnloadLibrary(lib);
+end;
+
+procedure TFApp.Button12Click(Sender: TObject);
+var
+  VL_BancoDados: TDBancoDados;
+begin
+  MMenu.Lines.Clear;
+
+  VL_BancoDados := TDBancoDados.Create(nil);
+
+  VL_BancoDados.ConsultaA.Close;
+  VL_BancoDados.ConsultaA.SQL.Text:='SELECT DADOS FROM TAG WHERE TAG_TIPO = ''MENU_PDV'' ';
+  VL_BancoDados.ConsultaA.Open;
+
+  VL_BancoDados.ConsultaA.First;
+  while not VL_BancoDados.ConsultaA.EOF do
+  begin
+    MMenu.Lines.Add(VL_BancoDados.ConsultaA.FieldByName('DADOS').AsString);
+    VL_BancoDados.ConsultaA.Next;
+  end;
+
+  VL_BancoDados.Free;
+end;
+
+procedure TFApp.Button13Click(Sender: TObject);
+var
+s: TLBytes;
+begin
+   s := nil;
+  setlength(s,3);
+  s[0]:=65;
+    s[1]:=65;
+      s[2]:=65;
+ mmenu.lines.add(inttostr(crc16(s,length(s))));
+
+
+
 end;
 
 procedure TFApp.Button1Click(Sender: TObject);

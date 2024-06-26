@@ -144,8 +144,8 @@ type
     procedure BLogGravacaoClick(Sender: TObject);
     procedure BLoginClick(Sender: TObject);
     procedure BDesconectarClick(Sender: TObject);
-  private
     procedure FormCreate(Sender: TObject);
+  private
     procedure MontarMenu(VP_Mensagem: Pointer);
   public
     procedure CliqueDoBotao(VP_Botao: TObject);
@@ -418,7 +418,7 @@ var
     end;
 
 
-    VL_ImagemDados   := UTF8Decode(Base64ToStr(Dados));
+    VL_ImagemDados   := Base64ToStr(Dados);
     VL_ImagemMemoria := TStringStream.Create(VL_ImagemDados);
 
     if Length(VL_ImagemDados)> 5 then // verifica o tipo da imagem
@@ -1128,12 +1128,12 @@ end;
 
 function StrToBase64(VP_Str:string):string;
 begin
-  Result := StringReplace(DecodeString(VP_Str), #$D#$A, '',[RfReplaceAll]);
+  Result := EncodeString(VP_Str);
 end;
 
 function Base64ToStr(VP_Bse64:string):string;
 begin
-  Result := EncodeString(VP_Bse64);
+  Result := StringReplace(DecodeString(VP_Bse64), #$D#$A, '',[RfReplaceAll]);
 end;
 
 end.

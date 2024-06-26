@@ -7,7 +7,7 @@ object F_MenuVenda: TF_MenuVenda
   ClientHeight = 451
   ClientWidth = 485
   OnClose = FormClose
-  LCLVersion = '2.2.4.0'
+  Position = poDesktopCenter
   object PMensagem: TPanel
     Left = 50
     Height = 50

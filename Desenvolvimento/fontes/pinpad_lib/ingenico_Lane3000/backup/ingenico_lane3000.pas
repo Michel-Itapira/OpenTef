@@ -9,7 +9,7 @@ uses
 
 type
 
-    { TGertec_ppc930 }
+    { TIngenico_Lane3000 }
 
     TUnit8 = array of uint8;
 
@@ -165,15 +165,15 @@ begin
 end;
 
 
-{ TGertec_ppc930 }
+{ TIngenico_Lane3000 }
 
-constructor TGertec_ppc930.Create;
+constructor TIngenico_Lane3000.Create;
 begin
     fPinPad := nil;
     inherited Create;
 end;
 
-function TGertec_ppc930.CarregaLib(): integer;
+function TIngenico_Lane3000.CarregaLib(): integer;
 begin
     VF_PinpadExecption := False;
     fPinPadLib := LoadLibrary(fCaminhoLib + 'gpinpad3.dll');
@@ -261,7 +261,7 @@ begin
     Result := 0;
 end;
 
-function TGertec_ppc930.DescarregaLib: integer;
+function TIngenico_Lane3000.DescarregaLib: integer;
 begin
     Result := 0;
     if fPinPad = nil then
@@ -272,14 +272,14 @@ begin
     fPinPad := nil;
 end;
 
-procedure TGertec_ppc930.SetConfig(VP_PinPad: TPinPadModelo; VP_CaminhoLib: ansistring; VP_Porta: ansistring);
+procedure TIngenico_Lane3000.SetConfig(VP_PinPad: TPinPadModelo; VP_CaminhoLib: ansistring; VP_Porta: ansistring);
 begin
     fPorta := VP_Porta;
     fCaminhoLib := VP_CaminhoLib;
     fModelo := VP_PinPad;
 end;
 
-function TGertec_ppc930.PinPadConecta(VO_Mensagem: TMensagem): integer;
+function TIngenico_Lane3000.PinPadConecta(VO_Mensagem: TMensagem): integer;
 begin
     Result := 1;
     VF_PinpadExecption := False;
@@ -305,20 +305,20 @@ begin
     Result := 0;
 end;
 
-function TGertec_ppc930.PinPadDesconectar(VL_Mensagem: string): integer;
+function TIngenico_Lane3000.PinPadDesconectar(VL_Mensagem: string): integer;
 begin
     abecs_cmd_clo(fPinPad, PChar(VL_Mensagem));
     abecs_comm_close(@fPinPad);
     Result := 0;
 end;
 
-function TGertec_ppc930.PinPadMensagem(VP_Mensagem: string): integer;
+function TIngenico_Lane3000.PinPadMensagem(VP_Mensagem: string): integer;
 begin
     abecs_cmd_dsp(fPinPad, PChar(VP_Mensagem));
     Result := 0;
 end;
 
-function TGertec_ppc930.PinPadImagem(VP_Imagem: string): integer;
+function TIngenico_Lane3000.PinPadImagem(VP_Imagem: string): integer;
 var
     v_crc16: uint16;
     d_byte: TLBytes;
@@ -338,7 +338,7 @@ begin
         d_byte[I] := Ord(DADOS[I + 1]);
     end;
 
-    v_crc16 := crc16(d_byte, Length(d_byte));
+    v_crc16 := crc_16(PByte(d_byte), Length(d_byte));
     Result := abecs_cmd_mli(fPinPad, 'OPENTEFI', Length(d_byte), v_crc16, 1);
 
     if Result <> 0 then
@@ -382,7 +382,7 @@ begin
 
 end;
 
-function TGertec_ppc930.PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer; var VO_Mensagem: TMensagem): integer;
+function TIngenico_Lane3000.PinPadLerTarja(var VO_Tarja1, VO_Tarja2, VO_Tarja3: string; VP_TempoEspera: integer; var VO_Mensagem: TMensagem): integer;
 var
     VL_PanMask: TAbecsSpePanMask;
     VL_Timeout: PInteger;
@@ -463,7 +463,7 @@ begin
 
 end;
 
-function TGertec_ppc930.PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
+function TIngenico_Lane3000.PinPadLerSenha(var VO_Senha: string; VP_KW_Index: integer; VP_KW, VP_Pan: string; VP_DigMin, VP_DigMax: integer;
     VP_Mensagem: string; var VO_Mensagem: TMensagem; VP_TempoEspera: integer): integer;
 var
     VL_cmdData: TAbecsCmdGpn_S;

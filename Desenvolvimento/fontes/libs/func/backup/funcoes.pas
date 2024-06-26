@@ -42,13 +42,13 @@ type
   TLBytes = array of byte;
 
   TTag = record
-    TagQt: ansistring;
+    TagQt: String;
     TagTamanho: longint;
-    Tag: ansistring;
+    Tag: String;
 
-    DadosQt: ansistring;
+    DadosQt: String;
     DadosTamanho: longint;
-    Dados: ansistring;
+    Dados: String;
   end;
 
   TCompatibilidade_Versao = (CvAtual, CvDesatualizado, CvAtualizar,
@@ -65,26 +65,26 @@ type
   private
     fTags: array of TTag;
   public
-    function CarregaTags(VP_Dados: ansistring): integer;
-    function TagToStr(var VO_Dados: ansistring): integer;
-    function AddComando(VP_Tag, VP_Dados: ansistring): integer;
-    function GetComando(var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
-    function GetComandoInt(var VO_Tag: integer; var VO_Dados: ansistring): integer;
-    function GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer;
-    function GetTag(VP_Posicao: integer; var VO_Tag: ansistring;
-      var VO_Dados: ansistring): integer;
+    function CarregaTags(VP_Dados: String): integer;
+    function TagToStr(var VO_Dados: String): integer;
+    function AddComando(VP_Tag, VP_Dados: String): integer;
+    function GetComando(var VO_Tag: String; var VO_Dados: String): integer;
+    function GetComandoInt(var VO_Tag: integer; var VO_Dados: String): integer;
+    function GetTag(VP_Tag: String; var VO_Dados: String): integer;
+    function GetTag(VP_Posicao: integer; var VO_Tag: String;
+      var VO_Dados: String): integer;
     function GetTag(VP_Posicao: integer; var VO_Tag: TTag): integer;
-    function GetTag(VP_Tag: ansistring; var VO_Dados: int64): integer;
-    function GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: ansistring;
-      var VO_Dados: ansistring): integer;
-    function GetTagAsAstring(VP_Tag: ansistring): ansistring;
-    function Comando(): ansistring;
-    function TagsAsString: ansistring;
+    function GetTag(VP_Tag: String; var VO_Dados: int64): integer;
+    function GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: String;
+      var VO_Dados: String): integer;
+    function GetTagAsAstring(VP_Tag: String): String;
+    function Comando(): String;
+    function TagsAsString: String;
     function TagCount(): integer;
-    function ComandoDados(): ansistring;
-    function GetTagAsInteger(VP_Tag: ansistring): integer;
-    function AddTag(VP_Tag, VP_Dados: ansistring): integer;
-    function AddTag(VP_Tag: ansistring; VP_Dados: integer): integer;
+    function ComandoDados(): String;
+    function GetTagAsInteger(VP_Tag: String): integer;
+    function AddTag(VP_Tag, VP_Dados: String): integer;
+    function AddTag(VP_Tag: String; VP_Dados: integer): integer;
     function AddTag(VP_Posicao: integer; VP_Tag, VP_Dados: string): integer;
     procedure Limpar;
     constructor Create;
@@ -107,7 +107,7 @@ type
 
   TPinPadModelo = (pNDF, pGERTEC_PPC930, pINGENICO_LANE3000);
   TRespostaPinPad = procedure(VP_Processo_ID: integer; VP_Mensagem: TMensagem);
-  TPinPadErro = procedure(errCode: int16; msg: pansichar);
+  TPinPadErro = procedure(errCode: int16; msg: PChar);
 
 
   TConexaoTipo = (cnCaixa, cnServico, cnNaoDefinido);
@@ -126,22 +126,22 @@ type
   // pmA permissao de administrador pode gerenciar as transacao e fazer cadastros
   // pmU permissao de usuario consulta e visualizacao das transacoes
 
-  TRetornoModulo = procedure(VP_Transmissao_ID: pansichar;
-    VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: pansichar;
+  TRetornoModulo = procedure(VP_Transmissao_ID: PChar;
+    VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: PChar;
     VP_Modulo: Pointer); cdecl;
-  TRetorno = procedure(VP_Transmissao_ID: pansichar; VP_ProcID, VP_Erro: integer;
-    VP_Dados: pansichar); cdecl;
+  TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: integer;
+    VP_Dados: PChar); cdecl;
 
-  TRetornoDoCliente = function(VP_DadosEntrada: pansichar;
-    var VO_DadosSaida: pansichar): integer; cdecl;
+  TRetornoDoCliente = function(VP_DadosEntrada: PChar;
+    var VO_DadosSaida: PChar): integer; cdecl;
   TServidorRecebimento = procedure(VP_Erro: integer;
     VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
     VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string;
     VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string;
     VP_Permissao: TPermissao; VP_ClienteIP: string);
   TServidorRecebimentoLib = function(VP_Erro: integer;
-    VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
-    VP_Conexao_ID: integer; VP_Chave: pansichar): integer; cdecl;
+    VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+    VP_Conexao_ID: integer; VP_Chave: PChar): integer; cdecl;
   TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando,
     tsAguardandoComando, tsNaoLocalizada, tsInicializada,
     tsComErro, tsAbortada, tsAguardandoDadosPDV);
@@ -210,18 +210,18 @@ type
     function GetStatus: TTransacaoStatus;
     procedure SetErroDescricao(VP_Descricao: string);
     procedure SetStatus(VP_Status: TTransacaoStatus);
-    function GetChaveTransacao: ansistring;
+    function GetChaveTransacao: String;
   public
-    constructor Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: ansistring;
-      VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+    constructor Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: String;
+      VP_Terminal_ID: int64; VP_TransacaoString: String);
     destructor Destroy; override;
-    function AsString: ansistring;
-    function GetID: ansistring;
+    function AsString: String;
+    function GetID: String;
     function TempoAguarda: integer;
     property erro: integer read GetErro write SetErro;
     property erroDescricao: string read GetErroDescricao write SetErroDescricao;
-    property ID: ansistring read GetID;
-    property chaveTransacao: ansistring read GetChaveTransacao;
+    property ID: String read GetID;
+    property chaveTransacao: String read GetChaveTransacao;
     property STATUS: TTransacaoStatus read GetSTATUS write SetStatus;
   end;
 
@@ -242,25 +242,25 @@ type
 
 function Formata(Texto, Espaco: string; Tamanho: int64;
   Alinha_Esquerda: boolean): string;
-procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
-function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
-function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
+procedure StrToRxMemData(VP_Dados: String; var VO_MemDataSet: TRxMemoryData);
+function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): String;
+function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): String;
 procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string;
-  var VO_Chave: ansistring);
+  var VO_Chave: String);
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer;
-  VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
+  VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: String;
   VP_CodigoErro: integer; VP_NivelLog: integer);
 function versao(var VO_Dados: PChar): integer; cdecl;
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
-function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
-function PermissaoToStrFormatada(VP_Permissao: TPermissao): ansistring;
-function StrToPermissao(VP_Permissao: ansistring): TPermissao;
-function TipoTagToStr(VP_TipoTag: integer): ansistring;
-function StrToTipoTag(VP_TipoTag: ansistring): integer;
-function TipoTerminalToStr(VP_TipoTerminal: integer): ansistring;
-function StrToTipoTerminal(VP_TipoTerminal: ansistring): integer;
+function PermissaoToStr(VP_Permissao: TPermissao): String;
+function PermissaoToStrFormatada(VP_Permissao: TPermissao): String;
+function StrToPermissao(VP_Permissao: String): TPermissao;
+function TipoTagToStr(VP_TipoTag: integer): String;
+function StrToTipoTag(VP_TipoTag: String): integer;
+function TipoTerminalToStr(VP_TipoTerminal: integer): String;
+function StrToTipoTerminal(VP_TipoTerminal: String): integer;
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
 function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
 function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
@@ -316,7 +316,7 @@ function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer;
 function mensagemaddcomando(VP_Mensagem: Pointer;
   VP_Tag, VP_Dados: PChar): integer; cdecl;
 function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer;
-  VP_Tag, VP_Dados: pansichar): integer; cdecl;
+  VP_Tag, VP_Dados: PChar): integer; cdecl;
 function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 function mensagemtagcount(VP_Mensagem: Pointer): integer; cdecl;
 function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar;
@@ -749,7 +749,7 @@ begin
 end;
 
 {
-function mensagemcarregatagsid(VP_ID: Pointer; VP_Dados: pansichar): integer; cdecl;
+function mensagemcarregatagsid(VP_ID: Pointer; VP_Dados: PChar): integer; cdecl;
 var
     //VL_RecMensagem: ^TRecMensagem.
 begin
@@ -761,7 +761,7 @@ end;
 
 function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: ansistring;
+  VL_Dados: String;
 begin
   Result := 0;
   VL_Dados := TMensagem(VP_Mensagem).Comando();
@@ -771,7 +771,7 @@ end;
 
 function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_String: ansistring;
+  VL_String: String;
 begin
   Result := 0;
   VL_String := TMensagem(VP_Mensagem).ComandoDados();
@@ -829,7 +829,7 @@ end;
 
 function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_String: ansistring;
+  VL_String: String;
 begin
   Result := 0;
   VL_String := TMensagem(VP_Mensagem).TagsAsString;
@@ -845,7 +845,7 @@ end;
 function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar;
   var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: ansistring;
+  VL_Dados: String;
 begin
   VL_Dados := '';
   Result := TMensagem(VP_Mensagem).GetTag(VP_Tag, VL_Dados);
@@ -858,7 +858,7 @@ end;
 function mensagemgettagposicao(VP_Mensagem: Pointer; VP_Posicao: integer;
   VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: ansistring;
+  VL_Dados: String;
 begin
   VL_Dados := '';
   Result := TMensagem(VP_Mensagem).GetTagTabelaPosicao(VP_Posicao, VP_Tag, VL_Dados);
@@ -870,7 +870,7 @@ end;
 function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer;
   var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados, VL_Tag: ansistring;
+  VL_Dados, VL_Tag: String;
 begin
   VL_Tag := '';
   VL_Dados := '';
@@ -885,7 +885,7 @@ end;
 
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: ansistring;
+  VL_Dados: String;
 begin
   VL_Dados := '';
   Result := TMensagem(VP_Mensagem).TagToStr(VL_Dados);
@@ -907,7 +907,7 @@ end;
 function mensagemerro(VP_CodigoErro: integer;
   var VO_RespostaMensagem: PChar): integer; cdecl;
 var
-  VL_String: ansistring;
+  VL_String: String;
 begin
 
   VO_RespostaMensagem := StrAlloc(2);
@@ -1336,19 +1336,19 @@ begin
   fMensagem.AddTag('00A4', TransacaoStatusToInt(VP_Status));
 end;
 
-function TTransacao.GetID: ansistring;
+function TTransacao.GetID: String;
 begin
   Result := fMensagem.GetTagAsAstring('0034');
 end;
 
-function TTransacao.GetChaveTransacao: ansistring;
+function TTransacao.GetChaveTransacao: String;
 begin
   Result := fMensagem.GetTagAsAstring('00F1');
 end;
 
 
-constructor TTransacao.Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: ansistring;
-  VP_Terminal_ID: int64; VP_TransacaoString: ansistring);
+constructor TTransacao.Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: String;
+  VP_Terminal_ID: int64; VP_TransacaoString: String);
 begin
   inherited Create;
   fcomando := VP_Comando;
@@ -1383,7 +1383,7 @@ begin
   inherited Destroy;
 end;
 
-function TTransacao.AsString: ansistring;
+function TTransacao.AsString: String;
 begin
   Result := fMensagem.TagsAsString;
 end;
@@ -1397,11 +1397,11 @@ end;
 
 
 
-function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): ansistring;
+function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): String;
 var
   VL_MemString: TStringStream;
   VL_Mem: TMemoryStream;
-  //VL_String: ansistring;
+  //VL_String: String;
   //VL_bytes: array of byte;
   //VL_i: integer;
 begin
@@ -1435,11 +1435,11 @@ begin
   VL_Mem.Free;
 end;
 
-procedure StrToRxMemData(VP_Dados: ansistring; var VO_MemDataSet: TRxMemoryData);
+procedure StrToRxMemData(VP_Dados: String; var VO_MemDataSet: TRxMemoryData);
 var
   //VL_bytes: array of byte;
   //VL_i: integer;
-  VL_String: ansistring;
+  VL_String: String;
   VL_MemString: TStringStream;
   VL_Mem: TMemoryStream;
 begin
@@ -1481,7 +1481,7 @@ begin
 end;
 
 
-function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): ansistring;
+function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): String;
 var
   VL_MemDataset: TRxMemoryData;
 begin
@@ -1498,9 +1498,9 @@ end;
 
 
 procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string;
-  var VO_Chave: ansistring);
+  var VO_Chave: String);
 var
-  VL_Chave: ansistring;
+  VL_Chave: String;
   I, II: integer;
   Intervalo: int64;
   VL_String: string;
@@ -1578,7 +1578,7 @@ end;
 
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer;
-  VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: ansistring;
+  VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: String;
   VP_CodigoErro: integer; VP_NivelLog: integer);
 var
   VL_Arquivo: TextFile;
@@ -1632,7 +1632,7 @@ end;
 
 {$ENDIF}
 
-function PermissaoToStrFormatada(VP_Permissao: TPermissao): ansistring;
+function PermissaoToStrFormatada(VP_Permissao: TPermissao): String;
 begin
   case VP_Permissao of
     pmA: Result := 'Administrador';
@@ -1644,7 +1644,7 @@ begin
   end;
 end;
 
-function PermissaoToStr(VP_Permissao: TPermissao): ansistring;
+function PermissaoToStr(VP_Permissao: TPermissao): String;
 begin
   case VP_Permissao of
     pmA: Result := 'A';
@@ -1656,7 +1656,7 @@ begin
   end;
 end;
 
-function StrToPermissao(VP_Permissao: ansistring): TPermissao;
+function StrToPermissao(VP_Permissao: String): TPermissao;
 begin
   case VP_Permissao of
     'A': Result := pmA;
@@ -1673,7 +1673,7 @@ end;
 
 
 
-function TipoTerminalToStr(VP_TipoTerminal: integer): ansistring;
+function TipoTerminalToStr(VP_TipoTerminal: integer): String;
 begin
   case VP_TipoTerminal of
     Ord(ttrNDF): Result := 'NDF';
@@ -1686,7 +1686,7 @@ begin
   end;
 end;
 
-function StrToTipoTerminal(VP_TipoTerminal: ansistring): integer;
+function StrToTipoTerminal(VP_TipoTerminal: String): integer;
 begin
 
   case VP_TipoTerminal of
@@ -1702,7 +1702,7 @@ end;
 
 
 
-function TipoTagToStr(VP_TipoTag: integer): ansistring;
+function TipoTagToStr(VP_TipoTag: integer): String;
 begin
   case VP_TipoTag of
     Ord(ttNDF): Result := 'NDF';
@@ -1718,7 +1718,7 @@ begin
   end;
 end;
 
-function StrToTipoTag(VP_TipoTag: ansistring): integer;
+function StrToTipoTag(VP_TipoTag: String): integer;
 begin
 
   case VP_TipoTag of
@@ -1915,7 +1915,7 @@ function copiaTagPosicao(VP_Posicao: integer;
   VP_TagEntrada, VO_TagSaida: TMensagem): integer;
 var
   VL_I: integer;
-  VL_Tag, VL_Dados, VL_Campo, VL_Posicao: ansistring;
+  VL_Tag, VL_Dados, VL_Campo, VL_Posicao: String;
 begin
   Result := 0;
 
@@ -1951,7 +1951,7 @@ begin
   end;
 end;
 
-function TMensagem.GetComando(var VO_Tag: ansistring; var VO_Dados: ansistring): integer;
+function TMensagem.GetComando(var VO_Tag: String; var VO_Dados: String): integer;
 begin
   Result := 0;
   if Length(fTags) > 0 then
@@ -1961,7 +1961,7 @@ begin
   end;
 end;
 
-function TMensagem.GetComandoInt(var VO_Tag: integer; var VO_Dados: ansistring): integer;
+function TMensagem.GetComandoInt(var VO_Tag: integer; var VO_Dados: String): integer;
 begin
   Result := 0;
   if Length(fTags) > 0 then
@@ -1972,7 +1972,7 @@ begin
 end;
 
 
-function TMensagem.CarregaTags(VP_Dados: ansistring): integer;
+function TMensagem.CarregaTags(VP_Dados: String): integer;
 var
   VL_Qtd, VL_Resto, VL_Tamanho: longint;
 begin
@@ -2050,11 +2050,11 @@ begin
   end;
 end;
 
-function TMensagem.TagToStr(var VO_Dados: ansistring): integer;
+function TMensagem.TagToStr(var VO_Dados: String): integer;
 var
   VL_Digitos, i: integer;
   VL_TamanhoPacote: longint;
-  VL_Dados: ansistring;
+  VL_Dados: String;
 begin
   VL_Dados := '';
   if Length(fTags) = 0 then
@@ -2082,7 +2082,7 @@ begin
   Result := 0;
 end;
 
-function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: ansistring): integer;
+function TMensagem.GetTag(VP_Tag: String; var VO_Dados: String): integer;
 var
   i: integer;
 begin
@@ -2108,8 +2108,8 @@ begin
   end;
 end;
 
-function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: ansistring;
-  var VO_Dados: ansistring): integer;
+function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: String;
+  var VO_Dados: String): integer;
 begin
   Result := 0;
   VO_Dados := '';
@@ -2129,7 +2129,7 @@ begin
   end;
 end;
 
-function TMensagem.GetTag(VP_Tag: ansistring; var VO_Dados: int64): integer;
+function TMensagem.GetTag(VP_Tag: String; var VO_Dados: int64): integer;
 var
   i: integer;
 begin
@@ -2158,16 +2158,16 @@ begin
   end;
 end;
 
-function TMensagem.GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: ansistring;
-  var VO_Dados: ansistring): integer;
+function TMensagem.GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: String;
+  var VO_Dados: String): integer;
 begin
   Result := self.GetTag((Formata(IntToStr(VP_Posicao), '0', 10, False) + VP_Tag),
     VO_Dados);
 end;
 
-function TMensagem.GetTagAsAstring(VP_Tag: ansistring): ansistring;
+function TMensagem.GetTagAsAstring(VP_Tag: String): String;
 var
-  VL_String: ansistring;
+  VL_String: String;
 begin
   Result := '';
   VL_String := '';
@@ -2175,7 +2175,7 @@ begin
     Result := VL_String;
 end;
 
-function TMensagem.Comando: ansistring;
+function TMensagem.Comando: String;
 begin
   Result := '';
   if Length(fTags) > 0 then
@@ -2185,7 +2185,7 @@ begin
 
 end;
 
-function TMensagem.ComandoDados: ansistring;
+function TMensagem.ComandoDados: String;
 begin
   Result := '';
   if Length(fTags) > 0 then
@@ -2195,7 +2195,7 @@ begin
 
 end;
 
-function TMensagem.TagsAsString: ansistring;
+function TMensagem.TagsAsString: String;
 begin
   Result := '';
   TagToStr(Result);
@@ -2212,9 +2212,9 @@ begin
     TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
 end;
 
-function TMensagem.GetTagAsInteger(VP_Tag: ansistring): integer;
+function TMensagem.GetTagAsInteger(VP_Tag: String): integer;
 var
-  VL_String: ansistring;
+  VL_String: String;
 begin
   Result := 0;
   VL_String := '';
@@ -2224,7 +2224,7 @@ begin
 end;
 
 
-function TMensagem.AddTag(VP_Tag, VP_Dados: ansistring): integer;
+function TMensagem.AddTag(VP_Tag, VP_Dados: String): integer;
 var
   i: integer;
 
@@ -2261,7 +2261,7 @@ begin
 
 end;
 
-function TMensagem.AddTag(VP_Tag: ansistring; VP_Dados: integer): integer;
+function TMensagem.AddTag(VP_Tag: String; VP_Dados: integer): integer;
 var
   i: integer;
 
@@ -2316,7 +2316,7 @@ begin
   AddComando('0000', '');
 end;
 
-function TMensagem.AddComando(VP_Tag, VP_Dados: ansistring): integer;
+function TMensagem.AddComando(VP_Tag, VP_Dados: String): integer;
 begin
   Result := 0;
 
@@ -2337,7 +2337,7 @@ end;
 procedure copiaTag(VP_TagEntrada, VP_TagSaida: TMensagem; VP_LimparTagSaida: boolean);
 var
   VL_I: integer;
-  VL_Tag, VL_Dados: ansistring;
+  VL_Tag, VL_Dados: String;
 begin
   if VP_LimparTagSaida then
     VP_TagSaida.Limpar;
@@ -2694,3 +2694,4 @@ initialization
 finalization
   DoneCriticalSection(VF_CriticoLog);
 end.
+

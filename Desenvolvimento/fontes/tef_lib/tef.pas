@@ -19,15 +19,13 @@ type
   TMensagemOperador = function(VP_Dados: PChar): integer; cdecl;
 
 
-  TPinPadDescarrega = function(): integer; cdecl;
-  TPinPadCarrega = function(VP_PinPadModelo: TPinPadModelo;
-    VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar;
-    VP_RespostaPinPad: TRespostaPinPad; VP_ArquivoLog: PChar): integer; cdecl;
-  TPinPadConectar = function(var VO_Mensagem: PChar): integer; cdecl;
-  TPinPadDesconectar = function(VL_Mensagem: PChar): integer; cdecl;
-  TPinPadMensagem = function(VL_Mensagem: PChar): integer; cdecl;
-  TPinPadComando = function(VP_Processo_ID: integer; VP_Mensagem: PChar;
-    var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
+  TPinPadCarrega = function(var VO_PinPad:Pointer; VP_PinPadModelo: TPinPadModelo;  VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar;  VP_RespostaPinPad: TRespostaPinPad; VP_ArquivoLog: PChar): integer; cdecl;
+  TPinPadDescarrega = function(var VO_PinPad:Pointer): integer; cdecl;
+  TPinPadConectar = function(VP_PinPad:Pointer;var VO_Mensagem: PChar): integer; cdecl;
+  TPinPadDesconectar = function(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
+  TPinPadMensagem = function(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
+  TPinPadComando = function(VP_PinPad:Pointer;VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
+
 
   TThProcesso = class(TThread)
   private
@@ -141,6 +139,7 @@ var
   F_Processo_ID: integer;
 
   F_PinPad: THandle;
+  F_TPinPad: Pointer; // classe do pinpad
 
   F_ModuloPublico: ansistring;
   F_ExpoentePublico: ansistring;
@@ -387,8 +386,8 @@ begin
       if (VL_Mensagem.Comando = '00FC') and (VL_Mensagem.ComandoDados = 'S') then
         // mostra imagem no pinpad
       begin
-        F_PinPadDescarrega;
-        VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib),
+        F_PinPadDescarrega(F_TPinPad);
+        VL_Erro := F_PinPadCarrega(F_TPinPad,F_PinPadModelo, PChar(F_PinPadModeloLib),
           PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
 
         if VL_Erro <> 0 then
@@ -398,7 +397,7 @@ begin
           Exit;
         end;
 
-        VL_Erro := F_PinPadConectar(VL_Dados);
+        VL_Erro := F_PinPadConectar(F_TPinPad,VL_Dados);
 
         if VL_Erro <> 0 then
         begin
@@ -407,9 +406,9 @@ begin
           Exit;
         end;
 
-        F_PinPadMensagem('Aguarde... gerando IMAGEM!');
+        F_PinPadMensagem(F_TPinPad,'Aguarde... gerando IMAGEM!');
 
-        VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString),
+        VL_Erro := F_PinPadComando(F_TPinPad,-1, PChar(VL_Mensagem.TagsAsString),
           VL_Dados, nil);
 
         if VL_Erro <> 0 then
@@ -440,8 +439,8 @@ begin
       if (VL_Mensagem.Comando() = '005A') and (VL_Mensagem.ComandoDados = 'S') then
         // SOLICITACAO DE CAPTURA DE SENHA
       begin
-        F_PinPadDescarrega;
-        VL_Erro := F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib),
+        F_PinPadDescarrega(F_TPinPad);
+        VL_Erro := F_PinPadCarrega(F_TPinPad,F_PinPadModelo, PChar(F_PinPadModeloLib),
           PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
         if VL_Erro <> 0 then
         begin
@@ -449,7 +448,7 @@ begin
             'SolicitaParaCliente recebeu comando com F_PinPadComando', '', VL_Erro, 1);
           Exit;
         end;
-        VL_Erro := F_PinPadConectar(VL_Dados);
+        VL_Erro := F_PinPadConectar(F_TPinPad,VL_Dados);
         if VL_Erro <> 0 then
         begin
           GravaLog(F_ArquivoLog, 0, '', 'tef', '220120240858',
@@ -458,7 +457,7 @@ begin
         end;
 
 
-        VL_Erro := F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString),
+        VL_Erro := F_PinPadComando(F_TPinPad,-1, PChar(VL_Mensagem.TagsAsString),
           VL_Dados, nil);
         if VL_Erro <> 0 then
         begin
@@ -467,7 +466,7 @@ begin
           Exit;
         end;
 
-        F_PinPadMensagem('    OpenTef    ');
+        F_PinPadMensagem(F_TPinPad,'    OpenTef    ');
         VL_Erro := VL_MensagemAuxiliar.CarregaTags(VL_Dados);
         if VL_Erro <> 0 then
         begin
@@ -605,7 +604,7 @@ begin
   F_ListaTransacao.Free;
   if F_PinPadModelo <> pNDF then
   begin
-    F_PinPadDescarrega;
+    F_PinPadDescarrega(F_TPinPad);
     UnloadLibrary(F_PinPad);
   end;
 
@@ -1138,9 +1137,8 @@ begin
           begin
             if not VL_PinPadCarregado then
             begin
-              F_PinPadDescarrega;
-              VL_Erro :=
-                F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib),
+              F_PinPadDescarrega(F_TPinPad);
+              VL_Erro := F_PinPadCarrega(F_TPinPad,F_PinPadModelo, PChar(F_PinPadModeloLib),
                 PChar(F_PinPadModeloPorta), @RespostaPinPad,
                 PChar(F_ArquivoLog));
               if ftransacao.fAbortada then
@@ -1155,7 +1153,8 @@ begin
                 Exit;
               end;
 
-              VL_Erro := F_PinPadConectar(VL_Dados);
+
+              VL_Erro := F_PinPadConectar(F_TPinPad,VL_Dados);
               if VL_Erro <> 0 then
               begin
                 ftransacao.erro := VL_Erro;
@@ -1169,7 +1168,7 @@ begin
               VL_PinPadCarregado := True;
             end;
             VL_Erro :=
-              F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
+              F_PinPadComando(F_TPinPad,-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
             if VL_Erro <> 0 then
             begin
               ftransacao.erro := VL_Erro;
@@ -1180,7 +1179,7 @@ begin
               Exit;
             end;
 
-            F_PinPadMensagem('    OpenTef    ');
+            F_PinPadMensagem(F_TPinPad,'    OpenTef    ');
 
             VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
             if VL_Erro <> 0 then
@@ -1212,9 +1211,9 @@ begin
           if not VL_PinPadCarregado then
           begin
             VL_Linha := '041220231336';
-            F_PinPadDescarrega;
+            F_PinPadDescarrega(F_TPinPad);
             VL_Erro :=
-              F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib),
+              F_PinPadCarrega(F_TPinPad,F_PinPadModelo, PChar(F_PinPadModeloLib),
               PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
             if ftransacao.fAbortada then
             begin
@@ -1227,7 +1226,7 @@ begin
               ftransacao.STATUS := tsComErro;
               Exit;
             end;
-            VL_Erro := F_PinPadConectar(VL_Dados);
+            VL_Erro := F_PinPadConectar(F_TPinPad,VL_Dados);
             if ftransacao.fAbortada then
             begin
               F_MensagemOperador(PChar('A transação foi abortada'));
@@ -1249,7 +1248,7 @@ begin
           VL_Linha := '041220231334';
 
           VL_Erro :=
-            F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
+            F_PinPadComando(F_TPinPad,-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
           if VL_Erro <> 0 then
           begin
             ftransacao.erro := VL_Erro;
@@ -1261,7 +1260,7 @@ begin
 
           VL_Linha := '041220231335';
 
-          F_PinPadMensagem('    OpenTef    ');
+          F_PinPadMensagem(F_TPinPad,'    OpenTef    ');
           VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
           if VL_Erro <> 0 then
           begin
@@ -1279,9 +1278,9 @@ begin
         begin
           if not VL_PinPadCarregado then
           begin
-            F_PinPadDescarrega;
+            F_PinPadDescarrega(F_TPinPad);
             VL_Erro :=
-              F_PinPadCarrega(F_PinPadModelo, PChar(F_PinPadModeloLib),
+              F_PinPadCarrega(F_TPinPad,F_PinPadModelo, PChar(F_PinPadModeloLib),
               PChar(F_PinPadModeloPorta), @RespostaPinPad, PChar(F_ArquivoLog));
             if ftransacao.fAbortada then
             begin
@@ -1294,7 +1293,7 @@ begin
               ftransacao.STATUS := tsComErro;
               Exit;
             end;
-            VL_Erro := F_PinPadConectar(VL_Dados);
+            VL_Erro := F_PinPadConectar(F_TPinPad,VL_Dados);
             if ftransacao.fAbortada then
             begin
               F_MensagemOperador(PChar('A transação foi abortada'));
@@ -1311,10 +1310,10 @@ begin
             end;
             VL_PinPadCarregado := True;
           end;
-          F_PinPadMensagem('Aguarde... gerando IMAGEM!');
+          F_PinPadMensagem(F_TPinPad,'Aguarde... gerando IMAGEM!');
 
           VL_Erro :=
-            F_PinPadComando(-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
+            F_PinPadComando(F_TPinPad,-1, PChar(VL_Mensagem.TagsAsString), VL_Dados, nil);
           if VL_Erro <> 0 then
           begin
             ftransacao.erro := VL_Erro;
@@ -1647,8 +1646,8 @@ begin
     begin
       if VL_PinPadCarregado then
       begin
-        F_PinPadDesconectar('    OpenTef    ');
-        F_PinPadDescarrega;
+        F_PinPadDesconectar(F_TPinPad,'    OpenTef    ');
+        F_PinPadDescarrega(F_TPinPad);
       end;
       if Assigned(VL_Transacao) then
         VL_Transacao.Free;
@@ -1867,7 +1866,7 @@ begin
     Result := 118;
     Exit;
   end;
-
+  F_TPinPad:=nil;
   F_RetornoCliente := VP_RetornoCliente;
   F_SolicitaDadosPDV := VP_SolicitaDadosPDV;
   F_SolicitaDadosTransacao := VP_SolicitaDadosTransacao;

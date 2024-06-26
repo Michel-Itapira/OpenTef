@@ -187,8 +187,8 @@ begin
         on e: Exception do
         begin
             Result := 1;
-            GravaLog(TDModulo(VP_Modulo).V_ArquivoLog, 0, '', 'modulo', '190520221827', 'Erro na finalizacao do modulo finalizar() ' +
-                e.ClassName + '/' + e.Message, '', 1, 1);
+            //GravaLog(TDModulo(VP_Modulo).V_ArquivoLog, 0, '', 'modulo', '190520221827', 'Erro na finalizacao do modulo finalizar() ' +
+           //     e.ClassName + '/' + e.Message, '', 1, 1);
         end;
     end;
 end;

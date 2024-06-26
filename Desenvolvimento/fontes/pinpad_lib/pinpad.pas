@@ -16,10 +16,11 @@ type
         fMensagem: TMensagem;
         FProcessoID: integer;
         fRespostaPinPad: TRespostaPinPad;
+        fPinPad:Pointer;
     protected
         procedure Execute; override;
     public
-        constructor Create(VP_Processo_ID: integer; VP_CreateSuspended: boolean; VP_Mensagem: TMensagem; var VO_TRespostaPinPad: TRespostaPinPad);
+        constructor Create(VP_PinPad:Pointer; VP_Processo_ID: integer; VP_CreateSuspended: boolean; VP_Mensagem: TMensagem; var VO_TRespostaPinPad: TRespostaPinPad);
 
     end;
 
@@ -27,7 +28,11 @@ type
     TPinPad = class
     private
         fRespostaPinPad: TRespostaPinPad;
+        F_ArquivoLog: string;
     public
+        F_PinPadComOpen: boolean;
+        F_PinPadConectado: boolean;
+        F_PinPaExecutando: boolean;
         function CarregaLib(): integer; virtual; abstract;
         function DescarregaLib(): integer; virtual; abstract;
         procedure SetConfig(VP_PinPad: TPinPadModelo; VP_CaminhoLib: ansistring; VP_Porta: ansistring); virtual; abstract;
@@ -54,21 +59,17 @@ type
 
 var
     D_PinPad: TDPinPad;
-    F_PinPad: TPinPad;
-    F_PinPaExecutando: boolean;
-    F_PinPadCarregado: boolean;
-    F_ArquivoLog: string;
 
 
-function PinPadCarrega(VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar; VP_RespostaPinPad: TRespostaPinPad;
-    VP_ArquivoLog: PChar): integer; stdcall;
-function PinPadDescarrega(): integer; stdcall;
-function PinPadConectar(var VO_Mensagem: PChar): integer; stdcall;
-function PinPadDesconectar(VL_Mensagem: PChar): integer; stdcall;
-function PinPadMensagem(VL_Mensagem: PChar): integer; stdcall;
-function PinPadImagem(VL_Mensagem: PChar): integer; stdcall;
-function PinPadComando(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
-function PinPadExecutaComando(VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem): integer;
+
+function PinPadCarrega(var VO_PinPad:Pointer; VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar; VP_RespostaPinPad: TRespostaPinPad; VP_ArquivoLog: PChar): integer; cdecl;
+function PinPadDescarrega(var VO_PinPad:Pointer): integer; cdecl;
+function PinPadConectar(VP_PinPad:Pointer;var VO_Mensagem: PChar): integer; cdecl;
+function PinPadDesconectar(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
+function PinPadMensagem(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
+function PinPadImagem(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
+function PinPadComando(VP_PinPad:Pointer;VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
+function PinPadExecutaComando(VP_PinPad:Pointer;VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem): integer;
 
 
 implementation
@@ -82,79 +83,88 @@ uses
 
 
 
-function PinPadCarrega(VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar; VP_RespostaPinPad: TRespostaPinPad;
-    VP_ArquivoLog: PChar): integer; stdcall;
+function PinPadCarrega(var VO_PinPad:Pointer;VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar; VP_RespostaPinPad: TRespostaPinPad; VP_ArquivoLog: PChar): integer; cdecl;
 begin
     Result := 0;
-    F_ArquivoLog := VP_ArquivoLog;
-    if F_PinPadCarregado then
-        Exit;
+    if VO_PinPad<>nil then
+    begin
+       Exit;
+    end;
     Result := 77;
     if VP_PinPadModelo = pGERTEC_PPC930 then
     begin
-        F_PinPad := TGertec_ppc930.Create;
-        F_PinPad.SetConfig(VP_PinPadModelo, VP_PinPadModeloLib, VP_PinPadModeloPorta);
-        F_PinPad.fRespostaPinPad := VP_RespostaPinPad;
-        Result := F_PinPad.CarregaLib();
-        F_PinPaExecutando := False;
-        if Result = 0 then
-            F_PinPadCarregado := True;
+        VO_PinPad := TGertec_ppc930.Create;
+        TPinPad(VO_PinPad).SetConfig(VP_PinPadModelo, VP_PinPadModeloLib, VP_PinPadModeloPorta);
+        TPinPad(VO_PinPad).fRespostaPinPad := VP_RespostaPinPad;
+        Result := TPinPad(VO_PinPad).CarregaLib();
+        TPinPad(VO_PinPad).F_PinPaExecutando := False;
+        TPinPad(VO_PinPad).F_ArquivoLog := VP_ArquivoLog;
+
     end;
     if VP_PinPadModelo = pINGENICO_LANE3000 then
     begin
-        F_PinPad := TGertec_ppc930.Create;
-        F_PinPad.SetConfig(VP_PinPadModelo, VP_PinPadModeloLib, VP_PinPadModeloPorta);
-        F_PinPad.fRespostaPinPad := VP_RespostaPinPad;
-        Result := F_PinPad.CarregaLib();
-        F_PinPaExecutando := False;
-        if Result = 0 then
-            F_PinPadCarregado := True;
+        VO_PinPad := TGertec_ppc930.Create;
+        TPinPad(VO_PinPad).SetConfig(VP_PinPadModelo, VP_PinPadModeloLib, VP_PinPadModeloPorta);
+        TPinPad(VO_PinPad).fRespostaPinPad := VP_RespostaPinPad;
+        Result := TPinPad(VO_PinPad).CarregaLib();
+        TPinPad(VO_PinPad).F_PinPaExecutando := False;
+        TPinPad(VO_PinPad).F_ArquivoLog := VP_ArquivoLog;
     end;
 
 end;
 
-function PinPadDescarrega(): integer; stdcall;
+function PinPadDescarrega(var VO_PinPad:Pointer): integer; cdecl;
 begin
-    if not F_PinPadCarregado then
-        Exit;
-
-    F_PinPadCarregado := False;
-    Result := F_PinPad.DescarregaLib();
-    F_PinPad.Free;
+    if VO_PinPad=nil then
+       exit;
+    TPinPad(VO_PinPad).PinPadDesconectar('Open Tef');
+    Result := TPinPad(VO_PinPad).DescarregaLib();
+    TPinPad(VO_PinPad).Free;
+    VO_PinPad:=nil;
 end;
 
-function PinPadConectar(var VO_Mensagem: PChar): integer; stdcall;
+function PinPadConectar(VP_PinPad:Pointer;var VO_Mensagem: PChar): integer; cdecl;
 var
     VL_Mensgem: TMensagem;
 begin
+    if VP_PinPad=nil then
+       exit;
     try
         VL_Mensgem := TMensagem.Create;
-        Result := F_PinPad.PinPadConecta(VL_Mensgem);
+        Result := TPinPad(VP_PinPad).PinPadConecta(VL_Mensgem);
         VO_Mensagem := StrAlloc(Length(VL_Mensgem.TagsAsString) + 1);
         StrPCopy(VO_Mensagem, VL_Mensgem.TagsAsString);
-        F_PinPaExecutando := False;
+        TPinPad(VP_PinPad).F_PinPaExecutando := False;
 
     finally
         VL_Mensgem.Free;
     end;
 end;
 
-function PinPadDesconectar(VL_Mensagem: PChar): integer; stdcall;
+function PinPadDesconectar(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
 begin
-    Result := F_PinPad.PinPadDesconectar(VL_Mensagem);
+    if VP_PinPad=nil then
+       exit;
+
+    Result := TPinPad(VP_PinPad).PinPadDesconectar(VL_Mensagem);
 end;
 
-function PinPadMensagem(VL_Mensagem: PChar): integer; stdcall;
+function PinPadMensagem(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
 begin
-    Result := F_PinPad.PinPadMensagem(VL_Mensagem);
+   if VP_PinPad=nil then
+       exit;
+
+    Result := TPinPad(VP_PinPad).PinPadMensagem(VL_Mensagem);
 end;
 
-function PinPadImagem(VL_Mensagem: PChar): integer; stdcall;
+function PinPadImagem(VP_PinPad:Pointer;VL_Mensagem: PChar): integer; cdecl;
 begin
-    Result := F_PinPad.PinPadImagem(VL_Mensagem);
+   if VP_PinPad=nil then
+      exit;
+   Result := TPinPad(VP_PinPad).PinPadImagem(VL_Mensagem);
 end;
 
-function PinPadComando(VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; stdcall;
+function PinPadComando(VP_PinPad:Pointer;VP_Processo_ID: integer; VP_Mensagem: PChar; var VO_Mensagem: PChar; VP_RespostaPinPad: TRespostaPinPad): integer; cdecl;
 var
     VL_Mensagem: TMensagem;
     VL_Dados, VL_Comando: string;
@@ -162,7 +172,10 @@ var
     VL_MensagemO: TMensagem;
     VL_Linha: string;
 begin
-    try
+if VP_PinPad=nil then
+   exit;
+
+   try
         try
             VL_Linha := '041220231443';
             VL_Mensagem := TMensagem.Create;
@@ -176,25 +189,25 @@ begin
                 '0047':                 // MOSTRA MENSAGEM TEXTO
                 begin
                     VL_Linha := '041220231444';
-                    Result := F_PinPad.PinPadMensagem(VL_Dados);
+                    Result := TPinPad(VP_PinPad).PinPadMensagem(VL_Dados);
                 end;
                 '00FC':                 // MOSTRA IMAGEM
                 begin
                     VL_Linha := '041220231445';
-                    Result := F_PinPad.PinPadImagem(VL_Mensagem.GetTagAsAstring('00FE'));
+                    Result := TPinPad(VP_PinPad).PinPadImagem(VL_Mensagem.GetTagAsAstring('00FE'));
                 end;
                 '0048': // PINPAD SOLICITA TARJA CARTAO
                 begin
                     VL_Linha := '041220231446';
                     if VP_Processo_ID = -1 then
                     begin
-                        Result := PinPadExecutaComando(VL_Mensagem, VL_MensagemO);
+                        Result := PinPadExecutaComando(VP_PinPad,VL_Mensagem, VL_MensagemO);
                         VO_Mensagem := StrAlloc(Length(VL_MensagemO.TagsAsString) + 1);
                         StrPCopy(VO_Mensagem, VL_MensagemO.TagsAsString);
                     end
                     else
                     begin
-                        VL_TPinPad := TTPinPad.Create(VP_Processo_ID, True, VL_Mensagem, VP_RespostaPinPad);
+                        VL_TPinPad := TTPinPad.Create(VP_PinPad, VP_Processo_ID, True, VL_Mensagem, VP_RespostaPinPad);
                         VL_TPinPad.Start;
                     end;
                 end;
@@ -203,7 +216,7 @@ begin
                     if VP_Processo_ID = -1 then
                     begin
                         VL_Linha := '041220231448';
-                        Result := PinPadExecutaComando(VL_Mensagem, VL_MensagemO);
+                        Result := PinPadExecutaComando(VP_PinPad, VL_Mensagem, VL_MensagemO);
                         VO_Mensagem := StrAlloc(Length(VL_MensagemO.TagsAsString) + 1);
                         StrPCopy(VO_Mensagem, VL_MensagemO.TagsAsString);
                         VL_Linha := '041220231449';
@@ -211,7 +224,7 @@ begin
                     else
                     begin
                         VL_Linha := '041220231450';
-                        VL_TPinPad := TTPinPad.Create(VP_Processo_ID, True, VL_Mensagem, VP_RespostaPinPad);
+                        VL_TPinPad := TTPinPad.Create(VP_PinPad,VP_Processo_ID, True, VL_Mensagem, VP_RespostaPinPad);
                         VL_TPinPad.Start;
                         VL_Linha := '041220231451';
                     end;
@@ -229,7 +242,7 @@ begin
             on e: Exception do
             begin
                 Result := 124;
-                GravaLog(F_ArquivoLog, 0, '', 'pinpad_lib', VL_Linha, 'Erro de excecao na PinPadComando ' + e.ClassName +
+                GravaLog(TPinPad(VP_PinPad).F_ArquivoLog, 0, '', 'pinpad_lib', VL_Linha, 'Erro de excecao na PinPadComando ' + e.ClassName +
                     '/' + e.Message, VP_Mensagem, 124, 1);
             end;
         end;
@@ -240,12 +253,14 @@ begin
 end;
 
 
-function PinPadExecutaComando(VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem): integer;
+function PinPadExecutaComando(VP_PinPad:Pointer;VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem): integer;
 var
     VL_Comando, VL_Dados: string;
     VL_Tk1, VL_Tk2, VL_Tk3: string;
     VL_Linha: string;
 begin
+    if VP_PinPad=nil then
+       exit;
     Result := 0;
     VL_Linha := '041220231508';
     try
@@ -263,14 +278,14 @@ begin
             begin
                 if VL_Dados = 'S' then
                 begin
-                    F_PinPad.PinPadMensagem(' Passe o cartao');
-                    Result := F_PinPad.PinPadLerTarja(VL_Tk1, VL_Tk2, VL_Tk3, VP_Mensagem.GetTagAsInteger('0051'), VO_Mensagem);
+                    TPinPad(VP_PinPad).PinPadMensagem(' Passe o cartao');
+                    Result := TPinPad(VP_PinPad).PinPadLerTarja(VL_Tk1, VL_Tk2, VL_Tk3, VP_Mensagem.GetTagAsInteger('0051'), VO_Mensagem);
                     if Result <> 0 then
                     begin
                         VO_Mensagem.AddTag('004D', Result);
-                        F_PinPad.PinPadMensagem('    Operacao       cancelada    ');
+                        TPinPad(VP_PinPad).PinPadMensagem('    Operacao       cancelada    ');
                         sleep(2000);
-                        F_PinPad.PinPadMensagem('    OpenTef    ');
+                        TPinPad(VP_PinPad).PinPadMensagem('    OpenTef    ');
                         Exit;
                     end;
                     VO_Mensagem.AddTag('004D', 0);
@@ -294,7 +309,7 @@ begin
             while True do
             begin
                 VL_Linha := '041220231510';
-                Result := F_PinPad.PinPadLerSenha(VL_Dados, VP_Mensagem.GetTagAsInteger('005B'), VP_Mensagem.GetTagAsAstring(
+                Result := TPinPad(VP_PinPad).PinPadLerSenha(VL_Dados, VP_Mensagem.GetTagAsInteger('005B'), VP_Mensagem.GetTagAsAstring(
                     '005F'), VP_Mensagem.GetTagAsAstring('00D9'), VP_Mensagem.GetTagAsInteger('005D'), VP_Mensagem.GetTagAsInteger('005E'),
                     VP_Mensagem.GetTagAsAstring('005C'), VO_Mensagem, VP_Mensagem.GetTagAsInteger('0051'));
                 if Result <> 0 then
@@ -307,14 +322,14 @@ begin
                 VO_Mensagem.AddTag('0046', Result);
                 VO_Mensagem.AddTag('004D', 0);
                 VO_Mensagem.AddTag('0060', VL_Dados);
-                F_PinPad.PinPadMensagem('    OpenTef    ');
+                TPinPad(VP_PinPad).PinPadMensagem('    OpenTef    ');
                 Exit;
             end;
         end;
         if VL_Comando = '00FC' then     //mostrar imagem
         begin
             VO_Mensagem.AddComando('00FC', 'R');
-            Result := F_PinPad.PinPadImagem(VP_Mensagem.GetTagAsAstring('00FE'));
+            Result := TPinPad(VP_PinPad).PinPadImagem(VP_Mensagem.GetTagAsAstring('00FE'));
             if Result <> 0 then
             begin
                 VO_Mensagem.AddTag('0046', Result);
@@ -326,7 +341,7 @@ begin
         on e: Exception do
         begin
             Result := 124;
-            GravaLog(F_ArquivoLog, 0, '', 'pinpad_lib', VL_Linha, 'Erro de excecao na PinPadExecutaComando ' + e.ClassName +
+            GravaLog(TPinPad(VP_PinPad).F_ArquivoLog, 0, '', 'pinpad_lib', VL_Linha, 'Erro de excecao na PinPadExecutaComando ' + e.ClassName +
                 '/' + e.Message, VP_Mensagem.TagsAsString, 124, 1);
         end;
     end;
@@ -359,16 +374,16 @@ begin
             begin
                 if VL_Dados = 'S' then
                 begin
-                    F_PinPad.PinPadMensagem(' Passe o cartao');
-                    VL_Retorno := F_PinPad.PinPadLerTarja(VL_Tk1, VL_Tk2, VL_Tk3, fMensagem.GetTagAsInteger('0051'), VL_Mensagem);
+                    TPinPad(fPinPad).PinPadMensagem(' Passe o cartao');
+                    VL_Retorno := TPinPad(fPinPad).PinPadLerTarja(VL_Tk1, VL_Tk2, VL_Tk3, fMensagem.GetTagAsInteger('0051'), VL_Mensagem);
                     if VL_Retorno <> 0 then
                     begin
                         fMensagem.CarregaTags(VL_Mensagem.TagsAsString);
                         if Assigned(fRespostaPinPad) then
                             fRespostaPinPad(FProcessoID, fMensagem);
-                        F_PinPad.PinPadMensagem('    Operacao       cancelada    ');
+                        TPinPad(fPinPad).PinPadMensagem('    Operacao       cancelada    ');
                         sleep(2000);
-                        F_PinPad.PinPadMensagem('    OpenTef    ');
+                        TPinPad(fPinPad).PinPadMensagem('    OpenTef    ');
                         Exit;
                     end;
 
@@ -379,7 +394,7 @@ begin
                     fMensagem.AddTag('0050', VL_Tk3);
                     if Assigned(fRespostaPinPad) then
                         fRespostaPinPad(FProcessoID, fMensagem);
-                    F_PinPad.PinPadMensagem('    OpenTef    ');
+                    TPinPad(fPinPad).PinPadMensagem('    OpenTef    ');
                     Exit;
                 end
                 else
@@ -395,7 +410,7 @@ begin
         begin
             while True do
             begin
-                VL_Retorno := F_PinPad.PinPadLerSenha(VL_Dados, fMensagem.GetTagAsInteger('005B'), fMensagem.GetTagAsAstring(
+                VL_Retorno := TPinPad(fPinPad).PinPadLerSenha(VL_Dados, fMensagem.GetTagAsInteger('005B'), fMensagem.GetTagAsAstring(
                     '005F'), fMensagem.GetTagAsAstring('00D9'), fMensagem.GetTagAsInteger('005D'), fMensagem.GetTagAsInteger('005E'),
                     fMensagem.GetTagAsAstring('005C'), VL_Mensagem, fMensagem.GetTagAsInteger('0051'));
 
@@ -404,9 +419,9 @@ begin
                     fMensagem.CarregaTags(VL_Mensagem.TagsAsString);
                     if Assigned(fRespostaPinPad) then
                         fRespostaPinPad(FProcessoID, fMensagem);
-                    F_PinPad.PinPadMensagem('    Operacao       cancelada    ');
+                    TPinPad(fPinPad).PinPadMensagem('    Operacao       cancelada    ');
                     sleep(2000);
-                    F_PinPad.PinPadMensagem('    OpenTef    ');
+                    TPinPad(fPinPad).PinPadMensagem('    OpenTef    ');
                     Exit;
                 end;
 
@@ -415,22 +430,22 @@ begin
                 fMensagem.AddTag('0060', VL_Dados);
                 if Assigned(fRespostaPinPad) then
                     fRespostaPinPad(FProcessoID, fMensagem);
-                F_PinPad.PinPadMensagem('    OpenTef    ');
+                TPinPad(fPinPad).PinPadMensagem('    OpenTef    ');
                 Exit;
             end;
         end;
         if VL_Comando = '00FC' then     //MOSTRAR IMAGEM
         begin
-            VL_Retorno := F_PinPad.PinPadImagem(fMensagem.GetTagAsAstring('00FE'));
+            VL_Retorno := TPinPad(fPinPad).PinPadImagem(fMensagem.GetTagAsAstring('00FE'));
 
             if VL_Retorno <> 0 then
             begin
                 fMensagem.CarregaTags(VL_Mensagem.TagsAsString);
                 if Assigned(fRespostaPinPad) then
                     fRespostaPinPad(FProcessoID, fMensagem);
-                F_PinPad.PinPadMensagem('    Operacao       cancelada    ');
+                TPinPad(fPinPad).PinPadMensagem('    Operacao       cancelada    ');
                 sleep(2000);
-                F_PinPad.PinPadMensagem('    OpenTef    ');
+                TPinPad(fPinPad).PinPadMensagem('    OpenTef    ');
                 Exit;
             end;
 
@@ -438,7 +453,7 @@ begin
             fMensagem.AddTag('004D', VL_Retorno);
             if Assigned(fRespostaPinPad) then
                 fRespostaPinPad(FProcessoID, fMensagem);
-            F_PinPad.PinPadMensagem('    OpenTef    ');
+            TPinPad(fPinPad).PinPadMensagem('    OpenTef    ');
             Exit;
         end;
 
@@ -450,7 +465,7 @@ begin
 end;
 
 
-constructor TTPinPad.Create(VP_Processo_ID: integer; VP_CreateSuspended: boolean; VP_Mensagem: TMensagem; var VO_TRespostaPinPad: TRespostaPinPad);
+constructor TTPinPad.Create(VP_PinPad:Pointer; VP_Processo_ID: integer; VP_CreateSuspended: boolean; VP_Mensagem: TMensagem; var VO_TRespostaPinPad: TRespostaPinPad);
 begin
     fMensagem := TMensagem.Create;
     fMensagem.CarregaTags(VP_Mensagem.TagsAsString);
@@ -475,8 +490,5 @@ begin
     end;
 
 end;
-
-initialization
-    F_PinPadCarregado := False;
 
 end.

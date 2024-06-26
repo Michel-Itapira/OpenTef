@@ -2,8 +2,8 @@ object DTef: TDTef
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 220
-  HorizontalOffset = 716
-  VerticalOffset = 285
+  HorizontalOffset = 939
+  VerticalOffset = 509
   Width = 291
   object CriptoRsa: TLbRSA
     PrimeTestIterations = 20

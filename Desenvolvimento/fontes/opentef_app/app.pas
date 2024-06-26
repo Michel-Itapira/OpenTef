@@ -1,12 +1,12 @@
 unit app;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+} {$RANGECHECKS OFF}
 
 interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, opentefnucleo, ubarcodes, funcoes,
+  ExtCtrls, opentefnucleo, ubarcodes, funcoes,fcrc16,
   ZConnection, ZDataset,
   rxmemds, IdContext, cadastro, LbClass, md5, base64, FMTBcd, DB, comunicador,bancodados;
 
@@ -25,6 +25,7 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
+    Button13: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -46,6 +47,7 @@ type
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
+    procedure Button13Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -220,6 +222,21 @@ begin
   end;
 
   VL_BancoDados.Free;
+end;
+
+procedure TFApp.Button13Click(Sender: TObject);
+var
+s: TLBytes;
+begin
+   s := nil;
+  setlength(s,3);
+  s[0]:=65;
+    s[1]:=65;
+      s[2]:=65;
+// mmenu.lines.add(inttostr(crc16(s,length(s))));
+
+
+
 end;
 
 procedure TFApp.Button1Click(Sender: TObject);

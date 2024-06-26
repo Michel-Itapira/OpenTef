@@ -3,8 +3,8 @@ object DNucleo: TDNucleo
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 242
-  HorizontalOffset = 1683
-  VerticalOffset = 669
+  HorizontalOffset = 814
+  VerticalOffset = 508
   Width = 416
   object CriptoAes: TLbRijndael
     CipherMode = cmECB
@@ -14,11 +14,12 @@ object DNucleo: TDNucleo
   end
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
-    ClientCodepage = 'ISO8859_1'
+    ClientCodepage = 'UTF8'
     Properties.Strings = (
-      'codepage=ISO8859_1'
+      'codepage=UTF8'
       'controls_cp=GET_ACP'
       'AutoEncodeStrings=OFF'
+      'RawStringEncoding=DB_CP'
     )
     AutoCommit = False
     TransactIsolationLevel = tiReadCommitted

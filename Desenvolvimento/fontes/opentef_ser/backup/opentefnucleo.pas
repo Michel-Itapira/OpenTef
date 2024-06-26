@@ -7,7 +7,7 @@ interface
 uses
 
   {$IFDEF UNIX}
-      CThreads,
+  	CThreads,
   {$ENDIF}
   Classes, SysUtils, IniFiles, comunicador, ZConnection, ZDataset,
   funcoes, rxmemds, IdContext, cadastro, LbClass, md5, base64,
@@ -742,6 +742,7 @@ var
   VL_Tarefa: ^TTarefa;
   VL_I: integer;
   VL_TipoConexao: PUtf8Char;
+  VL_Linha: string;
 begin
   VF_Rodando := True;
   TRegModulo(VF_RegModulo^).PModulo := nil;
@@ -749,6 +750,7 @@ begin
   VL_DadosInteger := 0;
   VL_VersaoModulo := '';
   VL_VersaoMensagem := 0;
+  VL_Linha := '200520220934';
   if VF_ConexaoTipo = cnCaixa then
     VL_TipoConexao := 'C'
   else
@@ -807,7 +809,7 @@ begin
             if VF_Sair then
               Exit;
 
-
+            VL_Linha := '24062024154801';
             if VF_ConexaoTipo = cnCaixa then
               VL_Erro :=
                 TRegModulo(VF_RegModulo^).Inicializar(
@@ -842,6 +844,7 @@ begin
               Exit;
             end;
 
+            VL_Linha := '24062024154800';
             if (VF_ConexaoTipo = cnServico) then
               DNucleo.AtualizaBIN(TRegModulo(VF_RegModulo^), nil);
           end
@@ -852,6 +855,7 @@ begin
               Exit;
 
             // pega o status da conexao
+            VL_Linha := '24062024154200';
             VL_Erro :=
               TRegModulo(VF_RegModulo^).ModuloStatus(
               TRegModulo(VF_RegModulo^).PModulo, VL_VersaoModulo,
@@ -869,10 +873,12 @@ begin
                 '', VL_Erro, 1);
               Exit;
             end;
+            VL_Linha := '24062024154201';
             VL_ConexaoStatus := IntToConexaoStatus(VL_DadosInteger);
 
             if VL_ConexaoStatus <> csLogado then
             begin
+              VL_Linha := '24062024154300';
               VL_Erro :=
                 TRegModulo(VF_RegModulo^).Login(
                 TRegModulo(VF_RegModulo^).PModulo,
@@ -901,7 +907,7 @@ begin
               if VF_Sair then
                 Exit;
 
-
+              VL_Linha := '24062024154400';
               if (VL_ConexaoStatus = csLogado) and
                 (VF_ConexaoTipo = cnServico) and
                 (TRegModulo(VF_RegModulo^).Menu_estatico = False) then
@@ -924,6 +930,7 @@ begin
 
               end;
 
+              VL_Linha := '24062024154401';
               if (VL_ConexaoStatus = csLogado) and
                 (VF_ConexaoTipo = cnServico) and
                 (TRegModulo(VF_RegModulo^).Menu_Operacional_estatico =
@@ -954,6 +961,7 @@ begin
                 Exit;
 
 
+              VL_Linha := '24062024154402';
               if (VL_ConexaoStatus = csLogado) and
                 (VF_ConexaoTipo = cnServico) and
                 (TRegModulo(VF_RegModulo^).Bin_Estatico = False) then
@@ -978,6 +986,7 @@ begin
 
             end;
 
+            VL_Linha := '24062024154403';
             // inicia as tratativas das solicitações
             if VL_ConexaoStatus = csLogado then
             begin
@@ -985,6 +994,7 @@ begin
               if VF_Sair then
                 Exit;
 
+              VL_Linha := '24062024154404';
               for VL_I := 0 to V_ListaTarefas.Count - 1 do
               begin
                 if VF_Sair then
@@ -1014,27 +1024,43 @@ begin
                 end;
               end;
 
+              VL_Linha := '24062024154405';
               for VL_I := 0 to V_ListaTarefas.Count - 1 do
               begin
-
+                VL_Linha := '24062024155200';
                 if VF_Sair then
                   Exit;
 
 
                 VL_Tarefa := V_ListaTarefas[VL_I];
+                VL_Linha := '2406202415700';
+
+                DateTimeToTimeStamp(now);
+                VL_Linha := '24062024160600';
+                TimeStampToMSecs(DateTimeToTimeStamp(now));
+                VL_Linha := '24062024160601';
+                DateTimeToTimeStamp(VL_Tarefa^.VF_DataCriacao);
+                VL_Linha := '240620241606002';
+                {
                 if ((TimeStampToMSecs(DateTimeToTimeStamp(now)) -
                   TimeStampToMSecs(
                   DateTimeToTimeStamp(VL_Tarefa^.VF_DataCriacao))) >
                   VL_Tarefa^.VF_TempoEspera) then
                 begin
                   // pode estudar uma opcao de enviar uma mensagem de erro
+                  VL_Linha := '2406202415701';
                   V_ListaTarefas.Remove(VL_Tarefa);
                   Dispose(VL_Tarefa);
                   Break;
                 end;
+                }
+
               end;
+
+              VL_Linha := '24062024154406';
             end;
           end;
+
           if VF_ConexaoTipo = cnCaixa then
             Sleep(100)
           else
@@ -1044,8 +1070,10 @@ begin
 
         if VF_ConexaoTipo = cnServico then
         begin
+          VL_Linha := '24062024154500';
           DNucleo.VF_Bin.RemovePorModuloConf(
             TRegModulo(VF_RegModulo^).ModuloConfig_ID);
+          VL_Linha := '24062024154501';
         end;
 
       end;
@@ -1053,7 +1081,7 @@ begin
     except
       on e: Exception do
         GravaLog(F_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID,
-          '', 'opentefnucleo', '200520220934',
+          '', 'opentefnucleo', VL_Linha,
           'Erro na TThModulo.Execute ' + e.ClassName + '/' +
           e.Message, '', VL_Erro, 1);
     end;
@@ -1098,7 +1126,7 @@ begin
   try
 
     GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '2024061911261230',
-        'TDNucleo.iniciar Iniciando', '', 0, 3);
+      'TDNucleo.iniciar Iniciando', '', 0, 3);
 
 
     VL_RegModulo.Menu_Operacional_estatico := True;
@@ -1113,31 +1141,33 @@ begin
       Conf.WriteInteger('Servidor', 'Porta', 39000);
       Conf.WriteBool('Servidor', 'Ativa', True);
       Conf.WriteBool('Servidor', 'Debug', False);
-      {$IFDEF UNIX}
+      {$IFDEF LINUX}
       Conf.WriteString('BancoDados','LibraryLocation',  ExtractFilePath(ParamStr(0)) + 'bd/libfbclient.so');
       {$ELSE}
-      Conf.WriteString('BancoDados','LibraryLocation',  ExtractFilePath(ParamStr(0)) + 'bd\fbclient.dll');
+      Conf.WriteString('BancoDados', 'LibraryLocation',
+        ExtractFilePath(ParamStr(0)) + 'bd\fbclient.dll');
       {$ENDIF}
-      Conf.WriteString('BancoDados','HostName', 'localhost');
-      Conf.WriteInteger('BancoDados','Port', 3050);
-      Conf.WriteString('BancoDados','User', 'SYSDBA');
-      Conf.WriteString('BancoDados','Password', 'masterkey');
-      {$IFDEF UNIX}
+      Conf.WriteString('BancoDados', 'HostName', 'localhost');
+      Conf.WriteInteger('BancoDados', 'Port', 3050);
+      Conf.WriteString('BancoDados', 'User', 'SYSDBA');
+      Conf.WriteString('BancoDados', 'Password', 'masterkey');
+      {$IFDEF LINUX}
       Conf.WriteString('BancoDados','Database', ExtractFilePath(ParamStr(0)) + 'bd/opentef.fdb');
       {$ELSE}
-      Conf.WriteString('BancoDados','Database', ExtractFilePath(ParamStr(0)) + 'bd\opentef.fdb');
+      Conf.WriteString('BancoDados', 'Database', ExtractFilePath(ParamStr(0)) +
+        'bd\opentef.fdb');
       {$ENDIF}
       Conf.Free;
     end;
 
     Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0)) + 'open_tef.ini'));
 
-    ZConexao.LibraryLocation :=Conf.ReadString('BancoDados', 'LibraryLocation', '');
-    ZConexao.HostName:=Conf.ReadString('BancoDados', 'HostName', 'localhost');
+    ZConexao.LibraryLocation := Conf.ReadString('BancoDados', 'LibraryLocation', '');
+    ZConexao.HostName := Conf.ReadString('BancoDados', 'HostName', 'localhost');
     ZConexao.Database := Conf.ReadString('BancoDados', 'Database', 'opentef');
-    ZConexao.User:=Conf.ReadString('BancoDados', 'User', 'SYSDBA');
-    ZConexao.Port:=Conf.ReadInteger('BancoDados', 'Port', 3050);
-    ZConexao.Password:=Conf.ReadString('BancoDados', 'Password', 'masterkey');
+    ZConexao.User := Conf.ReadString('BancoDados', 'User', 'SYSDBA');
+    ZConexao.Port := Conf.ReadInteger('BancoDados', 'Port', 3050);
+    ZConexao.Password := Conf.ReadString('BancoDados', 'Password', 'masterkey');
 
     C_Debug := Conf.ReadBool('Servidor', 'Debug', False);
 
@@ -1175,7 +1205,7 @@ begin
     ModuloCarrega(0);
 
     GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '202211081230',
-        'TDNucleo.iniciar Iniciado', '', 0, 3);
+      'TDNucleo.iniciar Iniciado', '', 0, 3);
 
   except
     on e: Exception do
@@ -2227,8 +2257,8 @@ begin
 
 end;
 
-function TDNucleo.ModuloGetRegAdquirencia(VP_AdquirenciaIdentificacao,
-  VP_Tag: string): TRegModulo;
+function TDNucleo.ModuloGetRegAdquirencia(VP_AdquirenciaIdentificacao, VP_Tag: string):
+TRegModulo;
 var
   VL_I: integer;
   VL_RegModulo: ^TRegModulo;
@@ -2693,8 +2723,8 @@ begin
           if VF_Sair then
             Exit;
 
-          if ((VF_Status <> ssCriada) and (VF_Status <>
-            ssAguardandoResposta)) then
+          if ((VF_Status <> ssCriada) and
+            (VF_Status <> ssAguardandoResposta)) then
             Exit;
 
           if VF_Status = ssCriada then

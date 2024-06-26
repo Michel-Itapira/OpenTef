@@ -16,7 +16,7 @@
     </General>
     <BuildModes>
       <Item Name="Linux64" Default="True"/>
-      <Item Name="Windows64">
+      <Item Name="Win64">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>

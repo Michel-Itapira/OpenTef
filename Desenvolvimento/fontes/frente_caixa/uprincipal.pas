@@ -980,7 +980,6 @@ var
   VL_Dados: PUtf8Char;
   VL_MenuVenda: TF_MenuVenda;
 begin
-
   Result := 0;
   VL_Tag := '';
   VL_Dados := '';

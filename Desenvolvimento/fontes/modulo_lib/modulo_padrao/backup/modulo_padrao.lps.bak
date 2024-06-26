@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Linux64 Debug"/>
+    <BuildModes Active="Win32 Debug"/>
     <Units>
       <Unit>
         <Filename Value="modulo_padrao.lpr"/>
@@ -53,7 +53,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="721"/>
-        <CursorPos X="4" Y="728"/>
+        <CursorPos X="43" Y="730"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -173,6 +173,9 @@
         <UsageCount Value="13"/>
       </Unit>
     </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="TEF_LIB"/>
+    </OtherDefines>
     <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="..\..\libs\func\funcoes.pas"/>

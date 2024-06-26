@@ -8,9 +8,9 @@ object DBancoDados: TDBancoDados
   Width = 466
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8
-    ClientCodepage = 'ISO8859_1'
+    ClientCodepage = 'NONE'
     Properties.Strings = (
-      'codepage=ISO8859_1'
+      'codepage=NONE'
       'controls_cp=GET_ACP'
       'AutoEncodeStrings=OFF'
     )

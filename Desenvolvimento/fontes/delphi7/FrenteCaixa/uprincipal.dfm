@@ -11,6 +11,7 @@ object FPrincipal: TFPrincipal
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object IFundo: TImage
@@ -5873,10 +5874,6 @@ object FPrincipal: TFPrincipal
     object TabSheet1: TTabSheet
       Caption = 'Venda'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label3: TLabel
         Left = 27
         Top = 16
@@ -6091,7 +6088,7 @@ object FPrincipal: TFPrincipal
         Left = 626
         Top = 13
         Width = 135
-        Height = 23
+        Height = 21
         TabOrder = 1
         Text = '123654'
       end
@@ -6099,7 +6096,7 @@ object FPrincipal: TFPrincipal
         Left = 126
         Top = 55
         Width = 116
-        Height = 23
+        Height = 21
         TabOrder = 2
         Text = '0'
       end
@@ -6107,7 +6104,7 @@ object FPrincipal: TFPrincipal
         Left = 507
         Top = 55
         Width = 60
-        Height = 23
+        Height = 21
         TabOrder = 3
         Text = '10'
       end
@@ -6115,7 +6112,7 @@ object FPrincipal: TFPrincipal
         Left = 120
         Top = 194
         Width = 482
-        Height = 23
+        Height = 21
         TabOrder = 4
         Text = 'Compra feita pelo Filho'
       end
@@ -6123,7 +6120,7 @@ object FPrincipal: TFPrincipal
         Left = 326
         Top = 55
         Width = 89
-        Height = 23
+        Height = 21
         TabOrder = 5
         Text = '00012'
       end
@@ -6131,7 +6128,7 @@ object FPrincipal: TFPrincipal
         Left = 933
         Top = 13
         Width = 60
-        Height = 23
+        Height = 21
         TabOrder = 6
         Text = '1'
       end
@@ -6139,7 +6136,7 @@ object FPrincipal: TFPrincipal
         Left = 377
         Top = 13
         Width = 128
-        Height = 23
+        Height = 21
         TabOrder = 7
         Text = '10.86'
       end
@@ -6162,7 +6159,7 @@ object FPrincipal: TFPrincipal
         Left = 711
         Top = 194
         Width = 306
-        Height = 23
+        Height = 21
         TabOrder = 10
         Text = '123'
       end
@@ -6170,7 +6167,7 @@ object FPrincipal: TFPrincipal
         Left = 120
         Top = 231
         Width = 482
-        Height = 23
+        Height = 21
         TabOrder = 11
         Text = 'https://www.validador.com.br/?nota=123'
       end

@@ -909,7 +909,7 @@ begin
                     'HABILITADO=' + StrToSql(VL_Tabela.FieldByName('HABILITADO').AsString) + ',' +
                     'IDENTIFICACAO_ID=' + IntToSql(VL_Identificador) + ',' +
                     'CHAVE_ID=' + IntToSql(VL_Chave) + ',' +
-                    'IDENTIFICADOR_PDV=' + strToSQl(VL_Tabela.FieldByName('IDENTIFICADOR_PDV').AsString) +
+                    'IDENTIFICADOR_PDV=''' + strToSQl(VL_Tabela.FieldByName('IDENTIFICADOR_PDV').AsString) +
                     ' WHERE ' + 'PDV.ID=' + IntToSql(VL_ID);
                 VL_Erro := 46;
                 VL_Linha := '300520221144';
@@ -7671,8 +7671,7 @@ begin
                     VL_TPdvModulo.ConsultaA.Close;
                     VL_TPdvModulo.ConsultaA.SQL.Text := 'SELECT FIRST 1 ID FROM PDV_MODULO_CONF WHERE MODULO_CONF_ID=' +
                         IntToSql(VL_Tabela.FieldByName('MODULO_CONF_ID').AsInteger) + ' AND TAG_NUMERO=' +
-                        StrToSql(VL_Tabela.FieldByName('TAG_NUMERO').AsString) + 'AND PDV_ID=' +
-                        IntToSql(VL_Tabela.FieldByName('PDV_ID').AsInteger);
+                        StrToSql(VL_Tabela.FieldByName('TAG_NUMERO').AsString);
                     VL_Erro := 55;
                     VL_Linha := '030620220923';
                     VL_TPdvModulo.ConsultaA.Open;
@@ -8007,7 +8006,6 @@ begin
                 VL_Erro := 46;
                 VL_Linha := '030620220940';
                 VL_TPdv_Modulo.ConsultaA.ExecSQL;
-
 
                 VL_Mensagem.Limpar;
                 VL_Mensagem.AddComando('00CB', 'R');//alteração aceita

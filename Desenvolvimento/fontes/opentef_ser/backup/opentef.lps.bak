@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="6"/>
         <CursorPos Y="7"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="132"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -20,7 +20,7 @@
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="46" Y="14"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="132"/>
       </Unit>
       <Unit>
         <Filename Value="servico.pas"/>
@@ -31,7 +31,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="124"/>
         <CursorPos X="22" Y="145"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="132"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -44,7 +44,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="1429"/>
         <CursorPos Y="1669"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="132"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -55,9 +55,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1032"/>
-        <CursorPos X="71" Y="1058"/>
-        <UsageCount Value="135"/>
+        <TopLine Value="1023"/>
+        <CursorPos X="45" Y="1043"/>
+        <UsageCount Value="132"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -66,7 +66,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
         <CursorPos X="4" Y="15"/>
-        <UsageCount Value="120"/>
+        <UsageCount Value="117"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -74,7 +74,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1740"/>
         <CursorPos X="15" Y="1756"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="50"/>
       </Unit>
       <Unit>
         <Filename Value="..\libs\func\funcoes.pas"/>
@@ -84,7 +84,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="1835"/>
         <CursorPos X="3" Y="1837"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="47"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -92,27 +92,27 @@
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\win64\classes.pp"/>
         <UnitName Value="Classes"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="44"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\rxdb\ex_rx_xml_datapacket.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="127"/>
         <CursorPos X="34" Y="146"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="14"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="34"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\lcl.pas"/>
         <UnitName Value="LCL"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="11"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\math.pp"/>
@@ -120,21 +120,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="196"/>
         <CursorPos X="71" Y="196"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\lcl\interfaces\gtk2\interfaces.pas"/>
         <UnitName Value="Interfaces"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="11"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\..\lazarus\fpcsrc\packages\fcl-extra\src\daemonapp.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="398"/>
         <CursorPos X="10" Y="414"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="bancodados.pas"/>
@@ -144,7 +144,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="30"/>
         <CursorPos X="5" Y="14"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -153,7 +153,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="99"/>
         <CursorPos X="48" Y="106"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -163,6 +163,10 @@
       <Define2 Value="UNIX"/>
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="opentefnucleo.pas"/>
+        <Caret Line="253" Column="19" TopLine="239"/>
+      </Position>
       <Position>
         <Filename Value="opentef.lpr"/>
         <Caret Line="7"/>
@@ -278,10 +282,6 @@
       <Position>
         <Filename Value="opentefnucleo.pas"/>
         <Caret Line="1040" Column="62" TopLine="1023"/>
-      </Position>
-      <Position>
-        <Filename Value="opentefnucleo.pas"/>
-        <Caret Line="1044" Column="76" TopLine="1023"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -16,45 +16,45 @@ type
     tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro, tsAbortada);
 
   TServidorRecebimentoLib = function(VP_Codigo: integer;
-    VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
-    VP_ID: integer; VP_Chave: pansichar): integer; cdecl;
+    VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+    VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 
   Tiniciarconexao = function(VP_ArquivoLog, VP_Chave, VP_IP_Caixa,
-    VP_IP_Servico: pansichar; VP_PortaCaixa, VP_PortaServico: integer;
+    VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
     VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib;
-    VP_Identificacao: pansichar): integer; cdecl;
+    VP_Identificacao: PChar): integer; cdecl;
   Tfinalizaconexao = function(): integer; cdecl;
-  TResponde = function(VP_Transmissao_ID, VP_Mensagem: pansichar;
+  TResponde = function(VP_Transmissao_ID, VP_Mensagem: PChar;
     VP_ID: integer): integer; cdecl;
 
   TTMensagemCreate = function(var VO_Mensagem: Pointer): integer; cdecl;
   TTMensagemCarregaTags = function(VP_Mensagem: Pointer;
-    VP_Dados: pansichar): integer; cdecl;
+    VP_Dados: PChar): integer; cdecl;
   TTMensagemComando = function(VP_Mensagem: Pointer;
-    var VO_Dados: pansichar): integer; cdecl;
+    var VO_Dados: PChar): integer; cdecl;
   TTMensagemComandoDados = function(VP_Mensagem: Pointer;
-    var VO_Dados: pansichar): integer; cdecl;
+    var VO_Dados: PChar): integer; cdecl;
   TTMensagemFree = procedure(VP_Mensagem: Pointer); cdecl;
   TTMensagemaddtag = function(VP_Mensagem: Pointer;
-    VP_Tag, VP_Dados: pansichar): integer; cdecl;
+    VP_Tag, VP_Dados: PChar): integer; cdecl;
   TTMensagemaddcomando = function(VP_Mensagem: Pointer;
-    VP_Tag, VP_Dados: pansichar): integer; cdecl;
+    VP_Tag, VP_Dados: PChar): integer; cdecl;
   TTMensagemTagAsString = function(VP_Mensagem: Pointer;
-    var VO_Dados: pansichar): integer; cdecl;
+    var VO_Dados: PChar): integer; cdecl;
   TTMensagemTagCount = function(VP_Mensagem: Pointer): integer; cdecl;
-  TTMensagemGetTag = function(VP_Mensagem: Pointer; VP_Tag: pansichar;
-    var VO_Dados: pansichar): integer; cdecl;
+  TTMensagemGetTag = function(VP_Mensagem: Pointer; VP_Tag: PChar;
+    var VO_Dados: PChar): integer; cdecl;
   TTMensagemGetTagIdx = function(VP_Mensagem: Pointer; VL_Idx: integer;
-    var VO_Tag: pansichar; var VO_Dados: pansichar): integer; cdecl;
+    var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
   TTMensagemTagToStr = function(VP_Mensagem: Pointer;
-    var VO_Dados: pansichar): integer; cdecl;
+    var VO_Dados: PChar): integer; cdecl;
   TTMensagemLimpar = procedure(VP_Mensagem: Pointer); cdecl;
   TTMensagemerro = function(VP_CodigoErro: integer;
-    var VO_RespostaMensagem: pansichar): integer; cdecl;
+    var VO_RespostaMensagem: PChar): integer; cdecl;
 
-  TDescriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: pansichar): pansichar; cdecl;
-  TEncriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: pansichar): pansichar; cdecl;
-  Twkc = function(): ansistring; cdecl;
+  TDescriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: PChar): PChar; cdecl;
+  TEncriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: PChar): PChar; cdecl;
+  Twkc = function(): PChar; cdecl;
   Timk = function(): integer; cdecl;
   TpinFromPindPad = function(Pin, Pan, WK: string): string;
 
@@ -189,11 +189,11 @@ type
 
 
 function ServidorRecebimentoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
-  VP_ID: integer; VP_Chave: pansichar): integer; cdecl;
+  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 function ServidorRecebimentoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
-  VP_ID: integer; VP_Chave: pansichar): integer; cdecl;
+  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 function ByteToHex(const Value: array of byte): string;
 
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
@@ -236,8 +236,8 @@ var
 implementation
 
 function ServidorRecebimentoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
-  VP_ID: integer; VP_Chave: pansichar): integer; cdecl;
+  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 var
   VL_Mensagem: Pointer;
   VL_Comando: PChar;
@@ -274,8 +274,8 @@ begin
 end;
 
 function ServidorRecebimentoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: pansichar; VP_IP: pansichar;
-  VP_ID: integer; VP_Chave: pansichar): integer; cdecl;
+  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
+  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 var
   VL_Mensagem: Pointer;
   VL_Comando: PChar;
@@ -1553,6 +1553,7 @@ begin
       begin
         if VL_Senha = '' then
         begin
+           sleep(5000);
           // solicita senha pin pad
           F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
             PChar('005A'), PChar('S'));   //solicita senha
@@ -2242,7 +2243,7 @@ end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 var
-  VL_Pan, VL_WK, VL_Senha: pansichar;
+  VL_Pan, VL_WK, VL_Senha: PChar;
   VL_Resultado: string;
 begin
   VL_Resultado := '';

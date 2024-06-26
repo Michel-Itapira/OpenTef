@@ -1,0 +1,98 @@
+unit uprincipal;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, jpeg, StdCtrls, ComCtrls;
+
+type
+  TForm1 = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    Label3: TLabel;
+    Label9: TLabel;
+    Label25: TLabel;
+    Label11: TLabel;
+    Label26: TLabel;
+    Label12: TLabel;
+    Label8: TLabel;
+    Label4: TLabel;
+    Label31: TLabel;
+    Label28: TLabel;
+    Label1: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    BVenda: TButton;
+    ENSU: TEdit;
+    EDesconto: TEdit;
+    ECaixa: TEdit;
+    EObservacao: TEdit;
+    EOperador: TEdit;
+    EParcela: TEdit;
+    EValorParcela: TEdit;
+    MChave: TMemo;
+    MStatus: TMemo;
+    ECupomFiscal: TEdit;
+    ELink: TEdit;
+    EXml: TMemo;
+    EDataHora: TDateTimePicker;
+    GroupBox1: TGroupBox;
+    Label13: TLabel;
+    Label16: TLabel;
+    Label15: TLabel;
+    Label14: TLabel;
+    EValorItens: TEdit;
+    EValorValeCultura: TEdit;
+    EValorRefeicao: TEdit;
+    EValorAlimentacao: TEdit;
+    TabSheet2: TTabSheet;
+    LTefLib: TLabel;
+    LPinPadLib: TLabel;
+    LPinPadLibHashMd5: TLabel;
+    LPinPadModeloLib: TLabel;
+    LPinPadModeloLibHashMd5: TLabel;
+    LPinPadModelo: TLabel;
+    LPinPadModeloPorta: TLabel;
+    LTempo: TLabel;
+    LHost: TLabel;
+    LPorta: TLabel;
+    LID: TLabel;
+    LChave: TLabel;
+    LIdentificador: TLabel;
+    ETefLib: TEdit;
+    EPinPadLib: TEdit;
+    EPinPadLibHashMd5: TEdit;
+    EPinPadModeloLib: TEdit;
+    EPinPadModeloLibHashMd5: TEdit;
+    EPinPadModelo: TEdit;
+    EPinPadModeloPorta: TEdit;
+    ETempo: TEdit;
+    BInicializar: TButton;
+    EHost: TEdit;
+    EPorta: TEdit;
+    EID: TEdit;
+    EChave: TMemo;
+    EIdentificador: TMemo;
+    BLogin: TButton;
+    BDesconectar: TButton;
+    cbxAmbienteTeste: TCheckBox;
+    BLogGravacao: TButton;
+    IFundo: TImage;
+    PTopo: TPanel;
+    lblStatusConexao: TLabel;
+    LTitulo: TLabel;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+end.

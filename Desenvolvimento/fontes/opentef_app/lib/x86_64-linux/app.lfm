@@ -208,4 +208,13 @@ object FApp: TFApp
     TabOrder = 19
     OnClick = Button11Click
   end
+  object Button12: TButton
+    Left = 112
+    Height = 25
+    Top = 86
+    Width = 75
+    Caption = 'Codificacao'
+    TabOrder = 20
+    OnClick = Button12Click
+  end
 end

@@ -1,7 +1,7 @@
 object F_Principal: TF_Principal
-  Left = 884
+  Left = 1410
   Height = 688
-  Top = 173
+  Top = 54
   Width = 943
   Caption = 'Caixa'
   ClientHeight = 688
@@ -9,14 +9,13 @@ object F_Principal: TF_Principal
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 602
     Top = 16
     Width = 947
-    ActivePage = TabSheet1
-    TabIndex = 0
+    ActivePage = TabSheet2
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Venda'
@@ -369,15 +368,15 @@ object F_Principal: TF_Principal
         TabOrder = 1
       end
       object BVenda: TButton
-        Left = 616
+        Left = 608
         Height = 32
         Top = 32
         Width = 155
         Caption = 'Realizar Venda Open TEF'
         Font.Style = [fsBold]
-        OnClick = BVendaClick
         ParentFont = False
         TabOrder = 2
+        OnClick = BVendaClick
       end
       object EXml: TMemo
         Left = 136
@@ -611,9 +610,9 @@ object F_Principal: TF_Principal
         Font.Pitch = fpVariable
         Font.Quality = fqDraft
         Font.Style = [fsBold]
-        OnClick = BMenuOperacionalClick
         ParentFont = False
         TabOrder = 5
+        OnClick = BMenuOperacionalClick
       end
       object MChave: TMemo
         Left = 608
@@ -643,8 +642,8 @@ object F_Principal: TF_Principal
           Top = 320
           Width = 440
           Caption = 'Inicializar Libs'
-          OnClick = BInicializarClick
           TabOrder = 0
+          OnClick = BInicializarClick
         end
         object ETefLib: TEdit
           Left = 168
@@ -721,7 +720,7 @@ object F_Principal: TF_Principal
           Top = 203
           Width = 296
           TabOrder = 4
-          Text = 'COM6'
+          Text = 'COM4'
         end
         object Label23: TLabel
           Left = 8
@@ -746,10 +745,10 @@ object F_Principal: TF_Principal
           Left = 168
           Height = 19
           Top = 267
-          Width = 116
+          Width = 114
           Caption = 'Ambiente de teste'
-          OnChange = cbxAmbienteTesteChange
           TabOrder = 6
+          OnChange = cbxAmbienteTesteChange
         end
         object Label19: TLabel
           Left = 8
@@ -867,7 +866,7 @@ object F_Principal: TF_Principal
         end
         object EChave: TMemo
           Left = 88
-          Height = 24
+          Height = 40
           Top = 80
           Width = 288
           Lines.Strings = (
@@ -882,9 +881,9 @@ object F_Principal: TF_Principal
           Width = 288
           Caption = 'Login'
           Font.Style = [fsBold]
-          OnClick = BLoginClick
           ParentFont = False
           TabOrder = 3
+          OnClick = BLoginClick
         end
         object Label17: TLabel
           Left = 268
@@ -918,7 +917,7 @@ object F_Principal: TF_Principal
         end
         object EIdentificador: TMemo
           Left = 88
-          Height = 24
+          Height = 40
           Top = 116
           Width = 288
           Lines.Strings = (
@@ -933,9 +932,9 @@ object F_Principal: TF_Principal
           Width = 288
           Caption = 'Desconectar'
           Font.Style = [fsBold]
-          OnClick = BDesconectarClick
           ParentFont = False
           TabOrder = 6
+          OnClick = BDesconectarClick
         end
       end
       object BFinalizarTef: TButton
@@ -944,8 +943,8 @@ object F_Principal: TF_Principal
         Top = 376
         Width = 112
         Caption = 'Finalizar Tef'
-        OnClick = BFinalizarTefClick
         TabOrder = 2
+        OnClick = BFinalizarTefClick
       end
       object BSolicitacao: TButton
         Left = 784
@@ -953,8 +952,8 @@ object F_Principal: TF_Principal
         Top = 415
         Width = 112
         Caption = 'Solicitacao'
-        OnClick = BSolicitacaoClick
         TabOrder = 3
+        OnClick = BSolicitacaoClick
       end
       object BSolicitacaoBlocante: TButton
         Left = 512
@@ -962,8 +961,8 @@ object F_Principal: TF_Principal
         Top = 415
         Width = 128
         Caption = 'Solicitacao Blocante'
-        OnClick = BSolicitacaoBlocanteClick
         TabOrder = 4
+        OnClick = BSolicitacaoBlocanteClick
       end
       object GroupBox5: TGroupBox
         Left = 24
@@ -980,8 +979,8 @@ object F_Principal: TF_Principal
           Top = 48
           Width = 112
           Caption = 'Alterar'
-          OnClick = BAlterarNivelLogClick
           TabOrder = 0
+          OnClick = BAlterarNivelLogClick
         end
         object ELogNivel: TEdit
           Left = 120
@@ -996,19 +995,21 @@ object F_Principal: TF_Principal
         Left = 576
         Height = 19
         Top = 40
-        Width = 100
+        Width = 98
         Caption = 'Servidor Oficial'
-        OnChange = RServidorOficialChange
+        Checked = True
         TabOrder = 6
+        TabStop = True
+        OnChange = RServidorOficialChange
       end
       object RServidorLocal: TRadioButton
         Left = 744
         Height = 19
         Top = 40
-        Width = 94
+        Width = 92
         Caption = 'Servidor Local'
-        OnChange = RServidorLocalChange
         TabOrder = 7
+        OnChange = RServidorLocalChange
       end
     end
     object TabSheet3: TTabSheet
@@ -1021,8 +1022,8 @@ object F_Principal: TF_Principal
         Top = 32
         Width = 75
         Caption = 'Conciliar'
-        OnClick = Button2Click
         TabOrder = 0
+        OnClick = Button2Click
       end
       object GConciliacao: TDBGrid
         Left = 40
@@ -1063,7 +1064,7 @@ object F_Principal: TF_Principal
         Left = 40
         Height = 19
         Top = 288
-        Width = 75
+        Width = 73
         Caption = 'Salvar CSV'
         TabOrder = 2
       end
@@ -1114,8 +1115,8 @@ object F_Principal: TF_Principal
     Top = 632
     Width = 160
     Caption = 'Verificar Conexão'
-    OnClick = Button1Click
     TabOrder = 2
+    OnClick = Button1Click
   end
   object MDConciliacao: TRxMemoryData
     Active = True
