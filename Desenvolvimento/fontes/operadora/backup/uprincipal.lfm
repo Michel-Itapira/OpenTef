@@ -467,7 +467,7 @@ object Form1: TForm1
           OnClick = BAtivaClick
         end
         object BDesativar: TButton
-          Left = 168
+          Left = 208
           Height = 26
           Top = 272
           Width = 75
@@ -476,7 +476,7 @@ object Form1: TForm1
           OnClick = BDesativarClick
         end
         object BInicializaDll: TButton
-          Left = 104
+          Left = 48
           Height = 26
           Top = 232
           Width = 105
@@ -500,6 +500,15 @@ object Form1: TForm1
           Width = 71
           Caption = 'Identificação:'
           ParentColor = False
+        end
+        object Button3: TButton
+          Left = 176
+          Height = 25
+          Top = 233
+          Width = 107
+          Caption = 'Finalizar DLL'
+          TabOrder = 11
+          OnClick = Button3Click
         end
       end
       object IFoto: TImage

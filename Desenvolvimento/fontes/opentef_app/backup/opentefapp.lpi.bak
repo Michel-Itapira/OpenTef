@@ -293,6 +293,9 @@
       <Item>
         <Name Value="ERangeError"/>
       </Item>
+      <Item>
+        <Name Value="EIdNotASocket"/>
+      </Item>
     </Exceptions>
   </Debugging>
 </CONFIG>

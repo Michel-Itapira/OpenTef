@@ -52,6 +52,9 @@
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
@@ -100,6 +103,9 @@
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
@@ -115,8 +121,66 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="Win32 Debug">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\mcom_lib\win32\mcom_lib.dll" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dDEBUG
+-dWIN"/>
+            <OtherDefines Count="4">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="MCOM"/>
+              <Define2 Value="DEBUG"/>
+              <Define3 Value="WIN"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <SharedMatrixOptions Count="1">
-        <Item1 ID="201678388336" Modes="Win64 Debug,Win64 Release,Win32 Release" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+        <Item1 ID="201678388336" Modes="Win64 Debug,Win64 Release,Win32 Release,Win32 Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -216,8 +280,12 @@
         <DebugInfoType Value="dsDwarf3"/>
         <UseHeaptrc Value="True"/>
         <TrashVariables Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>

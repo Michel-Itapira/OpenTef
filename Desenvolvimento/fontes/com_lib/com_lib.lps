@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Win64 Release">
+    <BuildModes Active="Linux64 Debug">
       <Item Name="Linux64 Release">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="nogui"/>
@@ -83,6 +83,9 @@
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>

@@ -1,4 +1,4 @@
-package opentef;
+//package opentef;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -6,8 +6,8 @@ import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.*;
 
-public interface TefLib extends Library {
-		TefLib INSTANCE = Native.load("E:\\Lazarus\\OpenTef\\publica\\binarios\\tef_lib\\win64\\tef_lib.dll", TefLib.class);
+public interface TefLib extends Library {	
+		TefLib INSTANCE = Native.load("E:\\Projetos\\Desenvolvedor\\Thiago\\Lazarus\\OpenTef\\publica\\binarios\\tef_lib\\win64\\tef_lib.dll", TefLib.class);
 	
 	   interface RetornoCliente extends com.sun.jna.Callback {
 	   	int callbackRetornoCliente(String dadosEntrada, String dadosSaida);
@@ -38,7 +38,7 @@ public interface TefLib extends Library {
 	   }
 
 	   
-	   int inicializar(int pinPadModelo, String pinPadModeloLib, String pinPadModeloPorta, String VP_PinPadLib, String arquivoLog,
+	   int inicializar(Pointer tef, int pinPadModelo, String pinPadModeloLib, String pinPadModeloPorta, String VP_PinPadLib, String arquivoLog,
 			   RetornoCliente retornoCliente,SolicitaDadosTransacao solicitaDadosTransacao,SolicitaDadosPDV solicitaDadosPDV,
 			   Imprimir imprimir, MostraMenu mostraMenu,MensagemOperador mensagemOperador,int ambienteTeste);	   
 	   int finalizar();

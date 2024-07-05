@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Win32 Debug"/>
+    <BuildModes Active="Win64 Debug"/>
     <Units>
       <Unit>
         <Filename Value="modulo_padrao.lpr"/>
@@ -32,7 +32,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="3"/>
-        <CursorPos X="126" Y="9"/>
+        <CursorPos X="60" Y="9"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -52,8 +52,8 @@
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="721"/>
-        <CursorPos X="43" Y="730"/>
+        <TopLine Value="720"/>
+        <CursorPos X="9" Y="730"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>

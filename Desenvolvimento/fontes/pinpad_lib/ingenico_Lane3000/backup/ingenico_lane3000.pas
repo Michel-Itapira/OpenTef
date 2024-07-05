@@ -338,7 +338,7 @@ begin
         d_byte[I] := Ord(DADOS[I + 1]);
     end;
 
-    v_crc16 := crc_16(PByte(d_byte), Length(d_byte));
+    v_crc16 := crc16(d_byte, Length(d_byte));
     Result := abecs_cmd_mli(fPinPad, 'OPENTEFI', Length(d_byte), v_crc16, 1);
 
     if Result <> 0 then

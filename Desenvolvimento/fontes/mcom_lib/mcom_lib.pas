@@ -39,6 +39,7 @@ exports
     mensagemgettagposicao,
     mensagemaddtagposicao,
 
+    mensagemdispose,
     alterarnivellog,
     versao;
 

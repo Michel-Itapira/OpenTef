@@ -1,6 +1,7 @@
 unit funcoes;
 
 {$mode ObjFPC}{$H+}
+//{$RANGECHECKS OFF}
 
 interface
 
@@ -8,23 +9,27 @@ uses
   Classes,
   SysUtils,
   StrUtils,
+  syncobjs,
+  ExtCtrls,
+  Graphics,
+  Math,
+  typinfo,
+
+  {$IFNDEF PINPAD_LIB}
   ZDataset,
   ZConnection,
   DB,
   IdContext, IdTCPClient,
   IdSSLOpenSSL,
-  {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)OR DEFINED(COM_LIB)OR  DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
+  IdTime,
+  ubarcodes,
+  rxmemds,
+  {$ENDIF}
+  {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB)OR DEFINED(COM_LIB)OR  DEFINED(PINPAD_LIB) OR  DEFINED(MCOM)}
   def,
   {$ENDIF}
-  IdTime,
-  syncobjs,
-  ExtCtrls,
-  Graphics,
-  ubarcodes,
-  Math,
-  base64,
-  typinfo,
-  rxmemds;
+
+  base64;
 
 type
 
@@ -42,13 +47,13 @@ type
   TLBytes = array of byte;
 
   TTag = record
-    TagQt: String;
+    TagQt: string;
     TagTamanho: longint;
-    Tag: String;
+    Tag: string;
 
-    DadosQt: String;
+    DadosQt: string;
     DadosTamanho: longint;
-    Dados: String;
+    Dados: string;
   end;
 
   TCompatibilidade_Versao = (CvAtual, CvDesatualizado, CvAtualizar,
@@ -65,26 +70,24 @@ type
   private
     fTags: array of TTag;
   public
-    function CarregaTags(VP_Dados: String): integer;
-    function TagToStr(var VO_Dados: String): integer;
-    function AddComando(VP_Tag, VP_Dados: String): integer;
-    function GetComando(var VO_Tag: String; var VO_Dados: String): integer;
-    function GetComandoInt(var VO_Tag: integer; var VO_Dados: String): integer;
-    function GetTag(VP_Tag: String; var VO_Dados: String): integer;
-    function GetTag(VP_Posicao: integer; var VO_Tag: String;
-      var VO_Dados: String): integer;
+    function CarregaTags(VP_Dados: string): integer;
+    function TagToStr(var VO_Dados: string): integer;
+    function AddComando(VP_Tag, VP_Dados: string): integer;
+    function GetComando(var VO_Tag: string; var VO_Dados: string): integer;
+    function GetComandoInt(var VO_Tag: integer; var VO_Dados: string): integer;
+    function GetTag(VP_Tag: string; var VO_Dados: string): integer;
+    function GetTag(VP_Posicao: integer; var VO_Tag: string; var VO_Dados: string): integer;
     function GetTag(VP_Posicao: integer; var VO_Tag: TTag): integer;
-    function GetTag(VP_Tag: String; var VO_Dados: int64): integer;
-    function GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: String;
-      var VO_Dados: String): integer;
-    function GetTagAsAstring(VP_Tag: String): String;
-    function Comando(): String;
-    function TagsAsString: String;
+    function GetTag(VP_Tag: string; var VO_Dados: int64): integer;
+    function GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: string; var VO_Dados: string): integer;
+    function GetTagAsAstring(VP_Tag: string): string;
+    function Comando(): string;
+    function TagsAsString: string;
     function TagCount(): integer;
-    function ComandoDados(): String;
-    function GetTagAsInteger(VP_Tag: String): integer;
-    function AddTag(VP_Tag, VP_Dados: String): integer;
-    function AddTag(VP_Tag: String; VP_Dados: integer): integer;
+    function ComandoDados(): string;
+    function GetTagAsInteger(VP_Tag: string): integer;
+    function AddTag(VP_Tag, VP_Dados: string): integer;
+    function AddTag(VP_Tag: string; VP_Dados: integer): integer;
     function AddTag(VP_Posicao: integer; VP_Tag, VP_Dados: string): integer;
     procedure Limpar;
     constructor Create;
@@ -126,22 +129,14 @@ type
   // pmA permissao de administrador pode gerenciar as transacao e fazer cadastros
   // pmU permissao de usuario consulta e visualizacao das transacoes
 
-  TRetornoModulo = procedure(VP_Transmissao_ID: PChar;
-    VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: PChar;
-    VP_Modulo: Pointer); cdecl;
-  TRetorno = procedure(VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: integer;
-    VP_Dados: PChar); cdecl;
+  TRetornoModulo = procedure(VP_Transmissao_ID: PChar; VP_Tarefa_ID, VP_ProcID, VP_Erro: integer; VP_Dados: PChar; VP_Modulo: Pointer); cdecl;
+  TRetorno = procedure(VP_ClassePai: pointer; VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 
-  TRetornoDoCliente = function(VP_DadosEntrada: PChar;
-    var VO_DadosSaida: PChar): integer; cdecl;
-  TServidorRecebimento = procedure(VP_Erro: integer;
-    VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-    VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string;
-    VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string;
-    VP_Permissao: TPermissao; VP_ClienteIP: string);
-  TServidorRecebimentoLib = function(VP_Erro: integer;
-    VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-    VP_Conexao_ID: integer; VP_Chave: PChar): integer; cdecl;
+  TRetornoDoCliente = function(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+  TStrDispose = procedure(VP_PChar: PChar): integer; cdecl;
+  TServidorRecebimento = procedure(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer; VP_Terminal_Tipo: string;
+    VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
+  TServidorRecebimentoLib = function(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_Conexao_ID: integer; VP_Chave: PChar): integer; cdecl;
   TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando,
     tsAguardandoComando, tsNaoLocalizada, tsInicializada,
     tsComErro, tsAbortada, tsAguardandoDadosPDV);
@@ -190,8 +185,7 @@ type
     constructor Create(VO_ListaThreads: TList);
     procedure parar;
     procedure abortar;
-    function aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean;
-      VP_Temporizador: Pointer): TAguardaEvento;
+    function aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean; VP_Temporizador: Pointer): TAguardaEvento;
     destructor Destroy; override;
 
   end;
@@ -210,18 +204,17 @@ type
     function GetStatus: TTransacaoStatus;
     procedure SetErroDescricao(VP_Descricao: string);
     procedure SetStatus(VP_Status: TTransacaoStatus);
-    function GetChaveTransacao: String;
+    function GetChaveTransacao: string;
   public
-    constructor Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: String;
-      VP_Terminal_ID: int64; VP_TransacaoString: String);
+    constructor Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: string; VP_Terminal_ID: int64; VP_TransacaoString: string);
     destructor Destroy; override;
-    function AsString: String;
-    function GetID: String;
+    function AsString: string;
+    function GetID: string;
     function TempoAguarda: integer;
     property erro: integer read GetErro write SetErro;
     property erroDescricao: string read GetErroDescricao write SetErroDescricao;
-    property ID: String read GetID;
-    property chaveTransacao: String read GetChaveTransacao;
+    property ID: string read GetID;
+    property chaveTransacao: string read GetChaveTransacao;
     property STATUS: TTransacaoStatus read GetSTATUS write SetStatus;
   end;
 
@@ -240,27 +233,30 @@ type
     function objetoGet(VP_ID: integer): Pointer;
   end;
 
-function Formata(Texto, Espaco: string; Tamanho: int64;
-  Alinha_Esquerda: boolean): string;
-procedure StrToRxMemData(VP_Dados: String; var VO_MemDataSet: TRxMemoryData);
-function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): String;
-function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): String;
-procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string;
-  var VO_Chave: String);
+{$IFNDEF PINPAD_LIB}
+procedure StrToRxMemData(VP_Dados: string; var VO_MemDataSet: TRxMemoryData);
+function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): string;
+function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): string;
+procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
+procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
+function GerarQRCodeAsString(QrCode: string): string;
+{$ENDIF}
+
+function Formata(Texto, Espaco: string; Tamanho: int64; Alinha_Esquerda: boolean): string;
+
+procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: string);
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer;
-  VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: String;
-  VP_CodigoErro: integer; VP_NivelLog: integer);
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: string; VP_CodigoErro: integer; VP_NivelLog: integer);
 function versao(var VO_Dados: PChar): integer; cdecl;
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
-function PermissaoToStr(VP_Permissao: TPermissao): String;
-function PermissaoToStrFormatada(VP_Permissao: TPermissao): String;
-function StrToPermissao(VP_Permissao: String): TPermissao;
-function TipoTagToStr(VP_TipoTag: integer): String;
-function StrToTipoTag(VP_TipoTag: String): integer;
-function TipoTerminalToStr(VP_TipoTerminal: integer): String;
-function StrToTipoTerminal(VP_TipoTerminal: String): integer;
+function PermissaoToStr(VP_Permissao: TPermissao): string;
+function PermissaoToStrFormatada(VP_Permissao: TPermissao): string;
+function StrToPermissao(VP_Permissao: string): TPermissao;
+function TipoTagToStr(VP_TipoTag: integer): string;
+function StrToTipoTag(VP_TipoTag: string): integer;
+function TipoTerminalToStr(VP_TipoTerminal: integer): string;
+function StrToTipoTerminal(VP_TipoTerminal: string): integer;
 function ConexaoStatusToInt(VP_ConexaoStatus: TConexaoStatus): integer;
 function IntToConexaoStatus(VP_ConexaoStatus: integer): TConexaoStatus;
 function ConexaoTipoToInt(VP_ConexaoTipo: TConexaoTipo): integer;
@@ -276,34 +272,26 @@ function FormataDoc(VP_Tipo: TTipoDocumento; VP_Documento: string): string;
 function TempoPassouMiliSegundos(VP_Agora: TDateTime): real;
 procedure StrToImagem(Dados: string; var Imagem: Timage; Tipo_Imagem: TImagem = TI_JPG);
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
-procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
-function IntToSQL(LetraNumero: int64; ConsideraZeroNull: boolean = False;
-  ConsideraMenosUmNull: boolean = False): string;
-function FloatToSql(VP_Valor: real; VP_ConsideraZeroNull: boolean = False;
-  VP_ConsideraMenosUmNull: boolean = False): string;
-function CLNValoresSQL(LetraNumero: string; ConsideraZeroNull: boolean = False;
-  ConsideraMenosUmNull: boolean = False): string;
-function StrToSql(S: string; ConsideraNull: boolean = False;
-  VL_Tamanho: int64 = 0): string;
+
+function IntToSQL(LetraNumero: int64; ConsideraZeroNull: boolean = False; ConsideraMenosUmNull: boolean = False): string;
+function FloatToSql(VP_Valor: real; VP_ConsideraZeroNull: boolean = False; VP_ConsideraMenosUmNull: boolean = False): string;
+function CLNValoresSQL(LetraNumero: string; ConsideraZeroNull: boolean = False; ConsideraMenosUmNull: boolean = False): string;
+function StrToSql(S: string; ConsideraNull: boolean = False; VL_Tamanho: int64 = 0): string;
 function VerificaSelect(Sql: string): string;
 function ConverteSQL(Script: string): string;
 function CriaID: string;
-function GerarQRCodeAsString(QrCode: string): string;
 function CompVersao(VersaoAtual, VersaoCliente: TVersao): TCompatibilidade_Versao;
 function StrToVer(S: string): TVersao;
 function VerToStr(Versao: TVersao): string;
 function CLNInteiro(LetraNumero: string): int64;
-function Tiraletra(DeixaZero: boolean; LetraNumero: string;
-  RetornaEspaco: boolean = False): string;
+function Tiraletra(DeixaZero: boolean; LetraNumero: string; RetornaEspaco: boolean = False): string;
 function CLNNumeros(LetraNumero: string): real;
 function StrToType(Tipo: PTypeInfo; Nome: string; Formata: boolean = False): variant;
 
 
-function copiaTagPosicao(VP_Posicao: integer;
-  VP_TagEntrada, VO_TagSaida: TMensagem): integer;
+function copiaTagPosicao(VP_Posicao: integer; VP_TagEntrada, VO_TagSaida: TMensagem): integer;
 procedure copiaTag(VP_TagEntrada, VP_TagSaida: TMensagem; VP_LimparTagSaida: boolean);
-procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData;
-  VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean = False);
+
 
 function mensagemcreate_id(var VO_ID: integer): integer; cdecl;
 function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
@@ -313,22 +301,17 @@ function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): intege
 procedure mensagemfree(VP_Mensagem: Pointer); cdecl;
 function mensagemfree_id(VP_ID: integer): integer; cdecl;
 function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
-function mensagemaddcomando(VP_Mensagem: Pointer;
-  VP_Tag, VP_Dados: PChar): integer; cdecl;
-function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer;
-  VP_Tag, VP_Dados: PChar): integer; cdecl;
+function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 function mensagemtagcount(VP_Mensagem: Pointer): integer; cdecl;
-function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar;
-  var VO_Dados: PChar): integer; cdecl;
-function mensagemgettagposicao(VP_Mensagem: Pointer; VP_Posicao: integer;
-  VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
-function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer;
-  var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemgettagposicao(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 procedure mensagemlimpar(VP_Mensagem: Pointer); cdecl;
-function mensagemerro(VP_CodigoErro: integer;
-  var VO_RespostaMensagem: PChar): integer; cdecl;
+function mensagemerro(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
+procedure mensagemdispose(VP_PChar: PChar); cdecl;
 function Crc16(s: TLBytes; len: integer; Polynom: word = $1021; Seed: word = $00): word;
 function ByteToHex(Value: TLBytes): string;
 procedure HexToByte(Value: string; var VO_Retorno: TLBytes);
@@ -350,6 +333,189 @@ const
 
 
 implementation
+
+{$IFNDEF PINPAD_LIB}
+
+function GerarQRCodeAsString(QrCode: string): string;
+var
+  Barcode: TBarcodeQR;
+  Dados: string;
+begin
+  Dados := '';
+  Barcode := TBarcodeQR.Create(nil);
+  Barcode.Width := 230;
+  Barcode.Height := 230;
+  Barcode.ECCLevel := eBarcodeQR_ECCLevel_Auto;
+  //    Barcode.StrictSize:=False;
+  Barcode.BackgroundColor := clNone;
+  Barcode.Text := QrCode;
+  BarcodeToStr(Dados, Barcode);
+  Result := Dados;
+  Barcode.Free;
+end;
+
+procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
+var
+  R: TRect;
+  png: TPortableNetworkGraphic;
+  img: TImage;
+begin
+  png := TPortableNetworkGraphic.Create;
+  img := TImage.Create(nil);
+  try
+    R := Rect(0, 0, Barcode.Width, Barcode.Height);
+    png.SetSize(Barcode.Width, Barcode.Height);
+    png.Monochrome := True;
+    png.Canvas.Brush.Color := clWhite;
+    png.Canvas.FillRect(R);
+
+    Barcode.PaintOnCanvas(png.Canvas, R);
+    img.Picture.Assign(png);
+
+    ImagemToStr(Dados, img);
+  finally
+    png.Free;
+    img.Free;
+  end;
+
+end;
+
+function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): string;
+var
+  VL_MemString: TStringStream;
+  VL_Mem: TMemoryStream;
+  //VL_String: String;
+  //VL_bytes: array of byte;
+  //VL_i: integer;
+begin
+  //VL_bytes := nil;
+
+  VL_MemString := TStringStream.Create;
+  VL_Mem := TMemoryStream.Create;
+
+  VO_MemDataSet.SaveToStream(VL_Mem);
+
+  VL_Mem.SaveToStream(VL_MemString);
+
+
+  Result := EncodeStringBase64(VL_MemString.DataString);
+
+{    VL_String := VL_MemString.DataString;
+
+    //  converte em bytes
+    for VL_i := 0 to Length(VL_String) - 1 do
+    begin
+        SetLength(VL_bytes, Length(VL_bytes) + 1);
+        VL_bytes[VL_i] := Ord(VL_String[VL_i + 1]);
+    end;
+    // converte em hex
+    VL_String := '';
+    for VL_i := 0 to Length(VL_bytes) - 1 do
+        VL_String := VL_String + HexStr(VL_bytes[VL_i], 2);
+
+    Result := VL_String; }
+  VL_MemString.Free;
+  VL_Mem.Free;
+end;
+
+procedure StrToRxMemData(VP_Dados: string; var VO_MemDataSet: TRxMemoryData);
+var
+  //VL_bytes: array of byte;
+  //VL_i: integer;
+  VL_String: string;
+  VL_MemString: TStringStream;
+  VL_Mem: TMemoryStream;
+begin
+
+  //VL_bytes := nil;
+  // converte em bytes
+  if VP_Dados = '' then
+    exit;
+
+  {  for VL_i := 0 to (Length(VP_Dados) div 2) - 1 do
+    begin
+        SetLength(VL_bytes, Length(VL_bytes) + 1);
+        VL_bytes[VL_i] := Hex2Dec(copy(VP_Dados, ((VL_i + 1) * 2) - 1, 2));
+    end;
+
+    VL_String := '';
+
+
+    for VL_i := 0 to Length(VL_bytes) - 1 do
+    begin
+        SetLength(VL_String, Length(VL_String) + 1);
+        VL_String[VL_i + 1] := char(VL_bytes[VL_i]);
+    end;
+
+
+    VL_MemString := TStringStream.Create(VL_String);
+    }
+
+  VL_MemString := TStringStream.Create(DecodeStringBase64(VP_Dados));
+
+  VL_Mem := TMemoryStream.Create;
+
+  VL_MemString.SaveToStream(VL_Mem);
+
+  VO_MemDataSet.LoadFromStream(VL_Mem);
+  VL_MemString.Free;
+  VL_Mem.Free;
+
+end;
+
+
+function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): string;
+var
+  VL_MemDataset: TRxMemoryData;
+begin
+  Result := '';
+  VL_MemDataset := TRxMemoryData.Create(nil);
+  try
+    VO_ZQuery.First;
+    VL_MemDataset.LoadFromDataSet(VO_ZQuery, MaxInt, lmCopy);
+    Result := RxMemDataToStr(VL_MemDataset);
+  finally
+    VL_MemDataset.Free;
+  end;
+end;
+
+procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData; VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean);
+var
+  I: integer;
+begin
+  if not Assigned(VO_TOrigemMemDataset) then
+    exit;
+  if not Assigned(VO_TDestinoMemDataset) then
+    exit;
+  if not VO_TOrigemMemDataset.Active then
+    exit;
+  if not VO_TDestinoMemDataset.Active then
+    exit;
+  if VL_Linha = False then
+    VO_TOrigemMemDataset.First;
+  while not VO_TOrigemMemDataset.EOF do
+  begin
+    for I := 0 to VO_TOrigemMemDataset.FieldCount - 1 do
+    begin
+      if VO_TDestinoMemDataset.FindField(VO_TOrigemMemDataset.Fields[I].FieldName) <> nil then
+      begin
+        if not (VO_TDestinoMemDataset.State in [dsInsert, dsEdit]) then
+          VO_TDestinoMemDataset.Insert;
+        VO_TDestinoMemDataset.FindField(
+          VO_TOrigemMemDataset.Fields[I].FieldName).AsString :=
+          VO_TOrigemMemDataset.Fields[I].AsString;
+      end;
+    end;
+    if VO_TDestinoMemDataset.State in [DsInsert, DsEdit] then
+      VO_TDestinoMemDataset.Post;
+    if VL_Linha then
+      Break;
+    VO_TOrigemMemDataset.Next;
+  end;
+
+end;
+
+{$ENDIF }
 
 function CLNInteiro(LetraNumero: string): int64;
 begin
@@ -394,8 +560,7 @@ begin
 end;
 
 
-function Tiraletra(DeixaZero: boolean; LetraNumero: string;
-  RetornaEspaco: boolean = False): string;
+function Tiraletra(DeixaZero: boolean; LetraNumero: string; RetornaEspaco: boolean = False): string;
 var
   LocalLetraFuncao, i: integer;
   ResultadoFuncao: string;
@@ -472,14 +637,12 @@ begin
   if VersaoAtual.Versao <> VersaoCliente.Versao then
     Result := CvAtualizar
   else
-  if (VersaoAtual.Compilacao > VersaoCliente.Compilacao) and
-    (VersaoAtual.Versao = VersaoCliente.Versao) then
+  if (VersaoAtual.Compilacao > VersaoCliente.Compilacao) and (VersaoAtual.Versao = VersaoCliente.Versao) then
     Result := CvDesatualizado;
 end;
 
 
-function Formata(Texto, Espaco: string; Tamanho: int64;
-  Alinha_Esquerda: boolean): string;
+function Formata(Texto, Espaco: string; Tamanho: int64; Alinha_Esquerda: boolean): string;
 var
   i: integer;
 begin
@@ -678,52 +841,6 @@ begin
   Sm.Free;
 end;
 
-
-function GerarQRCodeAsString(QrCode: string): string;
-var
-  Barcode: TBarcodeQR;
-  Dados: string;
-begin
-  Dados := '';
-  Barcode := TBarcodeQR.Create(nil);
-  Barcode.Width := 230;
-  Barcode.Height := 230;
-  Barcode.ECCLevel := eBarcodeQR_ECCLevel_Auto;
-  //    Barcode.StrictSize:=False;
-  Barcode.BackgroundColor := clNone;
-  Barcode.Text := QrCode;
-  BarcodeToStr(Dados, Barcode);
-  Result := Dados;
-  Barcode.Free;
-end;
-
-procedure BarcodeToStr(var Dados: string; Barcode: TBarcodeQR);
-var
-  R: TRect;
-  png: TPortableNetworkGraphic;
-  img: TImage;
-begin
-  png := TPortableNetworkGraphic.Create;
-  img := TImage.Create(nil);
-  try
-    R := Rect(0, 0, Barcode.Width, Barcode.Height);
-    png.SetSize(Barcode.Width, Barcode.Height);
-    png.Monochrome := True;
-    png.Canvas.Brush.Color := clWhite;
-    png.Canvas.FillRect(R);
-
-    Barcode.PaintOnCanvas(png.Canvas, R);
-    img.Picture.Assign(png);
-
-    ImagemToStr(Dados, img);
-  finally
-    png.Free;
-    img.Free;
-  end;
-
-end;
-
-
 function mensagemcreate_id(var VO_ID: integer): integer; cdecl;
 var
   VL_Mensagem: ^TMensagem;
@@ -761,7 +878,7 @@ end;
 
 function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: String;
+  VL_Dados: string;
 begin
   Result := 0;
   VL_Dados := TMensagem(VP_Mensagem).Comando();
@@ -771,7 +888,7 @@ end;
 
 function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_String: String;
+  VL_String: string;
 begin
   Result := 0;
   VL_String := TMensagem(VP_Mensagem).ComandoDados();
@@ -815,21 +932,19 @@ begin
   Result := TMensagem(VP_Mensagem).AddTag(VP_Tag, VP_Dados);
 end;
 
-function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer;
-  VP_Tag, VP_Dados: PChar): integer; cdecl;
+function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 begin
   Result := TMensagem(VP_Mensagem).AddTag(VP_Posicao, VP_Tag, VP_Dados);
 end;
 
-function mensagemaddcomando(VP_Mensagem: Pointer;
-  VP_Tag, VP_Dados: PChar): integer; cdecl;
+function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 begin
   Result := TMensagem(VP_Mensagem).AddComando(VP_Tag, VP_Dados);
 end;
 
 function mensagemtagasstring(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_String: String;
+  VL_String: string;
 begin
   Result := 0;
   VL_String := TMensagem(VP_Mensagem).TagsAsString;
@@ -842,10 +957,9 @@ begin
   Result := TMensagem(VP_Mensagem).TagCount;
 end;
 
-function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar;
-  var VO_Dados: PChar): integer; cdecl;
+function mensagemgettag(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: String;
+  VL_Dados: string;
 begin
   VL_Dados := '';
   Result := TMensagem(VP_Mensagem).GetTag(VP_Tag, VL_Dados);
@@ -855,10 +969,9 @@ begin
 
 end;
 
-function mensagemgettagposicao(VP_Mensagem: Pointer; VP_Posicao: integer;
-  VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemgettagposicao(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: String;
+  VL_Dados: string;
 begin
   VL_Dados := '';
   Result := TMensagem(VP_Mensagem).GetTagTabelaPosicao(VP_Posicao, VP_Tag, VL_Dados);
@@ -867,10 +980,9 @@ begin
   StrPCopy(VO_Dados, VL_Dados);
 end;
 
-function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer;
-  var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+function mensagemgettagidx(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados, VL_Tag: String;
+  VL_Dados, VL_Tag: string;
 begin
   VL_Tag := '';
   VL_Dados := '';
@@ -885,7 +997,7 @@ end;
 
 function mensagemtagtostr(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 var
-  VL_Dados: String;
+  VL_Dados: string;
 begin
   VL_Dados := '';
   Result := TMensagem(VP_Mensagem).TagToStr(VL_Dados);
@@ -898,26 +1010,34 @@ begin
   TMensagem(VP_Mensagem).Limpar;
 end;
 
+procedure mensagemdispose(VP_PChar: PChar); cdecl;
+begin
+  if not Assigned(VP_PChar) then
+     Exit;
+
+  if MemSize(VP_PChar) <= 0 then
+     Exit;
+
+  StrDispose(VP_PChar);
+end;
 
 {$R *.lfm}
 
 { TErroMensagem }
 
 
-function mensagemerro(VP_CodigoErro: integer;
-  var VO_RespostaMensagem: PChar): integer; cdecl;
+function mensagemerro(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 var
-  VL_String: String;
+  VL_String: string;
 begin
-
-  VO_RespostaMensagem := StrAlloc(2);
-  StrPCopy(VO_RespostaMensagem, '');
-
-  Result := 0;
-  VL_String := '';
-
   if VP_CodigoErro = 0 then
-    exit
+  begin
+    VO_RespostaMensagem := StrAlloc(1);
+    StrPCopy(VO_RespostaMensagem, '');
+    Result := 0;
+    VL_String := '';
+    exit;
+  end
   else
   begin
     case VP_CodigoErro of
@@ -1057,10 +1177,11 @@ begin
       120: VL_String := 'Não é possível buscar essa tag pois ela é protegida';
       121: VL_String :=
           'Não é possível realizar a conciliacao, pois a versão está desatualizada';
-      122: VL_String := 'ESSA CONEXAO NÃO PERMITE CONCILIAÇÃO';
+      122: VL_String := 'ESSA CONEXÃO NÃO PERMITE CONCILIAÇÃO';
       123: VL_String :=
           'Não é possível enviar mais de uma conciliacao para a mesma operadora';
       124: VL_String := 'Erro insperado na lib do pinpad';
+      125: VL_String := 'Ponteiro do tef informado está nulo';
       else
       begin
         Result := 1;
@@ -1203,8 +1324,7 @@ begin
   end;
 end;
 
-function TTemporizador.aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean;
-  VP_Temporizador: Pointer): TAguardaEvento;
+function TTemporizador.aguarda(VP_Tempo: cardinal; VP_Reaguardar: boolean; VP_Temporizador: Pointer): TAguardaEvento;
 begin
   V_Aguardando := True;
   Result := agTempo;
@@ -1278,9 +1398,7 @@ begin
     VL_Data := now;
     while not Terminated do
     begin
-      if ((fTempo <> INFINITE) and
-        ((TimeStampToMSecs(DateTimeToTimeStamp(now)) -
-        TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > fTempo)) then
+      if ((fTempo <> INFINITE) and ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > fTempo)) then
       begin
         if Assigned(fTemporizador) then
           TTemporizador(fTemporizador).fEvento := agTempo;
@@ -1336,19 +1454,18 @@ begin
   fMensagem.AddTag('00A4', TransacaoStatusToInt(VP_Status));
 end;
 
-function TTransacao.GetID: String;
+function TTransacao.GetID: string;
 begin
   Result := fMensagem.GetTagAsAstring('0034');
 end;
 
-function TTransacao.GetChaveTransacao: String;
+function TTransacao.GetChaveTransacao: string;
 begin
   Result := fMensagem.GetTagAsAstring('00F1');
 end;
 
 
-constructor TTransacao.Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: String;
-  VP_Terminal_ID: int64; VP_TransacaoString: String);
+constructor TTransacao.Create(VP_Comando, VP_Terminal_Tipo, VP_Doc: string; VP_Terminal_ID: int64; VP_TransacaoString: string);
 begin
   inherited Create;
   fcomando := VP_Comando;
@@ -1370,9 +1487,7 @@ begin
   fMensagem.AddTag('0091', VP_Doc);
   fMensagem.AddTag('007C', FloatToStr(Now));
   fMensagem.AddTag('00A4', TransacaoStatusToInt(tsAguardandoComando));
-  fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo +
-    '-' + IntToStr(VP_Terminal_ID) + '-' + FormatDateTime(
-    'dd/mm/yyyy hh:mm:ss:zzz', Now));
+  fMensagem.AddTag('0034', IntToStr(VF_Sequencia) + '-' + VP_Terminal_Tipo + '-' + IntToStr(VP_Terminal_ID) + '-' + FormatDateTime('dd/mm/yyyy hh:mm:ss:zzz', Now));
 
 end;
 
@@ -1383,7 +1498,7 @@ begin
   inherited Destroy;
 end;
 
-function TTransacao.AsString: String;
+function TTransacao.AsString: string;
 begin
   Result := fMensagem.TagsAsString;
 end;
@@ -1396,111 +1511,9 @@ end;
 { TDFuncoes }
 
 
-
-function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): String;
+procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; var VO_Chave: string);
 var
-  VL_MemString: TStringStream;
-  VL_Mem: TMemoryStream;
-  //VL_String: String;
-  //VL_bytes: array of byte;
-  //VL_i: integer;
-begin
-  //VL_bytes := nil;
-
-  VL_MemString := TStringStream.Create;
-  VL_Mem := TMemoryStream.Create;
-
-  VO_MemDataSet.SaveToStream(VL_Mem);
-
-  VL_Mem.SaveToStream(VL_MemString);
-
-
-  Result := EncodeStringBase64(VL_MemString.DataString);
-
-{    VL_String := VL_MemString.DataString;
-
-    //  converte em bytes
-    for VL_i := 0 to Length(VL_String) - 1 do
-    begin
-        SetLength(VL_bytes, Length(VL_bytes) + 1);
-        VL_bytes[VL_i] := Ord(VL_String[VL_i + 1]);
-    end;
-    // converte em hex
-    VL_String := '';
-    for VL_i := 0 to Length(VL_bytes) - 1 do
-        VL_String := VL_String + HexStr(VL_bytes[VL_i], 2);
-
-    Result := VL_String; }
-  VL_MemString.Free;
-  VL_Mem.Free;
-end;
-
-procedure StrToRxMemData(VP_Dados: String; var VO_MemDataSet: TRxMemoryData);
-var
-  //VL_bytes: array of byte;
-  //VL_i: integer;
-  VL_String: String;
-  VL_MemString: TStringStream;
-  VL_Mem: TMemoryStream;
-begin
-
-  //VL_bytes := nil;
-  // converte em bytes
-  if VP_Dados = '' then
-    exit;
-
-  {  for VL_i := 0 to (Length(VP_Dados) div 2) - 1 do
-    begin
-        SetLength(VL_bytes, Length(VL_bytes) + 1);
-        VL_bytes[VL_i] := Hex2Dec(copy(VP_Dados, ((VL_i + 1) * 2) - 1, 2));
-    end;
-
-    VL_String := '';
-
-
-    for VL_i := 0 to Length(VL_bytes) - 1 do
-    begin
-        SetLength(VL_String, Length(VL_String) + 1);
-        VL_String[VL_i + 1] := char(VL_bytes[VL_i]);
-    end;
-
-
-    VL_MemString := TStringStream.Create(VL_String);
-    }
-
-  VL_MemString := TStringStream.Create(DecodeStringBase64(VP_Dados));
-
-  VL_Mem := TMemoryStream.Create;
-
-  VL_MemString.SaveToStream(VL_Mem);
-
-  VO_MemDataSet.LoadFromStream(VL_Mem);
-  VL_MemString.Free;
-  VL_Mem.Free;
-
-end;
-
-
-function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): String;
-var
-  VL_MemDataset: TRxMemoryData;
-begin
-  Result := '';
-  VL_MemDataset := TRxMemoryData.Create(nil);
-  try
-    VO_ZQuery.First;
-    VL_MemDataset.LoadFromDataSet(VO_ZQuery, MaxInt, lmCopy);
-    Result := RxMemDataToStr(VL_MemDataset);
-  finally
-    VL_MemDataset.Free;
-  end;
-end;
-
-
-procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string;
-  var VO_Chave: String);
-var
-  VL_Chave: String;
+  VL_Chave: string;
   I, II: integer;
   Intervalo: int64;
   VL_String: string;
@@ -1577,9 +1590,7 @@ begin
 end;
 
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
-procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer;
-  VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: String;
-  VP_CodigoErro: integer; VP_NivelLog: integer);
+procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: string; VP_CodigoErro: integer; VP_NivelLog: integer);
 var
   VL_Arquivo: TextFile;
 begin
@@ -1598,15 +1609,10 @@ begin
     else
       Append(VL_Arquivo);
 
-    WriteLn(VL_Arquivo, '[ Nivel: ' + IntToStr(VP_NivelLog) +
-      ' ] ' + '[ Data:' + DateToStr(now) + '] - [ Hora:' + TimeToStr(now) +
-      '] - [ Linha:' + VP_Linha + '] - [ Modulo_ID:' + IntToStr(VP_Modulo_ID) +
-      ']- [ TagComando:' + VP_Tag_Comando + '] - [ Programa:' +
-      C_Programa + '] - [ Unit:' + VP_Unit + '] - [ VersaoMensagem:' +
-      IntToStr(C_Mensagem) + '] - [ Versao:' + IntToStr(C_Versao[0]) +
-      '.' + IntToStr(C_Versao[1]) + '.' + IntToStr(C_Versao[1]) +
-      '] -  [ CodigoErro:' + IntToStr(VP_CodigoErro) + ']  - [ Ocorrencia:' +
-      VP_Ocorrencia + '] - [ TMensagem:' + VP_Tag + ']');
+    WriteLn(VL_Arquivo, '[ Nivel: ' + IntToStr(VP_NivelLog) + ' ] ' + '[ Data:' + DateToStr(now) + '] - [ Hora:' + TimeToStr(now) + '] - [ Linha:' +
+      VP_Linha + '] - [ Modulo_ID:' + IntToStr(VP_Modulo_ID) + ']- [ TagComando:' + VP_Tag_Comando + '] - [ Programa:' + C_Programa + '] - [ Unit:' +
+      VP_Unit + '] - [ VersaoMensagem:' + IntToStr(C_Mensagem) + '] - [ Versao:' + IntToStr(C_Versao[0]) + '.' + IntToStr(C_Versao[1]) + '.' +
+      IntToStr(C_Versao[1]) + '] -  [ CodigoErro:' + IntToStr(VP_CodigoErro) + ']  - [ Ocorrencia:' + VP_Ocorrencia + '] - [ TMensagem:' + VP_Tag + ']');
 
     CloseFile(VL_Arquivo);
 
@@ -1620,10 +1626,8 @@ function versao(var VO_Dados: PChar): integer; cdecl;
 begin
   try
     Result := 0;
-    VO_Dados := StrAlloc(Length(IntToStr(C_Versao[0])) +
-      Length(IntToStr(C_Versao[1])) + Length(IntToStr(C_Versao[2])) + 3);
-    StrPCopy(VO_Dados, IntToStr(C_Versao[0]) + '.' + IntToStr(C_Versao[1]) +
-      '.' + IntToStr(C_Versao[2]));
+    VO_Dados := StrAlloc(Length(IntToStr(C_Versao[0])) + Length(IntToStr(C_Versao[1])) + Length(IntToStr(C_Versao[2])) + 3);
+    StrPCopy(VO_Dados, IntToStr(C_Versao[0]) + '.' + IntToStr(C_Versao[1]) + '.' + IntToStr(C_Versao[2]));
   except
     Result := 1;
   end;
@@ -1632,7 +1636,7 @@ end;
 
 {$ENDIF}
 
-function PermissaoToStrFormatada(VP_Permissao: TPermissao): String;
+function PermissaoToStrFormatada(VP_Permissao: TPermissao): string;
 begin
   case VP_Permissao of
     pmA: Result := 'Administrador';
@@ -1644,7 +1648,7 @@ begin
   end;
 end;
 
-function PermissaoToStr(VP_Permissao: TPermissao): String;
+function PermissaoToStr(VP_Permissao: TPermissao): string;
 begin
   case VP_Permissao of
     pmA: Result := 'A';
@@ -1656,7 +1660,7 @@ begin
   end;
 end;
 
-function StrToPermissao(VP_Permissao: String): TPermissao;
+function StrToPermissao(VP_Permissao: string): TPermissao;
 begin
   case VP_Permissao of
     'A': Result := pmA;
@@ -1664,8 +1668,7 @@ begin
     'U': Result := pmU;
     'S': Result := pmS;
     else
-      raise Exception.Create('Esse valor:"' + VP_Permissao +
-        '" não é uma permissao');
+      raise Exception.Create('Esse valor:"' + VP_Permissao + '" não é uma permissao');
   end;
 
 end;
@@ -1673,7 +1676,7 @@ end;
 
 
 
-function TipoTerminalToStr(VP_TipoTerminal: integer): String;
+function TipoTerminalToStr(VP_TipoTerminal: integer): string;
 begin
   case VP_TipoTerminal of
     Ord(ttrNDF): Result := 'NDF';
@@ -1686,7 +1689,7 @@ begin
   end;
 end;
 
-function StrToTipoTerminal(VP_TipoTerminal: String): integer;
+function StrToTipoTerminal(VP_TipoTerminal: string): integer;
 begin
 
   case VP_TipoTerminal of
@@ -1695,14 +1698,13 @@ begin
     'CONFIGUARADOR': Result := Ord(ttrConfigurador);
     'MODULO': Result := Ord(ttrModulo);
     else
-      raise Exception.Create('Esse valor:"' + VP_TipoTerminal +
-        '" não é um Tipo de Terminal Válido');
+      raise Exception.Create('Esse valor:"' + VP_TipoTerminal + '" não é um Tipo de Terminal Válido');
   end;
 end;
 
 
 
-function TipoTagToStr(VP_TipoTag: integer): String;
+function TipoTagToStr(VP_TipoTag: integer): string;
 begin
   case VP_TipoTag of
     Ord(ttNDF): Result := 'NDF';
@@ -1718,7 +1720,7 @@ begin
   end;
 end;
 
-function StrToTipoTag(VP_TipoTag: String): integer;
+function StrToTipoTag(VP_TipoTag: string): integer;
 begin
 
   case VP_TipoTag of
@@ -1730,8 +1732,7 @@ begin
     'PINPAD_FUNC': Result := Ord(ttPINPAD_FUNC);
     'MODULO': Result := Ord(ttMODULO);
     else
-      raise Exception.Create('Esse valor:"' + VP_TipoTag +
-        '" não é um Tipo de Tag Válido');
+      raise Exception.Create('Esse valor:"' + VP_TipoTag + '" não é um Tipo de Tag Válido');
   end;
 end;
 
@@ -1757,8 +1758,7 @@ begin
     pGERTEC_PPC930: Result := 'GERTEC_PPC930';
     pNDF: Result := 'NDF';
     else
-      raise Exception.Create('Esse valor:"' +
-        IntToStr(PinPadModeloToInt(VP_PinPadModelo)) + '" não é um pinpad valido');
+      raise Exception.Create('Esse valor:"' + IntToStr(PinPadModeloToInt(VP_PinPadModelo)) + '" não é um pinpad valido');
   end;
 end;
 
@@ -1795,9 +1795,7 @@ begin
       Result := '';
       exit;
     end;
-    Result := copy(VP_Documento, 0, 2) + '.' + copy(VP_Documento, 2, 3) +
-      '.' + copy(VP_Documento, 6, 3) + '/' + copy(VP_Documento, 9, 4) +
-      '-' + copy(VP_Documento, 13, 2);
+    Result := copy(VP_Documento, 0, 2) + '.' + copy(VP_Documento, 2, 3) + '.' + copy(VP_Documento, 6, 3) + '/' + copy(VP_Documento, 9, 4) + '-' + copy(VP_Documento, 13, 2);
   end;
   if VP_Tipo = tdCPF then
   begin
@@ -1806,8 +1804,7 @@ begin
       Result := '';
       exit;
     end;
-    Result := copy(VP_Documento, 0, 3) + '.' + copy(VP_Documento, 3, 3) +
-      '.' + copy(VP_Documento, 6, 3) + '-' + copy(VP_Documento, 9, 2);
+    Result := copy(VP_Documento, 0, 3) + '.' + copy(VP_Documento, 3, 3) + '.' + copy(VP_Documento, 6, 3) + '-' + copy(VP_Documento, 9, 2);
   end;
 end;
 
@@ -1873,49 +1870,12 @@ begin
 end;
 
 
-procedure CopiaDadosSimples(VO_TOrigemMemDataset: TRxMemoryData;
-  VO_TDestinoMemDataset: TRxMemoryData; VL_Linha: boolean);
-var
-  I: integer;
-begin
-  if not Assigned(VO_TOrigemMemDataset) then
-    exit;
-  if not Assigned(VO_TDestinoMemDataset) then
-    exit;
-  if not VO_TOrigemMemDataset.Active then
-    exit;
-  if not VO_TDestinoMemDataset.Active then
-    exit;
-  if VL_Linha = False then
-    VO_TOrigemMemDataset.First;
-  while not VO_TOrigemMemDataset.EOF do
-  begin
-    for I := 0 to VO_TOrigemMemDataset.FieldCount - 1 do
-    begin
-      if VO_TDestinoMemDataset.FindField(
-        VO_TOrigemMemDataset.Fields[I].FieldName) <> nil then
-      begin
-        if not (VO_TDestinoMemDataset.State in [dsInsert, dsEdit]) then
-          VO_TDestinoMemDataset.Insert;
-        VO_TDestinoMemDataset.FindField(
-          VO_TOrigemMemDataset.Fields[I].FieldName).AsString :=
-          VO_TOrigemMemDataset.Fields[I].AsString;
-      end;
-    end;
-    if VO_TDestinoMemDataset.State in [DsInsert, DsEdit] then
-      VO_TDestinoMemDataset.Post;
-    if VL_Linha then
-      Break;
-    VO_TOrigemMemDataset.Next;
-  end;
 
-end;
 
-function copiaTagPosicao(VP_Posicao: integer;
-  VP_TagEntrada, VO_TagSaida: TMensagem): integer;
+function copiaTagPosicao(VP_Posicao: integer; VP_TagEntrada, VO_TagSaida: TMensagem): integer;
 var
   VL_I: integer;
-  VL_Tag, VL_Dados, VL_Campo, VL_Posicao: String;
+  VL_Tag, VL_Dados, VL_Campo, VL_Posicao: string;
 begin
   Result := 0;
 
@@ -1951,7 +1911,7 @@ begin
   end;
 end;
 
-function TMensagem.GetComando(var VO_Tag: String; var VO_Dados: String): integer;
+function TMensagem.GetComando(var VO_Tag: string; var VO_Dados: string): integer;
 begin
   Result := 0;
   if Length(fTags) > 0 then
@@ -1961,7 +1921,7 @@ begin
   end;
 end;
 
-function TMensagem.GetComandoInt(var VO_Tag: integer; var VO_Dados: String): integer;
+function TMensagem.GetComandoInt(var VO_Tag: integer; var VO_Dados: string): integer;
 begin
   Result := 0;
   if Length(fTags) > 0 then
@@ -1972,7 +1932,7 @@ begin
 end;
 
 
-function TMensagem.CarregaTags(VP_Dados: String): integer;
+function TMensagem.CarregaTags(VP_Dados: string): integer;
 var
   VL_Qtd, VL_Resto, VL_Tamanho: longint;
 begin
@@ -2017,21 +1977,17 @@ begin
       fTags[Length(fTags) - 1].TagTamanho :=
         StrToInt64Def(Copy(VP_Dados, 2, Hex2Dec(fTags[Length(fTags) - 1].TagQt)), 0);
       fTags[Length(fTags) - 1].Tag :=
-        Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].TagQt),
-        fTags[Length(fTags) - 1].TagTamanho);
+        Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].TagQt), fTags[Length(fTags) - 1].TagTamanho);
 
-      VP_Dados := Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].TagQt) +
-        fTags[Length(fTags) - 1].TagTamanho, MaxInt);
+      VP_Dados := Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].TagQt) + fTags[Length(fTags) - 1].TagTamanho, MaxInt);
 
       fTags[Length(fTags) - 1].DadosQt := Copy(VP_Dados, 1, 1);
       fTags[Length(fTags) - 1].DadosTamanho :=
         StrToInt64Def(Copy(VP_Dados, 2, Hex2Dec(fTags[Length(fTags) - 1].DadosQt)), 0);
       fTags[Length(fTags) - 1].Dados :=
-        Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].DadosQt),
-        fTags[Length(fTags) - 1].DadosTamanho);
+        Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].DadosQt), fTags[Length(fTags) - 1].DadosTamanho);
 
-      VP_Dados := Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].DadosQt) +
-        fTags[Length(fTags) - 1].DadosTamanho, MaxInt);
+      VP_Dados := Copy(VP_Dados, 2 + Hex2Dec(fTags[Length(fTags) - 1].DadosQt) + fTags[Length(fTags) - 1].DadosTamanho, MaxInt);
 
       if Length(VP_Dados) >= VL_Resto then
       begin
@@ -2050,11 +2006,11 @@ begin
   end;
 end;
 
-function TMensagem.TagToStr(var VO_Dados: String): integer;
+function TMensagem.TagToStr(var VO_Dados: string): integer;
 var
   VL_Digitos, i: integer;
   VL_TamanhoPacote: longint;
-  VL_Dados: String;
+  VL_Dados: string;
 begin
   VL_Dados := '';
   if Length(fTags) = 0 then
@@ -2064,9 +2020,7 @@ begin
   end;
   for i := 0 to Length(fTags) - 1 do
   begin
-    VL_Dados := VL_Dados + fTags[i].TagQt + IntToStr(fTags[i].TagTamanho) +
-      fTags[i].Tag + fTags[i].DadosQt + IntToStr(fTags[i].DadosTamanho) +
-      fTags[i].Dados;
+    VL_Dados := VL_Dados + fTags[i].TagQt + IntToStr(fTags[i].TagTamanho) + fTags[i].Tag + fTags[i].DadosQt + IntToStr(fTags[i].DadosTamanho) + fTags[i].Dados;
   end;
   VL_TamanhoPacote := Length(VL_Dados) + 5;
 
@@ -2076,13 +2030,12 @@ begin
 
   VL_TamanhoPacote := VL_TamanhoPacote + VL_Digitos;
 
-  VO_Dados := '0000' + IntToHex((VL_Digitos), 1) +
-    IntToStr(VL_TamanhoPacote) + VL_Dados;
+  VO_Dados := '0000' + IntToHex((VL_Digitos), 1) + IntToStr(VL_TamanhoPacote) + VL_Dados;
 
   Result := 0;
 end;
 
-function TMensagem.GetTag(VP_Tag: String; var VO_Dados: String): integer;
+function TMensagem.GetTag(VP_Tag: string; var VO_Dados: string): integer;
 var
   i: integer;
 begin
@@ -2108,8 +2061,7 @@ begin
   end;
 end;
 
-function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: String;
-  var VO_Dados: String): integer;
+function TMensagem.GetTag(VP_Posicao: integer; var VO_Tag: string; var VO_Dados: string): integer;
 begin
   Result := 0;
   VO_Dados := '';
@@ -2129,7 +2081,7 @@ begin
   end;
 end;
 
-function TMensagem.GetTag(VP_Tag: String; var VO_Dados: int64): integer;
+function TMensagem.GetTag(VP_Tag: string; var VO_Dados: int64): integer;
 var
   i: integer;
 begin
@@ -2158,16 +2110,14 @@ begin
   end;
 end;
 
-function TMensagem.GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: String;
-  var VO_Dados: String): integer;
+function TMensagem.GetTagTabelaPosicao(VP_Posicao: integer; VP_Tag: string; var VO_Dados: string): integer;
 begin
-  Result := self.GetTag((Formata(IntToStr(VP_Posicao), '0', 10, False) + VP_Tag),
-    VO_Dados);
+  Result := self.GetTag((Formata(IntToStr(VP_Posicao), '0', 10, False) + VP_Tag), VO_Dados);
 end;
 
-function TMensagem.GetTagAsAstring(VP_Tag: String): String;
+function TMensagem.GetTagAsAstring(VP_Tag: string): string;
 var
-  VL_String: String;
+  VL_String: string;
 begin
   Result := '';
   VL_String := '';
@@ -2175,7 +2125,7 @@ begin
     Result := VL_String;
 end;
 
-function TMensagem.Comando: String;
+function TMensagem.Comando: string;
 begin
   Result := '';
   if Length(fTags) > 0 then
@@ -2185,7 +2135,7 @@ begin
 
 end;
 
-function TMensagem.ComandoDados: String;
+function TMensagem.ComandoDados: string;
 begin
   Result := '';
   if Length(fTags) > 0 then
@@ -2195,7 +2145,7 @@ begin
 
 end;
 
-function TMensagem.TagsAsString: String;
+function TMensagem.TagsAsString: string;
 begin
   Result := '';
   TagToStr(Result);
@@ -2208,13 +2158,12 @@ end;
 
 function TempoPassouMiliSegundos(VP_Agora: TDateTime): real;
 begin
-  Result := TimeStampToMSecs(DateTimeToTimeStamp(now)) -
-    TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
+  Result := TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VP_Agora));
 end;
 
-function TMensagem.GetTagAsInteger(VP_Tag: String): integer;
+function TMensagem.GetTagAsInteger(VP_Tag: string): integer;
 var
-  VL_String: String;
+  VL_String: string;
 begin
   Result := 0;
   VL_String := '';
@@ -2224,7 +2173,7 @@ begin
 end;
 
 
-function TMensagem.AddTag(VP_Tag, VP_Dados: String): integer;
+function TMensagem.AddTag(VP_Tag, VP_Dados: string): integer;
 var
   i: integer;
 
@@ -2261,7 +2210,7 @@ begin
 
 end;
 
-function TMensagem.AddTag(VP_Tag: String; VP_Dados: integer): integer;
+function TMensagem.AddTag(VP_Tag: string; VP_Dados: integer): integer;
 var
   i: integer;
 
@@ -2316,7 +2265,7 @@ begin
   AddComando('0000', '');
 end;
 
-function TMensagem.AddComando(VP_Tag, VP_Dados: String): integer;
+function TMensagem.AddComando(VP_Tag, VP_Dados: string): integer;
 begin
   Result := 0;
 
@@ -2337,7 +2286,7 @@ end;
 procedure copiaTag(VP_TagEntrada, VP_TagSaida: TMensagem; VP_LimparTagSaida: boolean);
 var
   VL_I: integer;
-  VL_Tag, VL_Dados: String;
+  VL_Tag, VL_Dados: string;
 begin
   if VP_LimparTagSaida then
     VP_TagSaida.Limpar;
@@ -2349,15 +2298,12 @@ begin
   end;
 end;
 
-function FloatToSql(VP_Valor: real; VP_ConsideraZeroNull: boolean = False;
-  VP_ConsideraMenosUmNull: boolean = False): string;
+function FloatToSql(VP_Valor: real; VP_ConsideraZeroNull: boolean = False; VP_ConsideraMenosUmNull: boolean = False): string;
 begin
-  Result := CLNValoresSQL(FloatToStr(VP_Valor), VP_ConsideraZeroNull,
-    VP_ConsideraMenosUmNull);
+  Result := CLNValoresSQL(FloatToStr(VP_Valor), VP_ConsideraZeroNull, VP_ConsideraMenosUmNull);
 end;
 
-function CLNValoresSQL(LetraNumero: string; ConsideraZeroNull: boolean = False;
-  ConsideraMenosUmNull: boolean = False): string;
+function CLNValoresSQL(LetraNumero: string; ConsideraZeroNull: boolean = False; ConsideraMenosUmNull: boolean = False): string;
 var
   SinalNegativo, Decimal: boolean;
   i: integer;
@@ -2379,9 +2325,7 @@ begin
   for i := Length(LetraNumero) downto 1 do
   begin
     TextoFuncao := Copy(LetraNumero, i, 1);
-    if ((TextoFuncao >= '0') and (TextoFuncao <= '9')) or
-      (((TextoFuncao = '.') or (TextoFuncao = ',')) and (Decimal = False)) or
-      ((TextoFuncao = '-') and (SinalNegativo = False)) then
+    if ((TextoFuncao >= '0') and (TextoFuncao <= '9')) or (((TextoFuncao = '.') or (TextoFuncao = ',')) and (Decimal = False)) or ((TextoFuncao = '-') and (SinalNegativo = False)) then
     begin
       if ((TextoFuncao = ',') or (TextoFuncao = '.')) and (Decimal = False) then
       begin
@@ -2412,8 +2356,7 @@ begin
     Result := ResultadoFuncao;
   if Copy(ResultadoFuncao, 1, 1) = '.' then
     Result := '0' + ResultadoFuncao;
-  while (Copy(Result, 1, 1) = '0') and (Copy(Result, 1, 2) <> '0.') and
-    (Length(Result) > 1) do
+  while (Copy(Result, 1, 1) = '0') and (Copy(Result, 1, 2) <> '0.') and (Length(Result) > 1) do
     Result := Copy(Result, 2, Length(Result));
   if (Result = '0') and (ConsideraZeroNull) then
     Result := 'NULL';
@@ -2422,8 +2365,7 @@ begin
 
 end;
 
-function IntToSQL(LetraNumero: int64; ConsideraZeroNull: boolean = False;
-  ConsideraMenosUmNull: boolean = False): string;
+function IntToSQL(LetraNumero: int64; ConsideraZeroNull: boolean = False; ConsideraMenosUmNull: boolean = False): string;
 begin
   Result := '';
   if (LetraNumero = 0) and (ConsideraZeroNull) then
@@ -2435,8 +2377,7 @@ begin
     Result := IntToStr(LetraNumero);
 end;
 
-function StrToSql(S: string; ConsideraNull: boolean = False;
-  VL_Tamanho: int64 = 0): string;
+function StrToSql(S: string; ConsideraNull: boolean = False; VL_Tamanho: int64 = 0): string;
 begin
   if (ConsideraNull) and ((Trim(S) = '') or (UpperCase(Trim(S)) = 'NULL')) then
   begin
@@ -2465,22 +2406,15 @@ begin
   if ((pos(' OR ', VL_String) = 0) and (pos('OR  ', VL_String) = 0) and
     // linha nova
     (pos('  OR', VL_String) = 0) and // linha nova
-    (pos('(OR:', VL_String) = 0) and (pos('(OR ', VL_String) = 0) and
-    (pos('(OR' + #13, VL_String) = 0) and (pos('(OR--', VL_String) = 0) and
-    (pos('(OR/', VL_String) = 0) and (pos('(OR(', VL_String) = 0) and
-    (pos(' OR' + #13, VL_String) = 0) and (pos('OR' + #13, VL_String) = 0) and
+    (pos('(OR:', VL_String) = 0) and (pos('(OR ', VL_String) = 0) and (pos('(OR' + #13, VL_String) = 0) and (pos('(OR--', VL_String) = 0) and
+    (pos('(OR/', VL_String) = 0) and (pos('(OR(', VL_String) = 0) and (pos(' OR' + #13, VL_String) = 0) and (pos('OR' + #13, VL_String) = 0) and
     // linha nova
     (pos('OR ' + #13, VL_String) = 0) and // linha nova
-    (pos(' (OR' + #13, VL_String) = 0) and (pos(#$A + 'OR(', VL_String) = 0) and
-    (pos(#$A + 'OR' + #13, VL_String) = 0) and (pos(#$A + 'OR ', VL_String) = 0) and
-    (pos(#$A + 'OR/', VL_String) = 0) and (pos(#$A + 'OR:', VL_String) = 0) and
-    (pos(' OR:', VL_String) = 0) and (pos('OR :', VL_String) = 0) and // linha nova
+    (pos(' (OR' + #13, VL_String) = 0) and (pos(#$A + 'OR(', VL_String) = 0) and (pos(#$A + 'OR' + #13, VL_String) = 0) and (pos(#$A + 'OR ', VL_String) = 0) and
+    (pos(#$A + 'OR/', VL_String) = 0) and (pos(#$A + 'OR:', VL_String) = 0) and (pos(' OR:', VL_String) = 0) and (pos('OR :', VL_String) = 0) and // linha nova
     (pos('OR:', VL_String) = 0) and  // linha nova
-    (pos(' OR(', VL_String) = 0) and (pos('/OR', VL_String) = 0) and
-    (pos('/ OR', VL_String) = 0) and (pos('OR/', VL_String) = 0) and
-    (pos('OR /', VL_String) = 0) and // linha nova
-    (pos('(OR ', VL_String) = 0) and (pos('OR--', VL_String) = 0) and
-    (pos('OR --', VL_String) = 0) and (pos(' OR--', VL_String) = 0) and
+    (pos(' OR(', VL_String) = 0) and (pos('/OR', VL_String) = 0) and (pos('/ OR', VL_String) = 0) and (pos('OR/', VL_String) = 0) and (pos('OR /', VL_String) = 0) and // linha nova
+    (pos('(OR ', VL_String) = 0) and (pos('OR--', VL_String) = 0) and (pos('OR --', VL_String) = 0) and (pos(' OR--', VL_String) = 0) and
     (pos(' OR''', VL_String) = 0) and (pos('''OR', VL_String) = 0) and
     // linha nova
     (pos('OR''', VL_String) = 0) and (pos(' OR ''', VL_String) = 0) and
@@ -2497,110 +2431,53 @@ begin
     (pos('8OR', VL_String) = 0) and    // linha nova
     (pos('9OR', VL_String) = 0) and    // linha nova
 
-    (pos(' SELECT ', VL_String) = 0) and (pos('SELECT ', VL_String) = 0) and
-    (pos('(SELECT:', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and
-    (pos('(SELECT' + #13, VL_String) = 0) and (pos('(SELECT--', VL_String) = 0) and
-    (pos('(SELECT/', VL_String) = 0) and (pos('(SELECT(', VL_String) = 0) and
-    (pos(' SELECT' + #13, VL_String) = 0) and
-    (pos(' (SELECT' + #13, VL_String) = 0) and
-    (pos(#$A + 'SELECT(', VL_String) = 0) and
-    (pos(#$A + 'SELECT' + #13, VL_String) = 0) and
-    (pos(#$A + 'SELECT ' + #13, VL_String) = 0) and
-    (pos(#$A + 'SELECT ', VL_String) = 0) and
-    (pos(#$A + 'SELECT/', VL_String) = 0) and
-    (pos(#$A + 'SELECT:', VL_String) = 0) and (pos(' SELECT:', VL_String) = 0) and
-    (pos(' SELECT(', VL_String) = 0) and (pos('/SELECT', VL_String) = 0) and
-    (pos('SELECT/', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and
-    (pos('SELECT--', VL_String) = 0) and (pos('SELECT --', VL_String) = 0) and
-    (pos(' SELECT--', VL_String) = 0) and (pos(' DELETE ', VL_String) = 0) and
-    (pos('DELETE ', VL_String) = 0) and (pos('(DELETE:', VL_String) = 0) and
-    (pos('(DELETE ', VL_String) = 0) and (pos('(DELETE' + #13, VL_String) = 0) and
-    (pos('(DELETE--', VL_String) = 0) and (pos('(DELETE/', VL_String) = 0) and
-    (pos('(DELETE(', VL_String) = 0) and (pos(' DELETE' + #13, VL_String) = 0) and
-    (pos('DELETE' + #13, VL_String) = 0) and (pos('DELETE ' + #13, VL_String) = 0) and
-    (pos(' (DELETE' + #13, VL_String) = 0) and
-    (pos(#$A + 'DELETE(', VL_String) = 0) and
-    (pos(#$A + 'DELETE' + #13, VL_String) = 0) and
-    (pos(#$A + 'DELETE ', VL_String) = 0) and
-    (pos(#$A + 'DELETE/', VL_String) = 0) and
-    (pos(#$A + 'DELETE:', VL_String) = 0) and (pos(' DELETE:', VL_String) = 0) and
-    (pos(' DELETE(', VL_String) = 0) and (pos('/DELETE', VL_String) = 0) and
-    (pos('DELETE/', VL_String) = 0) and (pos('(DELETE ', VL_String) = 0) and
-    (pos('DELETE--', VL_String) = 0) and (pos('DELETE --', VL_String) = 0) and
-    (pos(' DELETE--', VL_String) = 0) and (pos(' UPDATE ', VL_String) = 0) and
-    (pos('UPDATE ', VL_String) = 0) and (pos('(UPDATE:', VL_String) = 0) and
-    (pos('(UPDATE ', VL_String) = 0) and (pos('(UPDATE' + #13, VL_String) = 0) and
-    (pos('(UPDATE--', VL_String) = 0) and (pos('(UPDATE/', VL_String) = 0) and
-    (pos('(UPDATE(', VL_String) = 0) and (pos(' UPDATE' + #13, VL_String) = 0) and
-    (pos(' (UPDATE' + #13, VL_String) = 0) and
-    (pos('UPDATE' + #13, VL_String) = 0) and (pos('UPDATE ' + #13, VL_String) = 0) and
-    (pos(#$A + 'UPDATE(', VL_String) = 0) and
-    (pos(#$A + 'UPDATE' + #13, VL_String) = 0) and
-    (pos(#$A + 'UPDATE ' + #13, VL_String) = 0) and
-    (pos(#$A + 'UPDATE ', VL_String) = 0) and
-    (pos(#$A + 'UPDATE/', VL_String) = 0) and
-    (pos(#$A + 'UPDATE:', VL_String) = 0) and (pos(' UPDATE:', VL_String) = 0) and
-    (pos(' UPDATE(', VL_String) = 0) and (pos('/UPDATE', VL_String) = 0) and
-    (pos('UPDATE/', VL_String) = 0) and (pos('UPDATE /', VL_String) = 0) and
-    (pos('(UPDATE ', VL_String) = 0) and (pos('UPDATE--', VL_String) = 0) and
-    (pos('UPDATE --', VL_String) = 0) and (pos(' UPDATE--', VL_String) = 0) and
-    (pos(' INSERT ', VL_String) = 0) and (pos('INSERT ', VL_String) = 0) and
-    (pos('(INSERT:', VL_String) = 0) and (pos('(INSERT ', VL_String) = 0) and
-    (pos('(INSERT' + #13, VL_String) = 0) and (pos('(INSERT--', VL_String) = 0) and
-    (pos('(INSERT/', VL_String) = 0) and (pos('(INSERT(', VL_String) = 0) and
-    (pos(' INSERT' + #13, VL_String) = 0) and
-    (pos(' (INSERT' + #13, VL_String) = 0) and
-    (pos('INSERT' + #13, VL_String) = 0) and (pos('INSERT ' + #13, VL_String) = 0) and
-    (pos(#$A + 'INSERT(', VL_String) = 0) and
-    (pos(#$A + 'INSERT' + #13, VL_String) = 0) and
-    (pos(#$A + 'INSERT ', VL_String) = 0) and
-    (pos(#$A + 'INSERT/', VL_String) = 0) and
-    (pos(#$A + 'INSERT:', VL_String) = 0) and (pos(' INSERT:', VL_String) = 0) and
-    (pos(' INSERT(', VL_String) = 0) and (pos('/INSERT', VL_String) = 0) and
-    (pos('INSERT/', VL_String) = 0) and (pos('(INSERT ', VL_String) = 0) and
-    (pos('INSERT--', VL_String) = 0) and (pos('INSERT --', VL_String) = 0) and
-    (pos(' INSERT--', VL_String) = 0) and (pos(' DROP ', VL_String) = 0) and
-    (pos('DROP ', VL_String) = 0) and (pos('(DROP:', VL_String) = 0) and
-    (pos('(DROP ', VL_String) = 0) and (pos('(DROP' + #13, VL_String) = 0) and
-    (pos('(DROP--', VL_String) = 0) and (pos('(DROP/', VL_String) = 0) and
-    (pos('(DROP(', VL_String) = 0) and (pos(' DROP' + #13, VL_String) = 0) and
-    (pos(' (DROP' + #13, VL_String) = 0) and (pos('DROP' + #13, VL_String) = 0) and
-    (pos('DROP ' + #13, VL_String) = 0) and (pos(#$A + 'DROP(', VL_String) = 0) and
-    (pos(#$A + 'DROP' + #13, VL_String) = 0) and
-    (pos(#$A + 'DROP ', VL_String) = 0) and (pos(#$A + 'DROP/', VL_String) = 0) and
-    (pos(#$A + 'DROP:', VL_String) = 0) and (pos(' DROP:', VL_String) = 0) and
-    (pos(' DROP(', VL_String) = 0) and (pos('/DROP', VL_String) = 0) and
-    (pos('DROP/', VL_String) = 0) and (pos('(DROP ', VL_String) = 0) and
-    (pos('DROP--', VL_String) = 0) and (pos('DROP --', VL_String) = 0) and
-    (pos(' DROP--', VL_String) = 0) and (pos(' ALTER ', VL_String) = 0) and
-    (pos('ALTER ', VL_String) = 0) and (pos('(ALTER:', VL_String) = 0) and
-    (pos('(ALTER ', VL_String) = 0) and (pos('(ALTER' + #13, VL_String) = 0) and
-    (pos('(ALTER--', VL_String) = 0) and (pos('(ALTER/', VL_String) = 0) and
-    (pos('(ALTER(', VL_String) = 0) and (pos(' ALTER' + #13, VL_String) = 0) and
-    (pos(' (ALTER' + #13, VL_String) = 0) and (pos('ALTER' + #13, VL_String) = 0) and
-    (pos('ALTER ' + #13, VL_String) = 0) and (pos(#$A + 'ALTER(', VL_String) = 0) and
-    (pos(#$A + 'ALTER' + #13, VL_String) = 0) and
-    (pos(#$A + 'ALTER ', VL_String) = 0) and (pos(#$A + 'ALTER/', VL_String) = 0) and
-    (pos(#$A + 'ALTER:', VL_String) = 0) and (pos(' ALTER:', VL_String) = 0) and
-    (pos(' ALTER(', VL_String) = 0) and (pos('/ALTER', VL_String) = 0) and
-    (pos('ALTER/', VL_String) = 0) and (pos('(ALTER ', VL_String) = 0) and
-    (pos('ALTER--', VL_String) = 0) and (pos('ALTER --', VL_String) = 0) and
-    (pos(' ALTER--', VL_String) = 0) and (pos(' CREATE ', VL_String) = 0) and
-    (pos('CREATE ', VL_String) = 0) and (pos('(CREATE:', VL_String) = 0) and
-    (pos('(CREATE ', VL_String) = 0) and (pos('(CREATE' + #13, VL_String) = 0) and
-    (pos('(CREATE--', VL_String) = 0) and (pos('(CREATE/', VL_String) = 0) and
-    (pos('(CREATE(', VL_String) = 0) and (pos(' CREATE' + #13, VL_String) = 0) and
-    (pos(' (CREATE' + #13, VL_String) = 0) and
-    (pos('CREATE' + #13, VL_String) = 0) and (pos('CREATE ' + #13, VL_String) = 0) and
-    (pos(#$A + 'CREATE(', VL_String) = 0) and
-    (pos(#$A + 'CREATE' + #13, VL_String) = 0) and
-    (pos(#$A + 'CREATE ', VL_String) = 0) and
-    (pos(#$A + 'CREATE/', VL_String) = 0) and
-    (pos(#$A + 'CREATE:', VL_String) = 0) and (pos(' CREATE:', VL_String) = 0) and
-    (pos(' CREATE(', VL_String) = 0) and (pos('/CREATE', VL_String) = 0) and
-    (pos('CREATE/', VL_String) = 0) and (pos('(CREATE ', VL_String) = 0) and
-    (pos('CREATE--', VL_String) = 0) and (pos('CREATE --', VL_String) = 0) and
-    (pos(' CREATE--', VL_String) = 0)) then
+    (pos(' SELECT ', VL_String) = 0) and (pos('SELECT ', VL_String) = 0) and (pos('(SELECT:', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and
+    (pos('(SELECT' + #13, VL_String) = 0) and (pos('(SELECT--', VL_String) = 0) and (pos('(SELECT/', VL_String) = 0) and (pos('(SELECT(', VL_String) = 0) and
+    (pos(' SELECT' + #13, VL_String) = 0) and (pos(' (SELECT' + #13, VL_String) = 0) and (pos(#$A + 'SELECT(', VL_String) = 0) and
+    (pos(#$A + 'SELECT' + #13, VL_String) = 0) and (pos(#$A + 'SELECT ' + #13, VL_String) = 0) and (pos(#$A + 'SELECT ', VL_String) = 0) and
+    (pos(#$A + 'SELECT/', VL_String) = 0) and (pos(#$A + 'SELECT:', VL_String) = 0) and (pos(' SELECT:', VL_String) = 0) and (pos(' SELECT(', VL_String) = 0) and
+    (pos('/SELECT', VL_String) = 0) and (pos('SELECT/', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and (pos('SELECT--', VL_String) = 0) and
+    (pos('SELECT --', VL_String) = 0) and (pos(' SELECT--', VL_String) = 0) and (pos(' DELETE ', VL_String) = 0) and (pos('DELETE ', VL_String) = 0) and
+    (pos('(DELETE:', VL_String) = 0) and (pos('(DELETE ', VL_String) = 0) and (pos('(DELETE' + #13, VL_String) = 0) and (pos('(DELETE--', VL_String) = 0) and
+    (pos('(DELETE/', VL_String) = 0) and (pos('(DELETE(', VL_String) = 0) and (pos(' DELETE' + #13, VL_String) = 0) and (pos('DELETE' + #13, VL_String) = 0) and
+    (pos('DELETE ' + #13, VL_String) = 0) and (pos(' (DELETE' + #13, VL_String) = 0) and (pos(#$A + 'DELETE(', VL_String) = 0) and
+    (pos(#$A + 'DELETE' + #13, VL_String) = 0) and (pos(#$A + 'DELETE ', VL_String) = 0) and (pos(#$A + 'DELETE/', VL_String) = 0) and
+    (pos(#$A + 'DELETE:', VL_String) = 0) and (pos(' DELETE:', VL_String) = 0) and (pos(' DELETE(', VL_String) = 0) and (pos('/DELETE', VL_String) = 0) and
+    (pos('DELETE/', VL_String) = 0) and (pos('(DELETE ', VL_String) = 0) and (pos('DELETE--', VL_String) = 0) and (pos('DELETE --', VL_String) = 0) and
+    (pos(' DELETE--', VL_String) = 0) and (pos(' UPDATE ', VL_String) = 0) and (pos('UPDATE ', VL_String) = 0) and (pos('(UPDATE:', VL_String) = 0) and
+    (pos('(UPDATE ', VL_String) = 0) and (pos('(UPDATE' + #13, VL_String) = 0) and (pos('(UPDATE--', VL_String) = 0) and (pos('(UPDATE/', VL_String) = 0) and
+    (pos('(UPDATE(', VL_String) = 0) and (pos(' UPDATE' + #13, VL_String) = 0) and (pos(' (UPDATE' + #13, VL_String) = 0) and (pos('UPDATE' + #13, VL_String) = 0) and
+    (pos('UPDATE ' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE(', VL_String) = 0) and (pos(#$A + 'UPDATE' + #13, VL_String) = 0) and
+    (pos(#$A + 'UPDATE ' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE ', VL_String) = 0) and (pos(#$A + 'UPDATE/', VL_String) = 0) and
+    (pos(#$A + 'UPDATE:', VL_String) = 0) and (pos(' UPDATE:', VL_String) = 0) and (pos(' UPDATE(', VL_String) = 0) and (pos('/UPDATE', VL_String) = 0) and
+    (pos('UPDATE/', VL_String) = 0) and (pos('UPDATE /', VL_String) = 0) and (pos('(UPDATE ', VL_String) = 0) and (pos('UPDATE--', VL_String) = 0) and
+    (pos('UPDATE --', VL_String) = 0) and (pos(' UPDATE--', VL_String) = 0) and (pos(' INSERT ', VL_String) = 0) and (pos('INSERT ', VL_String) = 0) and
+    (pos('(INSERT:', VL_String) = 0) and (pos('(INSERT ', VL_String) = 0) and (pos('(INSERT' + #13, VL_String) = 0) and (pos('(INSERT--', VL_String) = 0) and
+    (pos('(INSERT/', VL_String) = 0) and (pos('(INSERT(', VL_String) = 0) and (pos(' INSERT' + #13, VL_String) = 0) and (pos(' (INSERT' + #13, VL_String) = 0) and
+    (pos('INSERT' + #13, VL_String) = 0) and (pos('INSERT ' + #13, VL_String) = 0) and (pos(#$A + 'INSERT(', VL_String) = 0) and (pos(#$A + 'INSERT' + #13, VL_String) = 0) and
+    (pos(#$A + 'INSERT ', VL_String) = 0) and (pos(#$A + 'INSERT/', VL_String) = 0) and (pos(#$A + 'INSERT:', VL_String) = 0) and
+    (pos(' INSERT:', VL_String) = 0) and (pos(' INSERT(', VL_String) = 0) and (pos('/INSERT', VL_String) = 0) and (pos('INSERT/', VL_String) = 0) and
+    (pos('(INSERT ', VL_String) = 0) and (pos('INSERT--', VL_String) = 0) and (pos('INSERT --', VL_String) = 0) and (pos(' INSERT--', VL_String) = 0) and
+    (pos(' DROP ', VL_String) = 0) and (pos('DROP ', VL_String) = 0) and (pos('(DROP:', VL_String) = 0) and (pos('(DROP ', VL_String) = 0) and
+    (pos('(DROP' + #13, VL_String) = 0) and (pos('(DROP--', VL_String) = 0) and (pos('(DROP/', VL_String) = 0) and (pos('(DROP(', VL_String) = 0) and
+    (pos(' DROP' + #13, VL_String) = 0) and (pos(' (DROP' + #13, VL_String) = 0) and (pos('DROP' + #13, VL_String) = 0) and (pos('DROP ' + #13, VL_String) = 0) and
+    (pos(#$A + 'DROP(', VL_String) = 0) and (pos(#$A + 'DROP' + #13, VL_String) = 0) and (pos(#$A + 'DROP ', VL_String) = 0) and (pos(#$A + 'DROP/', VL_String) = 0) and
+    (pos(#$A + 'DROP:', VL_String) = 0) and (pos(' DROP:', VL_String) = 0) and (pos(' DROP(', VL_String) = 0) and (pos('/DROP', VL_String) = 0) and
+    (pos('DROP/', VL_String) = 0) and (pos('(DROP ', VL_String) = 0) and (pos('DROP--', VL_String) = 0) and (pos('DROP --', VL_String) = 0) and
+    (pos(' DROP--', VL_String) = 0) and (pos(' ALTER ', VL_String) = 0) and (pos('ALTER ', VL_String) = 0) and (pos('(ALTER:', VL_String) = 0) and
+    (pos('(ALTER ', VL_String) = 0) and (pos('(ALTER' + #13, VL_String) = 0) and (pos('(ALTER--', VL_String) = 0) and (pos('(ALTER/', VL_String) = 0) and
+    (pos('(ALTER(', VL_String) = 0) and (pos(' ALTER' + #13, VL_String) = 0) and (pos(' (ALTER' + #13, VL_String) = 0) and (pos('ALTER' + #13, VL_String) = 0) and
+    (pos('ALTER ' + #13, VL_String) = 0) and (pos(#$A + 'ALTER(', VL_String) = 0) and (pos(#$A + 'ALTER' + #13, VL_String) = 0) and
+    (pos(#$A + 'ALTER ', VL_String) = 0) and (pos(#$A + 'ALTER/', VL_String) = 0) and (pos(#$A + 'ALTER:', VL_String) = 0) and (pos(' ALTER:', VL_String) = 0) and
+    (pos(' ALTER(', VL_String) = 0) and (pos('/ALTER', VL_String) = 0) and (pos('ALTER/', VL_String) = 0) and (pos('(ALTER ', VL_String) = 0) and
+    (pos('ALTER--', VL_String) = 0) and (pos('ALTER --', VL_String) = 0) and (pos(' ALTER--', VL_String) = 0) and (pos(' CREATE ', VL_String) = 0) and
+    (pos('CREATE ', VL_String) = 0) and (pos('(CREATE:', VL_String) = 0) and (pos('(CREATE ', VL_String) = 0) and (pos('(CREATE' + #13, VL_String) = 0) and
+    (pos('(CREATE--', VL_String) = 0) and (pos('(CREATE/', VL_String) = 0) and (pos('(CREATE(', VL_String) = 0) and (pos(' CREATE' + #13, VL_String) = 0) and
+    (pos(' (CREATE' + #13, VL_String) = 0) and (pos('CREATE' + #13, VL_String) = 0) and (pos('CREATE ' + #13, VL_String) = 0) and
+    (pos(#$A + 'CREATE(', VL_String) = 0) and (pos(#$A + 'CREATE' + #13, VL_String) = 0) and (pos(#$A + 'CREATE ', VL_String) = 0) and
+    (pos(#$A + 'CREATE/', VL_String) = 0) and (pos(#$A + 'CREATE:', VL_String) = 0) and (pos(' CREATE:', VL_String) = 0) and (pos(' CREATE(', VL_String) = 0) and
+    (pos('/CREATE', VL_String) = 0) and (pos('CREATE/', VL_String) = 0) and (pos('(CREATE ', VL_String) = 0) and (pos('CREATE--', VL_String) = 0) and
+    (pos('CREATE --', VL_String) = 0) and (pos(' CREATE--', VL_String) = 0)) then
 
     Result := 'OK'
   else
@@ -2694,4 +2571,3 @@ initialization
 finalization
   DoneCriticalSection(VF_CriticoLog);
 end.
-

@@ -1,1 +1,8 @@
 *.dbg
+*.res
+*.o
+*.log
+*.ppu
+*.bak
+*.or
+

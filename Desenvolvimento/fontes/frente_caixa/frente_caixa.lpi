@@ -11,7 +11,10 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <DpiAware Value="True"/>
+        <TextName Value="Opentef.Frentedecaixa"/>
+        <TextDesc Value="Frente de caixa de exemplo."/>
       </XPManifest>
+      <Icon Value="0"/>
     </General>
     <BuildModes>
       <Item Name="Debug Win64" Default="True"/>
@@ -99,7 +102,19 @@
             <IncludeFiles Value="$(ProjOutDir)"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
           <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
             <TargetCPU Value="i386"/>
             <TargetOS Value="win32"/>
             <Optimizations>
@@ -119,14 +134,7 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-XS
--Xt
--XX
--CX
--Xe
--XD
--Xi
--dFRENTE_CAIXA
+            <CustomOptions Value="-dFRENTE_CAIXA
 -dWIN32"/>
             <OtherDefines Count="2">
               <Define0 Value="FRENTE_CAIXA"/>
@@ -207,9 +215,6 @@
           </Other>
         </CompilerOptions>
       </Item>
-      <SharedMatrixOptions Count="1">
-        <Item1 ID="755527249129" Modes="Debug Win64,Linux32,Linux64,Win32,Release,Debug" Value="-dDisableUTF8RTL"/>
-      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -309,6 +314,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EIdSocketError"/>
       </Item>
     </Exceptions>
   </Debugging>

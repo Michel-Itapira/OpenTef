@@ -284,11 +284,11 @@ type
     procedure iniciar;
     procedure parar;
     procedure atualizaConfiguracao;
-    function comando(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
+    procedure comando(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
       VP_Conexao_ID: integer; VP_Terminal_Tipo: string; VP_Terminal_ID: integer;
       VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
       VP_Terminal_Identificacao: string; VP_Permissao: TPermissao;
-      VP_ClienteIP: string): integer;
+      VP_ClienteIP: string); // QUANDO VEM DIRETO PARA OPEN TEF (pdv)
     function ModuloCarrega(VP_ModuloConfig_ID: integer): integer;
     function ModuloDescarrega(VP_ModuloConfig_ID, VP_ModuloProcID: integer): integer;
     function ModuloAddSolicitacao(VP_ConexaoID: integer;
@@ -350,13 +350,6 @@ procedure ModuloCaixaRetorno(VP_Transmissao_ID: PUtf8Char;
   VP_Tarefa_ID, VP_ModuloProcID, VP_Erro: integer; VP_Dados: PUtf8Char;
   VP_Modulo: Pointer); cdecl;
 // QUANDO VEM DIRETO PARA OPEN TEF PELO MODULO (operadora)
-
-procedure ServidorRecebimento(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-  VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string;
-  VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string;
-  VP_Permissao: TPermissao; VP_ClienteIP: string);
-// QUANDO VEM DIRETO PARA OPEN TEF (pdv)
 
 implementation
 
@@ -1176,7 +1169,7 @@ begin
     Application.CreateForm(TDBancoDados, DBancoDados);
     DComunicador := TDComunicador.Create(Self);
     DComunicador.V_ArquivoLog := F_ArquivoLog;
-    DComunicador.V_ServidorRecebimento := @ServidorRecebimento;
+    DComunicador.V_ServidorRecebimento := @comando;
     DComunicador.V_TransmissaoComando := @TransmissaoComando;
 
     if Conf.ReadInteger('Servidor', 'Porta', 0) <> 0 then
@@ -3367,10 +3360,10 @@ begin
 end;
 
 
-function TDNucleo.comando(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
+procedure TDNucleo.comando(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
   VP_Conexao_ID: integer; VP_Terminal_Tipo: string; VP_Terminal_ID: integer;
   VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string;
-  VP_Permissao: TPermissao; VP_ClienteIP: string): integer;
+  VP_Permissao: TPermissao; VP_ClienteIP: string);
 var
   VL_Mensagem: TMensagem;
   VL_Erro: integer;
@@ -3410,196 +3403,196 @@ begin
     end;
 
     case VL_Mensagem.Comando() of
-      '0001': Result := comando0001(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
+      '0001': VL_Erro := comando0001(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
       // LOGIN
-      '0021': Result := comando0021(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
+      '0021': VL_Erro := comando0021(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
       // PEDIDO DE CONEXÃO TROCA DE CHAVES
-      '000A': Result := comando000A(VP_Transmissao_ID, VL_Mensagem,
+      '000A': VL_Erro := comando000A(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_ID,
           VP_Terminal_Tipo, VP_DOC, VP_Terminal_Identificacao);
       // INICIA VENDA DO FRENTE DE CAIXA
-      '0018': Result := comando0018(VP_Transmissao_ID, VL_Mensagem,
+      '0018': VL_Erro := comando0018(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_ID);
       // SOLICITANDO OU INFOMANDO A OPÇÃO DO MENU DE VENDA
-      '002B': Result := comando002B(VP_Transmissao_ID, VL_Mensagem,
+      '002B': VL_Erro := comando002B(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MODULO
-      '0039': Result := comando0039(VP_Transmissao_ID, VL_Mensagem,
+      '0039': VL_Erro := comando0039(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR LOJA
-      '003F': Result := comando003F(VP_Transmissao_ID, VL_Mensagem,
+      '003F': VL_Erro := comando003F(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR LOJA
-      '0044': Result := comando0044(VP_Transmissao_ID, VL_Mensagem,
+      '0044': VL_Erro := comando0044(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR PDV
-      '0045': Result := comando0045(VP_Transmissao_ID, VL_Mensagem,
+      '0045': VL_Erro := comando0045(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // VALIDA CHAVE PDV
-      '004B': Result := comando004B(VP_Transmissao_ID, VL_Mensagem,
+      '004B': VL_Erro := comando004B(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR PDV
-      '0052': Result := comando0052(VP_Transmissao_ID, VL_Mensagem,
+      '0052': VL_Erro := comando0052(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR TAG
-      '0053': Result := comando0053(VP_Transmissao_ID, VL_Mensagem,
+      '0053': VL_Erro := comando0053(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR PINPAD
-      '0055': Result := comando0055(VP_Transmissao_ID, VL_Mensagem,
+      '0055': VL_Erro := comando0055(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR PINPAD
-      '0057': Result := comando0057(VP_Transmissao_ID, VL_Mensagem,
+      '0057': VL_Erro := comando0057(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR CONFIGURADOR
-      '0058': Result := comando0058(VP_Transmissao_ID, VL_Mensagem,
+      '0058': VL_Erro := comando0058(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR CONFIGURADOR
-      '0059': Result := comando0059(VP_Transmissao_ID, VL_Mensagem,
+      '0059': VL_Erro := comando0059(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // VALIDA CHAVE CONFIGURADOR
-      '0064': Result := comando0064(VP_Transmissao_ID, VL_Mensagem,
+      '0064': VL_Erro := comando0064(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MULT-LOJA
-      '0066': Result := comando0066(VP_Transmissao_ID, VL_Mensagem,
+      '0066': VL_Erro := comando0066(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MULT-LOJA
-      '0067': Result := comando0067(VP_Transmissao_ID, VL_Mensagem,
+      '0067': VL_Erro := comando0067(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MULT-LOJA
-      '0069': Result := comando0069(VP_Transmissao_ID, VL_Mensagem,
+      '0069': VL_Erro := comando0069(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR LOJA
-      '006A': Result := comando006A(VP_Transmissao_ID, VL_Mensagem,
+      '006A': VL_Erro := comando006A(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR PINPAD
-      '006B': Result := comando006B(VP_Transmissao_ID, VL_Mensagem,
+      '006B': VL_Erro := comando006B(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR PDV
-      '0070': Result := comando0070(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
+      '0070': VL_Erro := comando0070(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
       // PESQUISA (TABELA EM LOTE)
-      '0071': Result := comando0071(VP_Transmissao_ID, VL_Mensagem,
+      '0071': VL_Erro := comando0071(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // VALIDA CHAVE MODULO_CONF
-      '0072': Result := comando0072(VP_Transmissao_ID, VL_Mensagem,
+      '0072': VL_Erro := comando0072(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MODULO_CONF
-      '0073': Result := comando0073(VP_Transmissao_ID, VL_Mensagem,
+      '0073': VL_Erro := comando0073(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MODULO_CONF
-      '0074': Result := comando0074(VP_Transmissao_ID, VL_Mensagem,
+      '0074': VL_Erro := comando0074(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MODULO
-      '0075': Result := comando0075(VP_Transmissao_ID, VL_Mensagem,
+      '0075': VL_Erro := comando0075(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MODULO
-      '0077': Result := comando0077(VP_Transmissao_ID, VL_Mensagem,
+      '0077': VL_Erro := comando0077(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR BIN
-      '0078': Result := comando0078(VP_Transmissao_ID, VL_Mensagem,
+      '0078': VL_Erro := comando0078(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR BIN
-      '0079': Result := comando0079(VP_Transmissao_ID, VL_Mensagem,
+      '0079': VL_Erro := comando0079(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MODULO_CONF_FUNCAO
-      '007A': Result := comando007A(VP_Transmissao_ID, VL_Mensagem,
+      '007A': VL_Erro := comando007A(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Tipo, VP_Terminal_ID, VP_DOC);
       // TRANSACAO PARA APROVACAO AUTOMATIZADA
-      '007E': Result := comando007E(VP_Transmissao_ID, VL_Mensagem,
+      '007E': VL_Erro := comando007E(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MODULO_FUNCAO
-      '007F': Result := comando007F(VP_Transmissao_ID, VL_Mensagem,
+      '007F': VL_Erro := comando007F(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MODULO_FUNCAO
-      '0085': Result := comando0085(VP_Transmissao_ID, VL_Mensagem,
+      '0085': VL_Erro := comando0085(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MODULO_CONF_FUNCAO
-      '0087': Result := comando0087(VP_Transmissao_ID, VL_Mensagem,
+      '0087': VL_Erro := comando0087(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR LOJA_MODULO_CONF_FUNCAO
-      '0088': Result := comando0088(VP_Transmissao_ID, VL_Mensagem,
+      '0088': VL_Erro := comando0088(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);
       // EXCLUIR MULTILOJA_MODULO_CONF_FUNCAO
-      '008A': Result := comando008A(VP_Transmissao_ID, VL_Mensagem,
+      '008A': VL_Erro := comando008A(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MODULO_CONF_FUNCAO
-      '0096': Result := comando0096(VP_Transmissao_ID, VL_Mensagem,
+      '0096': VL_Erro := comando0096(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MULTLOJA_MODULO
-      '0099': Result := comando0099(VP_Transmissao_ID, VL_Mensagem,
+      '0099': VL_Erro := comando0099(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MULTLOJA_MODULO
-      '009A': Result := comando009A(VP_Transmissao_ID, VL_Mensagem,
+      '009A': VL_Erro := comando009A(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MULTLOJA_MODULO
-      '009B': Result := comando009B(VP_Transmissao_ID, VL_Mensagem,
+      '009B': VL_Erro := comando009B(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR LOJA_MODULO_CONF_FUNCAO
-      '009D': Result := comando009D(VP_Transmissao_ID, VL_Mensagem,
+      '009D': VL_Erro := comando009D(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR MULTLOJA_FUNCAO
-      '009F': Result := comando009F(VP_Transmissao_ID, VL_Mensagem,
+      '009F': VL_Erro := comando009F(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MULTLOJA_FUNCAO
-      '00A0': Result := comando00A0(VP_Transmissao_ID, VL_Mensagem,
+      '00A0': VL_Erro := comando00A0(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MULTLOJA_FUNCAO
-      '00AA': Result := comando00AA(VP_Transmissao_ID, VL_Mensagem,
+      '00AA': VL_Erro := comando00AA(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR LOJA_FUNCAO
-      '00AC': Result := comando00AC(VP_Transmissao_ID, VL_Mensagem,
+      '00AC': VL_Erro := comando00AC(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR LOJA_FUNCAO
-      '00AD': Result := comando00AD(VP_Transmissao_ID, VL_Mensagem,
+      '00AD': VL_Erro := comando00AD(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUI LOJA_FUNCAO
-      '00AE': Result := comando00AE(VP_Transmissao_ID, VL_Mensagem,
+      '00AE': VL_Erro := comando00AE(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR LOJA_MODULO
-      '00B0': Result := comando00B0(VP_Transmissao_ID, VL_Mensagem,
+      '00B0': VL_Erro := comando00B0(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);
       // ALTERAR MULTILOJA_MODULO_CONF_FUNCAO
-      '00B1': Result := comando00B1(VP_Transmissao_ID, VL_Mensagem,
+      '00B1': VL_Erro := comando00B1(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR LOJA_MODULO
-      '00B2': Result := comando00B2(VP_Transmissao_ID, VL_Mensagem,
+      '00B2': VL_Erro := comando00B2(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR LOJA_MODULO
-      '00B5': Result := comando00B5(VP_Transmissao_ID, VL_Mensagem,
+      '00B5': VL_Erro := comando00B5(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR PINPAD_FUNCAO
-      '00B6': Result := comando00B6(VP_Transmissao_ID, VL_Mensagem,
+      '00B6': VL_Erro := comando00B6(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR PINPAD_FUNCAO
-      '00B8': Result := comando00B8(VP_Transmissao_ID, VL_Mensagem,
+      '00B8': VL_Erro := comando00B8(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR PINPAD_FUNCAO
-      '00B9': Result := comando00B9(VP_Transmissao_ID, VL_Mensagem,
+      '00B9': VL_Erro := comando00B9(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR MODULO_FUNCAO
-      '00BA': Result := comando00BA(VP_Transmissao_ID, VL_Mensagem,
+      '00BA': VL_Erro := comando00BA(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR MODULO_CONF
-      '00BB': Result := comando00BB(VP_Transmissao_ID, VL_Mensagem,
+      '00BB': VL_Erro := comando00BB(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR CONFIGURADOR
-      '00BF': Result := comando00BF(VP_Transmissao_ID, VL_Mensagem,
+      '00BF': VL_Erro := comando00BF(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR LOJA_MODULO_CONF_FUNCAO
-      '00C2': Result := comando00C2(VP_Transmissao_ID, VL_Mensagem,
+      '00C2': VL_Erro := comando00C2(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR PDV_FUNCAO
-      '00C4': Result := comando00C4(VP_Transmissao_ID, VL_Mensagem,
+      '00C4': VL_Erro := comando00C4(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR PDV_FUNCAO
-      '00C5': Result := comando00C5(VP_Transmissao_ID, VL_Mensagem,
+      '00C5': VL_Erro := comando00C5(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR PDV_FUNCAO
-      '00C8': Result := comando00C8(VP_Transmissao_ID, VL_Mensagem,
+      '00C8': VL_Erro := comando00C8(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR PDV_MODULO
-      '00CA': Result := comando00CA(VP_Transmissao_ID, VL_Mensagem,
+      '00CA': VL_Erro := comando00CA(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);
       // INCLUIR MULTILOJA_MODULO_CONF_FUNCAO
-      '00CB': Result := comando00CB(VP_Transmissao_ID, VL_Mensagem,
+      '00CB': VL_Erro := comando00CB(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR PDV_MODULO
-      '00CC': Result := comando00CC(VP_Transmissao_ID, VL_Mensagem,
+      '00CC': VL_Erro := comando00CC(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR PDV_MODULO
-      '00DB': Result := comando00DB(VP_Transmissao_ID, VL_Mensagem,
+      '00DB': VL_Erro := comando00DB(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR TAG
-      '00DC': Result := comando00DC(VP_Transmissao_ID, VL_Mensagem,
+      '00DC': VL_Erro := comando00DC(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR TAG
-      '00DE': Result := comando00DE(VP_Transmissao_ID, VL_Mensagem,
+      '00DE': VL_Erro := comando00DE(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // INCLUIR ADQUIRENTE
-      '00DF': Result := comando00DF(VP_Transmissao_ID, VL_Mensagem,
+      '00DF': VL_Erro := comando00DF(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // ALTERAR ADQUIRENTE
-      '00E0': Result := comando00E0(VP_Transmissao_ID, VL_Mensagem,
+      '00E0': VL_Erro := comando00E0(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);   // EXCLUIR ADQUIRENTE
-      '00FA': Result := comando00FA(VP_Transmissao_ID, VL_Mensagem,
+      '00FA': VL_Erro := comando00FA(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);
       // INCLUIR LOJA EM MULTILOJA(GUARDA-CHUVA)
-      '00FB': Result := comando00FB(VP_Transmissao_ID, VL_Mensagem,
+      '00FB': VL_Erro := comando00FB(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Permissao);
       // EXCLUIR LOJA EM MULTILOJA(GUARDA-CHUVA)
-      '00F3': Result := comando00F4(VP_Transmissao_ID, VL_Mensagem,
+      '00F3': VL_Erro := comando00F4(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_Tipo,
           VP_Terminal_ID, VP_DOC, VP_Terminal_Identificacao);
       // SOLICITA SALDO
-      '00F0': Result := comando00F4(VP_Transmissao_ID, VL_Mensagem,
+      '00F0': VL_Erro := comando00F4(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_Tipo,
           VP_Terminal_ID, VP_DOC, VP_Terminal_Identificacao);
       // SOLICITA MENU OPERACIONAL
-      '00F4': Result := comando00F4(VP_Transmissao_ID, VL_Mensagem,
+      '00F4': VL_Erro := comando00F4(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_Tipo,
           VP_Terminal_ID, VP_DOC, VP_Terminal_Identificacao);
       // EXECUTAR MODULO
-      '00F6': Result := comando00F4(VP_Transmissao_ID, VL_Mensagem,
+      '00F6': VL_Erro := comando00F4(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_Tipo,
           VP_Terminal_ID, VP_DOC, VP_Terminal_Identificacao);
       // SOLICITA CANCELAMENTO DE TRANSACAO
 
-      '0105': Result := comando0105(VP_Transmissao_ID, -1, -1,
+      '0105': VL_Erro := comando0105(VP_Transmissao_ID, -1, -1,
           VP_Conexao_ID, -1, 0, '', VL_Mensagem.TagsAsString);
       // EXECUTA NO CLIENTE CONEXAO VINDA DIRETO NO OPENTEF
 
-      '00F5': Result := comando00F5(VP_Transmissao_ID, VL_Mensagem,
+      '00F5': VL_Erro := comando00F5(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_ID);
       // MENU OPERACIONAL
-      '0111': Result := comando0111(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
+      '0111': VL_Erro := comando0111(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
       // SOLICITA CHAVE PUBLICA
-      '010D': Result := comando010D(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
+      '010D': VL_Erro := comando010D(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID);
       // SOLICITA ATUALIZACAO DO TEF
-      '0113': Result := comando0113(VP_Transmissao_ID, VL_Mensagem,
+      '0113': VL_Erro := comando0113(VP_Transmissao_ID, VL_Mensagem,
           VP_Conexao_ID);
         // SOLICITA CONCILIACAO
       else
       begin
         VL_Mensagem.Limpar;
-        Result := 101;
+        VL_Erro := 101;
         VL_Mensagem.AddComando('0026', '101'); // retorno com erro
         DComunicador.ServidorTransmiteSolicitacaoID(DComunicador,
           10000, False, nil, VP_Transmissao_ID,
@@ -3614,17 +3607,6 @@ begin
       VL_Mensagem.Free;
   end;
 
-end;
-
-procedure ServidorRecebimento(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-  VP_Terminal_Tipo: string; VP_Terminal_ID: integer; VP_DOC: string;
-  VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string;
-  VP_Permissao: TPermissao; VP_ClienteIP: string);
-begin
-  DNucleo.comando(VP_Erro, VP_Transmissao_ID, VP_DadosRecebidos,
-    VP_Conexao_ID, VP_Terminal_Tipo, VP_Terminal_ID, VP_DOC,
-    VP_Terminal_Status, VP_Terminal_Identificacao, VP_Permissao, VP_ClienteIP);
 end;
 
 function TDNucleo.comando0021(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;

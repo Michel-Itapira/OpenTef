@@ -170,6 +170,8 @@ var
 procedure gpinpad_exception_handler(errCode: int16; msg: pansichar); stdcall;
 begin
   try
+    GRAVALOG('C:\temp\tef.log', 0, '', '', '', 'Code: ' + IntToStr(errCode) +
+      ' msg: ' + msg, '', 1, 1);
     VF_PinpadExecption := True;
     VF_PinpadExecptionCodigo := errCode;
     VF_PinpadExecptionMensgem := msg;
@@ -188,9 +190,6 @@ end;
 constructor TGertec_ppc930.Create;
 begin
   fPinPad := nil;
-  F_PinPaExecutando:=False;
-  F_PinPadComOpen:=False;
-  F_PinPadConectado:=False;
   inherited Create;
 end;
 
@@ -209,6 +208,7 @@ begin
     Result := 50;
     Exit;
   end;
+
   {$IFDEF WIN32}
        Pointer(pcl_exception_set_uncaught_handler) :=
         GetProcAddress(fPinPadLib, 'pcl_exception_set_uncaught_handler@4');
@@ -378,12 +378,10 @@ begin
   Result := 0;
   if fPinPad = nil then
     Exit;
-  try
-  PinPadDesconectar('Open Tef');
+  abecs_cmd_clo(fPinPad, 'Open Tef');
+  abecs_comm_close(@fPinPad);
   UnloadLibrary(fPinPadLib);
-  finally
-  fPinPadLib :=0;
-  end;
+  fPinPad := nil;
 end;
 
 procedure TGertec_ppc930.SetConfig(VP_PinPad: TPinPadModelo;
@@ -407,7 +405,6 @@ begin
     Result := VF_PinpadExecptionCodigo;
     Exit;
   end;
-  F_PinPadComOpen :=True;
   Result := abecs_cmd_opn(fPinPad, 0);
   if VF_PinpadExecption then
   begin
@@ -417,22 +414,14 @@ begin
     Result := VF_PinpadExecptionCodigo;
     Exit;
   end;
-  F_PinPadConectado:=True;
+
   Result := 0;
 end;
 
 function TGertec_ppc930.PinPadDesconectar(VL_Mensagem: string): integer;
 begin
-  if F_PinPadConectado then
-  begin
-    abecs_cmd_clo(fPinPad, PChar(VL_Mensagem));
-    F_PinPadConectado:=false;
-  end;
-  if F_PinPadComOpen then
-  begin
-    abecs_comm_close(@fPinPad);
-    F_PinPadComOpen:=false;
-  end;
+  abecs_cmd_clo(fPinPad, PChar(VL_Mensagem));
+  abecs_comm_close(@fPinPad);
   Result := 0;
 end;
 
@@ -693,4 +682,3 @@ end;
 
 
 end.
-

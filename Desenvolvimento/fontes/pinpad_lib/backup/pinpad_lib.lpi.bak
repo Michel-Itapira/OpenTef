@@ -57,16 +57,21 @@
               <TrashVariables Value="True"/>
             </Debugging>
             <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dOPEN_TEF
+            <CustomOptions Value="-dpinpad_lib
 -dWIN
 -dDEBUG"/>
-            <OtherDefines Count="2">
+            <OtherDefines Count="4">
               <Define0 Value="pinpad_lib"/>
               <Define1 Value="WIN32"/>
+              <Define2 Value="WIN"/>
+              <Define3 Value="DEBUG"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -102,12 +107,19 @@
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dOPEN_TEF
--dWIN"/>
+            <CustomOptions Value="-dWIN
+-dPINPAD_LIB"/>
+            <OtherDefines Count="2">
+              <Define0 Value="WIN"/>
+              <Define1 Value="PINPAD_LIB"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
@@ -153,11 +165,13 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dOPEN_TEF
+            <CustomOptions Value="-dpinpad_lib
 -dLINUX
 -dDEBUG"/>
-            <OtherDefines Count="1">
+            <OtherDefines Count="3">
               <Define0 Value="pinpad_lib"/>
+              <Define1 Value="LINUX"/>
+              <Define2 Value="DEBUG"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -197,10 +211,11 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dOPEN_TEF
+            <CustomOptions Value="-dpinpad_lib
 -dLINUX"/>
-            <OtherDefines Count="1">
+            <OtherDefines Count="2">
               <Define0 Value="pinpad_lib"/>
+              <Define1 Value="LINUX"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -240,10 +255,11 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dOPEN_TEF
+            <CustomOptions Value="-dpinpad_lib
 -dLINUX"/>
-            <OtherDefines Count="1">
+            <OtherDefines Count="2">
               <Define0 Value="pinpad_lib"/>
+              <Define1 Value="LINUX"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -283,18 +299,24 @@
             <Debugging>
               <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dOPEN_TEF
+            <CustomOptions Value="-dpinpad_lib
 -dWIN
 -dDEBUG"/>
-            <OtherDefines Count="2">
+            <OtherDefines Count="4">
               <Define0 Value="pinpad_lib"/>
               <Define1 Value="WIN32"/>
+              <Define2 Value="WIN"/>
+              <Define3 Value="DEBUG"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -312,28 +334,7 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="LCLBase"/>
-      </Item>
-      <Item>
-        <PackageName Value="lazbarcodes_runtimeonly"/>
-      </Item>
-      <Item>
-        <PackageName Value="lazbarcodes"/>
-      </Item>
-      <Item>
         <PackageName Value="LCL"/>
-      </Item>
-      <Item>
-        <PackageName Value="indylaz"/>
-      </Item>
-      <Item>
-        <PackageName Value="rxnew"/>
-      </Item>
-      <Item>
-        <PackageName Value="LR_ZeosDB"/>
-      </Item>
-      <Item>
-        <PackageName Value="dcpcrypt"/>
       </Item>
     </RequiredPackages>
     <Units>
@@ -367,6 +368,10 @@
         <Filename Value="ingenico_Lane3000\ingenico_lane3000.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\utag.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -396,12 +401,19 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dOPEN_TEF
--dWIN"/>
+      <CustomOptions Value="-dWIN
+-dPINPAD_LIB"/>
+      <OtherDefines Count="2">
+        <Define0 Value="WIN"/>
+        <Define1 Value="PINPAD_LIB"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

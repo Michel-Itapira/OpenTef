@@ -6558,7 +6558,7 @@ object FPrincipal: TFPrincipal
         Width = 72
         Height = 21
         TabOrder = 10
-        Text = '39000'
+        Text = '39001'
       end
       object EID: TEdit
         Left = 872

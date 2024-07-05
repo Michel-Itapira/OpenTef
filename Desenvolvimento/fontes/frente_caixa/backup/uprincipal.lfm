@@ -6,7 +6,9 @@ object F_Principal: TF_Principal
   Caption = 'Caixa'
   ClientHeight = 688
   ClientWidth = 943
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDesktopCenter
   object PageControl1: TPageControl
@@ -14,8 +16,8 @@ object F_Principal: TF_Principal
     Height = 602
     Top = 16
     Width = 947
-    ActivePage = TabSheet1
-    TabIndex = 0
+    ActivePage = TabSheet2
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Venda'
@@ -720,7 +722,7 @@ object F_Principal: TF_Principal
           Top = 203
           Width = 296
           TabOrder = 4
-          Text = 'COM6'
+          Text = 'COM4'
         end
         object Label23: TLabel
           Left = 8
@@ -840,7 +842,7 @@ object F_Principal: TF_Principal
           Top = 50
           Width = 72
           TabOrder = 1
-          Text = '39001'
+          Text = '39000'
         end
         object Label5: TLabel
           Left = 46
@@ -1010,6 +1012,25 @@ object F_Principal: TF_Principal
         Caption = 'Servidor Local'
         TabOrder = 7
         OnChange = RServidorLocalChange
+      end
+      object BTestaTag: TButton
+        Left = 514
+        Height = 25
+        Top = 453
+        Width = 126
+        Caption = 'TestaTag'
+        TabOrder = 8
+        OnClick = BTestaTagClick
+      end
+      object Memo1: TMemo
+        Left = 648
+        Height = 90
+        Top = 456
+        Width = 150
+        Lines.Strings = (
+          '000022514010C11S14010A11S'
+        )
+        TabOrder = 9
       end
     end
     object TabSheet3: TTabSheet

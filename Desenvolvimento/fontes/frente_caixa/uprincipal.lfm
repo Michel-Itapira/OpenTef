@@ -7,6 +7,7 @@ object F_Principal: TF_Principal
   ClientHeight = 688
   ClientWidth = 943
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDesktopCenter
   object PageControl1: TPageControl

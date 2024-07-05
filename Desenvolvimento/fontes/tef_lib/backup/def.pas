@@ -8,7 +8,7 @@ uses
   Classes, SysUtils;
 
 const
-    C_Versao: array  [0..2] of integer = (1, 0, 0);
+    C_Versao: array  [0..2] of integer = (1, 0, 1);
     C_Programa : String ='tef_lib';
     C_Mensagem = 1;
 
@@ -36,7 +36,6 @@ const
 
     var
      F_NivelLog: integer = 1; // 0 = sem log  1 = erro 2 = log informativo  3 = comentario 4 = evento socket;
-     F_AmbienteTeste: integer = 0;
 
 implementation
 

@@ -47,7 +47,7 @@ type
     msg: array [0..256] of char;
   end;
 
-  TGpinpad_exception_handler = procedure(errCode: int16; msg: PChar); stdcall;
+  TGpinpad_exception_handler = procedure(errCode: int16; msg: PChar) of object; stdcall;
   TPcl_exception_set_uncaught_handler = procedure(handler: TGpinpad_exception_handler);
     stdcall;
   Tabecs_comm_open = function(portName: PChar): Pointer; stdcall;
@@ -101,6 +101,46 @@ type
     fPorta: ansistring;
     fCaminhoLib: ansistring;
   public
+    abecs_comm_open: Tabecs_comm_open;
+    abecs_comm_close: Tabecs_comm_close;
+
+    abecs_cmd_opn: Tabecs_cmd_opn;
+    abecs_cmd_dsp: Tabecs_cmd_dsp;
+    abecs_cmd_clo: Tabecs_cmd_clo;
+    abecs_cmd_cex: Tabecs_cmd_cex;
+    abecs_cmd_gpn: Tabecs_cmd_gpn;
+
+    abecs_cmd_mlx: Tabecs_cmd_mlx;
+    abecs_cmd_dsi: Tabecs_cmd_dsi;
+    abecs_cmd_mli: Tabecs_cmd_mli;
+    abecs_cmd_mlr: Tabecs_cmd_mlr;
+    abecs_cmd_mle: Tabecs_cmd_mle;
+    abecs_cmd_mlx_crc16: Tabecs_cmd_mlx_crc16;
+
+
+    abecs_cmd_cex_response: Tabecs_cmd_cex_response;
+    //abecs_cmd_gcx_response: Tabecs_cmd_gcx_response;
+    //abecs_cmd_gox_response: Tabecs_cmd_gox_response;
+    //abecs_cmd_fcx_response: Tabecs_cmd_fcx_response;
+    abecs_cmd_gpn_response: Tabecs_cmd_gpn_response;
+    abecs_rsp_param_map_new: Tabecs_rsp_param_map_new;
+    //abecs_rsp_param_map_begin: Tabecs_rsp_param_map_begin;
+    //abecs_rsp_param_map_get: Tabecs_rsp_param_map_get;
+    //abecs_rsp_param_map_next: Tabecs_rsp_param_map_next;
+
+    abecs_cmd_cex_response_get_trk1inc: Tabecs_cmd_cex_response_get_trk1inc;
+    abecs_cmd_cex_response_get_trk2inc: Tabecs_cmd_cex_response_get_trk2inc;
+    abecs_cmd_cex_response_get_trk3inc: Tabecs_cmd_cex_response_get_trk3inc;
+
+    abecs_cmd_cex_response_get_event: Tabecs_cmd_cex_response_get_event;
+
+    pcl_map_delete: TPcl_map_delete;
+    pcl_exception_set_uncaught_handler: TPcl_exception_set_uncaught_handler;
+    cbAux: Tgpinpad_exception_handler;
+    VF_PinpadExecption: boolean;
+    VF_PinpadExecptionCodigo: integer;
+    VF_PinpadExecptionMensgem: string;
+
     constructor Create;
     function CarregaLib(): integer; override;
     function DescarregaLib(): integer; override;
@@ -117,57 +157,16 @@ type
       VP_Mensagem: string; var VO_Mensagem: TMensagem;
       VP_TempoEspera: integer): integer; override;
 
-
+    procedure gpinpad_exception_handler(errCode: int16; msg: pansichar); stdcall;
   end;
 
-procedure gpinpad_exception_handler(errCode: int16; msg: pansichar); stdcall;
+  //procedure gpinpad_exception_handler(errCode: int16; msg: pansichar); stdcall;
 
 
 implementation
 
-var
-  abecs_comm_open: Tabecs_comm_open;
-  abecs_comm_close: Tabecs_comm_close;
-
-  abecs_cmd_opn: Tabecs_cmd_opn;
-  abecs_cmd_dsp: Tabecs_cmd_dsp;
-  abecs_cmd_clo: Tabecs_cmd_clo;
-  abecs_cmd_cex: Tabecs_cmd_cex;
-  abecs_cmd_gpn: Tabecs_cmd_gpn;
-
-  abecs_cmd_mlx: Tabecs_cmd_mlx;
-  abecs_cmd_dsi: Tabecs_cmd_dsi;
-  abecs_cmd_mli: Tabecs_cmd_mli;
-  abecs_cmd_mlr: Tabecs_cmd_mlr;
-  abecs_cmd_mle: Tabecs_cmd_mle;
-  abecs_cmd_mlx_crc16: Tabecs_cmd_mlx_crc16;
-
-
-  abecs_cmd_cex_response: Tabecs_cmd_cex_response;
-  //abecs_cmd_gcx_response: Tabecs_cmd_gcx_response;
-  //abecs_cmd_gox_response: Tabecs_cmd_gox_response;
-  //abecs_cmd_fcx_response: Tabecs_cmd_fcx_response;
-  abecs_cmd_gpn_response: Tabecs_cmd_gpn_response;
-  abecs_rsp_param_map_new: Tabecs_rsp_param_map_new;
-  //abecs_rsp_param_map_begin: Tabecs_rsp_param_map_begin;
-  //abecs_rsp_param_map_get: Tabecs_rsp_param_map_get;
-  //abecs_rsp_param_map_next: Tabecs_rsp_param_map_next;
-
-  abecs_cmd_cex_response_get_trk1inc: Tabecs_cmd_cex_response_get_trk1inc;
-  abecs_cmd_cex_response_get_trk2inc: Tabecs_cmd_cex_response_get_trk2inc;
-  abecs_cmd_cex_response_get_trk3inc: Tabecs_cmd_cex_response_get_trk3inc;
-
-  abecs_cmd_cex_response_get_event: Tabecs_cmd_cex_response_get_event;
-
-  pcl_map_delete: TPcl_map_delete;
-  pcl_exception_set_uncaught_handler: TPcl_exception_set_uncaught_handler;
-  cbAux: Tgpinpad_exception_handler;
-  VF_PinpadExecption: boolean;
-  VF_PinpadExecptionCodigo: integer;
-  VF_PinpadExecptionMensgem: string;
-
-
-procedure gpinpad_exception_handler(errCode: int16; msg: pansichar); stdcall;
+procedure TGertec_ppc930.gpinpad_exception_handler(errCode: int16;
+  msg: pansichar); stdcall;
 begin
   try
     VF_PinpadExecption := True;
@@ -188,9 +187,9 @@ end;
 constructor TGertec_ppc930.Create;
 begin
   fPinPad := nil;
-  F_PinPaExecutando:=False;
-  F_PinPadComOpen:=False;
-  F_PinPadConectado:=False;
+  F_PinPaExecutando := False;
+  F_PinPadComOpen := False;
+  F_PinPadConectado := False;
   inherited Create;
 end;
 
@@ -209,6 +208,7 @@ begin
     Result := 50;
     Exit;
   end;
+
   {$IFDEF WIN32}
        Pointer(pcl_exception_set_uncaught_handler) :=
         GetProcAddress(fPinPadLib, 'pcl_exception_set_uncaught_handler@4');
@@ -379,10 +379,10 @@ begin
   if fPinPad = nil then
     Exit;
   try
-  PinPadDesconectar('Open Tef');
-  UnloadLibrary(fPinPadLib);
+    PinPadDesconectar('Open Tef');
+    UnloadLibrary(fPinPadLib);
   finally
-  fPinPadLib :=0;
+    fPinPadLib := 0;
   end;
 end;
 
@@ -407,7 +407,7 @@ begin
     Result := VF_PinpadExecptionCodigo;
     Exit;
   end;
-  F_PinPadComOpen :=True;
+  F_PinPadComOpen := True;
   Result := abecs_cmd_opn(fPinPad, 0);
   if VF_PinpadExecption then
   begin
@@ -417,7 +417,7 @@ begin
     Result := VF_PinpadExecptionCodigo;
     Exit;
   end;
-  F_PinPadConectado:=True;
+  F_PinPadConectado := True;
   Result := 0;
 end;
 
@@ -426,12 +426,12 @@ begin
   if F_PinPadConectado then
   begin
     abecs_cmd_clo(fPinPad, PChar(VL_Mensagem));
-    F_PinPadConectado:=false;
+    F_PinPadConectado := False;
   end;
   if F_PinPadComOpen then
   begin
     abecs_comm_close(@fPinPad);
-    F_PinPadComOpen:=false;
+    F_PinPadComOpen := False;
   end;
   Result := 0;
 end;
@@ -631,7 +631,7 @@ begin
   VL_cmdData.entries[0].min := VP_DigMin;
   VL_cmdData.entries[0].max := VP_DigMax;
 
-  for VL_I := 0 to Length(VP_Mensagem) -1 do
+  for VL_I := 0 to Length(VP_Mensagem) - 1 do
     VL_cmdData.entries[0].msg[VL_I] := VP_Mensagem[VL_I + 1];
 
   VL_cmdData.entries[0].msg[VL_I + 1] := #0;
@@ -693,4 +693,3 @@ end;
 
 
 end.
-

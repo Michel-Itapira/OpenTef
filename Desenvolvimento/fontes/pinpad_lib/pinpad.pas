@@ -5,10 +5,9 @@ unit pinpad;
 interface
 
 uses
-    Classes, SysUtils, funcoes;
+    Classes, SysUtils,funcoes;
 
 type
-
 
     { TTPinPad }
 
@@ -56,10 +55,6 @@ type
     public
 
     end;
-
-var
-    D_PinPad: TDPinPad;
-
 
 
 function PinPadCarrega(var VO_PinPad:Pointer; VP_PinPadModelo: TPinPadModelo; VP_PinPadModeloLib, VP_PinPadModeloPorta: PChar; VP_RespostaPinPad: TRespostaPinPad; VP_ArquivoLog: PChar): integer; cdecl;

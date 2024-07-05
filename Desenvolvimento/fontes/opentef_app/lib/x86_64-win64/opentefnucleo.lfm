@@ -4,7 +4,7 @@ object DNucleo: TDNucleo
   OldCreateOrder = False
   Height = 242
   HorizontalOffset = 814
-  VerticalOffset = 508
+  VerticalOffset = 476
   Width = 416
   object CriptoAes: TLbRijndael
     CipherMode = cmECB

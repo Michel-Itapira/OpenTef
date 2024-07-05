@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Linux64 Debug"/>
+    <BuildModes Active="Win64 Debug"/>
     <Units>
       <Unit>
         <Filename Value="config_app.lpr"/>

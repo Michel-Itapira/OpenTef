@@ -50,6 +50,7 @@ exports
     transacaogettag,
     transacaocancela,
 
+    mensagemdispose,
     alterarnivellog,
     versao;
 

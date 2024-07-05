@@ -62,8 +62,8 @@ type
       var VO_DadosRecebidos: TTagVBI): TVBIRetorno;
   public
     constructor Create(VP_ArquivoLog: string; VP_Host: string;
-      VP_Porta: integer; VP_Aplicacao: string; VP_AplicacaoTela, VP_Estabelecimento, VP_Loja,
-      VP_Terminal: string);
+      VP_Porta: integer; VP_Aplicacao: string;
+      VP_AplicacaoTela, VP_Estabelecimento, VP_Loja, VP_Terminal: string);
     destructor Destroy; override;
 
     function inicializarTransacao: TVBIRetorno;
@@ -315,7 +315,8 @@ begin
 end;
 
 constructor TVBIIntergrador.Create(VP_ArquivoLog: string; VP_Host: string;
-  VP_Porta: integer; VP_Aplicacao, VP_AplicacaoTela, VP_Estabelecimento, VP_Loja, VP_Terminal: string);
+  VP_Porta: integer; VP_Aplicacao, VP_AplicacaoTela, VP_Estabelecimento,
+  VP_Loja, VP_Terminal: string);
 begin
   VF_IdTCPCliente := nil;
 

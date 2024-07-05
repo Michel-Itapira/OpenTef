@@ -1,3 +1,5 @@
+/* 
+
 package opentef;
 
 import com.sun.jna.Library;
@@ -75,3 +77,5 @@ public interface TefLib extends Library {
 	   void mensagemlimpar(Pointer ponteiro);
 	   int mensagemerro(int codigo, String mensagem);
 }
+
+*/

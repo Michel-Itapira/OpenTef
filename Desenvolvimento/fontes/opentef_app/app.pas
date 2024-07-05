@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, opentefnucleo, ubarcodes, funcoes,fcrc16,
+  ExtCtrls, opentefnucleo, ubarcodes, funcoes,
   ZConnection, ZDataset,
   rxmemds, IdContext, cadastro, LbClass, md5, base64, FMTBcd, DB, comunicador,bancodados;
 

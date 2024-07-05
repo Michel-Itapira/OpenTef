@@ -12,45 +12,30 @@ type
   TLBytes = array of byte;
   { TForm1 }
 
-  TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando,
-    tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro, tsAbortada);
+  TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando, tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro, tsAbortada);
 
-  TServidorRecebimentoLib = function(VP_Codigo: integer;
-    VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-    VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+  TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 
-  Tiniciarconexao = function(VP_ArquivoLog, VP_Chave, VP_IP_Caixa,
-    VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
-    VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib;
-    VP_Identificacao: PChar): integer; cdecl;
-  Tfinalizaconexao = function(): integer; cdecl;
-  TResponde = function(VP_Transmissao_ID, VP_Mensagem: PChar;
-    VP_ID: integer): integer; cdecl;
+  Tiniciarconexao = function(var VO_MCom: Pointer; VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
+    VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib; VP_Identificacao: PChar): integer; cdecl;
+  Tfinalizaconexao = function(VP_MCom: Pointer): integer; cdecl;
+  TResponde = function(VP_MCom: pointer; VP_Transmissao_ID, VP_Mensagem: PChar; VP_ID: integer): integer; cdecl;
 
   TTMensagemCreate = function(var VO_Mensagem: Pointer): integer; cdecl;
-  TTMensagemCarregaTags = function(VP_Mensagem: Pointer;
-    VP_Dados: PChar): integer; cdecl;
-  TTMensagemComando = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
-  TTMensagemComandoDados = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
+  TTMensagemCarregaTags = function(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
+  TTMensagemComando = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemComandoDados = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
   TTMensagemFree = procedure(VP_Mensagem: Pointer); cdecl;
-  TTMensagemaddtag = function(VP_Mensagem: Pointer;
-    VP_Tag, VP_Dados: PChar): integer; cdecl;
-  TTMensagemaddcomando = function(VP_Mensagem: Pointer;
-    VP_Tag, VP_Dados: PChar): integer; cdecl;
-  TTMensagemTagAsString = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
+  TTMensagemaddtag = function(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+  TTMensagemaddcomando = function(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+  TTMensagemTagAsString = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
   TTMensagemTagCount = function(VP_Mensagem: Pointer): integer; cdecl;
-  TTMensagemGetTag = function(VP_Mensagem: Pointer; VP_Tag: PChar;
-    var VO_Dados: PChar): integer; cdecl;
-  TTMensagemGetTagIdx = function(VP_Mensagem: Pointer; VL_Idx: integer;
-    var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
-  TTMensagemTagToStr = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
+  TTMensagemGetTag = function(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemGetTagIdx = function(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemTagToStr = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
   TTMensagemLimpar = procedure(VP_Mensagem: Pointer); cdecl;
-  TTMensagemerro = function(VP_CodigoErro: integer;
-    var VO_RespostaMensagem: PChar): integer; cdecl;
+  TTMensagemerro = function(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
+  TMensagemDispose = procedure(VP_PChar: PChar); cdecl;
 
   TDescriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: PChar): PChar; cdecl;
   TEncriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: PChar): PChar; cdecl;
@@ -79,8 +64,7 @@ type
     destructor Destroy; override;
     function GetRecOpeTef(VP_Idex: integer): TRecOpeTef;
     function Count: integer;
-    function Add(VP_ID: integer;
-      VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
+    function Add(VP_ID: integer; VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
     function Remove(VP_ID: integer): integer;
   end;
 
@@ -98,8 +82,7 @@ type
     destructor Destroy; override;
     function Add(VP_Transacao_ID: string): TRecTransacao;
     function Remove(VP_Transacao_ID: string): integer;
-    function Salvar(VP_Transacao_ID: string;
-      VP_Rec_Transacao: TRecTransacao): integer;
+    function Salvar(VP_Transacao_ID: string; VP_Rec_Transacao: TRecTransacao): integer;
   end;
 
 
@@ -114,6 +97,7 @@ type
     BInicializaDll: TButton;
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     cCpfPdv: TCheckBox;
     cQrcodePdv: TCheckBox;
     cMensagemPdv: TCheckBox;
@@ -182,18 +166,13 @@ type
   protected
     procedure Execute; override;
   public
-    constructor Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP: string;
-      VP_ID: integer; VP_Retorno: TResponde);
+    constructor Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP: string; VP_ID: integer; VP_Retorno: TResponde);
 
   end;
 
 
-function ServidorRecebimentoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
-function ServidorRecebimentoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 function ByteToHex(const Value: array of byte): string;
 
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
@@ -201,8 +180,12 @@ procedure ImagemToStr(var Dados: string; Imagem: TImage);
 
 var
   Form1: TForm1;
-  FMCom: THandle;
-  FKey: THandle;
+
+  FMCom: pointer;
+
+  FMComLib: THandle;
+  FKeyLib: THandle;
+
   finalizaconexao: Tfinalizaconexao;
   iniciarconexao: Tiniciarconexao;
   respondeservico, respondecaixa: TResponde;
@@ -222,6 +205,7 @@ var
   F_MensagemLimpar: TTMensagemLimpar;
   F_Mensagem: Pointer;
   F_Erro: TTMensagemerro;
+  F_MensagemDispose: TMensagemDispose;
 
   F_DescriptaSenha3Des: TDescriptaSenha3Des;
   F_EncriptaSenha3Des: TEncriptaSenha3Des;
@@ -235,15 +219,14 @@ var
 
 implementation
 
-function ServidorRecebimentoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 var
   VL_Mensagem: Pointer;
-  VL_Comando: PChar;
+  VL_Comando: string;
+  VL_Retorno: PChar;
 begin
-
   VL_Comando := '';
+  VL_Retorno := nil;
   VL_Mensagem := nil;
 
   Result := VP_Erro;
@@ -262,27 +245,29 @@ begin
   if Result <> 0 then
     exit;
 
-  F_MensagemComando(VL_Mensagem, VL_Comando);
+  F_MensagemComando(VL_Mensagem, VL_Retorno);
 
+  VL_Comando := VL_Retorno;
+  F_MensagemDispose(VL_Retorno);
+
+  F_MensagemFree(VL_Mensagem);
 
   if VL_Comando = '0001' then // login
     F_OpenTef.Add(VP_ID, VP_Transmissao_ID, 'C', VP_Chave, VP_IP)
   else
-    ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos,
-      VP_IP, VP_ID, respondecaixa);
+    ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP, VP_ID, respondecaixa);
 
 end;
 
-function ServidorRecebimentoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 var
   VL_Mensagem: Pointer;
-  VL_Comando: PChar;
+  VL_Comando: string;
+  VL_Retorno: PChar;
 begin
-
   VL_Comando := '';
   VL_Mensagem := nil;
+  VL_Retorno := nil;
 
   Result := VP_Erro;
 
@@ -300,13 +285,17 @@ begin
   if Result <> 0 then
     exit;
 
-  F_MensagemComando(VL_Mensagem, VL_Comando);
+  F_MensagemComando(VL_Mensagem, VL_Retorno);
+
+  VL_Comando := VL_Retorno;
+  F_MensagemDispose(VL_Retorno);
+
+  F_MensagemFree(VL_Mensagem);
 
   if VL_Comando = '0001' then // login
     F_OpenTef.Add(VP_ID, VP_Transmissao_ID, 'S', VP_Chave, VP_IP)
   else
-    ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos,
-      VP_IP, VP_ID, respondeservico);
+    ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP, VP_ID, respondeservico);
 
 end;
 
@@ -347,29 +336,12 @@ begin
   inherited Destroy;
 end;
 
-function TOpenTef.GetRecOpeTef(VP_Idex: integer): TRecOpeTef;
+function TOpenTef.GetRecOpeTef(VP_Index: integer): TRecOpeTef;
 begin
-
-  if V_Lista.Count < VP_Idex + 1 then
+  if V_Lista.Count < VP_Index + 1 then
     Exit;
 
-  Result := TRecOpeTef(V_Lista.Items[VP_Idex]^);
-
-
-
-  //    if V_Lista.Count = 0 then
-  //        Exit;
-
-  //    for VL_I := 0 to V_Lista.Count - 1 do
-  //    begin
-  //        VL_RecOpenTef := V_Lista.Items[VL_I];
-  //        if VL_RecOpenTef^.V_Chave = VP_Chave then
-  //        begin
-  //            Result := VL_RecOpenTef^.V_ID;
-  //            Exit;
-  //        end;
-  //    end;
-
+  Result := TRecOpeTef(V_Lista.Items[VP_Index]^);
 end;
 
 function TOpenTef.Count: integer;
@@ -377,8 +349,7 @@ begin
   Result := V_Lista.Count;
 end;
 
-function TOpenTef.Add(VP_ID: integer;
-  VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
+function TOpenTef.Add(VP_ID: integer; VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
 var
   VL_RecOpenTef: ^TRecOpeTef;
 begin
@@ -489,8 +460,7 @@ begin
   end;
 end;
 
-function TTransacao.Salvar(VP_Transacao_ID: string;
-  VP_Rec_Transacao: TRecTransacao): integer;
+function TTransacao.Salvar(VP_Transacao_ID: string; VP_Rec_Transacao: TRecTransacao): integer;
 var
   VL_RecTransacao: ^TRecTransacao;
   VL_I: integer;
@@ -506,7 +476,7 @@ begin
     if VL_RecTransacao^.V_Transacao_ID = VP_Transacao_ID then
     begin
       VL_RecTransacao^ := VP_Rec_Transacao;
-      V_Lista.Insert(VL_I, VL_RecTransacao);
+      V_Lista.Items[VL_I] := VL_RecTransacao;
       Exit;
     end;
   end;
@@ -547,26 +517,28 @@ var
   VL_Erro: integer;
   VL_ChaveTamanho: integer;
 
-  VL_Senha: PChar;
-  VL_Valor: PChar;
-  VL_Comando, VL_ComandoDados: PChar;
-  VL_Cpf: PChar;
-  VL_Cartao: PChar;
-  VL_TagDados: PChar;
-  VL_Pan: PChar;
-  VL_PChar: PChar;
-  VL_ChaveExpoente: PChar;
-  VL_ChaveModulo: PChar;
-  VL_ChaveComunicacaoSolicitacao: PChar;
-  VL_ChaveComunicacaoResposta: PChar;
-  VL_Tag: PChar;
-  VL_Autorizacao: PChar;
-  VL_DescricaoErro: PChar;
-  VL_DadosEnviados: PChar;
-  VL_Bin: PChar;
-  VL_BotaoSelecionado: PChar;
-  VL_BotaoDados: PChar;
-  VL_Transacao_ID: PChar;
+  VL_Retorno: PChar;
+
+  VL_Senha: string;
+  VL_Valor: string;
+  VL_Comando, VL_ComandoDados: string;
+  VL_Cpf: string;
+  VL_Cartao: string;
+  VL_TagDados: string;
+  VL_Pan: string;
+  VL_PChar: string;
+  VL_ChaveExpoente: string;
+  VL_ChaveModulo: string;
+  VL_ChaveComunicacaoSolicitacao: string;
+  VL_ChaveComunicacaoResposta: string;
+  VL_Tag: string;
+  VL_Autorizacao: string;
+  VL_DescricaoErro: string;
+  VL_DadosEnviados: string;
+  VL_Bin: string;
+  VL_BotaoSelecionado: string;
+  VL_BotaoDados: string;
+  VL_Transacao_ID: string;
 
   VL_ImagemDados: string;
   VL_String: string;
@@ -576,6 +548,8 @@ begin
   VL_Mensagem_ChaveTransacao := nil;
   VL_Mensagem_DadosProtegidos := nil;
   VL_Mensagem_Auxiliar := nil;
+
+  VL_Retorno := nil;
   try
     F_MensagemCreate(VL_Mensagem_Entrada);
     F_MensagemCreate(VL_Mensagem_Saida);
@@ -617,142 +591,169 @@ begin
 
     F_MensagemCarregaTags(VL_Mensagem_Saida, PChar(fVP_DadosRecebidos));
 
-    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('0008'), VL_ChaveModulo);
-    // CHAVE PUBLICA MODULO
-    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('0027'), VL_ChaveExpoente);
-    // CHAVE PUBLICA EXPOENTE
-    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E4'), VL_PChar);
-    // CHAVE PUBLICA TAMANHO
-    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('010E'),
-      VL_ChaveComunicacaoSolicitacao);
-    // CHAVE DE COMUNICACAO (AES) CRIPTOGRAFADA SOLICITACAO
-    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('010F'),
-      VL_ChaveComunicacaoResposta);
-    // CHAVE DE COMUNICACAO (AES) CRIPTOGRAFADA RESPOSTA
-    if VL_PChar <> '' then
-      VL_ChaveTamanho := StrToInt(VL_PChar);
+    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('0008'), VL_Retorno); // CHAVE PUBLICA MODULO
 
-    F_MensagemComando(VL_Mensagem_Entrada, VL_Comando);
-    F_MensagemComandoDados(VL_Mensagem_Entrada, VL_ComandoDados);
+    VL_ChaveModulo := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
+    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('0027'), VL_Retorno); // CHAVE PUBLICA EXPOENTE
+
+    VL_ChaveExpoente := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E4'), VL_Retorno); // CHAVE PUBLICA TAMANHO
+
+    if VL_Retorno <> '' then
+      VL_ChaveTamanho := StrToInt(VL_Retorno);
+
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('010E'), VL_Retorno); // CHAVE DE COMUNICACAO (AES) CRIPTOGRAFADA SOLICITACAO
+
+    VL_ChaveComunicacaoSolicitacao := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemGetTag(VL_Mensagem_Entrada, PChar('010F'), VL_Retorno); // CHAVE DE COMUNICACAO (AES) CRIPTOGRAFADA RESPOSTA
+
+    VL_ChaveComunicacaoResposta := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemComando(VL_Mensagem_Entrada, VL_Retorno);
+
+    VL_Comando := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemComandoDados(VL_Mensagem_Entrada, VL_Retorno);
+
+    VL_ComandoDados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
     if VL_Comando = '0026' then        // RETORNO DO COMANDO COM ERRO
     begin
       if VL_ComandoDados <> '' then
       begin
-        F_Erro(StrToInt(VL_ComandoDados), VL_DescricaoErro);
-        ShowMessage('Erro: ' + VL_ComandoDados + #13 + 'Descrição: ' +
-          VL_DescricaoErro);
+        F_Erro(StrToInt(VL_ComandoDados), VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        Dispose(VL_Retorno);
+
+        ShowMessage('Erro: ' + VL_ComandoDados + #13 + 'Descrição: ' + VL_DescricaoErro);
       end;
 
       Exit;
     end;
 
 
-    if ((VL_Comando = '00CD') and (VL_ComandoDados = 'S')) then
-      // atualiza bins
+    if ((VL_Comando = '00CD') and (VL_ComandoDados = 'S')) then // atualiza bins
     begin
       F_MensagemLimpar(VL_Mensagem_Saida);
-      F_MensagemAddComando(VL_Mensagem_Saida, '00CD', 'R');
-      // retorno da tabela de bin
+      F_MensagemAddComando(VL_Mensagem_Saida, '00CD', 'R'); // retorno da tabela de bin
       F_MensagemAddTag(VL_Mensagem_Saida, '004D', PChar('0')); // retorno com erro
       F_MensagemAddTag(VL_Mensagem_Saida, '00CE', PChar('629867')); // bin
-      F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
+
+      F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);
+
+      VL_DadosEnviados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
       //converte em string a mensagem
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);
       Exit;
     end;
 
-    if ((VL_Comando = '00CF') and (VL_ComandoDados = 'S')) then
-      //MENU DE VENDA
+    if ((VL_Comando = '00CF') and (VL_ComandoDados = 'S')) then //MENU DE VENDA
     begin
       F_MensagemLimpar(VL_Mensagem_Saida);
-      F_MensagemAddComando(VL_Mensagem_Saida, '00CF', 'R');
-      // RETORNO DO COMANDO VAZIO
-      F_MensagemAddTag(VL_Mensagem_Saida, '004D', PChar('0'));
-      // retorno com erro
+      F_MensagemAddComando(VL_Mensagem_Saida, '00CF', 'R'); // RETORNO DO COMANDO VAZIO
+      F_MensagemAddTag(VL_Mensagem_Saida, '004D', PChar('0')); // retorno com erro
       F_MensagemAddTag(VL_Mensagem_Saida, '007D', PChar(''));  // mensagem vazia
-      F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-      //converte em string a mensagem
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+
+      F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+      VL_DadosEnviados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);
       Exit;
     end;
 
-    if ((VL_Comando = '00D4') and (VL_ComandoDados = 'S')) then
-      // MENU DE OPERACAO
+    if ((VL_Comando = '00D4') and (VL_ComandoDados = 'S')) then // MENU DE OPERACAO
     begin
       F_MensagemLimpar(VL_Mensagem_Saida);
-      F_MensagemAddComando(VL_Mensagem_Saida, '00D4', 'R');
-      //renorno do comando
-      F_MensagemAddTag(VL_Mensagem_Saida, '004D', PChar('0'));
-      //comando realizado com sucesso
+      F_MensagemAddComando(VL_Mensagem_Saida, '00D4', 'R'); //renorno do comando
+      F_MensagemAddTag(VL_Mensagem_Saida, '004D', PChar('0')); //comando realizado com sucesso
 
       F_MensagemLimpar(VL_Mensagem_Auxiliar);
-      F_MensagemAddComando(VL_Mensagem_Auxiliar, '0018', PChar('R'));
-      //renorno da lista de menu
-      F_MensagemAddTag(VL_Mensagem_Auxiliar, '00D3', PChar('Cancela Venda'));
-      //item do menu
-      F_MensagemAddTag(VL_Mensagem_Auxiliar, 'FFD3', PChar('Cancela Plano'));
-      //item do menu
-      F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_PChar);
-      //converte em string a mensagem
+      F_MensagemAddComando(VL_Mensagem_Auxiliar, '0018', PChar('R')); //renorno da lista de menu
+      F_MensagemAddTag(VL_Mensagem_Auxiliar, '00D3', PChar('Cancela Venda')); //item do menu
+      F_MensagemAddTag(VL_Mensagem_Auxiliar, 'FFD3', PChar('Cancela Plano')); //item do menu
 
-      F_MensagemAddTag(VL_Mensagem_Saida, '007D', VL_PChar);
-      // coloca a mensagem na tag de mensagem
-      F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-      //converte em string a mensagem
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-      // envia de volta o comando
+      F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_Retorno); //converte em string a mensagem
+
+      VL_DadosEnviados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemAddTag(VL_Mensagem_Saida, '007D', PChar(VL_DadosEnviados)); // coloca a mensagem na tag de mensagem
+
+      F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+      VL_DadosEnviados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
       Exit;
     end;
 
-    if ((VL_Comando = '0105') and (VL_ComandoDados = 'R')) then
-      // RETORNO DO COMANDO EXECUTADO NO PDV
+    if ((VL_Comando = '0105') and (VL_ComandoDados = 'R')) then // RETORNO DO COMANDO EXECUTADO NO PDV
     begin
-      // carregando a chave da transacao
-      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_TagDados);
+      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_Retorno); // carregando a chave da transacao
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao,
-        PChar(VL_TagDados));
+      VL_TagDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
-      if vl_erro <> 0 then
-      begin
-        Exit;
-      end;
-
-      // carregando os dados protegidos
-      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_TagDados);
-
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
         Exit;
       end;
 
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0005'), VL_PChar);
-      // versao do tef
+      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_Retorno);  // carregando os dados protegidos
+
+      VL_TagDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos, PChar(VL_TagDados));
+
+      if vl_erro <> 0 then
+      begin
+        Exit;
+      end;
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0005'), VL_Retorno); // versao do tef
+
+      VL_PChar := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
       if VL_PChar <> '' then
       begin
         ShowMessage('Versão do tef: ' + VL_PChar);
       end;
 
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0060'), VL_PChar);
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0060'), VL_Retorno);
+
+      VL_PChar := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
       if VL_PChar <> '' then
       begin
-        ShowMessage('Data do nascimento: ' + F_DescriptaSenha3Des('',
-          '6298676000000510152', VL_PChar));
+        ShowMessage('Data do nascimento: ' + F_DescriptaSenha3Des('', '6298676000000510152', PChar(VL_PChar)));
       end;
-
 
       Exit;
     end;
 
-    if ((VL_Comando = '00F6') and (VL_ComandoDados = 'S')) then
-      // CANCELAMENTO DE VENDA
+    if ((VL_Comando = '00F6') and (VL_ComandoDados = 'S')) then // CANCELAMENTO DE VENDA
     begin
             {
             VL_TagDados := '';
@@ -817,94 +818,109 @@ begin
             }
     end;
 
-    if ((VL_Comando = '00F3') and (VL_ComandoDados = 'S')) then
-      // CONSULTAR SALDO
+    if ((VL_Comando = '00F3') and (VL_ComandoDados = 'S')) then // CONSULTAR SALDO
     begin
-      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_TagDados);
-      // carregando a chave da transacao
+      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_Retorno); // carregando a chave da transacao
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao,
-        PChar(VL_TagDados));
+      VL_TagDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
-      if vl_erro <> 0 then
-      begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('Erro ao carregar a tag'));  // mensagem no pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4',
-          PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A',
-          PChar('Erro ao carregar a tag'));  // mensagem erro descricao
-
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
-
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-        //solicita dados da venda
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografa
-
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
-
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
-        Exit;
-      end;
-
-      // carregando os dados protegidos
-      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_TagDados);
-
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('Erro ao carregar a tag'));  // mensagem no pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4',
-          PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A',
-          PChar('Erro ao carregar a tag'));  // mensagem erro descricao
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Erro ao carregar a tag'));  // mensagem no pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Erro ao carregar a tag'));  // mensagem erro descricao
 
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-        //solicita dados da venda
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografa
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita dados da venda
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografa
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID); // envia de volta o comando
         Exit;
       end;
 
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D9'), VL_Pan);
-      // pan nao enviado de proposito
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0033'), VL_BotaoDados);
-      // dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D5'),
-        VL_BotaoSelecionado);            // BOTAO SELECIONADO
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0060'), VL_Senha);
-      // senha criptografada dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00E7'), VL_Cartao);
-      // cartao dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0036'), VL_Bin);
-      // bin
+      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_Retorno); // carregando os dados protegidos
+
+      VL_TagDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos, PChar(VL_TagDados));
+
+      if vl_erro <> 0 then
+      begin
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Erro ao carregar a tag'));  // mensagem no pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Erro ao carregar a tag'));  // mensagem erro descricao
+
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
+
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita dados da venda
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografa
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID); // envia de volta o comando
+        Exit;
+      end;
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D9'), VL_Retorno); // pan nao enviado de proposito
+
+      VL_Pan := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0033'), VL_Retorno); // dados capturados
+
+      VL_BotaoDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D5'), VL_Retorno);            // BOTAO SELECIONADO
+
+      VL_BotaoSelecionado := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0060'), VL_Retorno); // senha criptografada dados capturados
+
+      VL_Senha := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00E7'), VL_Retorno); // cartao dados capturados
+
+      VL_Cartao := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0036'), VL_Retorno);// bin
+
+      VL_Bin := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
       if VL_Pan = '' then
-        F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('011A'), VL_Pan);
-      // pan digitado pelo pinpad
+      begin
+        F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('011A'), VL_Retorno); // pan digitado pelo pinpad
 
-      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) -
-        Length(VL_Bin) + 1));
+        VL_Pan := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+      end;
+
+      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) - Length(VL_Bin) + 1));
 
       if (VL_BotaoSelecionado = '00E8') and (VL_Senha = '') then
       begin
@@ -913,50 +929,46 @@ begin
         // informando que e necessario incluir a senha
         if VL_Senha = '' then
         begin
-          F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-            PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            '00DA', PChar('Senha não informada'));  // mensagem no pdv
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            '004A', PChar('Senha não informada'));  // mensagem erro descricao
+          F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Senha não informada'));  // mensagem no pdv
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Senha não informada'));  // mensagem erro descricao
 
-          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-          //converte em string a mensagem
+          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-          F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-          //solicita dados da venda
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-          // transacao criptografa
+          VL_Tag := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-          //converte em string a mensagem
+          F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));//solicita dados da venda
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografa
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-          // envia de volta o comando
+          F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+          VL_DadosEnviados := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
           Exit;
         end;
 
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('008C'), PChar('S'));   //solicita atualiza transacao
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-          PChar('0060'), PChar(VL_Senha));  // senha cripttografada
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('008C'), PChar('S'));   //solicita atualiza transacao
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('0060'), PChar(VL_Senha));  // senha cripttografada
 
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S'));
-        //solicita atualiza transacao
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-        // transacao criptografada
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00D5'), PChar(''));
-        // botao selecionado
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S')); //solicita atualiza transacao
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar)); // transacao criptografada
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00D5'), PChar(''));// botao selecionado
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
         Exit;
 
       end;
@@ -965,40 +977,38 @@ begin
       begin
         F_MensagemLimpar(VL_Mensagem_Auxiliar);
         F_MensagemAddComando(VL_Mensagem_Auxiliar, '0000', 'S');
-        F_MensagemAddTag(VL_Mensagem_Auxiliar, '00E8', PChar('OK'));
-        //BOTAO OK
-        F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemAddTag(VL_Mensagem_Auxiliar, '00E8', PChar('OK')); //BOTAO OK
 
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002A'), PChar('S'));   //solicita dados pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('DIGITE A SENHA'));    //MENSAGEM A SER MOSTRADA
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));
-        //BOTOES A MOSTRAR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('M'));
-        //campo para capturar com mascara
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_Retorno); //converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));
-        //solicita dados pdv
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-        // transacao criptografada
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002A'), PChar('S'));   //solicita dados pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('DIGITE A SENHA'));    //MENSAGEM A SER MOSTRADA
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));//BOTOES A MOSTRAR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('M'));//campo para capturar com mascara
 
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
+
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S')); //solicita dados pdv
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar)); // transacao criptografada
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID); // envia de volta o comando
         Exit;
       end;
 
       VL_String := 'Cartão:' + VL_Cartao + '<br>Saldo: R$100,00';
-      F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));
-      //MENSAGEM OPERADOR
-      F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar(VL_String));
-      // mensagem no pdv
+      F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S')); //MENSAGEM OPERADOR
+      F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar(VL_String));  // mensagem no pdv
       Exit;
 
             {
@@ -1083,230 +1093,234 @@ begin
            }
     end;
 
-    if ((VL_Comando = '000A') and (VL_ComandoDados = 'S')) then
-      // APROVACAO DA TRANSACAO
+    if ((VL_Comando = '000A') and (VL_ComandoDados = 'S')) then // APROVACAO DA TRANSACAO
     begin
-      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_TagDados);
-      // carregando a chave da transacao
+      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_Retorno); // carregando a chave da transacao
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao,
-        PChar(VL_TagDados));
+      VL_TagDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('Erro ao carregar a tag'));  // mensagem no pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4',
-          PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A',
-          PChar('Erro ao carregar a tag'));  // mensagem erro descricao
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Erro ao carregar a tag'));  // mensagem no pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Erro ao carregar a tag'));  // mensagem erro descricao
 
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-        //solicita dados da venda
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografa
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita dados da venda
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografa
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID); // envia de volta o comando
         Exit;
       end;
 
-      F_MensagemGetTag(VL_Mensagem_ChaveTransacao, PChar('0034'), VL_Transacao_ID);
-      // transacao_id
+      F_MensagemGetTag(VL_Mensagem_ChaveTransacao, PChar('0034'), VL_Retorno); // transacao_id
+
+      VL_Transacao_ID := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
       VL_RecTransacao := F_Transacao.Add(VL_Transacao_ID);
 
-      // carregando os dados protegidos
-      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_TagDados);
+      F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_Retorno); // carregando os dados protegidos
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos,
-        PChar(VL_TagDados));
+      VL_TagDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('Erro ao carregar a tag'));  // mensagem no pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4',
-          PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A',
-          PChar('Erro ao carregar a tag'));  // mensagem erro descricao
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Erro ao carregar a tag'));  // mensagem no pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Erro ao carregar a tag'));  // mensagem erro descricao
 
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-        //solicita dados da venda
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografa
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));//solicita dados da venda
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag));// transacao criptografa
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
         Exit;
       end;
 
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00E9'), VL_Cpf);
-      // CPF
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D9'), VL_Pan);
-      // pan nao enviado de proposito
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0033'), VL_BotaoDados);
-      // dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D5'),
-        VL_BotaoSelecionado);            // BOTAO SELECIONADO
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0060'), VL_Senha);
-      // senha criptografada dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0013'), VL_Valor);
-      // valor dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00E7'), VL_Cartao);
-      // cartao dados capturados
-      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0036'), VL_Bin);
-      // bin
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00E9'), VL_Retorno);// CPF
+
+      VL_Cpf := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D9'), VL_Retorno);// pan nao enviado de proposito
+
+      VL_Pan := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0033'), VL_Retorno);// dados capturados
+
+      VL_BotaoDados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00D5'), VL_Retorno);            // BOTAO SELECIONADO
+
+      VL_BotaoSelecionado := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0060'), VL_Retorno);// senha criptografada dados capturados
+
+      VL_Senha := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0013'), VL_Retorno);// valor dados capturados
+
+      VL_Valor := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('00E7'), VL_Retorno);// cartao dados capturados
+
+      VL_Cartao := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('0036'), VL_Retorno);// bin
+
+      VL_Bin := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
       if VL_Pan = '' then
-        F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('011A'), VL_Pan);
-      // pan digitado pelo pinpad
+      begin
+        F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('011A'), VL_Retorno); // pan digitado pelo pinpad
 
-      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) -
-        Length(VL_Bin) + 1));
+        VL_Pan := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+      end;
+
+      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) - Length(VL_Bin) + 1));
 
       if VL_Valor = '' then
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('00E1'), PChar('S'));   //solicita dados da venda
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('00E1'), PChar('S'));   //solicita dados da venda
 
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0013', '');
-        // solicita valor total da venda
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000C', '');
-        // solicita data da venda
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000D', '');
-        // solicita hora da venda
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000B', '');
-        // solicita nsu
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0040', '');
-        // solicita observacoes
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00E6', '');
-        // solicita desconto
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000F', '');
-        // solicita quantidade de parcela
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0012', '');
-        // solicita operador de caixa
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0011', '');
-        // solicita numero do caixa
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0017', '');
-        // solicita xml da venda
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0013', ''); // solicita valor total da venda
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000C', ''); // solicita data da venda
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000D', ''); // solicita hora da venda
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000B', ''); // solicita nsu
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0040', '');// solicita observacoes
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00E6', '');// solicita desconto
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '000F', '');// solicita quantidade de parcela
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0012', '');// solicita operador de caixa
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0011', '');// solicita numero do caixa
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0017', '');// solicita xml da venda
 
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('00E1'), PChar('S'));
-        //solicita dados da venda
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografa
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('00E1'), PChar('S'));//solicita dados da venda
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag));// transacao criptografa
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
         Exit;
       end;
 
       // verifica os dados obrigatorio
       if VL_Valor = #1 then // valor veio nulo
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('CPF não informado'));  // mensagem no pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4',
-          PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A',
-          PChar('Valor não informado'));  // mensagem erro descricao
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Valor não informado'));  // mensagem no pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Valor não informado'));  // mensagem erro descricao
 
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-        //solicita dados da venda
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografa
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita dados da venda
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag));// transacao criptografa
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
         Exit;
       end;
 
       if Form1.cCpfPdv.Checked then
       begin
-        if (VL_BotaoSelecionado = '002F') and (VL_Cpf = '') then
-          // retorno do cpf
+        if (VL_BotaoSelecionado = '002F') and (VL_Cpf = '') then // retorno do cpf
         begin
           VL_Cpf := VL_BotaoDados;
 
           // informando que e necessario incluir o cpf
           if VL_Cpf = '' then
           begin
-            F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-              PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-            F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-              '00DA', PChar('CPF não informado'));  // mensagem no pdv
-            F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-              '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-            F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-              '004A', PChar('CPF não informado'));  // mensagem erro descricao
+            F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+            F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('CPF não informado'));  // mensagem no pdv
+            F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+            F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('CPF não informado'));  // mensagem erro descricao
 
-            F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-            //converte em string a mensagem
+            F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-            F_MensagemAddComando(VL_Mensagem_Saida,
-              PChar('002C'), PChar('S'));
-            //solicita dados da venda
-            F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-            // transacao criptografa
+            VL_Tag := VL_Retorno;
+            F_MensagemDispose(VL_Retorno);
 
-            F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-            //converte em string a mensagem
+            F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita dados da venda
+            F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografa
 
-            fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-            // envia de volta o comando
+            F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+            VL_DadosEnviados := VL_Retorno;
+            F_MensagemDispose(VL_Retorno);
+
+            fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID); // envia de volta o comando
             Exit;
           end;
 
-          F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-            PChar('008C'), PChar('S'));     //solicita atualiza transacao
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('00E9'), PChar(VL_Cpf));       // cpf criptografado
+          F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('008C'), PChar('S'));     //solicita atualiza transacao
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('00E9'), PChar(VL_Cpf));       // cpf criptografado
 
-          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-          //converte em string a mensagem
+          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-          F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S'));
-          //solicita atualiza transacao
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-          // transacao criptografada
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00D5'), PChar(''));
-          // botao selecionado
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-          //converte em string a mensagem
+          F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S'));//solicita atualiza transacao
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));// transacao criptografada
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00D5'), PChar(''));// botao selecionado
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-          // envia de volta o comando
+          F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+          VL_DadosEnviados := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
           Exit;
-
         end;
 
 
@@ -1314,33 +1328,32 @@ begin
         begin
           F_MensagemLimpar(VL_Mensagem_Auxiliar);
           F_MensagemAddComando(VL_Mensagem_Auxiliar, '0000', 'S');
-          F_MensagemAddTag(VL_Mensagem_Auxiliar, '002F', PChar('OK'));
-          //BOTAO OK
+          F_MensagemAddTag(VL_Mensagem_Auxiliar, '002F', PChar('OK'));//BOTAO OK
 
-          F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_PChar);
-          //converte em string a mensagem
+          F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_Retorno);//converte em string a mensagem
 
-          F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-            PChar('002A'), PChar('S'));   //solicita dados pdv
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            '00DA', PChar('INFORME O CPF'));    //MENSAGEM A SER MOSTRADA
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', VL_PChar);
-          //BOTOES A MOSTRAR
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('A'));
-          //campo para capturar sem mascara
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-          //converte em string a mensagem
+          F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002A'), PChar('S'));   //solicita dados pdv
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('INFORME O CPF'));    //MENSAGEM A SER MOSTRADA
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));//BOTOES A MOSTRAR
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('A'));//campo para capturar sem mascara
 
-          F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));
-          //solicita dados pdv
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-          F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-          //converte em string a mensagem
+          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-          // envia de volta o comando
+          F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));//solicita dados pdv
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));
+
+          F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+          VL_DadosEnviados := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
           Exit;
         end;
       end;
@@ -1354,51 +1367,46 @@ begin
           // informando que e necessario incluir a senha
           if VL_Senha = '' then
           begin
-            F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-              PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-            F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-              '00DA', PChar('Senha não informada'));  // mensagem no pdv
-            F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-              '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
-            F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-              '004A', PChar('Senha não informada'));  // mensagem erro descricao
+            F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+            F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('Senha não informada'));  // mensagem no pdv
+            F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsNegada))));  // transacao obortada
+            F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '004A', PChar('Senha não informada'));  // mensagem erro descricao
 
-            F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-            //converte em string a mensagem
+            F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-            F_MensagemAddComando(VL_Mensagem_Saida,
-              PChar('002C'), PChar('S'));
-            //solicita dados da venda
-            F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-            // transacao criptografa
+            VL_Tag := VL_Retorno;
+            F_MensagemDispose(VL_Retorno);
 
-            F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-            //converte em string a mensagem
+            F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita dados da venda
+            F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografa
 
-            fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-            // envia de volta o comando
+            F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+            VL_DadosEnviados := VL_Retorno;
+            F_MensagemDispose(VL_Retorno);
+
+            fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
             Exit;
           end;
 
-          F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-            PChar('008C'), PChar('S'));   //solicita atualiza transacao
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('0060'), PChar(VL_Senha));  // senha cripttografada
+          F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('008C'), PChar('S'));   //solicita atualiza transacao
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('0060'), PChar(VL_Senha));  // senha cripttografada
 
-          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-          //converte em string a mensagem
+          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-          F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S'));
-          //solicita atualiza transacao
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-          // transacao criptografada
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00D5'), PChar(''));
-          // botao selecionado
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-          //converte em string a mensagem
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-          // envia de volta o comando
+          F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S')); //solicita atualiza transacao
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));// transacao criptografada
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00D5'), PChar(''));// botao selecionado
+
+          F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+          VL_DadosEnviados := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
           Exit;
 
         end;
@@ -1407,76 +1415,71 @@ begin
         begin
           F_MensagemLimpar(VL_Mensagem_Auxiliar);
           F_MensagemAddComando(VL_Mensagem_Auxiliar, '0000', 'S');
-          F_MensagemAddTag(VL_Mensagem_Auxiliar, '00E8', PChar('OK'));
-          //BOTAO OK
-          F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_PChar);
-          //converte em string a mensagem
+          F_MensagemAddTag(VL_Mensagem_Auxiliar, '00E8', PChar('OK'));//BOTAO OK
+          F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_Retorno);//converte em string a mensagem
 
-          F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-            PChar('002A'), PChar('S'));   //solicita dados pdv
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            '00DA', PChar('DIGITE A SENHA'));    //MENSAGEM A SER MOSTRADA
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            '00DD', PChar(VL_PChar));
-          //BOTOES A MOSTRAR
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('M'));
-          //campo para capturar com mascara
-          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-          //converte em string a mensagem
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));
-          //solicita dados pdv
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-          // transacao criptografada
-          F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-          //converte em string a mensagem
+          F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002A'), PChar('S'));   //solicita dados pdv
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('DIGITE A SENHA'));    //MENSAGEM A SER MOSTRADA
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));//BOTOES A MOSTRAR
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('M'));//campo para capturar com mascara
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-          // envia de volta o comando
+          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
+
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));//solicita dados pdv
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));// transacao criptografada
+
+          F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+          VL_DadosEnviados := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
 
           Exit;
         end;
       end;
 
-      if (Form1.cQrcodePdv.Checked) and
-        (not VL_RecTransacao.V_QrCodeEnviadoPDV) then
+      if (Form1.cQrcodePdv.Checked) and (not VL_RecTransacao.V_QrCodeEnviadoPDV) then
       begin
         VL_RecTransacao.V_QrCodeEnviadoPDV := True;
         F_Transacao.Salvar(VL_RecTransacao.V_Transacao_ID, VL_RecTransacao);
 
         F_MensagemLimpar(VL_Mensagem_Auxiliar);
         F_MensagemAddComando(VL_Mensagem_Auxiliar, '0000', 'S');
-        F_MensagemAddTag(VL_Mensagem_Auxiliar, '002E', PChar('CONFIRMAR'));
-        //BOTAO OK
-        F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemAddTag(VL_Mensagem_Auxiliar, '002E', PChar('CONFIRMAR')); //BOTAO OK
 
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002A'), PChar('S'));   //solicita dados pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('escaneie o qr code'));    //MENSAGEM A SER MOSTRADA
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));
-        //BOTOES A MOSTRAR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar(''));
-        // sem campo para solicitar
-        ImagemToStr(VL_ImagemDados, Form1.IQrCode);
-        // converte a imagem em string
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '002E',
-          PChar(VL_ImagemDados));    //campo enviar imagem
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em string a mensagem
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_Retorno); //converte em string a mensagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));
-        //solicita dados pdv
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-        // transacao criptografada
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002A'), PChar('S'));   //solicita dados pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('escaneie o qr code'));    //MENSAGEM A SER MOSTRADA
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));//BOTOES A MOSTRAR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar('')); // sem campo para solicitar
+        ImagemToStr(VL_ImagemDados, Form1.IQrCode);// converte a imagem em string
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '002E', PChar(VL_ImagemDados));    //campo enviar imagem
+
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
+
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));//solicita dados pdv
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));// transacao criptografada
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
 
         Exit;
       end;
@@ -1488,64 +1491,61 @@ begin
 
         F_MensagemLimpar(VL_Mensagem_Auxiliar);
         F_MensagemAddComando(VL_Mensagem_Auxiliar, '0000', 'S');
-        F_MensagemAddTag(VL_Mensagem_Auxiliar, '002E', PChar('CONFIRMAR'));
-        //BOTAO OK
-        F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemAddTag(VL_Mensagem_Auxiliar, '002E', PChar('CONFIRMAR')); //BOTAO OK
 
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002A'), PChar('S'));   //solicita dados pdv
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA',
-          PChar('foto do cliente'));    //MENSAGEM A SER MOSTRADA
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));
-        //BOTOES A MOSTRAR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar(''));
-        // sem campo para solicitar
+        F_MensagemTagAsString(VL_Mensagem_Auxiliar, VL_Retorno);//converte em string a mensagem
+
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002A'), PChar('S'));   //solicita dados pdv
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar('foto do cliente'));    //MENSAGEM A SER MOSTRADA
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DD', PChar(VL_PChar));//BOTOES A MOSTRAR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '0033', PChar(''));// sem campo para solicitar
         ImagemToStr(VL_ImagemDados, Form1.IFoto); // converte a imagem em string
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '002E',
-          PChar(VL_ImagemDados));    //campo enviar imagem
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em string a mensagem
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em string a mensagem
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '002E', PChar(VL_ImagemDados));    //campo enviar imagem
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));
-        //solicita dados pdv
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-        // transacao criptografada
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('002A'), PChar('S'));//solicita dados pdv
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));// transacao criptografada
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
 
         Exit;
       end;
 
-      if (Form1.cQrcodePinPad.Checked) and
-        (not VL_RecTransacao.V_QrCodeEnviadoPinpad) then    // mostra o qr code no pinpad
+      if (Form1.cQrcodePinPad.Checked) and (not VL_RecTransacao.V_QrCodeEnviadoPinpad) then    // mostra o qr code no pinpad
       begin
         VL_RecTransacao.V_QrCodeEnviadoPinpad := True;
         F_Transacao.Salvar(VL_RecTransacao.V_Transacao_ID, VL_RecTransacao);
 
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('00FC'), PChar('S'));   //solicita MOSTRAR O QR CODE
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('00FC'), PChar('S'));   //solicita MOSTRAR O QR CODE
         ImagemToStr(VL_String, Form1.IQrCodePinpad);
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-          PChar('00FE'), PChar(VL_String));  // IMAGEM
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-        //converte em strin
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('00FE'), PChar(VL_String));  // IMAGEM
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('00FC'), PChar('S'));
-        //solicita MOSTRAR O QR CODE
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-        // transacao criptografada
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string
 
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        VL_PChar := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('00FC'), PChar('S')); //solicita MOSTRAR O QR CODE
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar)); // transacao criptografada
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno); //converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
         Exit;
       end;
 
@@ -1553,65 +1553,63 @@ begin
       begin
         if VL_Senha = '' then
         begin
-           sleep(5000);
-          // solicita senha pin pad
-          F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-            PChar('005A'), PChar('S'));   //solicita senha
+          sleep(5000);
 
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('005B'), PChar(IntToStr(F_Imk())));
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('005C'), PChar(' DIGITE A SENHA'));
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('005D'), PChar('4'));
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('005E'), PChar('8'));
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-            PChar('005F'), PChar(F_Wk()));
-          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('00D9'), VL_Pan);
+          F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('005A'), PChar('S'));   // solicita senha pin pad
 
-          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_PChar);
-          //converte em string a mensagem
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('005B'), PChar(IntToStr(F_Imk())));
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('005C'), PChar(' DIGITE A SENHA'));
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('005D'), PChar('4'));
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('005E'), PChar('8'));
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('005F'), PChar(F_Wk()));
+          F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('00D9'), PChar(VL_Pan));
 
-          F_MensagemAddComando(VL_Mensagem_Saida, PChar('005A'), PChar('S'));
-          //solicita atualiza transacao
-          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_PChar);
-          // transacao criptografada
+          F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
-          F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-          //converte em string a mensagem
+          VL_PChar := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-          // envia de volta o comando
+          F_MensagemAddComando(VL_Mensagem_Saida, PChar('005A'), PChar('S'));//solicita atualiza transacao
+          F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_PChar));// transacao criptografada
+
+          F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+          VL_DadosEnviados := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
           Exit;
         end
         else
         begin
-          // descriptografar senha vinda do pinpad
-          VL_Senha := F_DescriptaSenha3Des('', VL_Pan, VL_Senha);
+          VL_Senha := F_DescriptaSenha3Des('', PChar(VL_Pan), PChar(VL_Senha));// descriptografar senha vinda do pinpad
         end;
       end;
 
-      // verifica se veio com autorizacao
-      F_MensagemGetTag(VL_Mensagem_ChaveTransacao, '00F7', VL_Autorizacao);
+      F_MensagemGetTag(VL_Mensagem_ChaveTransacao, '00F7', VL_Retorno); // verifica se veio com autorizacao
+
+      VL_Autorizacao := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
       if VL_Autorizacao = '' then // nao tem autorizacao entao fara a venda
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('008C'), PChar('S'));     //solicita atualiza transacao
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('00F7'), '214');
-        // autorizacao de teste
-        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-        //converte em string a mensagem
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('008C'), PChar('S'));     //solicita atualiza transacao
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('00F7'), '214');// autorizacao de teste
 
-        F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S'));
-        //solicita atualiza transacao
-        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-        // transacao criptografada
-        F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-        //converte em string a mensagem
+        F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno);//converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-        // envia de volta o comando
+        VL_Tag := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_MensagemAddComando(VL_Mensagem_Saida, PChar('008C'), PChar('S'));//solicita atualiza transacao
+        F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag));// transacao criptografada
+
+        F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+        VL_DadosEnviados := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID);// envia de volta o comando
         Exit;
       end;
 
@@ -1624,34 +1622,32 @@ begin
 
       if Form1.cMensagemPdv.Checked then
       begin
-        F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
-          PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar(VL_String));
-        // mensagem no pdv
+        F_MensagemAddComando(VL_Mensagem_DadosProtegidos, PChar('002C'), PChar('S'));   //MENSAGEM OPERADOR
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00DA', PChar(VL_String)); // mensagem no pdv
       end;
 
       if Form1.cImprimir.Checked then
       begin
-        F_MensagemAddTag(VL_Mensagem_DadosProtegidos,
-          PChar('002D'), PChar(VL_String));  // imprimir
+        F_MensagemAddTag(VL_Mensagem_DadosProtegidos, PChar('002D'), PChar(VL_String));  // imprimir
       end;
 
-      F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4',
-        PChar(IntToStr(Ord(tsEfetivada))));  // transacao efetivada
+      F_MensagemAddTag(VL_Mensagem_DadosProtegidos, '00A4', PChar(IntToStr(Ord(tsEfetivada))));  // transacao efetivada
       F_Transacao.Remove(VL_Transacao_ID);
 
-      F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Tag);
-      //converte em string a mensagem
+      F_MensagemTagAsString(VL_Mensagem_DadosProtegidos, VL_Retorno); //converte em string a mensagem
 
-      F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S'));
-      //solicita atualiza transacao
-      F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), VL_Tag);
-      // transacao criptografada
-      F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
-      //converte em string a mensagem
+      VL_Tag := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
 
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
-      // envia de volta o comando
+      F_MensagemAddComando(VL_Mensagem_Saida, PChar('002C'), PChar('S')); //solicita atualiza transacao
+      F_MensagemAddTag(VL_Mensagem_Saida, PChar('00E3'), PChar(VL_Tag)); // transacao criptografada
+
+      F_MensagemTagAsString(VL_Mensagem_Saida, VL_Retorno);//converte em string a mensagem
+
+      VL_DadosEnviados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), PChar(VL_DadosEnviados), fVP_ID); // envia de volta o comando
       Exit;
 
             {
@@ -1922,8 +1918,7 @@ begin
   end;
 end;
 
-constructor ThProcessaSolicitacoes.Create(VP_Transmissao_ID,
-  VP_DadosRecebidos, VP_IP: string; VP_ID: integer; VP_Retorno: TResponde);
+constructor ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP: string; VP_ID: integer; VP_Retorno: TResponde);
 begin
   FreeOnTerminate := True;
   fVP_Transmissao_ID := VP_Transmissao_ID;
@@ -1943,46 +1938,45 @@ begin
   {$ENDIF}
 
   {$IF DEFINED(WIN32)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\mcom_lib\win32\mcom_lib.dll'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\mcom_lib\win32\mcom_lib.dll'));
   {$ENDIF}
 
   {$IF DEFINED(LINUX64)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux64/libmcom_lib.so'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux64/mcom_lib.so'));
   {$ENDIF}
 
   {$IF DEFINED(LINUX32)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux32/libmcom_lib.so'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux32/mcom_lib.so'));
   {$ENDIF}
 
-  Pointer(finalizaconexao) := GetProcAddress(FMCom, 'finalizaconexao');
-  Pointer(iniciarconexao) := GetProcAddress(FMCom, 'iniciarconexao');
-  Pointer(respondecaixa) := GetProcAddress(FMCom, 'respondecaixa');
-  Pointer(respondeservico) := GetProcAddress(FMCom, 'respondeservico');
+  Pointer(finalizaconexao) := GetProcAddress(FMComLib, 'finalizaconexao');
+  Pointer(iniciarconexao) := GetProcAddress(FMComLib, 'iniciarconexao');
+  Pointer(respondecaixa) := GetProcAddress(FMComLib, 'respondecaixa');
+  Pointer(respondeservico) := GetProcAddress(FMComLib, 'respondeservico');
 
-  Pointer(F_MensagemCreate) := GetProcAddress(FMCom, 'mensagemcreate');
-  Pointer(F_MensagemCarregaTags) := GetProcAddress(FMCom, 'mensagemcarregatags');
-  Pointer(F_MensagemComando) := GetProcAddress(FMCom, 'mensagemcomando');
-  Pointer(F_MensagemComandoDados) := GetProcAddress(FMCom, 'mensagemcomandodados');
-  Pointer(F_MensagemFree) := GetProcAddress(FMCom, 'mensagemfree');
-  Pointer(F_Mensagemaddtag) := GetProcAddress(FMCom, 'mensagemaddtag');
-  Pointer(F_Mensagemaddcomando) := GetProcAddress(FMCom, 'mensagemaddcomando');
-  Pointer(F_MensagemTagAsString) := GetProcAddress(FMCom, 'mensagemtagasstring');
-  Pointer(F_MensagemTagCount) := GetProcAddress(FMCom, 'mensagemtagcount');
-  Pointer(F_MensagemGetTag) := GetProcAddress(FMCom, 'mensagemgettag');
-  Pointer(F_MensagemGetTagIdx) := GetProcAddress(FMCom, 'mensagemgettagidx');
-  Pointer(F_MensagemTagToStr) := GetProcAddress(FMCom, 'mensagemtagtostr');
-  Pointer(F_MensagemLimpar) := GetProcAddress(FMCom, 'mensagemlimpar');
-  Pointer(F_Erro) := GetProcAddress(FMCom, 'mensagemerro');
+  Pointer(F_MensagemCreate) := GetProcAddress(FMComLib, 'mensagemcreate');
+  Pointer(F_MensagemCarregaTags) := GetProcAddress(FMComLib, 'mensagemcarregatags');
+  Pointer(F_MensagemComando) := GetProcAddress(FMComLib, 'mensagemcomando');
+  Pointer(F_MensagemComandoDados) := GetProcAddress(FMComLib, 'mensagemcomandodados');
+  Pointer(F_MensagemFree) := GetProcAddress(FMComLib, 'mensagemfree');
+  Pointer(F_Mensagemaddtag) := GetProcAddress(FMComLib, 'mensagemaddtag');
+  Pointer(F_Mensagemaddcomando) := GetProcAddress(FMComLib, 'mensagemaddcomando');
+  Pointer(F_MensagemTagAsString) := GetProcAddress(FMComLib, 'mensagemtagasstring');
+  Pointer(F_MensagemTagCount) := GetProcAddress(FMComLib, 'mensagemtagcount');
+  Pointer(F_MensagemGetTag) := GetProcAddress(FMComLib, 'mensagemgettag');
+  Pointer(F_MensagemGetTagIdx) := GetProcAddress(FMComLib, 'mensagemgettagidx');
+  Pointer(F_MensagemTagToStr) := GetProcAddress(FMComLib, 'mensagemtagtostr');
+  Pointer(F_MensagemLimpar) := GetProcAddress(FMComLib, 'mensagemlimpar');
+  Pointer(F_Erro) := GetProcAddress(FMComLib, 'mensagemerro');
+  Pointer(F_MensagemDispose) := GetProcAddress(FMComLib, 'mensagemdispose');
 
+  FKeyLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'key_lib.dll'));
 
-  FKey := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'key_lib.dll'));
-
-  Pointer(F_DescriptaSenha3Des) := GetProcAddress(FKey, 'DescriptaSenha3Des');
-  Pointer(F_EncriptaSenha3Des) := GetProcAddress(FKey, 'EncriptaSenha3Des');
-  Pointer(F_Wk) := GetProcAddress(FKey, 'wkc');
-  Pointer(F_Imk) := GetProcAddress(FKey, 'imk');
-  Pointer(F_PinFromPindPad) := GetProcAddress(FKey, 'pinFromPindPad');
-
+  Pointer(F_DescriptaSenha3Des) := GetProcAddress(FKeyLib, 'DescriptaSenha3Des');
+  Pointer(F_EncriptaSenha3Des) := GetProcAddress(FKeyLib, 'EncriptaSenha3Des');
+  Pointer(F_Wk) := GetProcAddress(FKeyLib, 'wkc');
+  Pointer(F_Imk) := GetProcAddress(FKeyLib, 'imk');
+  Pointer(F_PinFromPindPad) := GetProcAddress(FKeyLib, 'pinFromPindPad');
 end;
 
 procedure TForm1.BMostrarMensagemClick(Sender: TObject);
@@ -1991,15 +1985,19 @@ var
   VL_Mensagem: Pointer;
   VL_Chave00F1: Pointer;
   VL_Transacao: Pointer;
-  VL_Dados: PChar;
-  VL_DescricaoErro: PChar;
+  VL_Dados: string;
+  VL_DescricaoErro: string;
   VL_Id: integer;
   VL_RecOpenTef: TRecOpeTef;
   VL_I: integer;
+  VL_Retorno: PChar;
 begin
   VL_Mensagem := nil;
   VL_Chave00F1 := nil;
   VL_Transacao := nil;
+
+  VL_Retorno := nil;
+
   F_MensagemCreate(VL_Mensagem);
   F_MensagemCreate(VL_Chave00F1);
   F_MensagemCreate(VL_Transacao);
@@ -2017,32 +2015,35 @@ begin
     F_MensagemAddComando(VL_Chave00F1, '0000', '');
     F_MensagemAddTag(VL_Chave00F1, '00F2', '0068'); // tag do modulo
     F_MensagemAddTag(VL_Chave00F1, '0036', '629867'); // bin
-    F_MensagemAddTag(VL_Chave00F1, '0110', 'S');
-    // conexao tipo s sistema c tipo caixa
-    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text));
-    // codigo da adquirencia- identificacao
+    F_MensagemAddTag(VL_Chave00F1, '0110', 'S');// conexao tipo s sistema c tipo caixa
+    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text)); // codigo da adquirencia- identificacao
     F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
-    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text));
-    // codigo da loja
+    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text));// codigo da loja
     F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
-    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));
-    // identificacao do pdv
+    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));// identificacao do pdv
 
-    F_MensagemTagAsString(VL_Chave00F1, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Chave00F1, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddComando(VL_Mensagem, '0105', 'S');
-    // solicita comando para ser executado no pdv
-    F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemAddComando(VL_Mensagem, '0105', 'S');// solicita comando para ser executado no pdv
+    F_MensagemAddTag(VL_Mensagem, '00F1', PChar(VL_Dados)); // chave da transacao
 
     F_MensagemAddComando(VL_Transacao, '002C', 'S'); //MENSAGEM OPERADOR
-    F_MensagemAddTag(VL_Transacao, '00DA', 'Mensagem enviada pela operadora');
-    // mensagem no pdv
+    F_MensagemAddTag(VL_Transacao, '00DA', 'Mensagem enviada pela operadora');// mensagem no pdv
 
-    F_MensagemTagAsString(VL_Transacao, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Transacao, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
-    F_MensagemTagAsString(VL_Mensagem, VL_Dados);  //converte em string a mensagem
+    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), PChar(VL_Dados));  // transacao criptografa
+
+    F_MensagemTagAsString(VL_Mensagem, VL_Retorno);  //converte em string a mensagem
+
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
     VL_Id := -1;
 
@@ -2059,12 +2060,15 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', PChar(VL_Dados), VL_Id);
     if VL_Erro <> 0 then
     begin
-      F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      F_Erro(VL_Erro, VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);
@@ -2080,16 +2084,20 @@ var
   VL_Mensagem: Pointer;
   VL_Chave00F1: Pointer;
   VL_Transacao: Pointer;
-  VL_Dados: PChar;
-  VL_DescricaoErro: PChar;
+  VL_Dados: string;
+  VL_DescricaoErro: string;
   VL_Id: integer;
   VL_RecOpenTef: TRecOpeTef;
   VL_I: integer;
   VL_String: string;
+  VL_Retorno: PChar;
 begin
   VL_Mensagem := nil;
   VL_Chave00F1 := nil;
   VL_Transacao := nil;
+
+  VL_Retorno := nil;
+
   F_MensagemCreate(VL_Mensagem);
   F_MensagemCreate(VL_Chave00F1);
   F_MensagemCreate(VL_Transacao);
@@ -2108,32 +2116,36 @@ begin
     F_MensagemAddComando(VL_Chave00F1, '0000', '');
     F_MensagemAddTag(VL_Chave00F1, '00F2', '0068'); // tag do modulo
     F_MensagemAddTag(VL_Chave00F1, '0036', '629867'); // bin
-    F_MensagemAddTag(VL_Chave00F1, '0110', 'S');
-    // conexao tipo s sistema c tipo caixa
-    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text));
-    // codigo da adquirencia- identificacao
+    F_MensagemAddTag(VL_Chave00F1, '0110', 'S');// conexao tipo s sistema c tipo caixa
+    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text));// codigo da adquirencia- identificacao
     F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
-    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text));
-    // codigo da loja
+    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text));// codigo da loja
     F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
-    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));
-    // identificacao do pdv
+    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));// identificacao do pdv
 
-    F_MensagemTagAsString(VL_Chave00F1, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Chave00F1, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddComando(VL_Mensagem, '0105', 'S');
-    // solicita comando para ser executado no pdv
-    F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemAddComando(VL_Mensagem, '0105', 'S');// solicita comando para ser executado no pdv
+    F_MensagemAddTag(VL_Mensagem, '00F1', PChar(VL_Dados)); // chave da transacao
 
     F_MensagemAddComando(VL_Transacao, '00FC', 'S'); //solicita MOSTRAR O QR CODE
     ImagemToStr(VL_String, Form1.IQrCodePinpad);
     F_MensagemAddTag(VL_Transacao, PChar('00FE'), PChar(VL_String));  // IMAGEM
 
-    F_MensagemTagAsString(VL_Transacao, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Transacao, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
-    F_MensagemTagAsString(VL_Mensagem, VL_Dados);  //converte em string a mensagem
+    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), PChar(VL_Dados));  // transacao criptografa
+
+    F_MensagemTagAsString(VL_Mensagem, VL_Retorno);  //converte em string a mensagem
+
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
     VL_Id := -1;
 
@@ -2150,12 +2162,15 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', PChar(VL_Dados), VL_Id);
     if VL_Erro <> 0 then
     begin
-      F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      F_Erro(VL_Erro, VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);
@@ -2258,20 +2273,37 @@ begin
 end;
 
 procedure TForm1.Button3Click(Sender: TObject);
-
 begin
+  if FMComLib <> 0 then
+    UnloadLibrary(FMComLib);
 
+  if FKeyLib <> 0 then
+    UnloadLibrary(FKeyLib);
 end;
 
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  FMCom := nil;
   F_OpenTef := TOpenTef.Create;
   F_Transacao := TTransacao.Create;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
+var
+  VL_Erro: integer;
 begin
+  VL_Erro := 0;
+
+  if Assigned(finalizaconexao) then
+    VL_Erro := finalizaconexao(FMCom);
+
+  if FMComLib <> 0 then
+    UnloadLibrary(FMComLib);
+
+  if FKeyLib <> 0 then
+    UnloadLibrary(FKeyLib);
+
   F_OpenTef.Free;
   F_Transacao.Free;
 end;
@@ -2284,23 +2316,21 @@ begin
     Exit;
   end;
 
-  finalizaconexao;
+  finalizaconexao(FMCom);
 end;
 
 procedure TForm1.BAtivaClick(Sender: TObject);
 var
   VL_Erro: integer;
 begin
-  if (FMCom = 0) then
+  if (FMComLib <= 0) then
   begin
     ShowMessage('Inicialize a lib');
     Exit;
   end;
 
-  VL_Erro := iniciarconexao(PChar(ExtractFilePath(ParamStr(0)) + 'operadora.log'),
-    PChar(EChave.Text), PChar(EIPCaixa.Text), PChar(EIPServico.Text),
-    EPortaCaixa.AsInteger, EPortaServico.AsInteger, @ServidorRecebimentoCaixa,
-    @ServidorRecebimentoServico, PChar(EIdentificacao.Text));
+  VL_Erro := iniciarconexao(FMCom, PChar(ExtractFilePath(ParamStr(0)) + 'operadora.log'), PChar(EChave.Text), PChar(EIPCaixa.Text), PChar(EIPServico.Text),
+    EPortaCaixa.AsInteger, EPortaServico.AsInteger, @ServidorRecebimentoCaixa, @ServidorRecebimentoServico, PChar(EIdentificacao.Text));
 
   if VL_Erro <> 0 then
     ShowMessage('Erro: ' + IntToStr(VL_Erro));
@@ -2312,15 +2342,19 @@ var
   VL_Mensagem: Pointer;
   VL_Chave00F1: Pointer;
   VL_Transacao: Pointer;
-  VL_Dados: PChar;
-  VL_DescricaoErro: PChar;
+  VL_Dados: string;
+  VL_DescricaoErro: string;
   VL_Id: integer;
   VL_RecOpenTef: TRecOpeTef;
   VL_I: integer;
+  VL_Retorno: PChar;
 begin
   VL_Mensagem := nil;
   VL_Chave00F1 := nil;
   VL_Transacao := nil;
+
+  VL_Retorno := nil;
+
   F_MensagemCreate(VL_Mensagem);
   F_MensagemCreate(VL_Chave00F1);
   F_MensagemCreate(VL_Transacao);
@@ -2338,31 +2372,35 @@ begin
     F_MensagemAddComando(VL_Chave00F1, '0000', '');
     F_MensagemAddTag(VL_Chave00F1, '00F2', '0068'); // tag do modulo
     F_MensagemAddTag(VL_Chave00F1, '0036', '629867'); // bin
-    F_MensagemAddTag(VL_Chave00F1, '0110', 'S');
-    // conexao tipo s sistema c tipo caixa
-    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text));
-    // codigo da adquirencia- identificacao
+    F_MensagemAddTag(VL_Chave00F1, '0110', 'S'); // conexao tipo s sistema c tipo caixa
+    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text)); // codigo da adquirencia- identificacao
     F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
-    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text));
-    // codigo da loja
+    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text)); // codigo da loja
     F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
-    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));
-    // identificacao do pdv
+    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));  // identificacao do pdv
 
-    F_MensagemTagAsString(VL_Chave00F1, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Chave00F1, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddComando(VL_Mensagem, '0105', 'S');
-    // solicita comando para ser executado no pdv
-    F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemAddComando(VL_Mensagem, '0105', 'S'); // solicita comando para ser executado no pdv
+    F_MensagemAddTag(VL_Mensagem, '00F1', PChar(VL_Dados)); // chave da transacao
 
     F_MensagemAddComando(VL_Transacao, '0104', 'S'); // solicita tags
     F_MensagemAddTag(VL_Transacao, '0005', ''); // versao do tef
 
-    F_MensagemTagAsString(VL_Transacao, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Transacao, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
-    F_MensagemTagAsString(VL_Mensagem, VL_Dados);  //converte em string a mensagem
+    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), PChar(VL_Dados));  // transacao criptografa
+
+    F_MensagemTagAsString(VL_Mensagem, VL_Retorno);  //converte em string a mensagem
+
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
     VL_Id := -1;
 
@@ -2379,13 +2417,17 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', PChar(VL_Dados), VL_Id);
     if VL_Erro <> 0 then
     begin
-      F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      F_Erro(VL_Erro, VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
+
   finally
     F_MensagemFree(VL_Mensagem);
     F_MensagemFree(VL_Chave00F1);
@@ -2399,16 +2441,19 @@ var
   VL_Mensagem: Pointer;
   VL_Chave00F1: Pointer;
   VL_Transacao: Pointer;
-  VL_Dados: PChar;
-  VL_DescricaoErro: PChar;
+  VL_Dados: string;
+  VL_DescricaoErro: string;
   VL_Id: integer;
   VL_RecOpenTef: TRecOpeTef;
   VL_I: integer;
-  VL_String: string;
+  VL_Retorno: PChar;
 begin
   VL_Mensagem := nil;
   VL_Chave00F1 := nil;
   VL_Transacao := nil;
+
+  VL_Retorno := nil;
+
   F_MensagemCreate(VL_Mensagem);
   F_MensagemCreate(VL_Chave00F1);
   F_MensagemCreate(VL_Transacao);
@@ -2422,43 +2467,45 @@ begin
 
     VL_Dados := '';
     VL_DescricaoErro := '';
-    VL_String := '';
 
     F_MensagemAddComando(VL_Chave00F1, '0000', '');
     F_MensagemAddTag(VL_Chave00F1, '00F2', '0068'); // tag do modulo
     F_MensagemAddTag(VL_Chave00F1, '0036', '629867'); // bin
-    F_MensagemAddTag(VL_Chave00F1, '0110', 'S');
-    // conexao tipo s sistema c tipo caixa
-    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text));
-    // codigo da adquirencia- identificacao
+    F_MensagemAddTag(VL_Chave00F1, '0110', 'S'); // conexao tipo s sistema c tipo caixa
+    F_MensagemAddTag(VL_Chave00F1, '0109', PChar(EIdentificacao.Text)); // codigo da adquirencia- identificacao
     F_MensagemAddTag(VL_Chave00F1, '00A2', PChar('PDV')); // tipo do terminal
-    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text));
-    // codigo da loja
+    F_MensagemAddTag(VL_Chave00F1, '00F9', PChar(ECodigoLoja.Text)); // codigo da loja
     F_MensagemAddTag(VL_Chave00F1, '0107', PChar(ECodigoPDV.Text)); // codigo do pdv
-    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text));
-    // identificacao do pdv
+    F_MensagemAddTag(VL_Chave00F1, '0108', PChar(ECaixaIdentificacao.Text)); // identificacao do pdv
 
-    F_MensagemTagAsString(VL_Chave00F1, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Chave00F1, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddComando(VL_Mensagem, '0105', 'S');
-    // solicita comando para ser executado no pdv
-    F_MensagemAddTag(VL_Mensagem, '00F1', VL_Dados); // chave da transacao
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemAddComando(VL_Mensagem, '0105', 'S');// solicita comando para ser executado no pdv
+    F_MensagemAddTag(VL_Mensagem, '00F1', PChar(VL_Dados)); // chave da transacao
 
     F_MensagemAddComando(VL_Transacao, PChar('005A'), PChar('S'));   //solicita senha
 
     F_MensagemAddTag(VL_Transacao, PChar('005B'), PChar(IntToStr(F_Imk())));
-    F_MensagemAddTag(VL_Transacao, PChar('005C'),
-      PChar(' DIGITE A DATA DE NASCIMENTO'));
+    F_MensagemAddTag(VL_Transacao, PChar('005C'), PChar(' DIGITE A DATA DE NASCIMENTO'));
     F_MensagemAddTag(VL_Transacao, PChar('005D'), PChar('8'));
     F_MensagemAddTag(VL_Transacao, PChar('005E'), PChar('8'));
     F_MensagemAddTag(VL_Transacao, PChar('005F'), PChar(F_Wk()));
     F_MensagemAddTag(VL_Transacao, PChar('00D9'), '6298676000000510152');
 
-    F_MensagemTagAsString(VL_Transacao, VL_Dados);  //converte em string a mensagem
+    F_MensagemTagAsString(VL_Transacao, VL_Retorno);  //converte em string a mensagem
 
-    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), VL_Dados);  // transacao criptografa
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
-    F_MensagemTagAsString(VL_Mensagem, VL_Dados);  //converte em string a mensagem
+    F_MensagemAddTag(VL_Mensagem, PChar('00E3'), PChar(VL_Dados));  // transacao criptografa
+
+    F_MensagemTagAsString(VL_Mensagem, VL_Retorno);  //converte em string a mensagem
+
+    VL_Dados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
     VL_Id := -1;
 
@@ -2475,12 +2522,15 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', PChar(VL_Dados), VL_Id);
     if VL_Erro <> 0 then
     begin
-      F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      F_Erro(VL_Erro, VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);

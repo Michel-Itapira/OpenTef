@@ -15,42 +15,27 @@ type
   TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando,
     tsAguardandoComando, tsNaoLocalizada, tsInicializada, tsComErro, tsAbortada);
 
-  TServidorRecebimentoLib = function(VP_Codigo: integer;
-    VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-    VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+  TServidorRecebimentoLib = function(VP_Codigo: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 
-  Tiniciarconexao = function(VP_ArquivoLog, VP_Chave, VP_IP_Caixa,
-    VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
-    VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib;
-    VP_Identificacao: PChar): integer; cdecl;
-  Tfinalizaconexao = function(): integer; cdecl;
-  TResponde = function(VP_Transmissao_ID, VP_Mensagem: PChar;
-    VP_ID: integer): integer; cdecl;
+  Tiniciarconexao = function(var VO_MCom: Pointer; VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
+    VO_RetornoCaixa, VO_Retorno_Servico: TServidorRecebimentoLib; VP_Identificacao: PChar): integer; cdecl;
+  Tfinalizaconexao = function(VP_MCom: Pointer): integer; cdecl;
+  TResponde = function(VP_MCom: pointer; VP_Transmissao_ID, VP_Mensagem: PChar; VP_ID: integer): integer; cdecl;
 
   TTMensagemCreate = function(var VO_Mensagem: Pointer): integer; cdecl;
-  TTMensagemCarregaTags = function(VP_Mensagem: Pointer;
-    VP_Dados: PChar): integer; cdecl;
-  TTMensagemComando = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
-  TTMensagemComandoDados = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
+  TTMensagemCarregaTags = function(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
+  TTMensagemComando = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemComandoDados = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
   TTMensagemFree = procedure(VP_Mensagem: Pointer); cdecl;
-  TTMensagemaddtag = function(VP_Mensagem: Pointer;
-    VP_Tag, VP_Dados: PChar): integer; cdecl;
-  TTMensagemaddcomando = function(VP_Mensagem: Pointer;
-    VP_Tag, VP_Dados: PChar): integer; cdecl;
-  TTMensagemTagAsString = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
+  TTMensagemaddtag = function(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+  TTMensagemaddcomando = function(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+  TTMensagemTagAsString = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
   TTMensagemTagCount = function(VP_Mensagem: Pointer): integer; cdecl;
-  TTMensagemGetTag = function(VP_Mensagem: Pointer; VP_Tag: PChar;
-    var VO_Dados: PChar): integer; cdecl;
-  TTMensagemGetTagIdx = function(VP_Mensagem: Pointer; VL_Idx: integer;
-    var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
-  TTMensagemTagToStr = function(VP_Mensagem: Pointer;
-    var VO_Dados: PChar): integer; cdecl;
+  TTMensagemGetTag = function(VP_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemGetTagIdx = function(VP_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemTagToStr = function(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
   TTMensagemLimpar = procedure(VP_Mensagem: Pointer); cdecl;
-  TTMensagemerro = function(VP_CodigoErro: integer;
-    var VO_RespostaMensagem: PChar): integer; cdecl;
+  TTMensagemerro = function(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
 
   TDescriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: PChar): PChar; cdecl;
   TEncriptaSenha3Des = function(VP_Wk, VP_pan, VP_Senha: PChar): PChar; cdecl;
@@ -79,8 +64,7 @@ type
     destructor Destroy; override;
     function GetRecOpeTef(VP_Idex: integer): TRecOpeTef;
     function Count: integer;
-    function Add(VP_ID: integer;
-      VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
+    function Add(VP_ID: integer; VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
     function Remove(VP_ID: integer): integer;
   end;
 
@@ -98,8 +82,7 @@ type
     destructor Destroy; override;
     function Add(VP_Transacao_ID: string): TRecTransacao;
     function Remove(VP_Transacao_ID: string): integer;
-    function Salvar(VP_Transacao_ID: string;
-      VP_Rec_Transacao: TRecTransacao): integer;
+    function Salvar(VP_Transacao_ID: string; VP_Rec_Transacao: TRecTransacao): integer;
   end;
 
 
@@ -114,6 +97,7 @@ type
     BInicializaDll: TButton;
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     cCpfPdv: TCheckBox;
     cQrcodePdv: TCheckBox;
     cMensagemPdv: TCheckBox;
@@ -182,18 +166,13 @@ type
   protected
     procedure Execute; override;
   public
-    constructor Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP: string;
-      VP_ID: integer; VP_Retorno: TResponde);
+    constructor Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP: string; VP_ID: integer; VP_Retorno: TResponde);
 
   end;
 
 
-function ServidorRecebimentoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
-function ServidorRecebimentoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 function ByteToHex(const Value: array of byte): string;
 
 procedure ImagemToStr(var Dados: string; Imagem: TImage);
@@ -201,8 +180,12 @@ procedure ImagemToStr(var Dados: string; Imagem: TImage);
 
 var
   Form1: TForm1;
-  FMCom: THandle;
-  FKey: THandle;
+
+  FMCom: pointer;
+
+  FMComLib: THandle;
+  FKeyLib: THandle;
+
   finalizaconexao: Tfinalizaconexao;
   iniciarconexao: Tiniciarconexao;
   respondeservico, respondecaixa: TResponde;
@@ -235,9 +218,7 @@ var
 
 implementation
 
-function ServidorRecebimentoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 var
   VL_Mensagem: Pointer;
   VL_Comando: PChar;
@@ -273,9 +254,7 @@ begin
 
 end;
 
-function ServidorRecebimentoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar;
-  VP_ID: integer; VP_Chave: PChar): integer; cdecl;
+function ServidorRecebimentoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_ID: integer; VP_Chave: PChar): integer; cdecl;
 var
   VL_Mensagem: Pointer;
   VL_Comando: PChar;
@@ -377,8 +356,7 @@ begin
   Result := V_Lista.Count;
 end;
 
-function TOpenTef.Add(VP_ID: integer;
-  VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
+function TOpenTef.Add(VP_ID: integer; VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
 var
   VL_RecOpenTef: ^TRecOpeTef;
 begin
@@ -489,8 +467,7 @@ begin
   end;
 end;
 
-function TTransacao.Salvar(VP_Transacao_ID: string;
-  VP_Rec_Transacao: TRecTransacao): integer;
+function TTransacao.Salvar(VP_Transacao_ID: string; VP_Rec_Transacao: TRecTransacao): integer;
 var
   VL_RecTransacao: ^TRecTransacao;
   VL_I: integer;
@@ -506,7 +483,7 @@ begin
     if VL_RecTransacao^.V_Transacao_ID = VP_Transacao_ID then
     begin
       VL_RecTransacao^ := VP_Rec_Transacao;
-      V_Lista.Insert(VL_I, VL_RecTransacao);
+      V_Lista.Items[VL_I] := VL_RecTransacao;
       Exit;
     end;
   end;
@@ -641,8 +618,7 @@ begin
       if VL_ComandoDados <> '' then
       begin
         F_Erro(StrToInt(VL_ComandoDados), VL_DescricaoErro);
-        ShowMessage('Erro: ' + VL_ComandoDados + #13 + 'Descrição: ' +
-          VL_DescricaoErro);
+        ShowMessage('Erro: ' + VL_ComandoDados + #13 + 'Descrição: ' + VL_DescricaoErro);
       end;
 
       Exit;
@@ -659,7 +635,7 @@ begin
       F_MensagemAddTag(VL_Mensagem_Saida, '00CE', PChar('629867')); // bin
       F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
       //converte em string a mensagem
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
       Exit;
     end;
 
@@ -674,7 +650,7 @@ begin
       F_MensagemAddTag(VL_Mensagem_Saida, '007D', PChar(''));  // mensagem vazia
       F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
       //converte em string a mensagem
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
       Exit;
     end;
 
@@ -701,7 +677,7 @@ begin
       // coloca a mensagem na tag de mensagem
       F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
       //converte em string a mensagem
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
       // envia de volta o comando
       Exit;
     end;
@@ -712,8 +688,7 @@ begin
       // carregando a chave da transacao
       F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_TagDados);
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
@@ -723,8 +698,7 @@ begin
       // carregando os dados protegidos
       F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_TagDados);
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
@@ -743,8 +717,7 @@ begin
 
       if VL_PChar <> '' then
       begin
-        ShowMessage('Data do nascimento: ' + F_DescriptaSenha3Des('',
-          '6298676000000510152', VL_PChar));
+        ShowMessage('Data do nascimento: ' + F_DescriptaSenha3Des('', '6298676000000510152', VL_PChar));
       end;
 
 
@@ -823,8 +796,7 @@ begin
       F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_TagDados);
       // carregando a chave da transacao
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
@@ -848,7 +820,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -856,8 +828,7 @@ begin
       // carregando os dados protegidos
       F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_TagDados);
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
@@ -881,7 +852,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -903,8 +874,7 @@ begin
         F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('011A'), VL_Pan);
       // pan digitado pelo pinpad
 
-      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) -
-        Length(VL_Bin) + 1));
+      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) - Length(VL_Bin) + 1));
 
       if (VL_BotaoSelecionado = '00E8') and (VL_Senha = '') then
       begin
@@ -933,7 +903,7 @@ begin
           F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
           //converte em string a mensagem
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
           // envia de volta o comando
           Exit;
         end;
@@ -955,7 +925,7 @@ begin
 
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
 
@@ -988,7 +958,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
 
         Exit;
@@ -1089,8 +1059,7 @@ begin
       F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00F1'), VL_TagDados);
       // carregando a chave da transacao
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_ChaveTransacao, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
@@ -1114,7 +1083,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -1126,8 +1095,7 @@ begin
       // carregando os dados protegidos
       F_MensagemGetTag(VL_Mensagem_Entrada, PChar('00E3'), VL_TagDados);
 
-      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos,
-        PChar(VL_TagDados));
+      vl_erro := F_MensagemCarregaTags(VL_Mensagem_DadosProtegidos, PChar(VL_TagDados));
 
       if vl_erro <> 0 then
       begin
@@ -1151,7 +1119,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -1177,8 +1145,7 @@ begin
         F_MensagemGetTag(VL_Mensagem_DadosProtegidos, PChar('011A'), VL_Pan);
       // pan digitado pelo pinpad
 
-      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) -
-        Length(VL_Bin) + 1));
+      VL_Cartao := PChar(Copy(VL_Pan, Length(VL_Bin) + 1, Length(VL_Pan) - Length(VL_Bin) + 1));
 
       if VL_Valor = '' then
       begin
@@ -1216,7 +1183,7 @@ begin
 
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -1244,7 +1211,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -1280,7 +1247,7 @@ begin
             F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
             //converte em string a mensagem
 
-            fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+            fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
             // envia de volta o comando
             Exit;
           end;
@@ -1303,7 +1270,7 @@ begin
           F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
           //converte em string a mensagem
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
           // envia de volta o comando
           Exit;
 
@@ -1339,7 +1306,7 @@ begin
           //converte em string a mensagem
 
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
           // envia de volta o comando
           Exit;
         end;
@@ -1375,7 +1342,7 @@ begin
             F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
             //converte em string a mensagem
 
-            fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+            fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
             // envia de volta o comando
             Exit;
           end;
@@ -1397,7 +1364,7 @@ begin
 
           F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
           //converte em string a mensagem
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
           // envia de volta o comando
           Exit;
 
@@ -1431,15 +1398,14 @@ begin
           F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
           //converte em string a mensagem
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
           // envia de volta o comando
 
           Exit;
         end;
       end;
 
-      if (Form1.cQrcodePdv.Checked) and
-        (not VL_RecTransacao.V_QrCodeEnviadoPDV) then
+      if (Form1.cQrcodePdv.Checked) and (not VL_RecTransacao.V_QrCodeEnviadoPDV) then
       begin
         VL_RecTransacao.V_QrCodeEnviadoPDV := True;
         F_Transacao.Salvar(VL_RecTransacao.V_Transacao_ID, VL_RecTransacao);
@@ -1475,7 +1441,7 @@ begin
 
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
 
         Exit;
@@ -1517,14 +1483,13 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
 
         Exit;
       end;
 
-      if (Form1.cQrcodePinPad.Checked) and
-        (not VL_RecTransacao.V_QrCodeEnviadoPinpad) then    // mostra o qr code no pinpad
+      if (Form1.cQrcodePinPad.Checked) and (not VL_RecTransacao.V_QrCodeEnviadoPinpad) then    // mostra o qr code no pinpad
       begin
         VL_RecTransacao.V_QrCodeEnviadoPinpad := True;
         F_Transacao.Salvar(VL_RecTransacao.V_Transacao_ID, VL_RecTransacao);
@@ -1544,7 +1509,7 @@ begin
 
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -1553,7 +1518,7 @@ begin
       begin
         if VL_Senha = '' then
         begin
-           sleep(15000);
+          sleep(5000);
           // solicita senha pin pad
           F_MensagemAddComando(VL_Mensagem_DadosProtegidos,
             PChar('005A'), PChar('S'));   //solicita senha
@@ -1581,7 +1546,7 @@ begin
           F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
           //converte em string a mensagem
 
-          fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+          fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
           // envia de volta o comando
           Exit;
         end
@@ -1610,7 +1575,7 @@ begin
         F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
         //converte em string a mensagem
 
-        fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+        fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
         // envia de volta o comando
         Exit;
       end;
@@ -1650,7 +1615,7 @@ begin
       F_MensagemTagAsString(VL_Mensagem_Saida, VL_DadosEnviados);
       //converte em string a mensagem
 
-      fVP_Retorno(PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
+      fVP_Retorno(FMCom, PChar(fVP_Transmissao_ID), VL_DadosEnviados, fVP_ID);
       // envia de volta o comando
       Exit;
 
@@ -1922,8 +1887,7 @@ begin
   end;
 end;
 
-constructor ThProcessaSolicitacoes.Create(VP_Transmissao_ID,
-  VP_DadosRecebidos, VP_IP: string; VP_ID: integer; VP_Retorno: TResponde);
+constructor ThProcessaSolicitacoes.Create(VP_Transmissao_ID, VP_DadosRecebidos, VP_IP: string; VP_ID: integer; VP_Retorno: TResponde);
 begin
   FreeOnTerminate := True;
   fVP_Transmissao_ID := VP_Transmissao_ID;
@@ -1943,45 +1907,45 @@ begin
   {$ENDIF}
 
   {$IF DEFINED(WIN32)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\mcom_lib\win32\mcom_lib.dll'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\mcom_lib\win32\mcom_lib.dll'));
   {$ENDIF}
 
   {$IF DEFINED(LINUX64)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux64/libmcom_lib.so'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux64/libmcom_lib.so'));
   {$ENDIF}
 
   {$IF DEFINED(LINUX32)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux32/libmcom_lib.so'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '../../mcom_lib/linux32/libmcom_lib.so'));
   {$ENDIF}
 
-  Pointer(finalizaconexao) := GetProcAddress(FMCom, 'finalizaconexao');
-  Pointer(iniciarconexao) := GetProcAddress(FMCom, 'iniciarconexao');
-  Pointer(respondecaixa) := GetProcAddress(FMCom, 'respondecaixa');
-  Pointer(respondeservico) := GetProcAddress(FMCom, 'respondeservico');
+  Pointer(finalizaconexao) := GetProcAddress(FMComLib, 'finalizaconexao');
+  Pointer(iniciarconexao) := GetProcAddress(FMComLib, 'iniciarconexao');
+  Pointer(respondecaixa) := GetProcAddress(FMComLib, 'respondecaixa');
+  Pointer(respondeservico) := GetProcAddress(FMComLib, 'respondeservico');
 
-  Pointer(F_MensagemCreate) := GetProcAddress(FMCom, 'mensagemcreate');
-  Pointer(F_MensagemCarregaTags) := GetProcAddress(FMCom, 'mensagemcarregatags');
-  Pointer(F_MensagemComando) := GetProcAddress(FMCom, 'mensagemcomando');
-  Pointer(F_MensagemComandoDados) := GetProcAddress(FMCom, 'mensagemcomandodados');
-  Pointer(F_MensagemFree) := GetProcAddress(FMCom, 'mensagemfree');
-  Pointer(F_Mensagemaddtag) := GetProcAddress(FMCom, 'mensagemaddtag');
-  Pointer(F_Mensagemaddcomando) := GetProcAddress(FMCom, 'mensagemaddcomando');
-  Pointer(F_MensagemTagAsString) := GetProcAddress(FMCom, 'mensagemtagasstring');
-  Pointer(F_MensagemTagCount) := GetProcAddress(FMCom, 'mensagemtagcount');
-  Pointer(F_MensagemGetTag) := GetProcAddress(FMCom, 'mensagemgettag');
-  Pointer(F_MensagemGetTagIdx) := GetProcAddress(FMCom, 'mensagemgettagidx');
-  Pointer(F_MensagemTagToStr) := GetProcAddress(FMCom, 'mensagemtagtostr');
-  Pointer(F_MensagemLimpar) := GetProcAddress(FMCom, 'mensagemlimpar');
-  Pointer(F_Erro) := GetProcAddress(FMCom, 'mensagemerro');
+  Pointer(F_MensagemCreate) := GetProcAddress(FMComLib, 'mensagemcreate');
+  Pointer(F_MensagemCarregaTags) := GetProcAddress(FMComLib, 'mensagemcarregatags');
+  Pointer(F_MensagemComando) := GetProcAddress(FMComLib, 'mensagemcomando');
+  Pointer(F_MensagemComandoDados) := GetProcAddress(FMComLib, 'mensagemcomandodados');
+  Pointer(F_MensagemFree) := GetProcAddress(FMComLib, 'mensagemfree');
+  Pointer(F_Mensagemaddtag) := GetProcAddress(FMComLib, 'mensagemaddtag');
+  Pointer(F_Mensagemaddcomando) := GetProcAddress(FMComLib, 'mensagemaddcomando');
+  Pointer(F_MensagemTagAsString) := GetProcAddress(FMComLib, 'mensagemtagasstring');
+  Pointer(F_MensagemTagCount) := GetProcAddress(FMComLib, 'mensagemtagcount');
+  Pointer(F_MensagemGetTag) := GetProcAddress(FMComLib, 'mensagemgettag');
+  Pointer(F_MensagemGetTagIdx) := GetProcAddress(FMComLib, 'mensagemgettagidx');
+  Pointer(F_MensagemTagToStr) := GetProcAddress(FMComLib, 'mensagemtagtostr');
+  Pointer(F_MensagemLimpar) := GetProcAddress(FMComLib, 'mensagemlimpar');
+  Pointer(F_Erro) := GetProcAddress(FMComLib, 'mensagemerro');
 
 
-  FKey := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'key_lib.dll'));
+  FKeyLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'key_lib.dll'));
 
-  Pointer(F_DescriptaSenha3Des) := GetProcAddress(FKey, 'DescriptaSenha3Des');
-  Pointer(F_EncriptaSenha3Des) := GetProcAddress(FKey, 'EncriptaSenha3Des');
-  Pointer(F_Wk) := GetProcAddress(FKey, 'wkc');
-  Pointer(F_Imk) := GetProcAddress(FKey, 'imk');
-  Pointer(F_PinFromPindPad) := GetProcAddress(FKey, 'pinFromPindPad');
+  Pointer(F_DescriptaSenha3Des) := GetProcAddress(FKeyLib, 'DescriptaSenha3Des');
+  Pointer(F_EncriptaSenha3Des) := GetProcAddress(FKeyLib, 'EncriptaSenha3Des');
+  Pointer(F_Wk) := GetProcAddress(FKeyLib, 'wkc');
+  Pointer(F_Imk) := GetProcAddress(FKeyLib, 'imk');
+  Pointer(F_PinFromPindPad) := GetProcAddress(FKeyLib, 'pinFromPindPad');
 
 end;
 
@@ -2059,12 +2023,11 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', VL_Dados, VL_Id);
     if VL_Erro <> 0 then
     begin
       F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);
@@ -2150,12 +2113,11 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', VL_Dados, VL_Id);
     if VL_Erro <> 0 then
     begin
       F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);
@@ -2258,20 +2220,37 @@ begin
 end;
 
 procedure TForm1.Button3Click(Sender: TObject);
-
 begin
+  if FMComLib <> 0 then
+    UnloadLibrary(FMComLib);
 
+  if FKeyLib <> 0 then
+    UnloadLibrary(FKeyLib);
 end;
 
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  FMCom := nil;
   F_OpenTef := TOpenTef.Create;
   F_Transacao := TTransacao.Create;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
+var
+  VL_Erro: integer;
 begin
+  VL_Erro := 0;
+
+  if Assigned(finalizaconexao) then
+    VL_Erro := finalizaconexao(FMCom);
+
+  if FMComLib <> 0 then
+    UnloadLibrary(FMComLib);
+
+  if FKeyLib <> 0 then
+    UnloadLibrary(FKeyLib);
+
   F_OpenTef.Free;
   F_Transacao.Free;
 end;
@@ -2284,23 +2263,21 @@ begin
     Exit;
   end;
 
-  finalizaconexao;
+  finalizaconexao(FMCom);
 end;
 
 procedure TForm1.BAtivaClick(Sender: TObject);
 var
   VL_Erro: integer;
 begin
-  if (FMCom = 0) then
+  if (FMComLib = 0) then
   begin
     ShowMessage('Inicialize a lib');
     Exit;
   end;
 
-  VL_Erro := iniciarconexao(PChar(ExtractFilePath(ParamStr(0)) + 'operadora.log'),
-    PChar(EChave.Text), PChar(EIPCaixa.Text), PChar(EIPServico.Text),
-    EPortaCaixa.AsInteger, EPortaServico.AsInteger, @ServidorRecebimentoCaixa,
-    @ServidorRecebimentoServico, PChar(EIdentificacao.Text));
+  VL_Erro := iniciarconexao(FMCom, PChar(ExtractFilePath(ParamStr(0)) + 'operadora.log'), PChar(EChave.Text), PChar(EIPCaixa.Text), PChar(EIPServico.Text),
+    EPortaCaixa.AsInteger, EPortaServico.AsInteger, @ServidorRecebimentoCaixa, @ServidorRecebimentoServico, PChar(EIdentificacao.Text));
 
   if VL_Erro <> 0 then
     ShowMessage('Erro: ' + IntToStr(VL_Erro));
@@ -2379,12 +2356,11 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', VL_Dados, VL_Id);
     if VL_Erro <> 0 then
     begin
       F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);
@@ -2475,12 +2451,11 @@ begin
       Exit;
     end;
 
-    VL_Erro := respondeservico('', VL_Dados, VL_Id);
+    VL_Erro := respondeservico(FMCom, '', VL_Dados, VL_Id);
     if VL_Erro <> 0 then
     begin
       F_Erro(VL_Erro, VL_DescricaoErro);
-      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' +
-        VL_DescricaoErro);
+      ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
     end;
   finally
     F_MensagemFree(VL_Mensagem);

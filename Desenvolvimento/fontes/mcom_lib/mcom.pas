@@ -17,12 +17,12 @@ type
     fdados: ansistring;
     fprocedimento: TRetorno;
     fTransmissaoID: string;
+    fMCom: pointer;
 
   protected
     procedure Execute; override;
   public
-    constructor Create(VP_Suspenso: boolean; VP_Transmissao_ID, VP_Dados: ansistring;
-      VP_Procedimento: TRetorno);
+    constructor Create(VP_MCom: Pointer; VP_Suspenso: boolean; VP_Transmissao_ID, VP_Dados: ansistring; VP_Procedimento: TRetorno);
 
   end;
 
@@ -44,137 +44,110 @@ type
     TamanhoPublico: integer;
     ChaveComunicacao: ansistring;
 
-    function iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string;
-      VP_PortaCaixa, VP_PortaServico: integer; VP_Identificacao: string): integer;
-    function RecebeComandoCaixa(VP_Erro: integer;
-      VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-      VP_ClienteIP: string; VP_Terminal_Status: TConexaoStatus): integer;
-    function RecebeComandoServico(VP_Erro: integer;
-      VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-      VP_ClienteIP: string; VP_Terminal_Status: TConexaoStatus): integer;
+    F_ArquivoLog: string;
+    F_ComunicadorCaixa: TDComunicador;
+    F_ComunicadorServico: TDComunicador;
+    F_ServidorRecebimentoLibCaixa, F_ServidorRecebimentoLibServico: TServidorRecebimentoLib;
 
-    function comando0001(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-      VP_Conexao_ID: integer; VP_DComunicador: TDComunicador;
-      VP_Terminal_Status: TConexaoStatus; VP_ClienteIP: string): integer;
-    function comando0021(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-      VP_Conexao_ID: integer; VP_DComunicador: TDComunicador;
-      VP_Terminal_Status: TConexaoStatus): integer;
-    function comando0111(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-      VP_Conexao_ID: integer; VP_DComunicador: TDComunicador): integer;
-    function TransmissaoComando(AOwner: Pointer; VP_Conexao_ID: integer;
-      VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer;
+    function iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string; VP_PortaCaixa, VP_PortaServico: integer; VP_Identificacao: string): integer;
+    procedure RecebeComandoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer; VP_Terminal_Tipo: string;
+      VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
+    procedure RecebeComandoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer; VP_Terminal_Tipo: string;
+      VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
+
+    function comando0001(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_DComunicador: TDComunicador; VP_Terminal_Status: TConexaoStatus;
+      VP_ClienteIP: string): integer;
+    function comando0021(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_DComunicador: TDComunicador; VP_Terminal_Status: TConexaoStatus): integer;
+    function comando0111(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_DComunicador: TDComunicador): integer;
+    function TransmissaoComando(AOwner: Pointer; VP_Conexao_ID: integer; VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer;
 
 
   end;
 
-function iniciarconexao(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar;
-  VP_PortaCaixa, VP_PortaServico: integer;
-  VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib;
-  VP_Identificacao: PChar; VP_NivelLog: integer): integer; cdecl;
-function finalizaconexao(): integer; cdecl;
-function respondecaixa(VP_Transmissao_ID, VP_Dados: PChar;
-  VP_ID: integer): integer; cdecl;
-function respondeservico(VP_Transmissao_ID, VP_Dados: PChar;
-  VP_ID: integer): integer; cdecl;
+function iniciarconexao(var VO_MCom: Pointer; VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
+  VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib; VP_Identificacao: PChar; VP_NivelLog: integer): integer; cdecl;
+function finalizaconexao(VP_MCom: Pointer): integer; cdecl;
+function respondecaixa(VP_MCom: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; cdecl;
+function respondeservico(VP_MCom: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; cdecl;
 procedure alterarnivellog(VP_Nivel: integer); cdecl;
-
-var
-  DMCom: TDMCom;
-  F_Mensagem: TMensagem;
-  F_ArquivoLog: string;
-  F_Inicializado: boolean = False;
-  F_ChaveTerminal: ansistring;
-  F_Versao_Comunicacao: integer;
-  F_ComunicadorCaixa: TDComunicador;
-  F_ComunicadorServico: TDComunicador;
-  F_ServidorRecebimentoLibCaixa, F_ServidorRecebimentoLibServico:
-  TServidorRecebimentoLib;
-
-procedure ComandoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
-  VP_Conexao_ID: integer; VP_Terminal_Tipo: string; VP_Terminal_ID: integer;
-  VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
-  VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
-procedure ComandoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
-  VP_Conexao_ID: integer; VP_Terminal_Tipo: string; VP_Terminal_ID: integer;
-  VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
-  VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
-
 
 implementation
 
-
 {$R *.lfm}
 
-
-function iniciarconexao(VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar;
-  VP_PortaCaixa, VP_PortaServico: integer;
-  VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib;
-  VP_Identificacao: PChar; VP_NivelLog: integer): integer; cdecl;
+function iniciarconexao(var VO_MCom: Pointer; VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
+  VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib; VP_Identificacao: PChar; VP_NivelLog: integer): integer; cdecl;
 begin
   try
-    F_ArquivoLog := string(VP_ArquivoLog);
     F_NivelLog := VP_NivelLog;
 
-    GravaLog(VP_ArquivoLog, 0, '', 'mcom', '11122023214806', 'f_arquivo:' +
-      F_ArquivoLog + ' vparquivo:' + VP_ArquivoLog + ' vp_chave:' +
-      VP_Chave + ' identificacao:' + VP_Identificacao, '', 0, 2);
+    GravaLog(VP_ArquivoLog, 0, '', 'mcom', '11122023214806', 'f_arquivo:' + VP_ArquivoLog + ' vparquivo:' + VP_ArquivoLog + ' vp_chave:' + VP_Chave +
+      ' identificacao:' + VP_Identificacao, '', 0, 2);
 
 
-    DMCom := TDMCom.Create(nil);
-    Result := DMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico,
-      VP_PortaCaixa, VP_PortaServico, VP_Identificacao);
-    F_ServidorRecebimentoLibCaixa := VO_RetornoCaixa;
-    F_ServidorRecebimentoLibServico := VO_RetornoServico;
+    VO_MCom := TDMCom.Create(nil);
+    TDMCom(VO_MCom).F_ArquivoLog := VP_ArquivoLog;
+
+    Result := TDMCom(VO_MCom).iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico, VP_PortaCaixa, VP_PortaServico, VP_Identificacao);
+    TDMCom(VO_MCom).F_ServidorRecebimentoLibCaixa := VO_RetornoCaixa;
+    TDMCom(VO_MCom).F_ServidorRecebimentoLibServico := VO_RetornoServico;
 
   except
     on e: Exception do
     begin
       Result := 1;
-      GravaLog(F_ArquivoLog, 0, 'iniciarconexao', 'mcom',
+      GravaLog(VP_ArquivoLog, 0, 'iniciarconexao', 'mcom',
         '070620241647', e.ClassName + '/' + e.Message, '', Result, 1);
     end;
   end;
 end;
 
-function finalizaconexao: integer; cdecl;
+function finalizaconexao(VP_MCom: Pointer): integer; cdecl;
 begin
+  if not Assigned(VP_MCom) then
+  begin
+    Result := 126;
+    Exit;
+  end;
+
   try
-    if Assigned(F_ComunicadorCaixa.V_ThRecebeEscuta) then
+    if Assigned(TDMCom(VP_MCom).F_ComunicadorCaixa.V_ThRecebeEscuta) then
     begin
       //F_ComunicadorCaixa.V_ThRecebeEscuta.Parar;
-      F_ComunicadorCaixa.V_ThRecebeEscuta.Terminate;
+      TDMCom(VP_MCom).F_ComunicadorCaixa.V_ThRecebeEscuta.Terminate;
     end;
 
-    if Assigned(F_ComunicadorServico.V_ThRecebeEscuta) then
+    if Assigned(TDMCom(VP_MCom).F_ComunicadorServico.V_ThRecebeEscuta) then
     begin
       //F_ComunicadorServico.V_ThRecebeEscuta.Parar;
-      F_ComunicadorServico.V_ThRecebeEscuta.Terminate;
+      TDMCom(VP_MCom).F_ComunicadorServico.V_ThRecebeEscuta.Terminate;
     end;
 
 
-    F_ComunicadorCaixa.DesconectarCliente(F_ComunicadorCaixa);
-    F_ComunicadorServico.DesconectarCliente(F_ComunicadorServico);
+    TDMCom(VP_MCom).F_ComunicadorCaixa.DesconectarCliente(TDMCom(VP_MCom).F_ComunicadorCaixa);
+    TDMCom(VP_MCom).F_ComunicadorServico.DesconectarCliente(TDMCom(VP_MCom).F_ComunicadorServico);
 
-    F_ComunicadorServico.Free;
-    F_ComunicadorCaixa.Free;
-    DMCom.Free;
-    F_Mensagem.Free;
+    TDMCom(VP_MCom).F_ComunicadorServico.Free;
+    TDMCom(VP_MCom).F_ComunicadorCaixa.Free;
+
+    TDMCom(VP_MCom).Free;
+    VP_MCom := nil;
+
     Result := 0;
 
   except
     on e: Exception do
     begin
       Result := 1;
-      GravaLog(F_ArquivoLog, 0, 'finalizaconexao', 'mcom',
+      GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'finalizaconexao', 'mcom',
         '070620241648', e.ClassName + '/' + e.Message, '', Result, 1);
     end;
   end;
 end;
 
-function respondecaixa(VP_Transmissao_ID, VP_Dados: PChar;
-  VP_ID: integer): integer; cdecl;
+function respondecaixa(VP_MCom: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; cdecl;
 var
-  VL_Mensagem, VL_Chaves: TMensagem;
+  VL_Mensagem, VL_Chaves, VL_MensagemRecebida: TMensagem;
   VL_TagDados: string;
   VL_ModuloPublico: ansistring;
   VL_ExpoentePublico: ansistring;
@@ -187,16 +160,25 @@ begin
   VL_ChaveComunicacao := '';
   VL_Rsa := nil;
   VL_Aes := nil;
+  VL_MensagemRecebida := nil;
+
+  if not Assigned(VP_MCom) then
+  begin
+    Result := 126;
+    Exit;
+  end;
+
   try
     try
       VL_Mensagem := TMensagem.Create;
       VL_Chaves := TMensagem.Create;
+      VL_MensagemRecebida := TMensagem.Create;
 
       Result := VL_Mensagem.CarregaTags(VP_Dados);
 
       if Result <> 0 then
       begin
-        GravaLog(F_ArquivoLog, 0, '', 'mcom', '290820221240', '', '', Result, 1);
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom', '290820221240', '', '', Result, 1);
         Exit;
       end;
 
@@ -214,8 +196,7 @@ begin
         if VL_Mensagem.GetTagAsAstring('010E') <> '' then
           // chave de comunicacao criptografada aes da solicitação
         begin
-          VL_ChaveComunicacao :=
-            DMCom.CriptoRsa.DecryptString(VL_Mensagem.GetTagAsAstring('010E'));
+          VL_ChaveComunicacao := TDMCom(VP_MCom).CriptoRsa.DecryptString(VL_Mensagem.GetTagAsAstring('010E'));
           VL_Mensagem.AddTag('010F', VL_Mensagem.GetTagAsAstring('010E'));
           VL_Mensagem.AddTag('010E', '');
         end
@@ -223,42 +204,41 @@ begin
         if VL_Mensagem.GetTagAsAstring('010F') <> '' then
           // chave de comunicacao criptografada aes da resposta
         begin
-          VL_ChaveComunicacao := DMCom.ChaveComunicacao;
+          VL_ChaveComunicacao := TDMCom(VP_MCom).ChaveComunicacao;
         end;
 
         VL_Aes := TLbRijndael.Create(nil);
-        VL_Aes.KeySize := F_ComunicadorServico.CriptoAes.KeySize;
-        VL_Aes.CipherMode := F_ComunicadorServico.CriptoAes.CipherMode;
+        VL_Aes.KeySize := TDMCom(VP_MCom).F_ComunicadorServico.CriptoAes.KeySize;
+        VL_Aes.CipherMode := TDMCom(VP_MCom).F_ComunicadorServico.CriptoAes.CipherMode;
         VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
-        GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom',
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondecaixa', 'mcom',
           '131120230937', 'mensagem enviada descriptografada', VL_TagDados, 0, 2);
 
         VL_TagDados := VL_Aes.EncryptString(VL_TagDados);
         VL_Mensagem.AddTag('00E3', VL_TagDados);        // mensagem criptografada
 
-        if VL_ChaveComunicacao = DMCom.ChaveComunicacao then
+        if VL_ChaveComunicacao = TDMCom(VP_MCom).ChaveComunicacao then
         begin
           if ((VL_ModuloPublico = '') or (VL_ExpoentePublico = '')) then
           begin
             VL_Chaves.AddComando('0111', 'S');
             VL_Chaves.AddTag('00F1', VL_Mensagem.GetTagAsAstring('00F1'));
 
-            GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom',
+            GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondecaixa', 'mcom',
               '131120230936', 'mensagem enviada', VL_Chaves.TagsAsString, 0, 2);
 
             Result :=
-              F_ComunicadorServico.ServidorTransmiteSolicitacaoID(
-              F_ComunicadorServico, 30000, True, nil, '', VL_Chaves, VL_Chaves, VP_ID);
+              TDMCom(VP_MCom).F_ComunicadorServico.ServidorTransmiteSolicitacaoID(TDMCom(VP_MCom).F_ComunicadorServico, 30000, True, nil, '', VL_Chaves, VL_Chaves, VP_ID);
 
             if Result <> 0 then
             begin
-              GravaLog(F_ArquivoLog, 0, '', 'mcom',
+              GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom',
                 '310820221737', '', '', Result, 1);
               Exit;
             end;
 
-            GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom',
+            GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondecaixa', 'mcom',
               '131120230935', 'mensagem recebida', VL_Chaves.TagsAsString, 0, 2);
 
             VL_Chaves.GetTag('0028', VL_TamanhoPublico);        //tamanho chave
@@ -270,7 +250,7 @@ begin
 
             if Result <> 0 then
             begin
-              GravaLog(F_ArquivoLog, 0, '', 'mcom',
+              GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom',
                 '310820221737', '', '', Result, 1);
               Exit;
             end;
@@ -281,26 +261,24 @@ begin
           VL_Rsa.PublicKey.ExponentAsString := VL_ExpoentePublico;
           VL_Rsa.PublicKey.ModulusAsString := VL_ModuloPublico;
 
-          VL_ChaveComunicacao := VL_Rsa.EncryptString(DMCom.ChaveComunicacao);
+          VL_ChaveComunicacao := VL_Rsa.EncryptString(TDMCom(VP_MCom).ChaveComunicacao);
           VL_Mensagem.AddTag('010E', VL_ChaveComunicacao);
           // chave de comunicacao criptografada
           VL_Mensagem.AddTag('010F', '');
         end;
       end;
 
-      VL_Mensagem.AddTag('0028', DMCom.TamanhoPublico);        //tamanho chave
-      VL_Mensagem.AddTag('0023', DMCom.ExpoentePublico);        //expoente
-      VL_Mensagem.AddTag('0024', DMCom.ModuloPublico);        //modulos
+      VL_Mensagem.AddTag('0028', TDMCom(VP_MCom).TamanhoPublico);        //tamanho chave
+      VL_Mensagem.AddTag('0023', TDMCom(VP_MCom).ExpoentePublico);        //expoente
+      VL_Mensagem.AddTag('0024', TDMCom(VP_MCom).ModuloPublico);        //modulos
 
-      GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230934',
+      GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondecaixa', 'mcom', '131120230934',
         'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
-      Result := F_ComunicadorCaixa.ServidorTransmiteSolicitacaoID(
-        F_ComunicadorCaixa, 3000, False, nil, VP_Transmissao_ID,
-        VL_Mensagem, F_Mensagem, VP_ID);
+      Result := TDMCom(VP_MCom).F_ComunicadorCaixa.ServidorTransmiteSolicitacaoID(TDMCom(VP_MCom).F_ComunicadorCaixa, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VL_MensagemRecebida, VP_ID);
       if Result <> 0 then
       begin
-        GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221311', '', '', Result, 1);
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom', '200920221311', '', '', Result, 1);
         Exit;
       end;
 
@@ -308,14 +286,14 @@ begin
       on e: Exception do
       begin
         Result := 1;
-        GravaLog(F_ArquivoLog, 0, 'respondecaixa', 'mcom',
-          '070620241649', e.ClassName + '/' + e.Message, VP_Dados, Result, 1);
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondecaixa', 'mcom','070620241649', e.ClassName + '/' + e.Message, VP_Dados, Result, 1);
       end;
     end;
 
   finally
     VL_Mensagem.Free;
     VL_Chaves.Free;
+    VL_MensagemRecebida.Free;
     if Assigned(VL_Aes) then
       VL_Aes.Free;
     if Assigned(VL_Rsa) then
@@ -323,10 +301,9 @@ begin
   end;
 end;
 
-function respondeservico(VP_Transmissao_ID, VP_Dados: PChar;
-  VP_ID: integer): integer; cdecl;
+function respondeservico(VP_MCom: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; cdecl;
 var
-  VL_Mensagem, VL_Chaves: TMensagem;
+  VL_Mensagem, VL_Chaves, VL_MensagemRecebida: TMensagem;
   VL_TagDados: string;
   VL_Transmissao_ID: string;
   VL_ModuloPublico: ansistring;
@@ -336,21 +313,30 @@ var
   VL_Aes: TLbRijndael;
   VL_ChaveComunicacao: string;
 begin
+  VL_Rsa := nil;
+  VL_Aes := nil;
+  VL_MensagemRecebida := nil;
+  VL_ChaveComunicacao := '';
+  VL_TagDados := '';
+
+  if not Assigned(VP_MCom) then
+  begin
+    Result := 126;
+    Exit;
+  end;
+
   try
     try
-      VL_Rsa := nil;
-      VL_Aes := nil;
-      VL_ChaveComunicacao := '';
-      VL_TagDados := '';
       VL_Transmissao_ID := VP_Transmissao_ID;
       VL_Mensagem := TMensagem.Create;
       VL_Chaves := TMensagem.Create;
+      VL_MensagemRecebida := TMensagem.Create;
 
       Result := VL_Mensagem.CarregaTags(VP_Dados);
 
       if Result <> 0 then
       begin
-        GravaLog(F_ArquivoLog, 0, '', 'mcom', '290820221350', '', '', Result, 1);
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom', '290820221350', '', '', Result, 1);
         Exit;
       end;
 
@@ -361,7 +347,7 @@ begin
       if (VL_Mensagem.Comando = '0105') and (VL_Mensagem.ComandoDados = 'S') then
       begin
         VL_Mensagem.AddTag('010E', '');
-        VL_Mensagem.AddTag('010F', DMCom.ChaveComunicacao);
+        VL_Mensagem.AddTag('010F', TDMCom(VP_MCom).ChaveComunicacao);
       end;
 
       if VL_Mensagem.GetTag('00E3', VL_TagDados) = 0 then
@@ -374,48 +360,46 @@ begin
           // chave de comunicacao criptografada aes da solicitação
         begin
           VL_ChaveComunicacao :=
-            DMCom.CriptoRsa.DecryptString(VL_Mensagem.GetTagAsAstring('010E'));
+            TDMCom(VP_MCom).CriptoRsa.DecryptString(VL_Mensagem.GetTagAsAstring('010E'));
           VL_Mensagem.AddTag('010F', VL_Mensagem.GetTagAsAstring('010E'));
           VL_Mensagem.AddTag('010E', '');
         end
         else
         if VL_Mensagem.GetTagAsAstring('010F') <> '' then
           // chave de comunicacao criptografada aes da resposta
-          VL_ChaveComunicacao := DMCom.ChaveComunicacao;
+          VL_ChaveComunicacao := TDMCom(VP_MCom).ChaveComunicacao;
 
         VL_Aes := TLbRijndael.Create(nil);
-        VL_Aes.KeySize := F_ComunicadorServico.CriptoAes.KeySize;
-        VL_Aes.CipherMode := F_ComunicadorServico.CriptoAes.CipherMode;
+        VL_Aes.KeySize := TDMCom(VP_MCom).F_ComunicadorServico.CriptoAes.KeySize;
+        VL_Aes.CipherMode := TDMCom(VP_MCom).F_ComunicadorServico.CriptoAes.CipherMode;
         VL_Aes.GenerateKey(VL_ChaveComunicacao);
 
-        GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom',
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondeservico', 'mcom',
           '131120230933', 'mensagem enviada descriptografada', VL_TagDados, 0, 2);
 
         VL_TagDados := VL_Aes.EncryptString(VL_TagDados);
         VL_Mensagem.AddTag('00E3', VL_TagDados);        // mensagem criptografada
 
-        if VL_ChaveComunicacao = DMCom.ChaveComunicacao then
+        if VL_ChaveComunicacao = TDMCom(VP_MCom).ChaveComunicacao then
         begin
           if ((VL_ModuloPublico = '') or (VL_ExpoentePublico = '')) then
           begin
             VL_Chaves.AddComando('0111', 'S');
             VL_Chaves.AddTag('00F1', VL_Mensagem.GetTagAsAstring('00F1'));
 
-            GravaLog(F_ArquivoLog, 0, 'respondeservico',
+            GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondeservico',
               'mcom', '131120230931', 'mensagem enviada', VL_Chaves.TagsAsString, 0, 2);
 
-            Result :=
-              F_ComunicadorServico.ServidorTransmiteSolicitacaoID(
-              F_ComunicadorServico, 30000, True, nil, '', VL_Chaves, VL_Chaves, VP_ID);
+            Result := TDMCom(VP_MCom).F_ComunicadorServico.ServidorTransmiteSolicitacaoID(TDMCom(VP_MCom).F_ComunicadorServico, 30000, True, nil, '', VL_Chaves, VL_Chaves, VP_ID);
 
             if Result <> 0 then
             begin
-              GravaLog(F_ArquivoLog, 0, '', 'mcom',
+              GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom',
                 '310820221737', '', '', Result, 1);
               Exit;
             end;
 
-            GravaLog(F_ArquivoLog, 0, 'respondeservico',
+            GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondeservico',
               'mcom', '131120230932', 'mensagem recebida', VL_Chaves.TagsAsString, 0, 2);
 
             VL_Chaves.GetTag('0028', VL_TamanhoPublico);        //tamanho chave
@@ -427,7 +411,7 @@ begin
 
             if Result <> 0 then
             begin
-              GravaLog(F_ArquivoLog, 0, '', 'mcom',
+              GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom',
                 '310820221737', '', '', Result, 1);
               Exit;
             end;
@@ -438,26 +422,25 @@ begin
           VL_Rsa.PublicKey.ExponentAsString := VL_ExpoentePublico;
           VL_Rsa.PublicKey.ModulusAsString := VL_ModuloPublico;
 
-          VL_ChaveComunicacao := VL_Rsa.EncryptString(DMCom.ChaveComunicacao);
+          VL_ChaveComunicacao := VL_Rsa.EncryptString(TDMCom(VP_MCom).ChaveComunicacao);
           VL_Mensagem.AddTag('010E', VL_ChaveComunicacao);
           // chave de comunicacao criptografada
           VL_Mensagem.AddTag('010F', '');
         end;
       end;
 
-      VL_Mensagem.AddTag('0028', DMCom.TamanhoPublico);        //tamanho chave
-      VL_Mensagem.AddTag('0023', DMCom.ExpoentePublico);        //expoente
-      VL_Mensagem.AddTag('0024', DMCom.ModuloPublico);        //modulos
+      VL_Mensagem.AddTag('0028', TDMCom(VP_MCom).TamanhoPublico);        //tamanho chave
+      VL_Mensagem.AddTag('0023', TDMCom(VP_MCom).ExpoentePublico);        //expoente
+      VL_Mensagem.AddTag('0024', TDMCom(VP_MCom).ModuloPublico);        //modulos
 
-      GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230930',
+      GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondeservico', 'mcom', '131120230930',
         'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
-      Result := F_ComunicadorServico.ServidorTransmiteSolicitacaoID(
-        F_ComunicadorServico, 3000, False, nil, VL_Transmissao_ID,
-        VL_Mensagem, F_Mensagem, VP_ID);
+      Result := TDMCom(VP_MCom).F_ComunicadorServico.ServidorTransmiteSolicitacaoID(TDMCom(VP_MCom).F_ComunicadorServico, 3000, False, nil, VL_Transmissao_ID,
+        VL_Mensagem, VL_MensagemRecebida, VP_ID);
       if Result <> 0 then
       begin
-        GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221312', '', '', Result, 1);
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, '', 'mcom', '200920221312', '', '', Result, 1);
         Exit;
       end;
 
@@ -465,7 +448,7 @@ begin
       on e: Exception do
       begin
         Result := 1;
-        GravaLog(F_ArquivoLog, 0, 'respondeservico', 'mcom',
+        GravaLog(TDMCom(VP_MCom).F_ArquivoLog, 0, 'respondeservico', 'mcom',
           '070620241650', e.ClassName + '/' + e.Message, VP_Dados, Result, 1);
       end;
     end;
@@ -473,6 +456,7 @@ begin
   finally
     VL_Chaves.Free;
     VL_Mensagem.Free;
+    VL_MensagemRecebida.Free;
     if Assigned(VL_Aes) then
       VL_Aes.Free;
     if Assigned(VL_Rsa) then
@@ -485,40 +469,20 @@ end;
 procedure ThProcesso.Execute;
 begin
   sleep(5000);
-  fprocedimento(PChar(fTransmissaoID), 0, 1, PChar('tok' + fdados));
+  fprocedimento(fMCom, PChar(fTransmissaoID), 0, 1, PChar('tok' + fdados));
 end;
 
-constructor ThProcesso.Create(VP_Suspenso: boolean;
-  VP_Transmissao_ID, VP_Dados: ansistring; VP_Procedimento: TRetorno);
+constructor ThProcesso.Create(VP_MCom: Pointer; VP_Suspenso: boolean; VP_Transmissao_ID, VP_Dados: ansistring; VP_Procedimento: TRetorno);
 begin
   FreeOnTerminate := True;
+  fMCom := VP_MCom;
   fdados := VP_Dados;
   fTransmissaoID := VP_Transmissao_ID;
   fprocedimento := VP_Procedimento;
   inherited Create(VP_Suspenso);
 end;
 
-procedure ComandoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
-  VP_Conexao_ID: integer; VP_Terminal_Tipo: string; VP_Terminal_ID: integer;
-  VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
-  VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
-begin
-  DMCom.RecebeComandoCaixa(VP_Erro, VP_Transmissao_ID, VP_DadosRecebidos,
-    VP_Conexao_ID, VP_ClienteIP, VP_Terminal_Status);
-end;
-
-procedure ComandoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string;
-  VP_Conexao_ID: integer; VP_Terminal_Tipo: string; VP_Terminal_ID: integer;
-  VP_DOC: string; VP_Terminal_Status: TConexaoStatus;
-  VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
-begin
-  DMCom.RecebeComandoServico(VP_Erro, VP_Transmissao_ID, VP_DadosRecebidos,
-    VP_Conexao_ID, VP_ClienteIP, VP_Terminal_Status);
-end;
-
-
-function TDMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string;
-  VP_PortaCaixa, VP_PortaServico: integer; VP_Identificacao: string): integer;
+function TDMCom.iniciar(VP_Chave, VP_IP_Caixa, VP_IP_Servico: string; VP_PortaCaixa, VP_PortaServico: integer; VP_Identificacao: string): integer;
 begin
   Result := 1;
 
@@ -547,25 +511,22 @@ begin
   self.CriptoAes.GenerateKey(self.ChaveComunicacao);
 
   F_ComunicadorCaixa.V_TransmissaoComando := @TransmissaoComando;
-  F_ComunicadorCaixa.V_ServidorRecebimento := @ComandoCaixa;
+  F_ComunicadorCaixa.V_ServidorRecebimento := @RecebeComandoCaixa;
   F_ComunicadorCaixa.V_ArquivoLog := F_ArquivoLog;
   F_ComunicadorCaixa.IdTCPServidor.DefaultPort := VP_PortaCaixa;
   F_ComunicadorCaixa.IdTCPServidor.Active := True;
 
   F_ComunicadorServico.V_TransmissaoComando := @TransmissaoComando;
-  F_ComunicadorServico.V_ServidorRecebimento := @ComandoServico;
+  F_ComunicadorServico.V_ServidorRecebimento := @RecebeComandoServico;
   F_ComunicadorServico.V_ArquivoLog := F_ArquivoLog;
   F_ComunicadorServico.IdTCPServidor.DefaultPort := VP_PortaServico;
   F_ComunicadorServico.IdTCPServidor.Active := True;
 
-  F_Mensagem := TMensagem.Create;
-
   Result := 0;
 end;
 
-function TDMCom.RecebeComandoCaixa(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-  VP_ClienteIP: string; VP_Terminal_Status: TConexaoStatus): integer;
+procedure TDMCom.RecebeComandoCaixa(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer; VP_Terminal_Tipo: string;
+  VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
 var
   VL_Mensagem: TMensagem;
   VL_DadosCriptografados: string;
@@ -580,7 +541,6 @@ begin
     try
       GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom',
         '131120230927', 'mensagem recebida', VP_DadosRecebidos, VP_Erro, 2);
-
       if VP_Erro = 96 then
       begin
         F_ServidorRecebimentoLibCaixa(VP_Erro, PChar(VP_Transmissao_ID),
@@ -610,11 +570,11 @@ begin
       if VL_Mensagem.GetTagAsAstring('010E') <> '' then
         // chave de comunicacao criptografada aes da solicitação
         VL_ChaveComunicacao :=
-          DMCom.CriptoRsa.DecryptString(VL_Mensagem.GetTagAsAstring('010E'))
+          CriptoRsa.DecryptString(VL_Mensagem.GetTagAsAstring('010E'))
       else
       if VL_Mensagem.GetTagAsAstring('010F') <> '' then
         // chave de comunicacao criptografada aes da resposta
-        VL_ChaveComunicacao := DMCom.ChaveComunicacao;
+        VL_ChaveComunicacao := ChaveComunicacao;
 
       VL_DadosCriptografados := VL_Mensagem.GetTagAsAstring('00E3');
       // mensagem criptografada
@@ -623,7 +583,7 @@ begin
       begin
         if VL_ChaveComunicacao = '' then
         begin
-          Result := 109;
+          GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom', '030720241408', 'Chave de comunicacao nao informada para transacao criptograda', VP_DadosRecebidos, 109, 1);
           Exit;
         end;
 
@@ -657,13 +617,11 @@ begin
       end;
 
 
-      Result := 0;
     except
       on e: Exception do
       begin
-        Result := 1;
         GravaLog(F_ArquivoLog, 0, 'RecebeComandoCaixa', 'mcom',
-          '080820231603', e.ClassName + '/' + e.Message, VP_DadosRecebidos, Result, 1);
+          '080820231603', e.ClassName + '/' + e.Message, VP_DadosRecebidos, 1, 1);
       end;
     end;
   finally
@@ -677,9 +635,8 @@ begin
 
 end;
 
-function TDMCom.RecebeComandoServico(VP_Erro: integer;
-  VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer;
-  VP_ClienteIP: string; VP_Terminal_Status: TConexaoStatus): integer;
+procedure TDMCom.RecebeComandoServico(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer; VP_Terminal_Tipo: string;
+  VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
 var
   VL_Mensagem: TMensagem;
   VL_DadosCriptografados: string;
@@ -729,17 +686,16 @@ begin
         except
           on e: Exception do
           begin
-            Result := 1;
             GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico',
               'mcom', '080820231605', e.ClassName + '/' + e.Message,
-              VP_DadosRecebidos, Result, 1);
+              VP_DadosRecebidos, 1, 1);
           end;
         end;
       end
       else
       if VL_Mensagem.GetTagAsAstring('010F') <> '' then
         // chave de comunicacao criptografada aes da resposta
-        VL_ChaveComunicacao := DMCom.ChaveComunicacao;
+        VL_ChaveComunicacao := ChaveComunicacao;
 
       VL_DadosCriptografados := VL_Mensagem.GetTagAsAstring('00E3');
       // mensagem criptografada
@@ -748,7 +704,7 @@ begin
       begin
         if VL_ChaveComunicacao = '' then
         begin
-          Result := 109;
+          GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico', 'mcom', '030720241409', 'Chave de comunicacao nao informada para transacao criptograda', VP_DadosRecebidos, 109, 1);
           Exit;
         end;
 
@@ -779,14 +735,12 @@ begin
             VP_Conexao_ID, PChar(VF_Chave));
       end;
 
-      Result := 0;
     except
       on e: Exception do
       begin
-        Result := 1;
         GravaLog(F_ArquivoLog, 0, 'RecebeComandoServico',
           'mcom', '080820231605', e.ClassName + '/' + e.Message,
-          VP_DadosRecebidos, Result, 1);
+          VP_DadosRecebidos, 1, 1);
       end;
     end;
   finally
@@ -799,22 +753,24 @@ begin
   end;
 end;
 
-function TDMCom.comando0001(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-  VP_Conexao_ID: integer; VP_DComunicador: TDComunicador;
-  VP_Terminal_Status: TConexaoStatus; VP_ClienteIP: string): integer; // login
+function TDMCom.comando0001(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_DComunicador: TDComunicador; VP_Terminal_Status: TConexaoStatus;
+  VP_ClienteIP: string): integer; // login
 var
   VL_Mensagem: TMensagem;
+  VL_MensagemRecebida: TMensagem;
   VL_TipoConexao: string;
   VL_AContext: TIdContext;
 begin
   Result := 0;
-  VL_Mensagem := TMensagem.Create;
   VL_TipoConexao := '';
   VL_AContext := nil;
+  VL_MensagemRecebida := nil;
   try
+    VL_Mensagem := TMensagem.Create;
+    VL_MensagemRecebida := TMensagem.Create;
+
     //inicio do processo
-    if not VP_DComunicador.V_ConexaoCliente.GetSocketServidor(
-      VP_DComunicador, VP_Conexao_ID, VL_AContext) then
+    if not VP_DComunicador.V_ConexaoCliente.GetSocketServidor(VP_DComunicador, VP_Conexao_ID, VL_AContext) then
     begin
       GravaLog(F_ArquivoLog, 0, '', 'mcom', '130920221654',
         'Erro no comando0001 conexão do cliente não encontrada ', '', 99, 1);
@@ -829,13 +785,9 @@ begin
 
 
     if VL_TipoConexao = 'C' then // caixa
-      Result := F_ServidorRecebimentoLibCaixa(0, PChar(VP_Transmissao_ID),
-        PChar(VL_Mensagem.TagsAsString), PChar(VP_ClienteIP),
-        VP_Conexao_ID, PChar(VF_Chave))
+      Result := F_ServidorRecebimentoLibCaixa(0, PChar(VP_Transmissao_ID), PChar(VL_Mensagem.TagsAsString), PChar(VP_ClienteIP), VP_Conexao_ID, PChar(VF_Chave))
     else
-      Result := F_ServidorRecebimentoLibServico(0, PChar(VP_Transmissao_ID),
-        PChar(VL_Mensagem.TagsAsString), PChar(VP_ClienteIP),
-        VP_Conexao_ID, PChar(VF_Chave));
+      Result := F_ServidorRecebimentoLibServico(0, PChar(VP_Transmissao_ID), PChar(VL_Mensagem.TagsAsString), PChar(VP_ClienteIP), VP_Conexao_ID, PChar(VF_Chave));
 
     if Result = 0 then
       TTConexao(VL_AContext.Data).Status := csLogado
@@ -845,9 +797,7 @@ begin
     GravaLog(F_ArquivoLog, 0, 'comando0001', 'mcom', '131120230925',
       'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
-    Result := VP_DComunicador.ServidorTransmiteSolicitacaoID(
-      VP_DComunicador, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem,
-      F_Mensagem, VP_Conexao_ID);
+    Result := VP_DComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VL_MensagemRecebida, VP_Conexao_ID);
     if Result <> 0 then
     begin
       GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221313', '',
@@ -857,12 +807,11 @@ begin
 
   finally
     VL_Mensagem.Free;
+    VL_MensagemRecebida.Free;
   end;
-
 end;
 
-function TDMCom.comando0021(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-  VP_Conexao_ID: integer; VP_DComunicador: TDComunicador; // PEDIDO DE CONEXÃO
+function TDMCom.comando0021(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_DComunicador: TDComunicador; // PEDIDO DE CONEXÃO
   VP_Terminal_Status: TConexaoStatus): integer;
 var
   VL_Dados: string;
@@ -933,14 +882,15 @@ begin
  }
 end;
 
-function TDMCom.comando0111(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-  VP_Conexao_ID: integer; VP_DComunicador: TDComunicador): integer;
+function TDMCom.comando0111(VP_Transmissao_ID: string; VP_Mensagem: TMensagem; VP_Conexao_ID: integer; VP_DComunicador: TDComunicador): integer;
   // SOLICITA CHAVE PÚBLICA
 var
   VL_Mensagem: TMensagem;
+  VL_MensagemRecebida: TMensagem;
 begin
   try
     VL_Mensagem := TMensagem.Create;
+    VL_MensagemRecebida := TMensagem.Create;
 
     Result := VL_Mensagem.CarregaTags(VP_Mensagem.TagsAsString);
 
@@ -960,9 +910,7 @@ begin
     GravaLog(F_ArquivoLog, 0, 'comando0111', 'mcom', '131120230924',
       'mensagem enviada', VL_Mensagem.TagsAsString, 0, 2);
 
-    Result := VP_DComunicador.ServidorTransmiteSolicitacaoID(
-      VP_DComunicador, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem,
-      F_Mensagem, VP_Conexao_ID);
+    Result := VP_DComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador, 3000, False, nil, VP_Transmissao_ID, VL_Mensagem, VL_MensagemRecebida, VP_Conexao_ID);
     if Result <> 0 then
     begin
       GravaLog(F_ArquivoLog, 0, '', 'mcom', '200920221314', '',
@@ -971,12 +919,11 @@ begin
     end;
   finally
     VL_Mensagem.Free;
+    VL_MensagemRecebida.Free;
   end;
-
 end;
 
-function TDMCom.TransmissaoComando(AOwner: Pointer; VP_Conexao_ID: integer;
-  VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer;
+function TDMCom.TransmissaoComando(AOwner: Pointer; VP_Conexao_ID: integer; VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer;
 var
   VL_Mensagem: TMensagem;
 begin

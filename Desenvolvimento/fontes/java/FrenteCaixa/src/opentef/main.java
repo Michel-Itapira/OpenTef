@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/* 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Callback;
@@ -17,9 +18,11 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
 import com.sun.jna.WString;
 import com.sun.jna.ptr.*;
+*/
 
 public class main {
 
+	/* 
 	public static class RetornoClienteImpl implements TefLib.RetornoCliente {
 
 		@Override
@@ -78,7 +81,9 @@ public class main {
 		}
 
 	}
+	*/
 
+	/* 
 	private static TefLib teflib;
 	private static RetornoClienteImpl retornoClienteImpl;
 	private static SolicitaDadosPDVImpl solicitaDadosPDVImpl;
@@ -86,10 +91,11 @@ public class main {
 	private static ImprimirImpl imprimirImpl;
 	private static MostraMenuImpl mostraMenuImpl;
 	private static MensagemOperadorImple mensagemOperadorImple;
+	*/
 
 	public static void main(String[] args) {
 
-		teflib = TefLib.INSTANCE;
+		//teflib = TefLib.INSTANCE;
 
 		JFrame miJFrame = new JFrame("Frente de caixa");
 		miJFrame.setSize(500, 300);
@@ -149,6 +155,7 @@ public class main {
 				String tag = "";
 				String tagDados = "";				
 				
+				/* 
 				PointerByReference pointerByReference = new PointerByReference();
 				erro = teflib.mensagemcreate(pointerByReference);
 				
@@ -172,6 +179,7 @@ public class main {
 				lblChave.setText(comandoDados);
 				
 				teflib.mensagemfree(mensagem);
+				*/
 			} catch (Throwable ee) {
 				lblIdentificador.setText(ee.getMessage());
 			}
@@ -182,6 +190,7 @@ public class main {
 		btnInicializar.setText("Inicializar");
 		btnInicializar.setBounds(10, 10, 100, 50);
 		btnInicializar.addActionListener(e -> {
+			/* 
 			retornoClienteImpl = new RetornoClienteImpl();
 			solicitaDadosPDVImpl = new SolicitaDadosPDVImpl();
 			solicitaDadosTransacaoImpl = new SolicitaDadosTransacaoImpl();
@@ -198,6 +207,8 @@ public class main {
 				teflib.mensagemerro(erro, erroDescricao);
 				JOptionPane.showMessageDialog(null, erroDescricao);
 			}
+
+			*/
 		});
 
 		JButton btnLogin = new JButton();
@@ -210,12 +221,14 @@ public class main {
 			String chave = edtChave.getText();
 			String identificador = edtIdentificador.getText();
 
+			/*
 			int erro = teflib.login(host, porta, id, chave, 1, identificador);
 			if (erro != 0) {
 				String erroDescricao = "";
 				teflib.mensagemerro(erro, erroDescricao);
 				JOptionPane.showMessageDialog(null, erroDescricao);
 			}
+			*/
 		});
 
 		miJPanel.add(btnInicializar);

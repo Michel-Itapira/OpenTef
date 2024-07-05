@@ -1,7 +1,0 @@
-object DFuncoes: TDFuncoes
-  OldCreateOrder = False
-  Height = 312
-  HorizontalOffset = 854
-  VerticalOffset = 482
-  Width = 375
-end

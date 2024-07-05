@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Linux64"/>
+    <BuildModes Active="Linux64 Release"/>
     <Units>
       <Unit>
         <Filename Value="opentef.lpr"/>
@@ -56,7 +56,7 @@
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
         <TopLine Value="1032"/>
-        <CursorPos X="57" Y="1039"/>
+        <CursorPos X="44" Y="1044"/>
         <UsageCount Value="135"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -152,7 +152,7 @@
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\sysutils\datih.inc"/>
         <EditorIndex Value="1"/>
         <TopLine Value="99"/>
-        <CursorPos X="48" Y="106"/>
+        <CursorPos Y="106"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit>

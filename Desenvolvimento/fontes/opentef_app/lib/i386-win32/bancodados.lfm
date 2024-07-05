@@ -3,8 +3,8 @@ object DBancoDados: TDBancoDados
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 330
-  HorizontalOffset = 1589
-  VerticalOffset = 546
+  HorizontalOffset = 850
+  VerticalOffset = 388
   Width = 466
   object ZConexao: TZConnection
     ControlsCodePage = cCP_UTF8

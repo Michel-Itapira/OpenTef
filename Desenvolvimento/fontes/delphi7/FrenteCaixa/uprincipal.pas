@@ -20,31 +20,31 @@ type
   TMensagemOperador       = function(VP_Dados: PChar)                                 : Integer; cdecl;
 
   // definicoes das funcoes de inicializacao e conexao
-  TTefInicializar = function(VP_PinPadModelo: Integer;
+  TTefInicializar = function(var VO_Tef: Pointer;VP_PinPadModelo: Integer;
     VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
     VP_RetornoCliente: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao;
     VP_SolicitaDadosPDV: TSolicitaDadosPDV; VP_Imprime: TImprime;
     VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador;
     VP_AmbienteTeste: Integer): Integer; cdecl;
-  TTLogin = function(VP_Host: PChar; VP_Porta, VP_ID: Integer; VP_Chave: PChar; VP_Versao_Comunicacao: Integer;
+  TTLogin = function(VP_Tef: pointer;VP_Host: PChar; VP_Porta, VP_ID: Integer; VP_Chave: PChar; VP_Versao_Comunicacao: Integer;
     VP_Identificador: PChar)                           : Integer; cdecl;
-  TTFinalizar     = function()                                 : Integer; cdecl;
-  TTDesconectar   = function()                               : Integer; cdecl;
-  TTOpenTefStatus = function(var VO_StatusRetorno: Integer): Integer; cdecl;
+  TTFinalizar     = function(VP_Tef: pointer)                                 : Integer; cdecl;
+  TTDesconectar   = function(VP_Tef: pointer)                               : Integer; cdecl;
+  TTOpenTefStatus = function(VP_Tef: pointer;var VO_StatusRetorno: Integer): Integer; cdecl;
 
   // definicoes das funcoes para tratar da transacao exclusiva de aprovação
-  TTransacaoCreate          = function(VP_Comando, VP_IdentificadorCaixa: PChar;var VO_TransacaID: PChar; VP_TempoAguarda: Integer): Integer; cdecl;
-  TTransacaoStatus          = function(var VO_Status: Integer;var VO_TransacaoChave: PChar; VP_TransacaoID: PChar)                 : Integer; cdecl;
-  TTransacaoStatusDescricao = function(var VO_Status: PChar; VP_TransacaoID: PChar)                                       : Integer; cdecl;
-  TTransacaoCancela         = function(var VO_Resposta: Integer; VP_TransacaoChave, VP_TransacaoID: PChar)                            : Integer; cdecl;
-  TTransacaoFree            = procedure(VP_TransacaoID: PChar); cdecl;
-  TTransacaoGetTag          = function(VP_TransacaoID, VP_Tag: PChar;var VO_Dados: PChar): Integer; cdecl;
+  TTransacaoCreate          = function(VP_Tef: pointer;VP_Comando, VP_IdentificadorCaixa: PChar;var VO_TransacaID: PChar; VP_TempoAguarda: Integer): Integer; cdecl;
+  TTransacaoStatus          = function(VP_Tef: pointer;var VO_Status: Integer;var VO_TransacaoChave: PChar; VP_TransacaoID: PChar)                 : Integer; cdecl;
+  TTransacaoStatusDescricao = function(VP_Tef: pointer;var VO_Status: PChar; VP_TransacaoID: PChar)                                       : Integer; cdecl;
+  TTransacaoCancela         = function(VP_Tef: pointer;var VO_Resposta: Integer; VP_TransacaoChave, VP_TransacaoID: PChar)                            : Integer; cdecl;
+  TTransacaoFree            = procedure(VP_Tef: pointer;VP_TransacaoID: PChar); cdecl;
+  TTransacaoGetTag          = function(VP_Tef: pointer;VP_TransacaoID, VP_Tag: PChar;var VO_Dados: PChar): Integer; cdecl;
 
   // definicoes das demais funcoes auxilares
   TTAlterarNivelLog     = procedure(VP_Nivel: Integer); cdecl;
   TVersao               = function(var VO_Dados: PChar)                                                                                     : Integer; cdecl;
-  TTSolicitacao         = function(VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: Integer)           : Integer; cdecl;
-  TTSolicitacaoBlocante = function(var VO_Transmissao_ID, VP_Dados: PChar;var VO_Retorno: PChar; VP_TempoAguarda: Integer): Integer; cdecl;
+  TTSolicitacao         = function(VP_Tef: pointer;VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: Integer)           : Integer; cdecl;
+  TTSolicitacaoBlocante = function(VP_Tef: pointer;var VO_Transmissao_ID, VP_Dados: PChar;var VO_Retorno: PChar; VP_TempoAguarda: Integer): Integer; cdecl;
 
   // definicoes das funcoes para tratar da mensageria auxiliar
   TTMensagemCreate        = function(var VO_Mensagem: Pointer)                          : Integer; cdecl;
@@ -145,6 +145,7 @@ type
     procedure BLoginClick(Sender: TObject);
     procedure BDesconectarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
   private
     procedure MontarMenu(VP_Mensagem: Pointer);
   public
@@ -153,7 +154,8 @@ type
 
 var
   F_Principal: TFPrincipal;
-    F_ArquivoLog:string;
+  F_ArquivoLog:string;
+  F_Tef: Pointer;     
   F_Mensagem  : Pointer;
 
   F_TefLib        : THandle;
@@ -313,47 +315,47 @@ begin
 
       if Ord(tsComErro)= VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
         F_Erro(VL_Erro, VL_DescricaoErro);
         ShowMessage('Transação com erro ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
         F_Principal.MStatus.Lines.Add('Transação com erro ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(VL_TransacaoID);
+        F_TransacaoFree(F_Tef,VL_TransacaoID);
       end;
 
       if Ord(tsCancelada)= VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
         F_Erro(VL_Erro, VL_DescricaoErro);
         ShowMessage('Transação cancelada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
         F_Principal.MStatus.Lines.Add('Transação cancelada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(VL_TransacaoID);
+        F_TransacaoFree(F_Tef,VL_TransacaoID);
       end;
 
       if Ord(tsNegada)= VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
         F_Erro(VL_Erro, VL_DescricaoErro);
         ShowMessage('Transação negada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
         F_Principal.MStatus.Lines.Add('Transação negada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(VL_TransacaoID);
+        F_TransacaoFree(F_Tef,VL_TransacaoID);
       end;
 
       if Ord(tsNaoLocalizada)= VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
         F_Erro(VL_Erro, VL_DescricaoErro);
         ShowMessage('Transação não localizada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
         F_Principal.MStatus.Lines.Add('Transação não localizada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(VL_TransacaoID);
+        F_TransacaoFree(F_Tef,VL_TransacaoID);
       end;
 
       if Ord(tsAbortada)= VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
         F_Erro(VL_Erro, VL_DescricaoErro);
         ShowMessage('Transação abortada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
         F_Principal.MStatus.Lines.Add('Transação abortada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(VL_TransacaoID);
+        F_TransacaoFree(F_Tef,VL_TransacaoID);
       end;
 
       if Ord(tsEfetivada)= VL_TransacaoStatus then
@@ -361,9 +363,9 @@ begin
         ShowMessage('Transação aprovada ' + VL_TransacaoID);
         F_Principal.MChave.Lines.Add(VL_TransacaoChave);
         F_Principal.MStatus.Lines.Add('Transacao ID: ' + UTF8Decode(VL_TransacaoID)+ ' Efetivada');
-        F_TransacaoGetTag(VL_TransacaoID, '0036', VL_Bin); // bin do cartao
+        F_TransacaoGetTag(F_Tef,VL_TransacaoID, '0036', VL_Bin); // bin do cartao
         F_Principal.MStatus.Lines.Add('Bin: ' + UTF8Decode(VL_Bin));
-        F_TransacaoFree(VL_TransacaoID);
+        F_TransacaoFree(F_Tef,VL_TransacaoID);
       end;
 
       case VL_TransacaoStatus of // status da transacao em andamento
@@ -724,7 +726,7 @@ var
   VL_Codigo       : Integer;
   VL_DescricaoErro: PChar;
 begin
-  VL_Codigo := F_Desconectar();
+  VL_Codigo := F_Desconectar(F_Tef);
 
   if VL_Codigo <> 0 then
   begin
@@ -762,7 +764,7 @@ begin
     Exit;
   end;
 
-  VL_Codigo := F_Login(PChar(UTF8Encode(EHost.Text)), StrToInt(EPorta.Text),
+  VL_Codigo := F_Login(F_Tef,PChar(UTF8Encode(EHost.Text)), StrToInt(EPorta.Text),
     StrToInt(EID.Text), PChar(UTF8Encode(Trim(EChave.Lines.Text))), C_VersaoComunicacao,
     PChar(UTF8Encode(Trim(EIdentificador.Lines.Text))));
 
@@ -797,7 +799,7 @@ begin
     Exit;
   end;
 
-  VL_Erro := F_StatusOpenTef(VL_Status);
+  VL_Erro := F_StatusOpenTef(F_Tef,VL_Status);
 
   if VL_Erro <> 0 then
   begin
@@ -822,7 +824,7 @@ begin
   MStatus.Lines.Add('Inicia transacao de venda');
 
   // CRIA UMA TRANSACAO PARA APROVACAO DA VENDA
-  VL_Erro := F_TransacaoCreate('000A', PChar(UTF8Encode(ECaixa.Text)), VL_TransacaoID, VL_Tempo);
+  VL_Erro := F_TransacaoCreate(F_Tef,'000A', PChar(UTF8Encode(ECaixa.Text)), VL_TransacaoID, VL_Tempo);
 
   if VL_Erro <> 0 then
   begin
@@ -1063,7 +1065,7 @@ begin
     F_Solicitacao         := GetProcAddress(F_TefLib, 'solicitacao');
 
     // iniciliza a comunicacao com a biblioteca passando as funcoes a serem chamadas por ela e demais informacoes como log,pinpad
-    VL_Codigo := F_TefInicializar(VL_PinpadModelo,
+    VL_Codigo := F_TefInicializar(F_Tef,VL_PinpadModelo,
       PChar(UTF8Encode(ExtractFilePath(ParamStr(0))+ EPinPadModeloLib.Text)),
       PChar(UTF8Encode(EPinPadModeloPorta.Text)), PChar(UTF8Encode(ExtractFilePath(ParamStr(0))+
       EPinPadLib.Text)), PChar(UTF8Encode(F_ArquivoLog)),@uprincipal.Retorno,
@@ -1090,6 +1092,12 @@ end;
 procedure TFPrincipal.FormCreate(Sender: TObject);
 begin
   F_ArquivoLog := ExtractFilePath(ParamStr(0))+ 'appopentef.log';
+  F_Tef := nil;
+end;
+
+procedure TFPrincipal.FormDblClick(Sender: TObject);
+begin
+
 end;
 
 { TTransacao }
