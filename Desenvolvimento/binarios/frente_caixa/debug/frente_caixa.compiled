@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="E:\Lazarus_IDE\fpc\bin\x86_64-win64\fpc.exe" Date="1487573420"/>
+  <Params Value=" -MObjFPC -Scghi -WR -O1 -gw2 -gl -Xg -WG -l -vewnhibq -FiE:\Lazarus\OpenTef\publica\binarios\frente_caixa\debug -FuE:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\lib\rxcontrols\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\components\ideintf\units\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\components\lazcontrols\lib\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\lcl\units\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\components\datetimectrls\lib\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\lcl\units\x86_64-win64 -FuE:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Rx\lib\rxtools\x86_64-win64\win32 -FuE:\Lazarus_IDE\lazarus\components\freetype\lib\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\components\buildintf\units\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\components\lazutils\lib\x86_64-win64 -FuE:\Lazarus_IDE\lazarus\packager\units\x86_64-win64 -FuE:\Lazarus\OpenTef\publica\fontes\frente_caixa\ -FUE:\Lazarus\OpenTef\publica\binarios\frente_caixa\debug\ -FEE:\Lazarus\OpenTef\publica\binarios\frente_caixa\win64\ -oE:\Lazarus\OpenTef\publica\binarios\frente_caixa\win64\frente_caixa.exe -dLCL -dLCLwin32 -dDEBUG frente_caixa.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>
