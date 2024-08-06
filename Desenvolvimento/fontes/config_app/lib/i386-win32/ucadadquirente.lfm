@@ -8,10 +8,11 @@ object FCadAdquirente: TFCadAdquirente
   Caption = 'Cadastro de Adquirente'
   ClientHeight = 267
   ClientWidth = 1083
+  FormStyle = fsMDIChild
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75

@@ -11,7 +11,6 @@ object FCadModulo: TFCadModulo
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '3.2.0.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
@@ -744,7 +743,7 @@ object FCadModulo: TFCadModulo
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
         ParentFont = False

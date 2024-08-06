@@ -1,2176 +1,2149 @@
-unit comunicador;
+unit uprincipal;
 
-
-{$mode ObjFPC}{$H+}
+{$mode objfpc}{$H+}
 
 interface
 
 uses
-    Classes, SysUtils, LbRSA, StrUtils, LbClass, IdTCPClient, IdTCPServer, funcoes, IdContext, IdComponent, IdGlobal, base64;
+  Classes,
+  SysUtils,
+  Forms,
+  Controls,
+  Graphics,
+  Dialogs,
+  StdCtrls,
+  DBGrids,
+  ExtCtrls,
+  Menus,
+  ActnList,
+  ComCtrls,
+  DateTimePicker,
+  StrUtils,
+  def,
+  md5,
+  base64, DB,
+  uimpressao,
+  rxmemds,
+  LCLType;
 
 type
 
-    { TDComunicador }
+  TConexaoStatus = (csNaoInicializado, csDesconectado, csLink,
+    csChaveado, csChaveadoAssinado, csLogado);
+  TransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando,
+    tsAguardandoComando, tsNaoLocalizada, tsInicializada,
+    tsComErro, tsAbortada, tsAguardandoDadosPDV);
 
-    TKey = array [0..31] of byte;
-
-    TTransmissaoComando = function(AOwner: Pointer; VP_Conexao_ID: integer; VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer of object;
-
-    { TEventoSocket }
-
-    TEventoSocket = class
-        fTemporizadores: TList;
-    public
-        constructor Create;
-        destructor Destroy; override;
-        procedure add(VP_Temporizador: TTemporizador);
-        procedure remove(VP_Temporizador: TTemporizador);
-        function parar(VP_ID: string): integer;
-        function abortar(VP_ID: string): integer;
-        function SetDados(VP_ID, VP_Dados: string): integer;
-        function GetDados(VP_ID: string; var VO_Dados: string): integer;
-    end;
-
-    { TTConexao }
-
-    TTConexao = class
-        Aes: TLbRijndael;
-        Rsa: TLbRSA;
-        ClienteIp: string;
-        ClientePorta: integer;
-        ServidorHost: ansistring;
-        ServidorPorta: integer;
-        Hora: TDateTime;
-        ID: integer;
-        DOC: string;
-        Terminal_Tipo: ansistring;
-        Terminal_ID: integer;
-        Identificacao: string;    //unica em toda configuração do open tef para cada tipo de terminal, para uso como contigencia
-
-        ModuloPublico: ansistring;
-        ExpoentePublico: ansistring;
-        Status: TConexaoStatus;
-        StatusDesejado: TConexaoStatus;
-        DComunicador: Pointer;
-        Permissao: TPermissao;
-        ConexaoAtivadada: boolean;
-    public
-        constructor Create(VP_DComunicador: Pointer);
-        destructor Destroy; override;
-        function getModuloPublico: ansistring;
-        function getExpoentePublico: ansistring;
-        procedure setModuloPublico(VP_Dados: ansistring);
-        procedure setExpoentePublico(VP_Dados: ansistring);
-        procedure setChaveComunicacao(VP_Chave: ansistring);
-        function getChavePublica: ansistring;
-        function getChaveComunicacao: ansistring;
-        function GetSocketServidor(VP_DComunicador: Pointer; VP_Conexao_ID: integer; var VO_AContext: TIdContext): boolean;
-        function GetSocketServidorIdentificacao(VP_DComunicador: Pointer; VP_TipoTerminal, VP_TerminalIdentificacao: string;
-            var VO_AContext: TIdContext): boolean;
-
-        property Chave_Comunicacao: ansistring read getChaveComunicacao write setChaveComunicacao;
-    end;
+  TRetorno = function(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+  TStrDispose = procedure(VP_PChar: PChar); cdecl;
+  TSolicitaDadosPDV = function(VP_Menu: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+  TSolicitaDadosTransacao = function(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+  TImprime = function(VP_Dados: PChar): integer; cdecl;
+  TMostraMenu = function(VP_Menu: PChar; var VO_Botao: PChar): integer; cdecl;
+  TMensagemOperador = function(VP_Dados: PChar): integer; cdecl;
+  TVersao = function(var VO_Dados: PChar): integer; cdecl;
 
 
-    { TThRecebe }
 
-    TThRecebe = class(TThread)
-    protected
-        f_DComunicador: Pointer;
-        procedure Execute; override;
-    public
-        constructor Create(VP_DComunicador: Pointer);
-    end;
+  { TF_Principal }
 
-    TThClienteProcessaRecebe = class(TThread)
-    protected
-        f_DComunicador: Pointer;
-        f_Dados: string;
-        procedure Execute; override;
-    public
-        constructor Create(VP_Comunicador: Pointer; VP_Dados: string);
-    end;
+  TF_Principal = class(TForm)
+    Bevel1: TBevel;
+    Bevel2: TBevel;
+    Bevel3: TBevel;
+    Bevel4: TBevel;
+    BAlterarNivelLog: TButton;
+    BDesconectar: TButton;
+    BSolicitacao: TButton;
+    BInicializar: TButton;
+    BLogin: TButton;
+    BMenuOperacional: TButton;
+    BSolicitacaoBlocante: TButton;
+    Button1: TButton;
+    BFinalizarTef: TButton;
+    Button2: TButton;
+    BVenda: TButton;
+    cbxAmbienteTeste: TCheckBox;
+    CSalvarCSV: TCheckBox;
+    DConciliacao: TDataSource;
+    GConciliacao: TDBGrid;
+    ECaixa: TEdit;
+    EChave: TMemo;
+    ELogNivel: TEdit;
+    EIdentificador: TMemo;
+    ECupomFiscal: TEdit;
+    EDataHora: TDateTimePicker;
+    EDesconto: TEdit;
+    EHost: TEdit;
+    ELink: TEdit;
+    ENSU: TEdit;
+    EObservacao: TEdit;
+    EOperador: TEdit;
+    EParcela: TEdit;
+    EPinPadLib: TEdit;
+    EPinPadLibHashMd5: TEdit;
+    EPinPadModeloLibHashMd5: TEdit;
+    EPinPadModelo: TEdit;
+    EPinPadModeloLib: TEdit;
+    EPinPadModeloPorta: TEdit;
+    EPorta: TEdit;
+    EID: TEdit;
+    ETefLib: TEdit;
+    ETempo: TEdit;
+    EValorAlimentacao: TEdit;
+    EValorItens: TEdit;
+    EValorParcela: TEdit;
+    EValorRefeicao: TEdit;
+    EValorValeCultura: TEdit;
+    EXml: TMemo;
+    GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
+    GroupBox3: TGroupBox;
+    GroupBox4: TGroupBox;
+    GroupBox5: TGroupBox;
+    Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label24: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label31: TLabel;
+    lblStatusConexao: TLabel;
+    Label2: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label25: TLabel;
+    Label26: TLabel;
+    Label29: TLabel;
+    Label3: TLabel;
+    Label30: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    MChave: TMemo;
+    MDConciliacao: TRxMemoryData;
+    MDConciliacaoS_BIN: TStringField;
+    MDConciliacaoS_ERRO: TStringField;
+    MDConciliacaoS_NSU: TStringField;
+    MDConciliacaoS_PARCELA: TStringField;
+    MDConciliacaoS_VALOR: TStringField;
+    MStatus: TMemo;
+    PageControl1: TPageControl;
+    Panel1: TPanel;
+    RServidorOficial: TRadioButton;
+    RServidorLocal: TRadioButton;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    procedure BAlterarNivelLogClick(Sender: TObject);
+    procedure BDesconectarClick(Sender: TObject);
+    procedure BFinalizarTefClick(Sender: TObject);
+    procedure BInicializarClick(Sender: TObject);
+    procedure BLoginClick(Sender: TObject);
+    procedure BMenuOperacionalClick(Sender: TObject);
+    procedure BSolicitacaoBlocanteClick(Sender: TObject);
+    procedure BSolicitacaoClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure BVendaClick(Sender: TObject);
+    procedure cbxAmbienteTesteChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure Label20Click(Sender: TObject);
+    procedure MontarMenu(VP_Mensagem: Pointer);
+    procedure RServidorLocalChange(Sender: TObject);
+    procedure RServidorOficialChange(Sender: TObject);
+  private
+    procedure CliqueDoBotao(VP_Botao: TObject);
+  public
+    procedure retornoConciliacao(VP_Dados: PChar);
+    procedure mostramensagem(Data: PtrInt);
+    procedure MostraCaixaPergunta(Data: PtrInt);
+    procedure mostraImpressao(Data: PtrInt);
+  end;
 
 
-    TThServidorProcessaRecebe = class(TThread)
-    protected
-        f_TConexao: TTConexao;
-        f_DComunicador: Pointer;
-        f_Dados: string;
-        procedure Execute; override;
-    public
-        constructor Create(VP_Comunicador: Pointer; VP_Dados: string; VP_TConexao: TTConexao);
-    end;
+  TTefInicializar = function(var VO_Tef: Pointer; VP_PinPadModelo: integer; VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
+    VP_StrDispose: TStrDispose; VP_RetornoCliente: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao; VP_SolicitaDadosPDV: TSolicitaDadosPDV;
+    VP_Imprime: TImprime; VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador; VP_AmbienteTeste: integer): integer; cdecl;
+  TTLogin = function(VP_Tef: pointer; VP_Host: PChar; VP_Porta, VP_ID: integer; VP_Chave: PChar; VP_Versao_Comunicacao: integer; VP_Identificador: PChar): integer; cdecl;
+  TTFinalizar = function(VP_Tef: pointer): integer; cdecl;
+  TTDesconectar = function(VP_Tef: pointer): integer; cdecl;
+  TTSolicitacao = function(VP_Tef: pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetorno; VP_TempoAguarda: integer): integer; cdecl;
+  TTSolicitacaoBlocante = function(VP_Tef: pointer; var VO_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
+  TTOpenTefStatus = function(VP_Tef: pointer; var VO_StatusRetorno: integer): integer; cdecl;
 
+  TTMensagemCreate = function(var VO_Mensagem: Pointer): integer; cdecl;
+  TTMensagemCarregaTags = function(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
+  TTMensagemComando = function(VP_Mensagem: Pointer; var VP_Dados: PChar): integer; cdecl;
+  TTMensagemComandoDados = function(VP_Mensagem: Pointer; var VP_Dados: PChar): integer; cdecl;
+  TTMensagemFree = procedure(VP_Mensagem: Pointer); cdecl;
+  TTMensagemLimpar = procedure(VP_Mensagem: Pointer); cdecl;
+  TTMensagemAddtag = function(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+  TTMensagemAddcomando = function(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
+  TTMensagemTagAsString = function(VP_Mensagem: Pointer; var VO_PUtf8Char: PChar): integer; cdecl;
+  TTMensagemTagCount = function(VO_Mensagem: Pointer): integer; cdecl;
+  TTMensagemGetTag = function(VO_Mensagem: Pointer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemGetTagIdx = function(VO_Mensagem: Pointer; VL_Idx: integer; var VO_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemTagToStr = function(VO_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemerro = function(VP_CodigoErro: integer; var VO_RespostaMensagem: PChar): integer; cdecl;
+  TTMensagemGetTagPosicao = function(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
+  TTMensagemAddTagPosicao = function(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 
-    { TEvento }
+  TTransacaocreate = function(VP_Tef: pointer; VP_Comando, VP_IdentificadorCaixa: PChar; var VO_TransacaID: PChar; VP_TempoAguarda: integer): integer; cdecl;
+  TTransacaostatus = function(VP_Tef: pointer; var VO_Status: integer; var VO_TransacaoChave: PChar; VP_TransacaoID: PChar): integer; cdecl;
+  TTransacaostatusdescricao = function(VP_Tef: pointer; var VO_Status: PChar; VP_TransacaoID: PChar): integer; cdecl;
+  TTransacaocancela = function(var VO_Resposta: integer; VP_TransacaoChave, VP_TransacaoID: PChar): integer; cdecl;
+  TTransacaofree = procedure(VP_Tef: pointer; VP_TransacaoID: PChar); cdecl;
 
-    TDComunicador = class(TDataModule)
-        IdTCPServidor: TIdTCPServer;
-        IdTCPCliente: TIdTCPClient;
-        CriptoAes: TLbRijndael;
-        CriptoRsa: TLbRSA;
-        procedure DataModuleCreate(Sender: TObject);
-        procedure DataModuleDestroy(Sender: TObject);
-        procedure IdTCPServidorConnect(AContext: TIdContext);
-        procedure IdTCPServidorDisconnect(AContext: TIdContext);
-        procedure IdTCPServidorExecute(AContext: TIdContext);
-        procedure IdTCPClienteConnected(Sender: TObject);
-        procedure IdTCPClienteDisconnected(Sender: TObject);
-    private
+  TTransacaogettag = function(VP_Tef: pointer; VP_TransacaoID, VP_Tag: PChar; var VO_Dados: PChar): integer; cdecl;
 
-    public
-        V_Versao_Comunicacao: integer;
-        V_ThRecebeEscuta: TThRecebe;
-        V_EventoSocketAguardaResposta: TEventoSocket;
-        V_ConexaoCliente: TTConexao;
-        V_ServidorRecebimento: TServidorRecebimento;   //procedure disparado no envento que o IdTCPServidor recebe passa a conexão do cliente
-        V_ClienteRecebimento: TRetorno;   //procedure disparado no envento que o IdTCPCliente recebe sem ter solicitado ou quando a solicitação expirou
-        V_ClienteRecebimentoModulo: TRetornoModulo;
-        //procedure disparado no envento que o IdTCPCliente recebe sem ter solicitado ou quando a solicitação expirou
-        V_TransmissaoComando: TTransmissaoComando;
-        // comando enviados pelo comunicador do servidor diretamente para o opentef
-        V_ArquivoLog: string;
-        V_ProcID: integer;
-        V_Modulo: Pointer;
-        V_Parar: boolean;
-        V_DComunicador: Pointer;
-        V_ListaThreads: TList;
+  TTAlterarNilveLog = procedure(VP_Nivel: integer); cdecl;
+  TMensagemDispose = procedure(VP_PChar: PChar); cdecl;
 
-        function DesconectarCliente(VP_DComunicador: Pointer): integer;
-        function DesconectarClienteID(VP_DComunicador: Pointer; VP_Conexao_ID: integer): integer;
-        function ConectarCliente(VP_DComunicador: Pointer): integer;
+  TLogMsgData = record
+    Text: string;
+  end;
+  PLogMsgData = ^TLogMsgData;
 
-        function ClienteVerificaConexao(VP_DComunicador: Pointer): integer;
+  TCaixaPergunta = record
+    mensagem: string;
+    Caption: string;
+    botoes: integer;
+    botaoSelecionado: integer;
+    aguardando: boolean;
+    pointer: pointer;
+  end;
+  PCaixaPergunta = ^TCaixaPergunta;
 
+  TImpressaoDados = record
+    mensagem: string;
+  end;
 
-        function ClienteTransmiteDados(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_DadosO, VO_DadosI: ansistring;
-            VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
+  PImpressaoDados = ^TImpressaoDados;
 
-        function ClienteTransmiteSolicitacao(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_Dados: TMensagem;
-            var VO_Retorno: TMensagem; VP_Procedimento: TRetorno; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
-
-
-        function ServidorTransmiteSolicitacaoID(VP_DComunicador: Pointer; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-            VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem;
-            VP_Conexao_ID: integer): integer;
-
-        function ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer; VP_TempoAguarda: integer;
-            VP_AguardaRetorno: boolean; VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-            var VO_Mensagem: TMensagem;  VP_TerminalIdentificacao: string): integer;
-
-        procedure desativartodasconexao(VP_DComunicador: Pointer);
-
-    end;
+procedure StringDispose(VP_PChar: PChar); cdecl;
+function Retorno(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+function solicitadadospdv(VP_Mensagem: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
+function imprime(VP_Dados: PChar): integer; cdecl;
+function mostramenu(VP_Menu: PChar; var VO_Botao: PChar): integer; cdecl;
+function mensagemoperador(VP_Dados: PChar): integer; cdecl;
 
 var
+  F_Principal: TF_Principal;
+  F_SolicitacaoBlocante: TTSolicitacaoBlocante;
+  F_Solicitacao: TTSolicitacao;
+  F_TefLib: THandle;
+  F_TefInicializar: TTefInicializar;
+  F_Login: TTLogin;
+  F_Desconectar: TTDesconectar;
+  F_Finalizar: TTFinalizar;
+  F_StatusOpenTef: TTOpenTefStatus;
+  F_MensagemCreate: TTMensagemcreate;
+  F_MensagemCarregaTags: TTMensagemCarregaTags;
+  F_MensagemComando: TTMensagemComando;
+  F_MensagemComandoDados: TTMensagemComandoDados;
+  F_MensagemFree: TTMensagemFree;
+  F_MensagemLimpar: TTMensagemLimpar;
+  F_MensagemAddTag: TTMensagemaddtag;
+  F_MensagemAddComando: TTMensagemaddcomando;
+  F_MensagemTagAsString: TTMensagemTagAsString;
+  F_MensagemTagCount: TTMensagemTagCount;
+  F_MensagemGetTag: TTMensagemGetTag;
+  F_MensagemGetTagIdx: TTMensagemGetTagIdx;
+  F_MensagemTagToStr: TTMensagemTagToStr;
+  F_MensagemGetTagPosicao: TTMensagemGetTagPosicao;
+  F_MensagemAddTagPosicao: TTMensagemAddTagPosicao;
 
-    F_NumeroConexao: integer;
+  F_TransacaoCancela: TTransacaocancela;
+  F_TransacaoCreate: TTransacaocreate;
+  F_TransacaoFree: TTransacaofree;
+  F_TransacaoStatus: TTransacaostatus;
+  F_TransacaoStatusDescricao: TTransacaostatusdescricao;
+  F_TransacaoGetTag: TTransacaogettag;
+
+  F_Mensagem: Pointer;
+  F_ArquivoLog: ansistring;
+
+  F_Erro: TTMensagemerro;
+
+  F_Versao: TVersao;
+  F_AlterarNivelLog: TTAlterarNilveLog;
+  F_MensagemDispose: TMensagemDispose;
+
+  F_CaminhoDownload: ansistring;
+  F_Tef: Pointer;
 
 const
-    LFL = #01;
+  C_VersaoConciliacao: ansistring = '1.0.0';
+
+function StrToPinPadModelo(VP_PinPadModelo: ansistring): integer;
 
 implementation
 
-uses
-    Def;
-
 {$R *.lfm}
 
-{ TThServidorConclui }
+{ TF_Principal }
 
-procedure TThServidorProcessaRecebe.Execute;
+uses
+  umenuvenda;
+
+procedure TF_Principal.mostramensagem(Data: PtrInt);
+var // called from main thread after all other messages have been processed to allow thread safe TMemo access
+  ReceivedLogMsg: TLogMsgData;
 begin
-    //var
-    //    VL_Mensagem: TMensagem;
-    //    VL_Erro: integer;
-    //    VL_TransmissaoID: string;
-    //    VL_AContext: TIdContext;
-    //    VL_Dados: string;
-    //    VL_Desafio: string;
-    //    VL_Identificacao: string;
+  ReceivedLogMsg := PLogMsgData(Data)^;
+  try
+    if (not Application.Terminated) then
+    begin
+      ShowMessage(ReceivedLogMsg.Text);
+    end;
+  finally
+    Dispose(PLogMsgData(Data));
+  end;
+end;
+
+
+procedure mensagem(s: string);
+var
+  LogMsgToSend: PLogMsgData;
+begin
+  New(LogMsgToSend);
+  LogMsgToSend^.Text := s;
+
+  if Application.Terminated then
+    Exit;
+
+  Application.QueueAsyncCall(@F_Principal.mostramensagem, PtrInt(LogMsgToSend));
+end;
+
+procedure TF_Principal.mostraImpressao(Data: PtrInt);
+var // called from main thread after all other messages have been processed to allow thread safe TMemo access
+  ReceivedLogMsg: TImpressaoDados;
+begin
+  ReceivedLogMsg := PImpressaoDados(Data)^;
+  try
+    if (not Application.Terminated) then
+    begin
+      Application.CreateForm(TFImpressao, FImpressao);
+
+      FImpressao.MImpressao.Lines.Text := ReceivedLogMsg.mensagem;
+      FImpressao.ShowModal;
+      FImpressao.Free;
+    end;
+  finally
+    Dispose(PLogMsgData(Data));
+  end;
+end;
+
+procedure impressao(s: string);
+var
+  LogMsgToSend: PImpressaoDados;
+begin
+  New(LogMsgToSend);
+  LogMsgToSend^.mensagem := s;
+  Application.QueueAsyncCall(@F_Principal.mostraImpressao, PtrInt(LogMsgToSend));
+end;
+
+procedure CaixaPergunta(VP_Mensagem, VP_Caption: string; VP_Botoes: integer; var VO_BotaoSelecionado: integer);
+var
+  LogMsgToSend: PCaixaPergunta;
+begin
+  New(LogMsgToSend);
+  try
+    LogMsgToSend^.mensagem := VP_Mensagem;
+    LogMsgToSend^.Caption := VP_Caption;
+    LogMsgToSend^.botoes := VP_Botoes;
+    LogMsgToSend^.botaoSelecionado := 0;
+    LogMsgToSend^.aguardando := True;
+    LogMsgToSend^.pointer := Pointer(LogMsgToSend);
+
+    Application.QueueAsyncCall(@F_Principal.MostraCaixaPergunta, PtrInt(LogMsgToSend));
+
+    while LogMsgToSend^.aguardando do
+    begin
+      sleep(10);
+    end;
+
+    VO_BotaoSelecionado := LogMsgToSend^.botaoSelecionado;
+  finally
+    Dispose(LogMsgToSend);
+  end;
+end;
+
+procedure TF_Principal.MostraCaixaPergunta(Data: PtrInt);
+var // called from main thread after all other messages have been processed to allow thread safe TMemo access
+  ReceivedLogMsg: TCaixaPergunta;
+begin
+  ReceivedLogMsg := PCaixaPergunta(Data)^;
+  if (not Application.Terminated) then
+  begin
+    ReceivedLogMsg.botaoSelecionado := Application.MessageBox(PChar(ReceivedLogMsg.mensagem), PChar(ReceivedLogMsg.Caption), MB_ICONQUESTION + MB_YESNO);
+  end;
+
+  PCaixaPergunta(Data)^.aguardando := False;
+  PCaixaPergunta(PCaixaPergunta(Data)^.pointer)^.aguardando := False;
+  PCaixaPergunta(PCaixaPergunta(Data)^.pointer)^.botaoSelecionado := ReceivedLogMsg.botaoSelecionado;
+end;
+
+procedure StringDispose(VP_PChar: PChar); cdecl;
+begin
+  if not Assigned(VP_PChar) then
+    Exit;
+
+  if MemSize(VP_PChar) <= 0 then
+    Exit;
+
+  StrDispose(VP_PChar);
+end;
+
+function Retorno(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
+var
+  VL_Retorno: PChar;
+  VL_Dados: string;
+  VL_Comando: string;
+  VL_ComandoDados: string;
+  VL_Mensagem: Pointer;
+  VL_String: ansistring;
+  VL_Erro: integer;
+  VL_DescricaoErro: string;
+  VL_TransacaoID: string;
+  VL_DescricaoErroTransacao: string;
+  VL_TransacaoChave: string;
+  VL_Bin: string;
+  VL_TransacaoStatus: integer;
+  VL_BotaoSelecionado: integer;
+begin
+  Result := 0;
+
+  if Application.Terminated then
+    Exit;
+
+  VL_Erro := 0;
+  VL_Retorno := nil;
+  VL_String := '';
+  VL_Mensagem := nil;
+  VL_Dados := '';
+  VL_DescricaoErro := '';
+  VL_Comando := '';
+  VL_ComandoDados := '';
+  VL_Comando := '';
+  VL_TransacaoID := '';
+  VL_DescricaoErroTransacao := '';
+  VL_TransacaoChave := '';
+  VL_Bin := '';
+  VL_BotaoSelecionado := 0;
+  try
+    F_MensagemCreate(VL_Mensagem);
+
+    VL_Erro := F_MensagemCarregaTags(VL_Mensagem, VP_DadosEntrada);
+    if VL_Erro <> 0 then
+    begin
+      F_MensagemAddComando(VL_Mensagem, '0026', PChar(IntToStr(VL_Erro)));
+      // retorno com erro
+      F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+      VL_String := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+      StrPCopy(VO_DadosSaida, VL_String);
+      Exit;
+    end;
+
+    F_MensagemComando(VL_Mensagem, VL_Retorno);
+
+    VL_Comando := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemComandoDados(VL_Mensagem, VL_Retorno);
+
+    VL_ComandoDados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    if VL_Comando = '0026' then  // retorno com erro
+    begin
+      if VL_ComandoDados = '96' then // desconectado
+      begin
+        F_Principal.lblStatusConexao.Caption := 'Desconectado';
+        F_Principal.lblStatusConexao.Font.Color := clRed;
+      end;
+
+      F_Erro(StrToInt(VL_ComandoDados), VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      Mensagem('Erro: ' + VL_ComandoDados + #13 + 'Descrição: ' + VL_DescricaoErro);
+      exit;
+    end;
+
+    if VL_Comando = '0018' then //Veio pedido de mostrar menu de venda
+    begin
+      // monta o menu e aguarda a escolha pelo operador
+      F_Principal.MontarMenu(VL_Mensagem);
+      exit;
+    end;
+
+    if VL_Comando = '010C' then // solicitacao de atualizacao do tef
+    begin
+      VL_Dados := '';
+      F_MensagemGetTag(VL_Mensagem, '00FD', VL_Retorno);  // atualizacao obrigatoria
+
+      VL_Dados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      if VL_Dados = 'S' then
+      begin
+        F_MensagemAddComando(VL_Mensagem, '010C', PChar(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\'));
+        // comando de retorno com o caminho
+
+        F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+        VL_String := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+        StrPCopy(VO_DadosSaida, VL_String);
+      end;
+
+      F_MensagemGetTag(VL_Mensagem, '010A', VL_Retorno); // atualizacao opcional
+
+      VL_Dados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      if VL_Dados = 'S' then
+      begin
+        CaixaPergunta('Nova atualização do tef, deseja atualizar?', 'PDV', MB_ICONQUESTION + MB_YESNO, VL_BotaoSelecionado);
+        if VL_BotaoSelecionado = idYes then
+        begin
+          F_MensagemAddComando(VL_Mensagem, '010C', PChar(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\'));
+          // comando de retorno com o caminho
+
+          F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+          VL_String := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+
+          VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+          StrPCopy(VO_DadosSaida, VL_String);
+        end;
+      end;
+
+      exit;
+    end;
+
+    if VL_Comando = '00A4' then // status da transacao
+    begin
+      VL_TransacaoStatus := StrToInt(VL_ComandoDados);
+      F_MensagemGetTag(VL_Mensagem, '0034', VL_Retorno);  // transacao id
+
+      VL_TransacaoID := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem, '00F1', VL_Retorno); // chave da transacao
+
+      VL_TransacaoChave := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      if Ord(tsComErro) = VL_TransacaoStatus then
+      begin
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação com erro ' + VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao);
+        F_Principal.MStatus.Lines.Add('Transação com erro ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
+      end;
+
+      if Ord(tsCancelada) = VL_TransacaoStatus then
+      begin
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação cancelada ' + VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao);
+        F_Principal.MStatus.Lines.Add('Transação cancelada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
+      end;
+
+      if Ord(tsNegada) = VL_TransacaoStatus then
+      begin
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação negada ' + VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao);
+        F_Principal.MStatus.Lines.Add('Transação negada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
+      end;
+
+
+      if Ord(tsNaoLocalizada) = VL_TransacaoStatus then
+      begin
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação nao localizada ' + VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao);
+        F_Principal.MStatus.Lines.Add('Transação não localizada ' + VL_TransacaoID + ' ' + VL_DescricaoErro);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
+      end;
+
+      if Ord(tsEfetivada) = VL_TransacaoStatus then
+      begin
+        Mensagem('Transação aprovada ' + VL_TransacaoID);
+
+        F_Principal.MChave.Lines.Add(VL_TransacaoChave);
+        F_Principal.MStatus.Lines.Add('Transacao ID: ' + VL_TransacaoID + ' Efetivada');
+
+        F_TransacaoGetTag(F_Tef, PChar(VL_TransacaoID), '0036', VL_Retorno);
+
+        VL_Bin := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Principal.MStatus.Lines.Add('Bin: ' + VL_Bin);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+        Exit;
+      end;
+
+      if Ord(tsAbortada) = VL_TransacaoStatus then
+      begin
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação abortada ' + VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
+      end;
+
+      case VL_TransacaoStatus of
+        Ord(tsProcessando): F_Principal.MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de processamento');
+        Ord(tsInicializada): F_Principal.MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de inicializada');
+        Ord(tsAguardandoComando): F_Principal.MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de aguardando comando');
+        Ord(tsAguardandoDadosPDV): F_Principal.MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de aguardando dados do pdv');
+      end;
+
+      exit;
+    end;
+
+    if (VL_Comando = '0118') and (VL_ComandoDados = 'CONCILIACAO') then
+    begin
+      F_Principal.retornoConciliacao(VP_DadosEntrada);
+      exit;
+    end;
+
+    F_MensagemAddComando(VL_Mensagem, '0026', '1'); // retorno com erro
+
+    F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+    VL_String := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    vo_DadosSaida := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_DadosSaida, VL_String);
+
+  finally
+    F_MensagemFree(VL_Mensagem);
+  end;
+end;
+
+function solicitadadospdv(VP_Mensagem: PChar; var VO_Botao, VO_Dados: PChar): integer; cdecl;
+var
+  VL_btn: TMButton;
+  VL_I: integer;
+  VL_Tag: string;
+  VL_Dados: string;
+  VL_RTag: PChar;
+  VL_RDados: PChar;
+  VL_String: ansistring;
+  VL_MenuVenda: TF_MenuVenda;
+  VL_Imagem: ansistring;
+
+
+  procedure StrToImagem(Dados: ansistring; var Imagem: Timage);
+  var
+    JP: TJPEGImage;
+    PNG: TPortableNetworkGraphic;
+    BPM: TBitmap;
+    Sm: TStringStream;
+    i: integer;
+    Tipo_Imagem, S, L: ansistring;
+  begin
+    s := '';
+    L := '';
+    Tipo_Imagem := 'TI_JPG';
+    if Dados = '' then
+    begin
+      Imagem.Picture.Graphic := nil;
+      exit;
+    end;
+
+    //for i := 0 to Length(Dados) div 2 - 1 do
     //begin
-    //    VL_Erro := 0;
-    //    VL_TransmissaoID := '';
-    //    VL_Desafio := '';
-    //    VL_Identificacao := '';
-    //    VL_Mensagem := TMensagem.Create;
-    //    VL_AContext := nil;
-    //    try
-    //        try
+    //    L := copy(Dados, ((1 + i) * 2) - 1, 2);
+    //    s := s + char(Hex2Dec(L));
+    //end;
 
-    //            GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '141120231415', 'TThServidorProcessaRecebe.Execute', f_Dados, 0, 4);
 
-    //            if Terminated then
-    //                Exit;
+    s := DecodeStringBase64(Dados);
 
-    //            if TDComunicador(f_DComunicador).V_Parar then
-    //                Exit;
+    Sm := TStringStream.Create(s);
 
-    //            if (f_Dados = '') then
-    //            begin
-    //                Exit;
-    //            end;
 
-    //            if not Assigned(f_TConexao) then
-    //            begin
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221152',
-    //                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
-    //                Exit;
-    //            end
-    //            else
-    //            if not f_TConexao.GetSocketServidor(f_DComunicador, f_TConexao.ID, VL_AContext) then
-    //            begin
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221153',
-    //                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
-    //                Exit;
-    //            end;
-
-    //            if VL_AContext = nil then
-    //            begin
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '140920221154',
-    //                    'TThServidorProcessaRecebe.Execute; ', '', 0, 1);
-    //                Exit;
-    //            end;
-
-
-
-    //            VL_Erro := VL_Mensagem.CarregaTags(f_Dados);
-    //            if VL_Erro <> 0 then
-    //            begin
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221716',
-    //                    'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
-    //                Exit;
-    //            end;
-
-
-    //            if VL_Mensagem.Comando <> '00D1' then
-    //            begin
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221717',
-    //                    'TThServidorProcessaRecebe.Execute; ', '', 68, 1);
-
-    //                Exit;
-    //            end;
-
-
-    //            VL_TransmissaoID := VL_Mensagem.ComandoDados;
-    //            VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
-
-    //            if (f_TConexao.Status = csChaveado) or (f_TConexao.Status = csLogado) then
-    //                VL_Dados := Copy(VL_Dados, 1, 5) + f_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
-
-
-    //            if VL_Dados = '00002161400E311S' then  // comando de eco
-    //            begin
-    //                VL_Mensagem.CarregaTags('00002161400E311R');
-    //                TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                    VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-
-    //                Exit;
-    //            end;
-
-
-    //            if (VL_TransmissaoID = '') then
-    //            begin
-
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221718',
-    //                    'ID da transmissao vazia', '', 0, 1);
-    //                Exit;
-
-    //            end;
-
-    //            VL_Mensagem.Limpar;
-    //            VL_Mensagem.CarregaTags(VL_Dados);
-
-    //            if ((VL_Mensagem.Comando = '0021') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita conexao(troca de chave rsa)
-    //            begin
-    //                if Assigned(f_TConexao) then
-    //                begin
-    //                    TDComunicador(f_DComunicador).V_ConexaoCliente.setModuloPublico(VL_Mensagem.GetTagAsAstring('0008'));  // CHAVE PUBLICA MODULO
-    //                    TDComunicador(f_DComunicador).V_ConexaoCliente.setExpoentePublico(VL_Mensagem.GetTagAsAstring('0027')); // CHAVE PUBLICA EXPOENTE
-
-    //                    VL_Mensagem.Limpar;
-    //                    VL_Mensagem.AddComando('0021', 'R'); // troca de chave rsa aceita
-    //                    VL_Mensagem.AddTag('0008', f_TConexao.ModuloPublico); // CHAVE PUBLICA MODULO
-    //                    VL_Mensagem.AddTag('0027', f_TConexao.ExpoentePublico); // CHAVE PUBLICA EXPOENTE
-
-    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-
-    //                    exit;
-    //                end;
-    //            end;
-
-    //            if ((VL_Mensagem.Comando = '0103') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita desafio de chave
-    //            begin
-    //                if VL_Mensagem.GetTagAsAstring('00E3') = '' then // transacao criptografada
-    //                begin
-    //                    VL_Mensagem.Limpar;
-    //                    VL_Mensagem.AddComando('0026', '92');
-
-    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                    Exit;
-    //                end;
-
-    //                VL_Dados := f_TConexao.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
-
-    //                VL_Mensagem.Limpar;
-    //                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-    //                if VL_Erro <> 0 then
-    //                begin
-    //                    VL_Mensagem.Limpar;
-    //                    VL_Mensagem.AddComando('0026', '92');
-
-    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                    Exit;
-    //                end;
-
-    //                VL_Mensagem.GetTag('0106', VL_Desafio); // desafio
-    //                VL_Mensagem.GetTag('0108', VL_Identificacao); // identificacao
-
-    //                if VL_Identificacao = '' then // identificacao
-    //                begin
-    //                    f_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0009')); // chave simetrica aes
-    //                end
-    //                else
-    //                begin
-    //                    if not Assigned(TDComunicador(f_DComunicador).V_TransmissaoComando) then
-    //                    begin
-    //                        VL_Mensagem.Limpar;
-    //                        VL_Mensagem.AddComando('0026', '105');
-
-    //                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                        Exit;
-    //                    end;
-
-    //                    VL_Mensagem.GetTag('0108', VL_Identificacao); // identificador
-
-    //                    VL_Mensagem.Limpar;
-    //                    VL_Mensagem.AddComando('0022', 'S'); // SOLICITA DADOS DA IDENTIFICACAO
-    //                    VL_Mensagem.AddTag('0108', VL_Identificacao); // IDENTIFICADOR
-
-    //                    VL_Erro := TDComunicador(f_DComunicador).V_TransmissaoComando(TDComunicador(f_DComunicador), f_TConexao.ID,
-    //                        VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
-
-    //                    if VL_Erro <> 0 then
-    //                    begin
-    //                        VL_Mensagem.Limpar;
-    //                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-    //                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                        Exit;
-    //                    end;
-
-    //                    VL_Mensagem.Limpar;
-    //                    VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-    //                    if VL_Erro <> 0 then
-    //                    begin
-    //                        VL_Mensagem.Limpar;
-    //                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-    //                        TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                            VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                        Exit;
-    //                    end;
-
-    //                    f_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0023')); // chave de comunicacao
-    //                end;
-
-
-    //                VL_Desafio := f_TConexao.Aes.DecryptString(VL_Desafio);
-
-    //                if Copy(VL_Desafio, 1, 2) <> 'OK' then
-    //                begin
-    //                    VL_Mensagem.Limpar;
-    //                    VL_Mensagem.AddComando('0026', '92');
-
-    //                    TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                        VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                    Exit;
-    //                end;
-
-    //                VL_Mensagem.Limpar;
-    //                VL_Mensagem.AddComando('0103', 'R'); // retorno do desafio da chave
-    //                VL_Mensagem.AddTag('0106', f_TConexao.Aes.EncryptString(Formata('OKOK' +
-    //                    DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True))); // desafio
-
-    //                VL_Dados := VL_Mensagem.TagsAsString;
-
-    //                VL_Mensagem.Limpar;
-    //                VL_Mensagem.AddComando('0103', 'R'); // RETORNO DO DESAFIO DE CHAVE
-    //                VL_Mensagem.AddTag('00E3', TDComunicador(f_DComunicador).V_ConexaoCliente.Rsa.EncryptString(VL_Dados)); // transacao criptografada
-
-    //                TDComunicador(f_DComunicador).ServidorTransmiteSolicitacaoID(f_DComunicador, 3000, False, nil, VL_TransmissaoID,
-    //                    VL_Mensagem, VL_Mensagem, f_TConexao.ID);
-    //                if Assigned(f_TConexao) then
-    //                    if VL_Identificacao = '' then // identificacao
-    //                        F_Tconexao.Status := csChaveado
-    //                    else
-    //                        F_Tconexao.Status := csChaveadoAssinado;
-
-
-    //                Exit;
-
-    //            end;
-
-    //            VL_Erro := TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
-
-    //            if VL_Erro <> 0 then
-    //            begin
-    //                if Assigned(TDComunicador(f_DComunicador).V_ServidorRecebimento) then
-    //                    TDComunicador(f_DComunicador).V_ServidorRecebimento(0, VL_TransmissaoID, VL_Dados,
-    //                        f_TConexao.ID, f_TConexao.Terminal_Tipo,
-    //                        f_TConexao.Terminal_ID, f_TConexao.DOC,
-    //                        f_TConexao.Status, f_TConexao.Identificacao,
-    //                        f_TConexao.Permissao, f_TConexao.ClienteIp)
-    //                else
-    //                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '250520221719',
-    //                        'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
-    //            end
-    //            else
-    //                TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
-
-    //        except
-    //            on e: Exception do
-    //                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '120920222118', 'TThServidorProcessaRecebe.Execute ' +
-    //                    e.ClassName + '/' + e.Message, '', 1, 1);
-    //        end;
-
-
-    //    finally
-    //        VL_Mensagem.Free;
-    //    end;
-
-end;
-
-constructor TThServidorProcessaRecebe.Create(VP_Comunicador: Pointer; VP_Dados: string; VP_TConexao: TTConexao);
-begin
-    inherited Create(True);
-    FreeOnTerminate := False;
-    f_Dados := VP_Dados;
-    f_TConexao := VP_TConexao;
-    f_DComunicador := VP_Comunicador;
-end;
-
-{ TThRecebeConclui }
-
-procedure TThClienteProcessaRecebe.Execute;
-var
-    VL_Dados: string;
-    VL_TransmissaoID: string;
-    VL_Linha: string;
-    VL_Mensagem: TMensagem;
-    VL_Erro: integer;
-    VL_Desafio: ansistring;
-begin
-    VL_Linha := '';
-    VL_Desafio := '';
-    VL_Mensagem := TMensagem.Create;
-    try
-        try
-            GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '141120231417',
-                'TThClienteProcessaRecebe.Execute', f_Dados, 0, 4);
-
-            if ((TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csDesconectado) and
-                (TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado)) then
-            begin
-                TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado := csDesconectado;
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimento('', TDComunicador(f_DComunicador).V_ProcID, 96, PChar(''))
-                else
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('', 0, TDComunicador(f_DComunicador).V_ProcID,
-                        96, PChar(''), TDComunicador(f_DComunicador).V_Modulo);
-                Exit;
-            end;
-
-
-            if Terminated then
-                Exit;
-
-            if TDComunicador(f_DComunicador).V_Parar then
-                Exit;
-
-            VL_Dados := f_Dados;
-
-
-            if TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csDesconectado then
-                exit;
-
-
-            if VL_Dados = '' then
-                exit;
-
-            VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-            if VL_Erro <> 0 then
-            begin
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimento('', TDComunicador(f_DComunicador).V_ProcID,
-                        VL_Erro, PChar(VL_Dados))
-                else
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('', 0, TDComunicador(f_DComunicador).V_ProcID,
-                        VL_Erro, PChar(VL_Dados), TDComunicador(f_DComunicador).V_Modulo)
-                else
-
-
-                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador',
-                        '140920221150', 'Erro na TThRecebe.Execute ', '', VL_Erro, 1);
-                exit;
-            end;
-
-            VL_TransmissaoID := VL_Mensagem.ComandoDados;
-
-            if (VL_Mensagem.Comando <> '00D1') then
-            begin
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimento('', TDComunicador(f_DComunicador).V_ProcID,
-                        68, PChar(VL_Dados))
-                else
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('', 0, TDComunicador(f_DComunicador).V_ProcID,
-                        VL_Erro, PChar(VL_Dados), TDComunicador(f_DComunicador).V_Modulo)
-                else
-
-                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador',
-                        '140920221151', 'Erro na TThRecebe.Execute ', '', VL_Erro, 1);
-                exit;
-            end;
-
-
-            if (VL_TransmissaoID = '') then
-            begin
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', '220520221217',
-                    'Erro na TThRecebe.Execute veio sem ID de transmissao ', '', 0, 1);
-
-                exit;
-            end;
-
-            VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
-
-            if TDComunicador(f_DComunicador).V_ConexaoCliente.Status > csLink then
-                VL_Dados := Copy(VL_Dados, 1, 5) + TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt))
-            else
-                VL_Dados := Copy(VL_Dados, 1, 5) + DecodeStringBase64(Copy(VL_Dados, 6, MaxInt));
-
-            if VL_Dados = '000021400E211S' then  // comando de eco
-            begin
-                VL_Dados := '000021400E211R';
-                TDComunicador(f_DComunicador).ClienteTransmiteDados(f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
-                exit;
-            end;
-
-            VL_Mensagem.Limpar;
-            VL_Mensagem.CarregaTags(VL_Dados);
-
-            if ((VL_Mensagem.Comando = '0021') and (VL_Mensagem.ComandoDados = 'R')) then // troca da chave rsa
-            begin
-                if Assigned(TDComunicador(f_DComunicador).V_ConexaoCliente) then
-                begin
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.setModuloPublico(VL_Mensagem.GetTagAsAstring('0008'));
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.setExpoentePublico(VL_Mensagem.GetTagAsAstring('0027'));
-
-                    VL_Desafio := TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.EncryptString(Formata('OK' +
-                        DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True));
-
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0103', 'S'); // SOLICITA DESAFIO DE CHAVE
-                    VL_Mensagem.AddTag('0108', TDComunicador(f_DComunicador).V_ConexaoCliente.Identificacao); // IDENTIFICACAO
-                    VL_Mensagem.AddTag('0106', VL_Desafio); // DESAFIO DA CHAVE
-
-                    if TDComunicador(f_DComunicador).V_ConexaoCliente.Identificacao = '' then
-                        VL_Mensagem.AddTag('0009', TDComunicador(f_DComunicador).V_ConexaoCliente.getChaveComunicacao); // CHAVE AES
-
-                    VL_Dados := VL_Mensagem.TagsAsString;
-
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0103', 'S'); // SOLICITA DESAFIO DE CHAVE
-                    VL_Mensagem.AddTag('00E3', TDComunicador(f_DComunicador).V_ConexaoCliente.Rsa.EncryptString(VL_Dados)); // transacao criptografada
-
-                    VL_Dados := VL_Mensagem.TagsAsString;
-
-                    TDComunicador(f_DComunicador).ClienteTransmiteDados(f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
-                    exit;
-                end;
-            end;
-
-            if ((VL_Mensagem.Comando = '0103') and (VL_Mensagem.ComandoDados = 'R')) then // retorno do desafio de chave
-            begin
-                if VL_Mensagem.GetTagAsAstring('00E3') = '' then // transacao criptografada
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    VL_Dados := VL_Mensagem.TagsAsString;
-
-                    TDComunicador(f_DComunicador).ClienteTransmiteDados(f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
-                    Exit;
-                end;
-
-                VL_Dados := TDComunicador(f_DComunicador).V_ConexaoCliente.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));
-
-                VL_Mensagem.Limpar;
-                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-                if VL_Erro <> 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    VL_Dados := VL_Mensagem.TagsAsString;
-
-                    TDComunicador(f_DComunicador).ClienteTransmiteDados(f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
-                    Exit;
-                end;
-
-                VL_Desafio := TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.DecryptString(VL_Mensagem.GetTagAsAstring('0106'));
-
-                if Copy(VL_Desafio, 1, 4) <> 'OKOK' then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    VL_Dados := VL_Mensagem.TagsAsString;
-
-                    TDComunicador(f_DComunicador).ClienteTransmiteDados(f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
-                    Exit;
-                end;
-
-                if TDComunicador(f_DComunicador).V_ConexaoCliente.Identificacao = '' then
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csChaveado
-                else
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csChaveadoAssinado;
-
-            end;
-
-            VL_Erro := TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
-
-            if VL_Erro <> 0 then
-            begin
-
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimento(PChar(VL_TransmissaoID),
-                        TDComunicador(f_DComunicador).V_ProcID, 0, PChar(VL_Dados))
-                else
-                if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
-                    TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo(PChar(VL_TransmissaoID), 0,
-                        TDComunicador(f_DComunicador).V_ProcID, 0, PChar(VL_Dados), TDComunicador(f_DComunicador).V_Modulo);
-
-            end
-            else
-                TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
-
-        except
-            on e: Exception do
-                GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
-                    e.ClassName + '/' + e.Message, '', 1, 1);
-        end;
-    finally
-        begin
-            VL_Mensagem.Free;
-
-        end;
-    end;
-
-end;
-
-constructor TThClienteProcessaRecebe.Create(VP_Comunicador: Pointer; VP_Dados: string);
-begin
-    inherited Create(True);
-    Self.f_Dados := VP_Dados;
-    Self.f_DComunicador := VP_Comunicador;
-    Self.FreeOnTerminate := True;
-    Self.Start;
-end;
-
-{ TEvento }
-
-constructor TEventoSocket.Create;
-begin
-    fTemporizadores := TList.Create;
-end;
-
-destructor TEventoSocket.Destroy;
-var
-
-    VL_Temporizador: ^TTemporizador;
-
-begin
-    while fTemporizadores.Count > 0 do
+    if Length(s) > 5 then
     begin
-        VL_Temporizador := fTemporizadores[0];
-        if Assigned(VL_Temporizador) then
-        begin
-            VL_Temporizador^.abortar;
-            VL_Temporizador^.Free;
-            VL_Temporizador := nil;
-        end;
-        fTemporizadores.Delete(0);
+      if ((char(s[2]) = 'P') and (char(s[3]) = 'N') and (char(s[4]) = 'G')) then
+        Tipo_Imagem := 'TI_Png';
+      if ((char(s[1]) = 'B') and (char(s[2]) = 'M')) then
+        Tipo_Imagem := 'TI_BMP';
     end;
-    fTemporizadores.Free;
-    inherited Destroy;
-end;
 
-procedure TEventoSocket.add(VP_Temporizador: TTemporizador);
-begin
-    fTemporizadores.Add(VP_Temporizador);
-end;
 
-procedure TEventoSocket.remove(VP_Temporizador: TTemporizador);
-begin
-    fTemporizadores.Remove(VP_Temporizador);
-end;
-
-function TEventoSocket.parar(VP_ID: string): integer;
-var
-    VL_I: integer;
-begin
-    Result := 66;
-    for VL_I := 0 to fTemporizadores.Count - 1 do
+    if Tipo_Imagem = 'TI_JPG' then
     begin
-        if TTemporizador(fTemporizadores[VL_I]).V_ID = VP_ID then
-        begin
-            TTemporizador(fTemporizadores[VL_I]).parar;
-            Result := 0;
-        end;
-    end;
-end;
-
-function TEventoSocket.abortar(VP_ID: string): integer;
-var
-    VL_I: integer;
-begin
-    Result := 66;
-    for VL_I := 0 to fTemporizadores.Count - 1 do
+      JP := TJPEGImage.Create;
+      JP.LoadFromStream(Sm);
+      Imagem.Picture.Assign(JP);
+      JP.Free;
+      Sm.Free;
+    end
+    else
+    if Tipo_Imagem = 'TI_Png' then
     begin
-        if Assigned(TTemporizador(fTemporizadores[VL_I])) then
-        begin
-            if TTemporizador(fTemporizadores[VL_I]).V_ID = VP_ID then
-            begin
-                TTemporizador(fTemporizadores[VL_I]).abortar;
-                Result := 0;
-            end;
-        end;
-    end;
-
-end;
-
-function TEventoSocket.SetDados(VP_ID, VP_Dados: string): integer;
-var
-    VL_I: integer;
-begin
-    Result := 66;
-    for VL_I := 0 to fTemporizadores.Count - 1 do
+      PNG := TPortableNetworkGraphic.Create;
+      PNG.LoadFromStream(Sm);
+      Imagem.Picture.Assign(PNG);
+      PNG.Free;
+      Sm.Free;
+    end
+    else
+    if Tipo_Imagem = 'TI_BMP' then
     begin
-        if Assigned(TTemporizador(fTemporizadores[VL_I])) then
-        begin
-            if TTemporizador(fTemporizadores[VL_I]).V_ID = VP_ID then
-            begin
-                TTemporizador(fTemporizadores[VL_I]).V_Dados := VP_Dados;
-                Result := 0;
-            end;
-        end;
+      BPM := TBitmap.Create;
+      BPM.LoadFromStream(Sm);
+      Imagem.Picture.Assign(BPM);
+      BPM.Free;
+      Sm.Free;
     end;
 
-end;
+  end;
 
-function TEventoSocket.GetDados(VP_ID: string; var VO_Dados: string): integer;
-var
-    VL_I: integer;
 begin
-    Result := 66;
-    for VL_I := 0 to fTemporizadores.Count - 1 do
+  Result := 0;
+  VL_Tag := '';
+  VL_Dados := '';
+  VL_String := '';
+  VL_RTag := nil;
+  VL_RDados := nil;
+
+  F_MensagemCarregaTags(F_Mensagem, VP_Mensagem);
+
+  VL_MenuVenda := TF_MenuVenda.Create(F_Principal);
+  VL_MenuVenda.Height := 120;
+
+  F_MensagemGetTag(F_Mensagem, '00DA', VL_RDados);
+
+  VL_Dados := VL_RDados;
+  F_MensagemDispose(VL_RDados);
+
+  // verifica se veio mensagem a ser mostrada
+  if VL_Dados <> '' then
+  begin
+    VL_MenuVenda.PMensagem.Visible := True;
+    VL_MenuVenda.LMensagem.Caption := VL_Dados;
+    VL_MenuVenda.Height := VL_MenuVenda.Height + 100;
+  end;
+
+  VL_Dados := '';
+  VL_I := F_MensagemGetTag(F_Mensagem, '0033', VL_RDados);
+
+  VL_Dados := VL_RDados;
+  F_MensagemDispose(VL_RDados);
+
+  // VERIFICA SE É PARA CAPTURAR ALGUMA INFORMAÇÃO
+  if (VL_I = 0) and (VL_Dados <> '') then
+  begin
+    if VL_Dados = 'M' then // VERIFICA SE É PARA ESCONDER A DIGITAÇÃO "SENHA POR EXEMPLO"
+      VL_MenuVenda.EDados.PasswordChar := '*';
+    VL_MenuVenda.PDados.Visible := True;
+    VL_MenuVenda.Height := VL_MenuVenda.Height + 80;
+  end;
+
+  VL_Dados := '';
+  VL_I := F_MensagemGetTag(F_Mensagem, '002E', VL_RDados);
+
+  VL_Dados := VL_RDados;
+  F_MensagemDispose(VL_RDados);
+
+  // VERIFICA SE VEIO IMAGEM A SER MOSTRADA "QR CODE, FOTO..."
+  if (VL_I = 0) and (VL_Dados <> '') then
+  begin
+    VL_Imagem := VL_Dados;
+    StrToImagem(VL_Imagem, VL_MenuVenda.Imagem);
+    VL_MenuVenda.PImagem.Visible := True;
+    VL_MenuVenda.Height := VL_MenuVenda.Height + 300;
+  end;
+
+  VL_Dados := '';
+  F_MensagemGetTag(F_Mensagem, '00DD', VL_RDados);    // CONTEM A LISTA DE BOTOES
+
+  VL_Dados := VL_RDados;
+  F_MensagemDispose(VL_RDados);
+
+  F_MensagemCarregaTags(F_Mensagem, PChar(VL_Dados));
+
+  VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+  // SEMPRE COLOCAR BOTAO DE CANCELAMENTO
+  VL_btn.V_tag := '0030';
+  VL_btn.Caption := 'Cancela';
+  VL_btn.Align := alTop;
+  VL_btn.Height := 20;
+  VL_btn.BorderSpacing.Around := 20;
+  VL_btn.Parent := VL_MenuVenda.PBotao;
+  VL_btn.TabOrder := 0;
+  VL_btn.OnClick := @F_Principal.CliqueDoBotao;
+
+  for VL_I := 1 to F_MensagemTagCount(F_Mensagem) do
+  begin
+    F_MensagemGetTagIdx(F_Mensagem, VL_i, VL_RTag, VL_RDados);
+
+    VL_Tag := VL_RTag;
+    F_MensagemDispose(VL_RTag);
+
+    VL_Dados := VL_RDados;
+    F_MensagemDispose(VL_RDados);
+
+    if VL_Tag <> '0030' then //PULA SE TIVER BOTAO DE CANCELAMENTO POIS JA FOI COLOCADO ACIMA
     begin
-        if TTemporizador(fTemporizadores[VL_I]).V_ID = VP_ID then
-        begin
-            VO_Dados := TTemporizador(fTemporizadores[VL_I]).V_Dados;
-            Result := 0;
-        end;
+      VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+      VL_btn.V_tag := VL_tag;
+      VL_btn.Caption := VL_Dados;
+      VL_btn.Align := alTop;
+      VL_btn.Height := 20;
+      VL_btn.BorderSpacing.Around := 20;
+      VL_btn.Parent := VL_MenuVenda.PBotao;
+      VL_btn.TabOrder := 0;
+      VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+      VL_btn.OnClick := @F_Principal.CliqueDoBotao;
     end;
+  end;
+  VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+
+  VL_MenuVenda.ShowModal;
+
+  VO_Dados := StrAlloc(Length(VL_MenuVenda.EDados.Text) + 1);
+  StrPCopy(VO_Dados, VL_MenuVenda.EDados.Text);
+
+  VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
+  StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
+
+  VL_MenuVenda.Free;
 
 end;
 
-
-
-
-function TDComunicador.ConectarCliente(VP_DComunicador: Pointer): integer;
+function solicitadadostransacao(VP_Mensagem: PChar; var VO_Dados: PChar): integer; cdecl;
 var
-    VL_Mensagem: TMensagem;
-    //VL_Comando: ansistring;
-    //VL_Dados,
-    VL_DadosO, VL_DadosI: ansistring;
-    //VL_ChaveComunicacao: ansistring;
-    //VL_ExpoentePublico, VL_ModuloPublico: ansistring;
-    VL_Transmissao_ID: string;
-    //VL_Desafio: ansistring;
+  VL_I: integer;
+  VL_Tag: string;
+  VL_Dados: string;
+  VL_RTag: PChar;
+  VL_RDados: PChar;
+  VL_Resposta, VL_TagConciliacao: Pointer;
+  VL_DadosEnviados: PChar;
 begin
-    VL_Mensagem := TMensagem.Create;
-    //VL_ModuloPublico := '';
-    //VL_ExpoentePublico := '';
-    //VL_ChaveComunicacao := '';
-    //VL_Dados := '';
-    VL_DadosO := '';
-    VL_DadosI := '';
-    //VL_Comando := '';
-    VL_Transmissao_ID := '';
-    //VL_Desafio := '';
-    try
-        begin
-            if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or
-                (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csLogado) then
-            begin
-                Result := 0;
-                exit;
-            end;
+  Result := 0;
+  VL_Tag := '';
+  VL_Dados := '';
+  VL_DadosEnviados := '';
+  VL_Resposta := nil;
+  VL_RTag := nil;
+  VL_RDados := nil;
 
+  F_MensagemCreate(VL_Resposta);
+  F_MensagemAddComando(VL_Resposta, '00E1', 'R');
+  F_MensagemCarregaTags(F_Mensagem, VP_Mensagem);
 
-            if TDComunicador(VP_DComunicador).idTCPCliente.Connected then
-                DesconectarCliente(VP_DComunicador);
+  for vl_i := 1 to F_MensagemTagCount(F_Mensagem) do
+  begin
+    F_MensagemGetTagIdx(F_Mensagem, VL_I, VL_RTag, VL_RDados);
 
-            TDComunicador(VP_DComunicador).idTCPCliente.Host := TDComunicador(VP_DComunicador).V_ConexaoCliente.ServidorHost;
-            TDComunicador(VP_DComunicador).idTCPCliente.Port := TDComunicador(VP_DComunicador).V_ConexaoCliente.ServidorPorta;
+    VL_Tag := VL_RTag;
+    F_MensagemDispose(VL_RTag);
 
-            try
-                begin
-                    TDComunicador(VP_DComunicador).idTCPCliente.Connect;
-                    TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.MaxLineLength := MaxInt;
-                    TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.SendBufferSize := MaxInt;
-                end;
-            except
-                on e: Exception do
-                begin
-                    GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '281120231227',
-                        ' ' + e.ClassName + '/' + e.Message, '', 103, 1);
-                    Result := 103;
-                    Exit;
-                end;
-            end;
+    VL_Dados := VL_RDados;
+    F_MensagemDispose(VL_RDados);
 
-            if TDComunicador(VP_DComunicador).idTCPCliente.Connected = False then
-            begin
-                Result := 26;
-                GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '081220231450', 'erro ao conectar', '', Result, 1);
-                Exit;
-            end;
+    // A OPERADORA DE CARTÃO POR SOLICITAR OS DADOS PARA APROVAÇÃO
+    // DEVE TESTAR TODOS OS POSSIVEIS DADOS SOLICITADOS PARA RESPONDER A OPERADORA
+    // SE ALGUM DADO SOLICITADO NÃO FOR RESPONDIDO PODE HAVER A NEGAÇÃO DA TRANSAÇÃO PELA OPERADORA
 
+    if VL_Tag = '0011' then  // IDENTIFICAÇÃO DO CAIXA
+      F_MensagemAddTag(VL_Resposta, '0011', PChar(F_Principal.ECaixa.Text));
 
-            VL_Mensagem.Limpar;
-            VL_Mensagem.AddComando('0021', 'S'); // PEDIDO DE CONEXÃO(troca de chave rsa)
-            VL_Mensagem.AddTag('0008', TDComunicador(VP_DComunicador).V_ConexaoCliente.ModuloPublico); // CHAVE PUBLICA MODULO
-            VL_Mensagem.AddTag('0027', TDComunicador(VP_DComunicador).V_ConexaoCliente.ExpoentePublico); // CHAVE PUBLICA EXPOENTE
+    if VL_Tag = '0012' then // IDENTIFICAÇÃO DO OPERADOR DO CAIXA
+      F_MensagemAddTag(VL_Resposta, '0012', PChar(F_Principal.EOperador.Text));
 
-            VL_DadosO := VL_Mensagem.TagsAsString;
+    if VL_Tag = '0010' then // NUMERO DO CUPOM FISCAL
+      F_MensagemAddTag(VL_Resposta, '0010', PChar(F_Principal.ECupomFiscal.Text));
 
-            Result := ClienteTransmiteDados(VP_DComunicador, VL_Transmissao_ID, VL_DadosO, VL_DadosI, 15000, True);
+    if VL_Tag = '000E' then // VALOR DA PARCELA
+      F_MensagemAddTag(VL_Resposta, '000E', PChar(F_Principal.EValorParcela.Text));
 
-            if Result <> 0 then
-            begin
-                GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '081220231451',
-                    'erro na troca de chave', VL_DadosO, Result, 1);
-                Exit;
-            end;
+    if VL_Tag = '000F' then // NUMERO DE PARCELAS
+      F_MensagemAddTag(VL_Resposta, '000F', PChar(F_Principal.EParcela.Text));
 
-            VL_Mensagem.Limpar;
-            VL_Mensagem.CarregaTags(VL_DadosI);
+    if VL_Tag = '0013' then // VALOR TOTAL
+      F_MensagemAddTag(VL_Resposta, '0013', PChar(F_Principal.EValorItens.Text));
 
-            if VL_Mensagem.Comando = '0026' then
-            begin
-                GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'ConectarCliente', '081220231452',
-                    'comando recebido com erro', VL_DadosI, Result, 1);
-                Result := StrToInt(VL_Mensagem.ComandoDados);
-                Exit;
-            end;
-        end;
+    if VL_Tag = '0014' then // VALOR TOTAL REFERENTE A PRODUTOS PERTECENTES AO PAT ALIMENTO IN NATURA
+      F_MensagemAddTag(VL_Resposta, '0014', PChar(F_Principal.EValorAlimentacao.Text));
 
-    finally
-        VL_Mensagem.Free;
-    end;
+    if VL_Tag = '0015' then // VALOR TOTAL REFERENTE A PRODUTOS PERTECENTES AO PAT ALIMENTO PRONTO
+      F_MensagemAddTag(VL_Resposta, '0015', PChar(F_Principal.EValorRefeicao.Text));
 
-end;
+    if VL_Tag = '0016' then // VALOR TOTAL REFERENTE A PRODUTOS PERTECENTES AO VALE CULTURA
+      F_MensagemAddTag(VL_Resposta, '0016', PChar(F_Principal.EValorValeCultura.Text));
 
-function TDComunicador.ClienteVerificaConexao(VP_DComunicador: Pointer): integer;
-var
-    VL_Dados, VL_Transmissao_ID: string;
-begin
-    try
-        begin
-            //    result:=0;
-            //   exit;
-            //TDComunicador(VP_DComunicador).IdTCPCliente.CheckForGracefulDisconnect(True);
-            VL_Dados := '00002161400E311S';
-            VL_Transmissao_ID := '';
-            Result := ClienteTransmiteDados(VP_DComunicador, VL_Transmissao_ID, VL_Dados, VL_Dados, 30000, True);
-        end;
+    if VL_Tag = '0017' then // XML DO CUPOM FISCAL NÃO PRECISA ASSINAR E A FORMATAÇÃO É LIVRE
+      F_MensagemAddTag(VL_Resposta, '0017', PChar(F_Principal.EXml.Lines.Text));
 
-    except
-        on e: Exception do
-        begin
-            Result := 83;
-            GravaLog(TDComunicador(VP_DComunicador).V_ArquivoLog, 0, '', 'TDComunicador.ClienteVerificaConexao', '160920221056',
-                ' ' + e.ClassName + '/' + e.Message, '', 1, 1);
-            DesconectarCliente(VP_DComunicador);
-        end;
-    end;
-end;
+    if VL_Tag = '000B' then // NSU OU IDENTIFICADOR DA TRANSAÇÃO GERADO PELO PDV
+      F_MensagemAddTag(VL_Resposta, '000B', PChar(F_Principal.ENSU.Text));
 
+    if VL_Tag = '000C' then // DATA DA VENDA
+      F_MensagemAddTag(VL_Resposta, '000C', PChar(DateToStr(F_Principal.EDataHora.Date)));
 
-constructor TTConexao.Create(VP_DComunicador: Pointer);
-var
-    VL_Key: TMemoryStream;
-begin
-    Status := csDesconectado;
-    DComunicador := VP_DComunicador;
-    ConexaoAtivadada := False;
+    if VL_Tag = '000D' then // HORA DA VENDA
+      F_MensagemAddTag(VL_Resposta, '000D', PChar(TimeToStr(F_Principal.EDataHora.Time)));
 
-    ServidorHost := '';
-    ServidorPorta := 0;
+    if VL_Tag = '00E5' then // LINK DA VALIDAÇÃO DA NOTA/CUPOM FISCAL
+      F_MensagemAddTag(VL_Resposta, '00E5', PChar(F_Principal.ELink.Text));
 
-    ClienteIp := '';
-    ClientePorta := 0;
+    if VL_Tag = '00E6' then // VALOR DO DESCONTO
+      F_MensagemAddTag(VL_Resposta, '00E6', PChar(F_Principal.EDesconto.Text));
 
-    DOC := '';
-    Terminal_Tipo := '';
-    Terminal_ID := 0;
+    if VL_Tag = '0040' then  // OBSERVAÇÃO SOBRE A VENDA
+      F_MensagemAddTag(VL_Resposta, '0040', PChar(F_Principal.EObservacao.Text));
 
-    VL_Key := TMemoryStream.Create;
-    Aes := TLbRijndael.Create(nil);
-    Rsa := TLbRSA.Create(nil);
+    if VL_Tag = '00F1' then // CHAVE DA TRANSACAO
+      F_MensagemAddTag(VL_Resposta, '00F1', PChar(F_Principal.MChave.Text));
 
-    Aes.KeySize := TDComunicador(DComunicador).CriptoAes.KeySize;
-    Aes.CipherMode := TDComunicador(DComunicador).CriptoAes.CipherMode;
-    Aes.GenerateRandomKey;
+    if VL_Tag = '0114' then // VERSAO DA CONCILIACAO
+      F_MensagemAddTag(VL_Resposta, '0114', PChar(C_VersaoConciliacao));
 
-    Rsa.KeySize := TDComunicador(DComunicador).CriptoRsa.KeySize;
-
-    F_NumeroConexao := F_NumeroConexao + 1;
-    ID := F_NumeroConexao;
-
-    TDComunicador(DComunicador).CriptoRsa.PrivateKey.StoreToStream(VL_Key);
-    VL_Key.Position := 0;
-    Rsa.PrivateKey.LoadFromStream(VL_Key);
-
-    ExpoentePublico := TDComunicador(DComunicador).CriptoRsa.PublicKey.ExponentAsString;
-    ModuloPublico := TDComunicador(DComunicador).CriptoRsa.PublicKey.ModulusAsString;
-
-    VL_Key.Free;
-    inherited Create;
-end;
-
-destructor TTConexao.Destroy;
-begin
-    Aes.Free;
-    Rsa.Free;
-    inherited Destroy;
-end;
-
-function TTConexao.getModuloPublico: ansistring;
-begin
-    Result := Rsa.PublicKey.ModulusAsString;
-end;
-
-function TTConexao.getExpoentePublico: ansistring;
-begin
-    Result := Rsa.PublicKey.ExponentAsString;
-end;
-
-
-procedure TTConexao.setModuloPublico(VP_Dados: ansistring);
-begin
-    Rsa.PublicKey.ModulusAsString := VP_Dados;
-end;
-
-procedure TTConexao.setExpoentePublico(VP_Dados: ansistring);
-begin
-    Rsa.PublicKey.ExponentAsString := VP_Dados;
-end;
-
-function TTConexao.getChavePublica: ansistring;
-var
-    i: integer;
-    h: array of byte;
-    s: ansistring;
-    Key: TMemoryStream;
-begin
-    h := nil;
-    SetLength(h, 0);
-    Key := TMemoryStream.Create;
-
-    Rsa.PublicKey.StoreToStream(Key);
-
-    if Key.Size > 0 then
-        SetLength(h, Key.Size);
-    Key.Position := 0;
-    Key.ReadBuffer(pointer(h)^, Key.Size);
-
-    s := '';
-    for i := 0 to Length(h) - 1 do
+    if VL_Tag = '0117' then  // DADOS DA CONCILIACAO
     begin
-        s := s + HexStr(h[i], 2);
+      F_MensagemCreate(VL_TagConciliacao);
+      F_MensagemAddComando(VL_TagConciliacao, '0118', 'CONCILIACAO');
+      // indice que e uma tabela de dados
+      F_MensagemAddTag(VL_TagConciliacao, '0119', '1'); // quantidade
+
+      F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '0036', ''); // bin
+      F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000C', '12/12/2023');
+      // data da venda
+      F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000F', '');
+      // quantidade de parcela
+      F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000B', ''); // nsu
+      F_MensagemAddTagPosicao(VL_TagConciliacao, 1, '000E', '');
+      // valor da parcela
+
+      F_MensagemTagAsString(VL_TagConciliacao, VL_DadosEnviados);
+
+      F_MensagemAddTag(VL_Resposta, '0117', VL_DadosEnviados);
+      // DADOS DA CONCILIACAO
+
+      F_MensagemFree(VL_TagConciliacao);
     end;
-    Result := s;
-    Key.Free;
+  end;
+
+  F_MensagemTagAsString(VL_Resposta, VL_RDados);
+  VL_Dados:=VL_RDados;
+  F_MensagemDispose(VL_RDados);
+  F_MensagemFree(VL_Resposta);
+
+  VO_Dados := StrAlloc(Length(VL_Dados) + 1);
+  StrPCopy(VO_Dados, VL_Dados);
+
+
 
 end;
 
-
-function TTConexao.getChaveComunicacao: ansistring;
+function imprime(VP_Dados: PChar): integer; cdecl;
 var
-    s: ansistring;
-    i: integer;
-    Key: array [0..31] of byte;
+  VL_Texto: string;
 begin
-    s := '';
-    for i := 0 to 31 do
-        key[i] := 0;
+  Result := 0;
+  VL_Texto := VP_Dados;
+  VL_Texto := ReplaceStr(VL_Texto, '<br>', #13); // quebra de linha
+  impressao(VL_Texto);
+end;
 
-    Aes.GetKey(Key);
-    for i := 0 to Length(key) - 1 do
+function mostramenu(VP_Menu: PChar; var VO_Botao: PChar): integer; cdecl;
+var
+  VL_btn: TMButton;
+  VL_I: integer;
+  VL_Tag: string;
+  VL_Dados: string;
+  VL_RTag: PChar;
+  VL_RDados: PChar;
+  VL_MenuVenda: TF_MenuVenda;
+begin
+  Result := 0;
+  VL_Tag := '';
+  VL_Dados := '';
+  VO_Botao := '';
+  VL_RTag := nil;
+  VL_RDados := nil;
+
+  F_MensagemCarregaTags(F_Mensagem, VP_Menu);
+
+  VL_MenuVenda := TF_MenuVenda.Create(F_Principal);
+  VL_MenuVenda.Height := 170;
+
+  VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+  VL_btn.V_tag := '0030';
+  VL_btn.Caption := 'Cancela';
+  VL_btn.Align := alTop;
+  VL_btn.Height := 20;
+  VL_btn.BorderSpacing.Around := 20;
+  VL_btn.Parent := VL_MenuVenda.PBotao;
+  VL_btn.TabOrder := 0;
+  VL_btn.OnClick := @F_Principal.CliqueDoBotao;
+
+  for VL_I := 1 to F_MensagemTagCount(F_Mensagem) do
+  begin
+    F_MensagemGetTagIdx(F_Mensagem, VL_i, VL_RTag, VL_RDados);
+
+    VL_Tag := VL_RTag;
+    F_MensagemDispose(VL_RTag);
+
+    VL_Dados := VL_RDados;
+    F_MensagemDispose(VL_RDados);
+
+    if VL_Tag <> '0030' then
+      //pula se tiver tag 0030 que é de cancelamento pois ja foi criada acima
     begin
-        s := s + HexStr(key[i], 2);
+      VL_btn := TMButton.Create(VL_MenuVenda.PBotao);
+      VL_btn.V_tag := VL_tag;
+      VL_btn.Caption := VL_Dados;
+      VL_btn.Align := alTop;
+      VL_btn.Height := 20;
+      VL_btn.BorderSpacing.Around := 20;
+      VL_btn.Parent := VL_MenuVenda.PBotao;
+      VL_btn.TabOrder := 0;
+      VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+      VL_btn.OnClick := @F_Principal.CliqueDoBotao;
     end;
-    Result := s;
+  end;
+
+  VL_MenuVenda.Height := VL_MenuVenda.Height + 40;
+
+  VL_MenuVenda.ShowModal;
+
+  {01/07/2024 17:31}
+  VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
+  StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
+
+  VL_MenuVenda.Free;
 end;
 
-function TTConexao.GetSocketServidor(VP_DComunicador: Pointer; VP_Conexao_ID: integer; var VO_AContext: TIdContext): boolean;
+function mensagemoperador(VP_Dados: PChar): integer; cdecl;
 var
-    VL_I: integer;
-    VL_Clientes: TIdContextList;
+  VL_String: string;
 begin
-    Result := False;
-    VO_AContext := nil;
-    if VP_Conexao_ID < 1 then
-        exit;
-    try
-        VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
+  Result := 0;
+  VL_String := VP_Dados;
+  VL_String := ReplaceStr(VL_String, '<br>', #13); // quebra de linha
+  Mensagem(VL_String);
+end;
 
-        for VL_I := 0 to VL_Clientes.Count - 1 do
-            if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
-            begin
-                VO_AContext := TIdContext(VL_Clientes.Items[VL_I]);
-                Result := True;
-                Exit;
-            end;
-    finally
-        TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.UnlockList;
-    end;
+
+procedure TF_Principal.CliqueDoBotao(VP_Botao: TObject);
+var
+  VL_Botao: string;
+begin
+
+  VL_Botao := TMButton(VP_Botao).v_tag;
+  TF_MenuVenda(TPanel(TMButton(VP_Botao).Parent).Parent).V_Botao := VL_Botao;
+  TForm(TPanel(TMButton(VP_Botao).Parent).Parent).Close;
 
 end;
 
-function TTConexao.GetSocketServidorIdentificacao(VP_DComunicador: Pointer; VP_TipoTerminal, VP_TerminalIdentificacao: string;
-    var VO_AContext: TIdContext): boolean;
-var
-    VL_I: integer;
-    VL_Clientes: TIdContextList;
+procedure TF_Principal.FormShow(Sender: TObject);
 begin
-    Result := False;
-
-    try
-        VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
-
-        for VL_I := 0 to VL_Clientes.Count - 1 do
-            if (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_Tipo = VP_TipoTerminal) and
-                (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificacao = VP_TerminalIdentificacao) then
-            begin
-                VO_AContext := TIdContext(VL_Clientes.Items[VL_I]);
-                Result := True;
-                Break;
-            end;
-    finally
-        TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.UnlockList;
-    end;
+  EDataHora.DateTime := now;
 end;
 
-procedure TTConexao.setChaveComunicacao(VP_Chave: ansistring);
-var
-    i: integer;
-    c: ansistring;
-    Key: array [0..31] of byte;
+procedure TF_Principal.Label20Click(Sender: TObject);
 begin
-    if not Length(VP_Chave) > 0 then
-        Exit;
-    for i := 0 to Length(VP_Chave) div 2 - 1 do
+
+end;
+
+procedure TF_Principal.MontarMenu(VP_Mensagem: Pointer);
+var
+  VL_btn: TMButton;
+  VL_I: integer;
+  VL_Tag: string;
+  VL_Dados: string;
+  VL_RTag: PChar;
+  VL_RDados: PChar;
+begin
+  VL_Tag := '';
+  VL_Dados := '';
+  VL_RTag := nil;
+  VL_RDados := nil;
+
+  F_MenuVenda := TF_MenuVenda.Create(F_Principal);
+  F_MenuVenda.V_Mensagem := VP_Mensagem;
+
+  VL_btn := TMButton.Create(F_MenuVenda.PBotao);
+  VL_btn.V_tag := '0030';
+  VL_btn.Caption := 'Cancela';
+  VL_btn.Align := alTop;
+  VL_btn.Height := 20;
+  VL_btn.BorderSpacing.Around := 20;
+  VL_btn.Parent := F_MenuVenda.PBotao;
+  VL_btn.TabOrder := 0;
+  VL_btn.OnClick := @CliqueDoBotao;
+
+  for VL_I := 1 to F_MensagemTagCount(VP_Mensagem) do
+  begin
+    F_MensagemGetTagIdx(VP_Mensagem, VL_i, VL_RTag, VL_RDados);
+
+    VL_Tag := VL_RTag;
+    F_MensagemDispose(VL_RTag);
+
+    VL_Dados := VL_RDados;
+    F_MensagemDispose(VL_RDados);
+
+    if VL_Tag <> '0030' then
     begin
-        c := copy(VP_Chave, ((1 + i) * 2) - 1, 2);
-        Key[i] := Hex2Dec(c);
+      VL_btn := TMButton.Create(F_MenuVenda.PBotao);
+      VL_btn.V_tag := VL_tag;
+      VL_btn.Caption := VL_Dados;
+      VL_btn.Align := alTop;
+      VL_btn.Height := 20;
+      VL_btn.BorderSpacing.Around := 20;
+      VL_btn.Parent := F_MenuVenda.PBotao;
+      VL_btn.TabOrder := 0;
+      VL_btn.OnClick := @CliqueDoBotao;
+      F_MenuVenda.Height := F_MenuVenda.Height + 40;
     end;
-    Aes.SetKey(Key);
+  end;
+
+  F_MenuVenda.Height := F_MenuVenda.Height + 40;
+  F_MenuVenda.Position := poDesktopCenter;
+  F_MenuVenda.ShowModal;
+  F_MenuVenda.Free;
+
 end;
 
-
-procedure TDComunicador.DataModuleCreate(Sender: TObject);
+procedure TF_Principal.RServidorLocalChange(Sender: TObject);
 begin
-    TDComunicador(Sender).V_DComunicador := Sender;
-    TDComunicador(Sender).V_ListaThreads := TList.Create;
-    TDComunicador(Sender).V_ProcID := 0;
-    TDComunicador(Sender).V_Parar := False;
-    TDComunicador(Sender).V_EventoSocketAguardaResposta := TEventoSocket.Create;
-    TDComunicador(Sender).CriptoRsa.GenerateKeyPair;
-    F_NumeroConexao := 0;
-    TDComunicador(Sender).V_ClienteRecebimento := nil;
-    TDComunicador(Sender).V_ClienteRecebimentoModulo := nil;
-    TDComunicador(Sender).V_ServidorRecebimento := nil;
-    TDComunicador(Sender).V_TransmissaoComando := nil;
-    TDComunicador(Sender).V_ConexaoCliente := TTConexao.Create(Sender);
-
+  EHost.Caption := '127.0.0.1';
+  EPorta.Caption := '39001';
 end;
 
-procedure TDComunicador.DataModuleDestroy(Sender: TObject);
+procedure TF_Principal.RServidorOficialChange(Sender: TObject);
+begin
+  EHost.Caption := 'homologacao.opentef.com.br';
+  EPorta.Caption := '39001';
+end;
+
+
+procedure TF_Principal.BMenuOperacionalClick(Sender: TObject);
 var
-    V_TEmporizadorTThread: ^TTEmporizadorTThread;
+  VL_Erro: integer;
+  VL_Transacao_ID: string;
+  VL_Status: integer;
+  VL_DescricaoErro: string;
+  VL_Tempo: integer;
+  VL_Retorno: PChar;
 begin
-    try
-        GravaLog(TDComunicador(self).V_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231638',
-            'comeco do  TDComunicador.DataModuleDestroy', '', 0, 3);
-        // avisa as threads que vai parar
-        TDComunicador(Sender).V_Parar := True;
+  VL_Transacao_ID := '';
+  VL_Status := 0;
+  VL_DescricaoErro := '';
+  VL_Retorno := nil;
+  VL_Tempo := StrToInt(ETempo.Text);
 
-        while TDComunicador(Sender).V_ListaThreads.Count > 0 do
+  if not Assigned(F_StatusOpenTef) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  VL_Erro := F_StatusOpenTef(F_Tef, VL_Status);
+
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro);
+    Exit;
+  end;
+
+  if VL_Status <> Ord(csLogado) then
+  begin
+    MStatus.Lines.Add('Faça o login');
+    exit;
+  end;
+
+  if not Assigned(F_TransacaoCreate) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  // SOLICITA MENU OPERACIONAL
+  VL_Erro := F_TransacaoCreate(F_Tef, PChar('00F5'), PChar(ECaixa.Text), VL_Retorno, VL_Tempo);
+
+  VL_Transacao_ID := VL_Retorno;
+  F_MensagemDispose(VL_Retorno);
+
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro);
+    Exit;
+  end;
+
+  MStatus.Clear;
+  MStatus.Lines.add('Inicia transacao');
+
+    {
+    while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < VL_Tempo) do
+    begin
+        VL_Erro := F_TransacaoStatus(VL_TransacaoStatus, VL_TransacaoChave, VL_Transacao_ID);
+
+        if VL_Erro <> 0 then
         begin
-            V_TEmporizadorTThread := TDComunicador(Sender).V_ListaThreads.Items[0];
-            if Assigned(V_TEmporizadorTThread) then
-            begin
-                V_TEmporizadorTThread^.Terminate;
-                if Assigned(V_TEmporizadorTThread) then
-                    WaitForThreadTerminate(V_TEmporizadorTThread^.Handle, 5000);
-            end;
-            TDComunicador(Sender).V_ListaThreads.Remove(V_TEmporizadorTThread);
-        end;
-
-        // aguarda finalizar processamento da lista de solicitações da conexão dos clientes
-        //   if Assigned(TDComunicador(Sender).V_ThClienteProcessaRecebe) then
-        //   begin
-        //      TDComunicador(Sender).V_ThClienteProcessaRecebe.Terminate;
-        //      TDComunicador(Sender).V_ThClienteProcessaRecebe.WaitFor;
-        //     TDComunicador(Sender).V_ThClienteProcessaRecebe.Free;
-        //    TDComunicador(Sender).V_ThClienteProcessaRecebe := nil;
-        // end;
-
-        // aguarda finalizar processamento da lista de solicitações da conexão dos servidores
-
-
-
-
-        // desativa socket
-        desativartodasconexao(Sender);
-
-        if Assigned(TDComunicador(Sender).V_ConexaoCliente) then
-        begin
-            TDComunicador(Sender).V_ConexaoCliente.Free;
-            TDComunicador(Sender).V_ConexaoCliente := nil;
-        end;
-
-        if Assigned(TDComunicador(Sender).V_EventoSocketAguardaResposta) then
-        begin
-            TDComunicador(Sender).V_EventoSocketAguardaResposta.Free;
-            TDComunicador(Sender).V_EventoSocketAguardaResposta := nil;
-        end;
-
-        TDComunicador(Sender).V_ListaThreads.Free;
-
-    except
-        on e: Exception do
-            GravaLog(TDComunicador(self).V_ArquivoLog, 0, '', 'TDComunicador.DataModuleDestroy', '111220231640',
-                ' ' + e.ClassName + '/' + e.Message, '', 1, 1);
-    end;
-
-    GravaLog(TDComunicador(self).V_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo', '141120231639', 'fim do TDComunicador.DataModuleDestroy', '', 0, 3);
-end;
-
-
-
-
-procedure TDComunicador.IdTCPServidorConnect(AContext: TIdContext);
-var
-    TConexao: TTConexao;
-begin
-    if self.V_Parar then
-        Exit;
-    AContext.Connection.IOHandler.MaxLineLength := 0;
-    AContext.Connection.IOHandler.SendBufferSize := MaxInt;
-    TConexao := TTConexao.Create(self);
-    TConexao.Hora := Now;
-    TConexao.ID := F_NumeroConexao;
-    TConexao.ClienteIp := AContext.Connection.Socket.Binding.PeerIP;
-    TConexao.ClientePorta := AContext.Connection.Socket.Binding.PeerPort;
-    TConexao.Status := csLink;
-    TConexao.StatusDesejado := csLogado;
-    AContext.Data := TConexao;
-end;
-
-procedure TDComunicador.IdTCPServidorDisconnect(AContext: TIdContext);
-begin
-    if Assigned(TTConexao(AContext.Data)) then
-    begin
-        if Assigned(V_ServidorRecebimento) then
-            if TTConexao(AContext.Data).StatusDesejado = csLogado then
-                V_ServidorRecebimento(96, '', '', TTConexao(AContext.Data).ID, TTConexao(AContext.Data).Terminal_Tipo, TTConexao(
-                    AContext.Data).Terminal_ID, TTConexao(AContext.Data).DOC, TTConexao(AContext.Data).Status,
-                    TTConexao(AContext.Data).Identificacao, TTConexao(AContext.Data).Permissao, TTConexao(AContext.Data).ClienteIp);
-        TTConexao(AContext.Data).Status := csDesconectado;
-        TTConexao(AContext.Data).Free;
-        AContext.Data := nil;
-    end;
-end;
-
-
-
-
-procedure TDComunicador.IdTCPServidorExecute(AContext: TIdContext);
-var
-    VL_DadosRecebidos: string;
-    VL_Mensagem: TMensagem;
-    VL_Erro: integer;
-    VL_TransmissaoID: string;
-    VL_Dados: string;
-    VL_Desafio: string;
-    VL_Identificacao: string;
-    VL_TConexao: TTConexao;
-
-begin
-    VL_Erro := 0;
-    VL_TransmissaoID := '';
-    VL_Desafio := '';
-    VL_Identificacao := '';
-    VL_Mensagem := nil;
-
-    try
-        try
-            VL_DadosRecebidos := AContext.Connection.IOHandler.ReadLn(LF, 100, -1, nil);
-            if VL_DadosRecebidos = '' then
-                Exit;
-
-            VL_DadosRecebidos := base64.DEcodeStringBase64(VL_DadosRecebidos);
-
-            if AContext.Data = nil then
-                Exit;
-
-            if V_Parar then
-                Exit;
-
-            VL_TConexao := TTConexao(AContext.Data);
-
-            if not Assigned(VL_TConexao) then
-                Exit;
-
-
-            GravaLog(TDComunicador(Self).V_ArquivoLog, 0, '', 'comunicador', '141120231415', 'TThServidorProcessaRecebe.Execute', VL_DadosRecebidos, 0, 4);
-
-
-            if V_Parar then
-                Exit;
-
-
-            VL_Mensagem:= TMensagem.Create;
-
-
-            VL_Erro := VL_Mensagem.CarregaTags(VL_DadosRecebidos);
-            if VL_Erro <> 0 then
-            begin
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221716',
-                    'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
-                Exit;
-            end;
-
-
-            if VL_Mensagem.Comando <> '00D1' then
-            begin
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221717',
-                    'TThServidorProcessaRecebe.Execute; ', '', 68, 1);
-
-                Exit;
-            end;
-
-
-            VL_TransmissaoID := VL_Mensagem.ComandoDados;
-            VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
-
-            if (VL_TConexao.Status = csChaveado) or (VL_TConexao.Status = csLogado) then
-                VL_Dados := Copy(VL_Dados, 1, 5) + VL_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
-
-
-            if VL_Dados = '00002161400E311S' then  // comando de eco
-            begin
-                VL_Mensagem.CarregaTags('00002161400E311R');
-                ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-
-                Exit;
-            end;
-
-
-            if (VL_TransmissaoID = '') then
-            begin
-
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221718',
-                    'ID da transmissao vazia', '', 0, 1);
-                Exit;
-
-            end;
-
-            VL_Mensagem.Limpar;
-            VL_Mensagem.CarregaTags(VL_Dados);
-
-            if ((VL_Mensagem.Comando = '0021') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita conexao(troca de chave rsa)
-            begin
-                V_ConexaoCliente.setModuloPublico(VL_Mensagem.GetTagAsAstring('0008'));  // CHAVE PUBLICA MODULO
-                V_ConexaoCliente.setExpoentePublico(VL_Mensagem.GetTagAsAstring('0027')); // CHAVE PUBLICA EXPOENTE
-
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0021', 'R'); // troca de chave rsa aceita
-                VL_Mensagem.AddTag('0008', VL_TConexao.ModuloPublico); // CHAVE PUBLICA MODULO
-                VL_Mensagem.AddTag('0027', VL_TConexao.ExpoentePublico); // CHAVE PUBLICA EXPOENTE
-
-                ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                    VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-
-                exit;
-            end;
-
-
-            if ((VL_Mensagem.Comando = '0103') and (VL_Mensagem.ComandoDados = 'S')) then  // solicita desafio de chave
-            begin
-                if VL_Mensagem.GetTagAsAstring('00E3') = '' then // transacao criptografada
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                    Exit;
-                end;
-
-                VL_Dados := VL_TConexao.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
-
-                VL_Mensagem.Limpar;
-                VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-                if VL_Erro <> 0 then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                    Exit;
-                end;
-
-                VL_Mensagem.GetTag('0106', VL_Desafio); // desafio
-                VL_Mensagem.GetTag('0108', VL_Identificacao); // identificacao
-
-                if VL_Identificacao = '' then // identificacao
-                begin
-                    VL_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0009')); // chave simetrica aes
-                end
-                else
-                begin
-                    if not Assigned(V_TransmissaoComando) then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', '105');
-
-                        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                        Exit;
-                    end;
-
-                    VL_Mensagem.GetTag('0108', VL_Identificacao); // identificador
-
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0022', 'S'); // SOLICITA DADOS DA IDENTIFICACAO
-                    VL_Mensagem.AddTag('0108', VL_Identificacao); // IDENTIFICADOR
-
-                    VL_Erro := V_TransmissaoComando(TDComunicador(Self), VL_TConexao.ID,
-                        VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
-
-                    if VL_Erro <> 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-                        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                        Exit;
-                    end;
-
-                    VL_Mensagem.Limpar;
-                    VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
-
-                    if VL_Erro <> 0 then
-                    begin
-                        VL_Mensagem.Limpar;
-                        VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-                        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                        Exit;
-                    end;
-
-                    VL_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0023')); // chave de comunicacao
-                end;
-
-
-                VL_Desafio := VL_TConexao.Aes.DecryptString(VL_Desafio);
-
-                if Copy(VL_Desafio, 1, 2) <> 'OK' then
-                begin
-                    VL_Mensagem.Limpar;
-                    VL_Mensagem.AddComando('0026', '92');
-
-                    ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                        VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                    Exit;
-                end;
-
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0103', 'R'); // retorno do desafio da chave
-                VL_Mensagem.AddTag('0106', VL_TConexao.Aes.EncryptString(Formata('OKOK' +
-                    DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True))); // desafio
-
-                VL_Dados := VL_Mensagem.TagsAsString;
-
-                VL_Mensagem.Limpar;
-                VL_Mensagem.AddComando('0103', 'R'); // RETORNO DO DESAFIO DE CHAVE
-                VL_Mensagem.AddTag('00E3', V_ConexaoCliente.Rsa.EncryptString(VL_Dados)); // transacao criptografada
-
-                ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
-                    VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-                if Assigned(VL_TConexao) then
-                    if VL_Identificacao = '' then // identificacao
-                        VL_TConexao.Status := csChaveado
-                    else
-                        VL_TConexao.Status := csChaveadoAssinado;
-
-
-                Exit;
-
-            end;
-
-            VL_Erro := V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
-
-            if VL_Erro <> 0 then
-            begin
-                if Assigned(V_ServidorRecebimento) then
-                    V_ServidorRecebimento(0, VL_TransmissaoID, VL_Dados,
-                        VL_TConexao.ID, VL_TConexao.Terminal_Tipo,
-                        VL_TConexao.Terminal_ID, VL_TConexao.DOC,
-                        VL_TConexao.Status, VL_TConexao.Identificacao,
-                        VL_TConexao.Permissao, VL_TConexao.ClienteIp)
-                else
-                    GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221719',
-                        'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
-            end
-            else
-                V_EventoSocketAguardaResposta.parar(VL_TransmissaoID);
-
-        except
-            on e: Exception do
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920222118', 'TThServidorProcessaRecebe.Execute ' +
-                    e.ClassName + '/' + e.Message, '', 1, 1);
-        end;
-
-
-    finally
-        VL_Mensagem.Free;
-    end;
-
-end;
-
-
-procedure TDComunicador.IdTCPClienteConnected(Sender: TObject);
-begin
-    try
-        Self.V_ConexaoCliente.Status := csLink;
-        self.V_ConexaoCliente.StatusDesejado := csLogado;
-
-        TDComunicador(Self).V_ThRecebeEscuta := TThRecebe.Create(Self);
-        TDComunicador(Self).V_ThRecebeEscuta.FreeOnTerminate := False;
-        TDComunicador(Self).V_ThRecebeEscuta.Start;
-    except
-        on e: Exception do
-        begin
-            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '081220231619', 'IdTCPClienteConnected' + e.ClassName + '/' + e.Message, '', 1, 1);
-        end;
-    end;
-end;
-
-procedure TDComunicador.IdTCPClienteDisconnected(Sender: TObject);
-begin
-
-    // aguarda finalizar processamento da escuta do socket do cliente
-    if Assigned(TDComunicador(SELF.V_DComunicador).V_ThRecebeEscuta) then
-    begin
-        TDComunicador(Self).V_ThRecebeEscuta.Terminate;
-        TDComunicador(Self).V_ThRecebeEscuta.WaitFor;
-        TDComunicador(Self).V_ThRecebeEscuta.Free;
-        TDComunicador(Self).V_ThRecebeEscuta := nil;
-    end;
-
-
-    Self.V_ConexaoCliente.Status := csDesconectado;
-    if Self.V_ConexaoCliente.StatusDesejado = csLogado then
-    begin
-        Self.V_ConexaoCliente.StatusDesejado := csDesconectado;
-        if Assigned(TDComunicador(SELF.V_DComunicador).V_ClienteRecebimento) then
-            TDComunicador(SELF.V_DComunicador).V_ClienteRecebimento('', 0, 96, PChar(''));
-    end;
-end;
-
-function TDComunicador.DesconectarCliente(VP_DComunicador: Pointer): integer;
-begin
-    Result := 0;
-    if Assigned(TDComunicador(self.V_DComunicador).V_ConexaoCliente) then
-    begin
-        TDComunicador(VP_DComunicador).V_ConexaoCliente.StatusDesejado := csDesconectado;
-        TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
-    end;
-    if TDComunicador(VP_DComunicador).idTCPCliente.Connected then
-    begin
-        if not TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBufferIsEmpty then
-            TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBuffer.Clear;
-        if not TDComunicador(VP_DComunicador).idTCPCliente.Socket.InputBufferIsEmpty then
-            TDComunicador(VP_DComunicador).idTCPCliente.Socket.InputBuffer.Clear;
-
-        TDComunicador(VP_DComunicador).idTCPCliente.Disconnect;
-
-        if TDComunicador(VP_DComunicador).idTCPCliente.Socket.Connected then
-            TDComunicador(VP_DComunicador).idTCPCliente.Socket.Close;
-    end;
-end;
-
-function TDComunicador.DesconectarClienteID(VP_DComunicador: Pointer; VP_Conexao_ID: integer): integer;
-var
-    VL_I: integer;
-    VL_Clientes: TIdContextList;
-    VL_AContext: TIdContext;
-begin
-    Result := 0;
-
-    try
-        VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
-
-        for VL_I := 0 to VL_Clientes.Count - 1 do
-            if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
-            begin
-                TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).StatusDesejado := csDesconectado;
-                VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
-                VL_AContext.Connection.Disconnect;
-                Result := 0;
-                Exit;
-            end;
-    finally
-        TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.UnlockList;
-    end;
-
-end;
-
-
-function TDComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador: Pointer; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-    VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_Conexao_ID: integer): integer;
-var
-    VL_I: integer;
-    VL_Clientes: TIdContextList;
-    VL_Mensagem: TMensagem;
-    VL_Dados: ansistring;
-    VL_Temporizador: TTemporizador;
-    VL_Evento: TAguardaEvento;
-    VL_AContext: TIdContext;
-begin
-    try
-        Result := 53;
-        VL_Dados := '';
-        VP_Mensagem.TagToStr(VL_Dados);
-
-        if VP_Transmissao_ID = '' then
-            VP_Transmissao_ID := CriaID;
-        try
-            VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
-
-            for VL_I := 0 to VL_Clientes.Count - 1 do
-            begin
-                if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
-                begin
-                    VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
-                    Result := 0;
-                    Break;
-                end;
-
-            end;
-        finally
-            TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.UnlockList;
-        end;
-        if Result <> 0 then
+            F_Erro(VL_Erro, VL_StatusDescricao);
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_Transacao_ID);
+            ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_StatusDescricao + ' ' + VL_DescricaoErroTransacao);
+            //F_TransacaoFree(VL_Transacao_ID);
             Exit;
-
-        try
-            VL_Mensagem := TMensagem.Create;
-
-            if TTConexao(VL_AContext.Data).Status > csLink then
-                VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt))
-            else
-                VL_Dados := Copy(VL_Dados, 1, 5) + EncodeStringBase64(Copy(VL_Dados, 6, MaxInt));
-
-            VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
-            VP_Mensagem.AddTag('00D2', VL_Dados);
-
-
-            Result := 0;
-
-            if VP_AguardaRetorno then
-            begin
-                Result := 67;
-
-                VL_Temporizador := TTemporizador.Create(TDComunicador(VP_DComunicador).V_ListaThreads);
-                VL_Temporizador.V_Executado := False;
-                VL_Temporizador.V_ID := VP_Transmissao_ID;
-
-                VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
-
-                TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.add(VL_Temporizador);
-                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
-
-                {
-                VL_Dados := '';
-                VL_Dados := VL_AContext.Connection.IOHandler.ReadLn(LFL, VP_TempoAguarda, -1, nil);
-
-                Result := CLNInteiro(VL_Dados);
-
-                if Result <> 0 then
-                begin
-                    VL_Temporizador.Free;
-                    Exit;
-                end;
-                 }
-
-                VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, False, VL_Temporizador);
-
-                if TDComunicador(VP_DComunicador).V_Parar then
-                begin
-                    TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.remove(VL_Temporizador);
-                    VL_Temporizador.Free;
-                    Exit;
-                end;
-
-
-
-                case VL_Evento of
-                    agEvento:
-                    begin
-                        Result := VO_Mensagem.CarregaTags(VL_Temporizador.V_Dados);
-                    end;
-
-                    agTempo: Result := 67;
-                    agAborta: Result := 69;
-                end;
-
-                TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.remove(VL_Temporizador);
-                VL_Temporizador.Free;
-                if Assigned(VP_Procedimento) then
-                    VP_Procedimento(Result, VP_Transmissao_ID, VL_Temporizador.V_Dados, TTConexao(VL_AContext.Data).ID,
-                        TTConexao(VL_AContext.Data).Terminal_Tipo, TTConexao(VL_AContext.Data).Terminal_ID,
-                        TTConexao(VL_AContext.Data).DOC, TTConexao(VL_AContext.Data).Status, TTConexao(VL_AContext.Data).Identificacao,
-                        TTConexao(VL_AContext.Data).Permissao, TTConexao(VL_AContext.Data).ClienteIp);
-
-            end
-            else
-            begin
-
-                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
-                {
-                VL_Dados := '';
-                VL_Dados := VL_AContext.Connection.IOHandler.ReadLn(LFL, VP_TempoAguarda, -1, nil);
-
-                Result := CLNInteiro(VL_Dados);
-                }
-            end;
-
-        finally
-            VL_Mensagem.Free;
         end;
 
-    except
-        on e: Exception do
+        if Ord(tsCancelada) = VL_TransacaoStatus then
         begin
-            Result := 1;
-            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090620221846', 'ServidorTransmiteSolicitacaoID' + e.ClassName + '/' + e.Message, '', 1, 1);
-        end;
-
-    end;
-
-end;
-
-function TDComunicador.ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer; VP_TempoAguarda: integer;
-    VP_AguardaRetorno: boolean; VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
-    var VO_Mensagem: TMensagem;  VP_TerminalIdentificacao: string): integer;
-var
-    VL_I: integer;
-    VL_Clientes: TIdContextList;
-    VL_Mensagem: TMensagem;
-    VL_Dados: ansistring;
-    VL_Temporizador: TTemporizador;
-    VL_Evento: TAguardaEvento;
-    VL_AContext: TIdContext;
-begin
-    try
-        Result := 53;
-        VL_Dados := '';
-        VP_Mensagem.TagToStr(VL_Dados);
-
-        if VP_Transmissao_ID = '' then
-            VP_Transmissao_ID := CriaID;
-
-
-
-        try
-            VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
-
-            for VL_I := 0 to VL_Clientes.Count - 1 do
-                if  (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificacao = VP_TerminalIdentificacao) then
-                begin
-                    VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
-                    Result := 0;
-                    Break;
-                end;
-        finally
-            TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.UnlockList;
-        end;
-        if Result <> 0 then
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_Transacao_ID);
+            ShowMessage('Transação cancelada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transacao cancelada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            //F_TransacaoFree(VL_Transacao_ID);
             Exit;
-
-        try
-            VL_Mensagem := TMensagem.Create;
-
-            VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
-
-            VP_Mensagem.Limpar;
-            VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
-            VP_Mensagem.AddTag('00D2', VL_Dados);
-
-
-            Result := 0;
-
-            if VP_AguardaRetorno then
-            begin
-                Result := 67;
-
-                VL_Temporizador := TTemporizador.Create(TDComunicador(VP_DComunicador).V_ListaThreads);
-                VL_Temporizador.V_Executado := False;
-
-                VL_Temporizador.V_ID := VP_Transmissao_ID;
-
-                VP_Mensagem.AddComando('00D1', VL_Temporizador.V_ID);
-
-                TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.add(VL_Temporizador);
-                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
-
-                {
-                VL_Dados := '';
-                VL_Dados := VL_AContext.Connection.IOHandler.ReadLn(LFL, VP_TempoAguarda, -1, nil);
-
-                Result := CLNInteiro(VL_Dados);
-
-                if Result <> 0 then
-                begin
-                    VL_Temporizador.Free;
-                    Exit;
-                end;
-                }
-
-
-                VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, False, VL_Temporizador);
-
-                if TDComunicador(VP_DComunicador).V_Parar then
-                begin
-                    TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.remove(VL_Temporizador);
-                    VL_Temporizador.Free;
-                    Exit;
-                end;
-
-
-
-                case VL_Evento of
-                    agEvento:
-                    begin
-                        Result := VO_Mensagem.CarregaTags(VL_Temporizador.V_Dados);
-                    end;
-
-                    agTempo: Result := 67;
-                    agAborta: Result := 69;
-                end;
-
-                TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.remove(VL_Temporizador);
-                VL_Temporizador.Free;
-                if Assigned(VP_Procedimento) then
-                    VP_Procedimento(Result, VP_Transmissao_ID, VL_Temporizador.V_Dados, TTConexao(VL_AContext.Data).Id,
-                        TTConexao(VL_AContext.Data).Terminal_Tipo, TTConexao(VL_AContext.Data).Terminal_ID,
-                        TTConexao(VL_AContext.Data).DOC, TTConexao(VL_AContext.Data).Status, TTConexao(VL_AContext.Data).Identificacao,
-                        TTConexao(VL_AContext.Data).Permissao, TTConexao(VL_AContext.Data).ClienteIp);
-
-            end
-            else
-            begin
-                VL_AContext.Connection.Socket.WriteLn(base64.EncodeStringBase64(VP_Mensagem.TagsAsString));
-                {
-                VL_Dados := '';
-                VL_Dados := VL_AContext.Connection.IOHandler.ReadLn(LFL, VP_TempoAguarda, -1, nil);
-
-                Result := CLNInteiro(VL_Dados);
-                }
-            end;
-
-        finally
-            VL_Mensagem.Free;
         end;
 
-    except
-        on e: Exception do
+        if Ord(tsNaoLocalizada) = VL_TransacaoStatus then
         begin
-            Result := 1;
-            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '260820220820', 'ServidorTransmiteSolicitacaoIdentificacao' +
-                e.ClassName + '/' + e.Message, '', 1, 1);
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_Transacao_ID);
+            ShowMessage('Transação não localizada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transacao não localizada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            F_TransacaoFree(VL_Transacao_ID);
+            Exit;
         end;
 
+        if Ord(tsNegada) = VL_TransacaoStatus then
+        begin
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_Transacao_ID);
+            ShowMessage('Transação negada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transacao negada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            //F_TransacaoFree(VL_Transacao_ID);
+            Exit;
+        end;
+
+        if Ord(tsEfetivada) = VL_TransacaoStatus then
+        begin
+            ShowMessage('Transação aprovada ' + VL_Transacao_ID);
+            MStatus.Lines.Add('Transacao ID: ' + VL_Transacao_ID + ' efetivada');
+            F_TransacaoFree(VL_Transacao_ID);
+            Exit;
+        end;
+
+        if Ord(tsAbortada) = VL_TransacaoStatus then
+        begin
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_Transacao_ID);
+            ShowMessage('Transação abortada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transacao abortada ' + VL_Transacao_ID + ' ' + VL_DescricaoErroTransacao);
+            //F_TransacaoFree(VL_Transacao_ID);
+            Exit;
+        end;
+
+
+        Application.ProcessMessages;
+        sleep(30);
+        case VL_TransacaoStatus of
+            Ord(tsProcessando): MStatus.Lines.Add('Transacao ID:' + VL_Transacao_ID + 'Estado de processamento');
+            Ord(tsInicializada): MStatus.Lines.Add('Transacao ID:' + VL_Transacao_ID + 'Estado de inicializada');
+            Ord(tsAguardandoComando): MStatus.Lines.Add('Transacao ID:' + VL_Transacao_ID + 'Estado de aguardando comando');
+        end;
     end;
 
-end;
-
-procedure TDComunicador.desativartodasconexao(VP_DComunicador: Pointer);
-begin
-    try
-        begin
-            if TDComunicador(VP_DComunicador).IdTCPCliente.Connected then
-                DesconectarCliente(VP_DComunicador);
-
-            if TDComunicador(VP_DComunicador).IdTCPServidor.Active then
-            begin
-                TDComunicador(VP_DComunicador).IdTCPServidor.StopListening;
-                TDComunicador(VP_DComunicador).IdTCPServidor.Active := False;
-            end;
-        end;
-
-    except
-        on e: Exception do
-            GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920220835', 'Erro na TDComunicador.desativartodasconexao ' +
-                e.ClassName + '/' + e.Message, '', 1, 1);
-
+    if ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > 5000) then
+    begin
+        MStatus.Lines.Add('Transacao ID:' + VL_Transacao_ID + 'Não foi respondida em tempo hábil');
+        //F_TransacaoFree(VL_Transacao_ID);
     end;
+    }
 end;
 
-constructor TThRecebe.Create(VP_DComunicador: Pointer);
+procedure TF_Principal.BSolicitacaoBlocanteClick(Sender: TObject);
 begin
-    inherited Create(True);
-    Self.FreeOnTerminate := False;
-    Self.f_DComunicador := VP_DComunicador;
+
 end;
 
-procedure TThRecebe.Execute;
+procedure TF_Principal.BSolicitacaoClick(Sender: TObject);
+begin
+
+end;
+
+procedure TF_Principal.Button1Click(Sender: TObject);
 var
-    VL_Dados: string;
-    VL_Linha: string;
-    VL_Mensagem: TMensagem;
+  VL_Erro: integer;
+  VL_Status: integer;
+  VL_DescricaoErro: string;
+  VL_Retorno: PChar;
 begin
-    VL_Mensagem := TMensagem.Create;
-    try
+  VL_Status := 0;
+  VL_DescricaoErro := '';
+  VL_Retorno := nil;
 
-        while not Terminated do
-        begin
-            try
-                if not Assigned(TDComunicador(f_DComunicador)) then
-                    Exit;
+  if not Assigned(F_StatusOpenTef) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
 
-                VL_Linha := '090520221729';
-                if not Assigned(f_DComunicador) then
-                    Exit;
-                VL_Linha := '090520221741';
+  VL_Erro := F_StatusOpenTef(F_Tef, VL_Status);
 
-                VL_Dados := '';
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_Retorno);
 
-                if TDComunicador(f_DComunicador).V_Parar then
-                    Exit;
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
 
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro);
 
-                VL_Linha := '08122023153900';
+    lblStatusConexao.Caption := 'Desconectado';
+    lblStatusConexao.Font.Color := clRed;
 
-                if TDComunicador(f_DComunicador).IdTCPCliente.Connected then
-                begin
-                    VL_Linha := '08122023153910';
-                    TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.CheckForDisconnect;
-                    VL_Linha := '08122023153905';
-                end
-                else
-                if ((TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado) and
-                    (TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csLogado)) then
-                begin
-                    VL_Linha := '08122023153906';
-                    TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csDesconectado;
-                    TThClienteProcessaRecebe.Create(f_DComunicador, VL_Dados);
-                end;
+    Exit;
+  end;
 
-                VL_Linha := '08122023153901';
-                if TDComunicador(f_DComunicador).V_Parar then
-                    Exit;
-
-                VL_Linha := '08122023153902';
-                if TDComunicador(f_DComunicador).IdTCPCliente.Connected then
-                begin
-                    VL_Linha := '08122023153903';
-                    if not TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.InputBufferIsEmpty then
-                    begin
-                        VL_Linha := '090520221747';
-                        try
-                            VL_Dados := TDComunicador(f_DComunicador).IdTCPCliente.Socket.ReadLn;
-                            VL_Dados := base64.DEcodeStringBase64(VL_Dados);
-                        except
-                            VL_Linha := '090520221750';
-                        end;
-                        VL_Linha := '090520221730';
-
-                        if TDComunicador(f_DComunicador).V_Parar then
-                            Exit;
-
-                        VL_Linha := '090520221731';
-
-                        if VL_Dados <> '' then
-                        begin
-                            //TDComunicador(f_DComunicador).IdTCPCliente.Socket.Write('0' + LFL);
-                            TThClienteProcessaRecebe.Create(f_DComunicador, VL_Dados);
-
-                        end;
-
-                    end;
-                    VL_Linha := '08122023153904';
-                end;
-                sleep(10);
-
-
-
-            except
-                on e: Exception do
-                    GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
-                        e.ClassName + '/' + e.Message, '', 1, 1);
-            end;
-
-        end;
-
-    finally
-        begin
-            VL_Mensagem.Free;
-
-        end;
-
-    end;
+  if VL_Status = Ord(csLogado) then
+  begin
+    lblStatusConexao.Caption := 'Conectado';
+    lblStatusConexao.Font.Color := clGreen;
+  end
+  else
+  begin
+    lblStatusConexao.Caption := 'Desconectado';
+    lblStatusConexao.Font.Color := clRed;
+  end;
 
 end;
 
-
-function TDComunicador.ClienteTransmiteDados(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_DadosO, VO_DadosI: ansistring;
-    VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
+procedure TF_Principal.Button2Click(Sender: TObject);
 var
-    VL_Evento: TAguardaEvento;
-    VL_Temporizador: TTemporizador;
-    VL_Mensagem: TMensagem;
-    VL_DadosCriptografado: string;
-    VL_DadosEnviar: string;
+  VL_Erro: integer;
+  VL_Status: integer;
+  VL_TransacaoID: PChar;
+  VL_DescricaoErro: PChar;
+  VL_Tempo: integer;
 begin
-    Result := 0;
-    VL_DadosCriptografado := '';
-    VL_DadosEnviar := '';
-    try
-        try
-            VL_Mensagem := TMensagem.Create;
+  VL_TransacaoID := '';
+  VL_Status := 0;
+  VL_DescricaoErro := '';
+  VL_Tempo := StrToInt(ETempo.Text); // tempo de espera
 
-            if VO_Transmissao_ID = '' then
-                VO_Transmissao_ID := CriaID;
+  if not Assigned(F_StatusOpenTef) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
 
-            if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csDesconectado) then
-            begin
-                Result := 100;
-                Exit;
-            end;
-            if not TDComunicador(VP_DComunicador).IdTCPCliente.Connected then
-            begin
-                Result := 100;
-                TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
-                Exit;
-            end;
+  VL_Erro := F_StatusOpenTef(F_Tef, VL_Status);
 
-            if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or
-                (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csLogado) then
-            begin
-                VL_DadosCriptografado := Copy(VO_DadosO, 1, 5) + TDComunicador(VP_DComunicador).V_ConexaoCliente.Aes.EncryptString(
-                    Copy(VO_DadosO, 6, MaxInt));
-                VL_DadosEnviar := VL_DadosCriptografado;
-            end
-            else
-                VL_DadosEnviar := VO_DadosO;
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_DescricaoErro);
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
+    Exit;
+  end;
 
-            VL_Mensagem.AddComando('00D1', VO_Transmissao_ID);
-            VL_Mensagem.AddTag('00D2', VL_DadosEnviar);
+  if VL_Status <> Ord(csLogado) then
+  begin
+    MStatus.Lines.Add('Faça o login');
+    exit;
+  end;
 
+  if not Assigned(F_TransacaoCreate) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
 
-            if VP_AguardaRetorno then
-            begin
-                Result := 67;
+  MStatus.Clear;
+  MStatus.Lines.add('Inicia transacao de conciliacao');
 
+  // SOLICITA APROVAÇÃO
+  VL_Erro := F_TransacaoCreate(F_Tef, PChar('0113'), PChar(ECaixa.Text), VL_TransacaoID, VL_Tempo);
 
-                VL_Temporizador := TTemporizador.Create(TDComunicador(VP_DComunicador).V_ListaThreads);
-                VL_Temporizador.V_Executado := False;
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_DescricaoErro);
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro);
+    Exit;
+  end;
 
-                VL_Temporizador.V_ID := VO_Transmissao_ID;
-
-                TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.add(VL_Temporizador);
-
-                TDComunicador(VP_DComunicador).IdTCPCliente.Socket.WriteLn(base64.EncodeStringBase64(VL_Mensagem.TagsAsString));
-
-                {
-                VL_DadosEnviar := '';
-                VL_DadosEnviar := TDComunicador(VP_DComunicador).IdTCPCliente.Socket.ReadLn(LFL, VP_TempoAguarda, -1, nil);
-                Result := CLNInteiro(VL_DadosEnviar);
-                if Result <> 0 then
-                begin
-                    VL_Temporizador.Free;
-                    Exit;
-                end;
-                }
-
-                VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, False, VL_Temporizador);
-
-                if TDComunicador(VP_DComunicador).V_Parar then
-                begin
-                    TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.remove(VL_Temporizador);
-                    VL_Temporizador.Free;
-                    Exit;
-                end;
-
-                case VL_Evento of
-                    agEvento:
-                    begin
-                        VO_DadosI := VL_Temporizador.V_Dados;
-                        Result := 0;
-                    end;
-
-                    agTempo: Result := 67;
-                    agAborta: Result := 69;
-                end;
-
-                TDComunicador(VP_DComunicador).V_EventoSocketAguardaResposta.remove(VL_Temporizador);
-                VL_Temporizador.Free;
-
-            end
-            else
-            begin
-                TDComunicador(VP_DComunicador).IdTCPCliente.Socket.WriteLn(base64.EncodeStringBase64(VL_Mensagem.TagsAsString));
-                {
-                VL_DadosEnviar := '';
-                VL_DadosEnviar := TDComunicador(VP_DComunicador).IdTCPCliente.Socket.ReadLn(LFL, VP_TempoAguarda, -1, nil);
-                Result := CLNInteiro(VL_DadosEnviar);
-                if Result <> 0 then
-                    Exit;
-                }
-            end;
-
-
-
-        except
-            on e: Exception do
-            begin
-                Result := 83;
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '0109202219:09', 'Erro na TDComunicador.ClienteTransmiteDados' +
-                    e.ClassName + '/' + e.Message, '', Result, 1);
-                DesconectarCliente(VP_DComunicador);
-
-            end;
-        end;
-
-    finally
-        VL_Mensagem.Free;
-    end;
-
+  MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
 end;
 
-function TDComunicador.ClienteTransmiteSolicitacao(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_Dados: TMensagem;
-    var VO_Retorno: TMensagem; VP_Procedimento: TRetorno; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
+procedure TF_Principal.Button3Click(Sender: TObject);
+begin
+end;
+
+
+procedure TF_Principal.BInicializarClick(Sender: TObject);
 var
-    VL_Dados: ansistring;
-    VL_Mensagem: TMensagem;
+  VL_Codigo: integer;
+  VL_AmbienteTeste: integer;
+  VL_DescricaoErro: string;
+  VL_Retorno: PChar;
 begin
-    Result := 0;
-    VL_Dados := '';
-    try
-        try
-            VL_Mensagem := TMensagem.Create;
-            VL_Mensagem.CarregaTags(VO_Dados.TagsAsString);
-            VO_Dados.Limpar;
-            VO_Retorno.Limpar;
-            if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status < csChaveado) then
-            begin
-                Result := ConectarCliente(VP_DComunicador);
-                if Result <> 0 then
-                    Exit;
-            end;
+  VL_Retorno := nil;
+  try
+    VL_DescricaoErro := '';
 
-            Result := VL_Mensagem.TagToStr(VL_Dados);
-            if Result <> 0 then
-            begin
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '190520222159', 'Erro na TDComunicador.ClienteTransmiteSolicitacao ', '', Result, 1);
-                Exit;
-            end;
+    if cbxAmbienteTeste.Checked then // ambiente de teste
+      VL_AmbienteTeste := 1 // ativado
+    else
+      VL_AmbienteTeste := 0; // desativado
 
-            Result := ClienteVerificaConexao(VP_DComunicador);
+    if EPinPadLibHashMd5.Text <> '' then
+    begin
+      if EPinPadLibHashMd5.Text <> md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + ETefLib.Text)) then
+        ShowMessage('O Arquivo PinPad lib não esta com o Hash Válido');
+    end
+    else
+      EPinPadLibHashMd5.Text :=
+        md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + ETefLib.Text));
 
-            if Result <> 0 then
-            begin
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920220834', 'Erro na TDComunicador.ClienteTransmiteSolicitacao ', '', Result, 1);
-                Exit;
-            end;
 
-            Result := ClienteTransmiteDados(VP_DComunicador, VO_Transmissao_ID, VL_Dados, VL_Dados, VP_TempoAguarda, VP_AguardaRetorno);
-            if Result <> 0 then
-            begin
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '190520222101', 'Erro na TDComunicador.ClienteTransmiteSolicitacao ', '', Result, 1);
-                Exit;
+    if EPinPadModeloLibHashMd5.Text <> '' then
+    begin
+      if EPinPadModeloLibHashMd5.Text <> md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + EPinPadLib.Text)) then
+        ShowMessage('O Arquivo Modelo lib não esta com o Hash Válido');
+    end
+    else
+      EPinPadModeloLibHashMd5.Text :=
+        md5.MDPrint(md5.MD5File(ExtractFilePath(ParamStr(0)) + EPinPadLib.Text));
 
-            end;
-            if VP_AguardaRetorno then
-            begin
-                if VL_Dados = '' then
-                begin
-                    Result := 24;
-                    TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
-                    if TDComunicador(VP_DComunicador).idTCPCliente.Connected then
-                        DesconectarCliente(VP_DComunicador);
-                    GravaLog(V_ArquivoLog, 0, '', 'comunicador', '210520222014', 'Erro na TDComunicador.ClienteTransmiteSolicitacao ', '', Result, 1);
-                    Exit;
+    F_TefLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + ETefLib.Text));
 
-                end;
+    Pointer(F_TefInicializar) := GetProcAddress(F_TefLib, 'inicializar');
+    Pointer(F_Login) := GetProcAddress(F_TefLib, 'login');
+    Pointer(F_Desconectar) := GetProcAddress(F_TefLib, 'desconectar');
+    Pointer(F_SolicitacaoBlocante) := GetProcAddress(F_TefLib, 'solicitacaoblocante');
+    Pointer(F_Solicitacao) := GetProcAddress(F_TefLib, 'solicitacao');
+    Pointer(F_StatusOpenTef) := GetProcAddress(F_TefLib, 'opentefstatus');
+    Pointer(F_Finalizar) := GetProcAddress(F_TefLib, 'finalizar');
 
-                Result := VO_Retorno.CarregaTags(VL_Dados);
-                if Assigned(VP_Procedimento) then
-                    VP_Procedimento(PChar(VO_Transmissao_ID), V_ProcID, Result, PChar(VL_Dados));
-            end;
-        except
-            on e: Exception do
-            begin
-                Result := 24;
-                GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090520221723', 'Erro na TDComunicador.ClienteTransmiteSolicitacao ' +
-                    e.ClassName + '/' + e.Message, '', Result, 1);
+    Pointer(F_MensagemCreate) := GetProcAddress(F_TefLib, 'mensagemcreate');
+    Pointer(F_MensagemCarregaTags) := GetProcAddress(F_TefLib, 'mensagemcarregatags');
+    Pointer(F_MensagemComando) := GetProcAddress(F_TefLib, 'mensagemcomando');
+    Pointer(F_MensagemComandoDados) := GetProcAddress(F_TefLib, 'mensagemcomandodados');
+    Pointer(F_MensagemFree) := GetProcAddress(F_TefLib, 'mensagemfree');
+    Pointer(F_MensagemLimpar) := GetProcAddress(F_TefLib, 'mensagemlimpar');
+    Pointer(F_Mensagemaddtag) := GetProcAddress(F_TefLib, 'mensagemaddtag');
+    Pointer(F_Mensagemaddcomando) := GetProcAddress(F_TefLib, 'mensagemaddcomando');
+    Pointer(F_MensagemTagAsString) := GetProcAddress(F_TefLib, 'mensagemtagasstring');
+    Pointer(F_MensagemTagCount) := GetProcAddress(F_TefLib, 'mensagemtagcount');
+    Pointer(F_MensagemGetTag) := GetProcAddress(F_TefLib, 'mensagemgettag');
+    Pointer(F_MensagemGetTagIdx) := GetProcAddress(F_TefLib, 'mensagemgettagidx');
+    Pointer(F_MensagemTagToStr) := GetProcAddress(F_TefLib, 'mensagemtagtostr');
+    Pointer(F_Erro) := GetProcAddress(F_TefLib, 'mensagemerro');
+    Pointer(F_MensagemGetTagPosicao) := GetProcAddress(F_TefLib, 'mensagemgettagposicao');
+    Pointer(F_MensagemAddTagPosicao) := GetProcAddress(F_TefLib, 'mensagemaddtagposicao');
 
-                TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
-                if TDComunicador(VP_DComunicador).idTCPCliente.Connected then
-                    DesconectarCliente(VP_DComunicador);
-            end;
+    Pointer(F_TransacaoCancela) := GetProcAddress(F_TefLib, 'transacaocancela');
+    Pointer(F_TransacaoCreate) := GetProcAddress(F_TefLib, 'transacaocreate');
+    Pointer(F_TransacaoFree) := GetProcAddress(F_TefLib, 'transacaofree');
+    Pointer(F_TransacaoStatus) := GetProcAddress(F_TefLib, 'transacaostatus');
+    Pointer(F_TransacaoStatusDescricao) := GetProcAddress(F_TefLib, 'transacaostatusdescricao');
+    Pointer(F_TransacaoGetTag) := GetProcAddress(F_TefLib, 'transacaogettag');
 
-        end;
-    finally
-        VL_Mensagem.Free;
+    Pointer(F_AlterarNivelLog) := GetProcAddress(F_TefLib, 'alterarnivellog');
+    Pointer(F_Versao) := GetProcAddress(F_TefLib, 'versao');
+    Pointer(F_MensagemDispose) := GetProcAddress(F_TefLib, 'mensagemdispose');
+
+    VL_Codigo := F_TefInicializar(F_Tef, StrToPinPadModelo(EPinPadModelo.Text), PChar(ExtractFilePath(ParamStr(0)) + EPinPadModeloLib.Text),
+      PChar(EPinPadModeloPorta.Text), PChar(ExtractFilePath(ParamStr(0)) + EPinPadLib.Text), PChar(F_ArquivoLog), @uprincipal.StringDispose,
+      @uprincipal.Retorno, @uprincipal.solicitadadostransacao, @uprincipal.solicitadadospdv, @uprincipal.imprime, @uprincipal.mostramenu, @uprincipal.mensagemoperador, VL_AmbienteTeste);
+
+    if VL_Codigo <> 0 then
+    begin
+      F_Erro(VL_Codigo, VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição:' + VL_DescricaoErro);
+      exit;
     end;
+
+    F_MensagemCreate(F_Mensagem);
+
+  except
+    on e: Exception do
+      ShowMessage('Erro ao carregar a Lib ' + e.Message);
+  end;
 end;
 
+procedure TF_Principal.BFinalizarTefClick(Sender: TObject);
+var
+  VL_Codigo: integer;
+  VL_DescricaoErro: string;
+  VL_Retorno: PChar;
+begin
+  VL_DescricaoErro := '';
+  VL_Retorno := nil;
+
+  if not Assigned(F_Finalizar) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  VL_Codigo := F_Finalizar(F_Tef);
+
+  if VL_Codigo <> 0 then
+  begin
+    F_Erro(VL_Codigo, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' + VL_DescricaoErro);
+    exit;
+  end;
+
+  if Assigned(F_Mensagem) then
+    F_MensagemFree(F_Mensagem);
+
+  UnloadLibrary(F_TefLib);
+end;
+
+procedure TF_Principal.BAlterarNivelLogClick(Sender: TObject);
+begin
+  if not Assigned(F_AlterarNivelLog) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  F_AlterarNivelLog(StrToInt(ELogNivel.Text));
+end;
+
+procedure TF_Principal.BDesconectarClick(Sender: TObject);
+var
+  VL_Codigo: integer;
+  VL_DescricaoErro: string;
+  VL_Retorno: PChar;
+begin
+  VL_Retorno := nil;
+  VL_Codigo := F_Desconectar(F_Tef);
+
+  if VL_Codigo <> 0 then
+  begin
+    F_Erro(VL_Codigo, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' + VL_DescricaoErro);
+    exit;
+  end;
+
+  lblStatusConexao.Caption := 'Desconectado';
+  lblStatusConexao.Font.Color := clRed;
+end;
+
+procedure TF_Principal.BLoginClick(Sender: TObject);
+var
+  VL_Codigo: integer;
+  VL_DescricaoErro: string;
+  VL_Retorno: PChar;
+begin
+  VL_DescricaoErro := '';
+  VL_Retorno := nil;
+
+  if not Assigned(F_Login) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  VL_Codigo := F_Login(F_Tef, PChar(EHost.Text), StrToInt(EPorta.Text), StrToInt(EID.Text), PChar(Trim(EChave.Lines.Text)), C_mensagem, PChar(trim(EIdentificador.Lines.Text)));
+
+  if VL_Codigo <> 0 then
+  begin
+    F_Erro(VL_Codigo, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Codigo) + #13 + 'Descrição: ' + VL_DescricaoErro);
+    exit;
+  end;
+
+  lblStatusConexao.Caption := 'Conectado';
+  lblStatusConexao.Font.Color := clGreen;
+end;
+
+procedure TF_Principal.BVendaClick(Sender: TObject);
+var
+  VL_Erro: integer;
+  VL_Status: integer;
+  VL_TransacaoID: string;
+  VL_DescricaoErro: string;
+  VL_Retorno: PChar;
+  VL_Tempo: integer;
+begin
+  VL_TransacaoID := '';
+  VL_Status := 0;
+  VL_DescricaoErro := '';
+  VL_Retorno := nil;
+  VL_Tempo := StrToInt(ETempo.Text); // tempo de espera
+
+  if not Assigned(F_StatusOpenTef) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  VL_Erro := F_StatusOpenTef(F_Tef, VL_Status);
+
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
+    Exit;
+  end;
+
+  if VL_Status <> Ord(csLogado) then
+  begin
+    MStatus.Lines.Add('Faça o login');
+    exit;
+  end;
+
+  if not Assigned(F_TransacaoCreate) then
+  begin
+    ShowMessage('Inicialize a lib');
+    Exit;
+  end;
+
+  MStatus.Clear;
+  MStatus.Lines.add('Inicia transacao de venda');
+
+  // SOLICITA APROVAÇÃO
+  VL_Erro := F_TransacaoCreate(F_Tef, PChar('000A'), PChar(ECaixa.Text), VL_Retorno, VL_Tempo);
+
+  VL_TransacaoID := VL_Retorno;
+  F_MensagemDispose(VL_Retorno);
+
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_Retorno);
+
+    VL_DescricaoErro := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro);
+    Exit;
+  end;
+
+  MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
+  MChave.Lines.Text := VL_TransacaoID;
+    {
+    while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < VL_Tempo) do
+    begin
+        VL_Erro := F_TransacaoStatus(VL_TransacaoStatus, VL_TransacaoChave, VL_TransacaoID);
+
+        if VL_Erro <> 0 then
+        begin
+            F_Erro(VL_Erro, VL_DescricaoErro);
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição:' + VL_DescricaoErro + '  ' + VL_DescricaoErroTransacao);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsCancelada) = VL_TransacaoStatus then
+        begin
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            ShowMessage('Transação cancelada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transação cancelada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsNegada) = VL_TransacaoStatus then
+        begin
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            ShowMessage('Transação negada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transação negada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+
+        if Ord(tsNaoLocalizada) = VL_TransacaoStatus then
+        begin
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            ShowMessage('Transação não localizada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transação não localizada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+
+        if Ord(tsEfetivada) = VL_TransacaoStatus then
+        begin
+            ShowMessage('Transação aprovada ' + VL_TransacaoID);
+            MChave.Lines.Add(VL_TransacaoChave);
+            MStatus.Lines.Add('Transacao ID: ' + VL_TransacaoID + ' Efetivada');
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+        if Ord(tsAbortada) = VL_TransacaoStatus then
+        begin
+            F_TransacaoStatusDescricao(VL_DescricaoErroTransacao, VL_TransacaoID);
+            ShowMessage('Transação abortada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            MStatus.Lines.Add('Transação abortada ' + VL_TransacaoID + ' ' + VL_DescricaoErroTransacao);
+            F_TransacaoFree(VL_TransacaoID);
+            Exit;
+        end;
+
+
+        Application.ProcessMessages;
+        sleep(100);
+        case VL_TransacaoStatus of
+            Ord(tsProcessando): MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de processamento');
+            Ord(tsInicializada): MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de inicializada');
+            Ord(tsAguardandoComando): MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Estado de aguardando comando');
+        end;
+    end;
+
+    if ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) > 5000) then
+    begin
+        MStatus.Lines.Add('Transacao ID:' + VL_TransacaoID + 'Não foi respondida em tempo hábil');
+        F_TransacaoFree(VL_TransacaoID);
+    end;
+
+    }
+end;
+
+procedure TF_Principal.cbxAmbienteTesteChange(Sender: TObject);
+begin
+    {
+    if cbxAmbienteTeste.Checked then
+    begin
+        ETefLib.Text := 'tef_lib.dll';
+        EPinPadModelo.Text := 'NDF';
+    end
+    else
+    begin
+        ETefLib.Text := '..\tef_lib\win64\tef_lib.dll';
+        EPinPadModelo.Text := 'GERTEC_PPC930';
+    end;
+    }
+end;
+
+procedure TF_Principal.FormCreate(Sender: TObject);
+begin
+  F_Mensagem := nil;
+  F_Tef := nil;
+  F_ArquivoLog := ExtractFilePath(ParamStr(0)) + 'appopentef.log';
+
+  {$IF DEFINED(WIN64)}
+         ETefLib.Text := '..\..\tef_lib\win64\tef_lib.dll';
+         EPinPadLib.Text := '..\..\pinpad_lib\win64\pinpad_lib.dll';
+         EPinPadModeloLib.Text := '..\..\pinpad_lib\win64\';
+  {$ENDIF}
+
+  {$IF DEFINED(WIN32)}
+         ETefLib.Text := '..\..\tef_lib\win32\tef_lib.dll';
+         EPinPadLib.Text := '..\..\pinpad_lib\win32\pinpad_lib.dll';
+         EPinPadModeloLib.Text := '..\..\pinpad_lib\win32\';
+  {$ENDIF}
+
+  {$IF DEFINED(LINUX64)}
+         ETefLib.Text := '../../tef_lib/linux64/libtef_lib.so';
+         EPinPadLib.Text := '../../pinpad_lib/linux64/libpinpad_lib.so';
+         EPinPadModeloLib.Text := '../../pinpad_lib/linux64/';
+  {$ENDIF}
+
+  {$IF DEFINED(LINUX32)}
+         ETefLib.Text := '../../tef_lib/linux32/tef_lib.so';
+         EPinPadLib.Text := '../../pinpad_lib/linux32/pinpad_lib.so';
+         EPinPadModeloLib.Text := '../../pinpad_lib/linux32/';
+  {$ENDIF}
+
+end;
+
+procedure TF_Principal.FormDestroy(Sender: TObject);
+begin
+  if Assigned(F_Mensagem) then
+    F_MensagemFree(F_Mensagem);
+
+  if Assigned(F_Finalizar) then
+    F_Finalizar(F_Tef);
+
+  if F_TefLib <> 0 then
+    UnloadLibrary(F_TefLib);
+
+end;
+
+function StrToPinPadModelo(VP_PinPadModelo: ansistring): integer;
+begin
+  VP_PinPadModelo := UpperCase(VP_PinPadModelo);
+  case VP_PinPadModelo of
+    'NDF': Result := 0;
+    'GERTEC_PPC930': Result := 1;
+    else
+      Result := 0
+  end;
+
+end;
+
+procedure TF_Principal.retornoConciliacao(VP_Dados: PChar);
+var
+  VL_PosicaoConciliacao, VL_PosicaoVenda, VL_ConciliacaoQuantidade, VL_VendaQuantidade: integer;
+  VL_Erro: integer;
+  VL_Mensagem, VL_Venda: Pointer;
+  VL_String, VL_Bin, VL_DescricaoErro: PChar;
+  VL_Arquivo_Nome: ansistring;
+  VL_Arquivo: Text;
+begin
+  VL_DescricaoErro := '';
+  VL_String := '';
+  VL_Bin := '';
+  VL_Arquivo_Nome := '';
+  VL_Mensagem := nil;
+  VL_Venda := nil;
+  VL_PosicaoVenda := 0;
+
+  F_MensagemCreate(VL_Mensagem);
+  F_MensagemCreate(VL_Venda);
+
+  VL_Erro := F_MensagemCarregaTags(VL_Mensagem, VP_Dados);
+
+  if VL_Erro <> 0 then
+  begin
+    F_Erro(VL_Erro, VL_DescricaoErro);
+    ShowMessage('Erro: ' + IntToStr(VL_Erro) + #13 + 'Descrição: ' + VL_DescricaoErro);
+    Exit;
+  end;
+
+  F_MensagemGetTag(VL_Mensagem, '0119', VL_String); // quantidade de linha na tabela
+  VL_ConciliacaoQuantidade := StrToInt(VL_String);
+
+  MDConciliacao.EmptyTable;
+
+  for VL_PosicaoConciliacao := 1 to VL_ConciliacaoQuantidade do
+  begin
+    F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao, '0036', VL_Bin);
+    // bin
+
+    F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao, '004D', VL_String);
+    // mensagem com erro
+
+    if VL_String <> '' then
+      VL_Erro := StrToInt(VL_String);
+
+    if VL_Erro <> 0 then
+    begin
+      MDConciliacao.Insert;
+      MDConciliacao.FieldByName('S_BIN').AsString := VL_Bin;
+
+      MDConciliacao.FieldByName('S_NSU').AsString := '';
+      MDConciliacao.FieldByName('S_PARCELA').AsString := '';
+      MDConciliacao.FieldByName('S_VALOR').AsString := '';
+      MDConciliacao.FieldByName('S_ERRO').AsString := IntToStr(VL_Erro);
+
+      MDConciliacao.Post;
+      continue;
+    end;
+
+    F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao, '004A', VL_String);
+    // mensagem com erro
+    VL_String := PChar(trim(VL_String));
+
+    if VL_String <> '' then
+    begin
+      MDConciliacao.Insert;
+      MDConciliacao.FieldByName('S_BIN').AsString := VL_Bin;
+
+      MDConciliacao.FieldByName('S_NSU').AsString := '';
+      MDConciliacao.FieldByName('S_PARCELA').AsString := '';
+      MDConciliacao.FieldByName('S_VALOR').AsString := '';
+      MDConciliacao.FieldByName('S_ERRO').AsString := VL_String;
+
+      MDConciliacao.Post;
+      continue;
+    end;
+
+    F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao, '0117', VL_String);
+    // dados da conciliacao
+
+    VL_Erro := F_MensagemCarregaTags(VL_Venda, VL_String);
+
+    if VL_Erro <> 0 then
+    begin
+      MDConciliacao.Insert;
+      MDConciliacao.FieldByName('S_BIN').AsString := VL_Bin;
+
+      MDConciliacao.FieldByName('S_NSU').AsString := '';
+      MDConciliacao.FieldByName('S_PARCELA').AsString := '';
+      MDConciliacao.FieldByName('S_VALOR').AsString := '';
+      MDConciliacao.FieldByName('S_ERRO').AsString := IntToStr(VL_Erro);
+
+      MDConciliacao.Post;
+      continue;
+    end;
+
+    F_MensagemGetTag(VL_Venda, '0119', VL_String); // quantidade de linha na tabela
+    VL_VendaQuantidade := StrToInt(VL_String);
+
+    for VL_PosicaoVenda := 1 to VL_VendaQuantidade do
+    begin
+      MDConciliacao.Insert;
+      MDConciliacao.FieldByName('S_BIN').AsString := VL_Bin;
+
+      F_MensagemGetTagPosicao(VL_Venda, VL_PosicaoVenda, '000B', VL_String); // nsu
+      MDConciliacao.FieldByName('S_NSU').AsString := VL_String;
+
+      F_MensagemGetTagPosicao(VL_Venda, VL_PosicaoVenda, '000F', VL_String);
+      // parcela
+      MDConciliacao.FieldByName('S_PARCELA').AsString := VL_String;
+
+      F_MensagemGetTagPosicao(VL_Venda, VL_PosicaoVenda, '000E', VL_String);
+      // VALOR
+      MDConciliacao.FieldByName('S_VALOR').AsString := VL_String;
+
+      MDConciliacao.FieldByName('S_ERRO').AsString := '';
+
+      MDConciliacao.Post;
+      continue;
+    end;
+  end;
+
+  if CSalvarCSV.Checked then
+  begin
+    VL_Arquivo_Nome := ExtractFilePath(ParamStr(0)) + 'conciliacao.csv';
+
+    if FileExists(VL_Arquivo_Nome) then
+      DeleteFile(VL_Arquivo_Nome);
+
+    AssignFile(VL_Arquivo, VL_Arquivo_Nome);
+    Rewrite(VL_Arquivo);
+
+    // CABECALHO
+    Write(VL_Arquivo, 'BIN');
+    Write(VL_Arquivo, ';');
+    Write(VL_Arquivo, 'NSU');
+    Write(VL_Arquivo, ';');
+    Write(VL_Arquivo, 'PARCELA');
+    Write(VL_Arquivo, ';');
+    Write(VL_Arquivo, 'VALOR');
+    Write(VL_Arquivo, ';');
+    Write(VL_Arquivo, 'ERRO');
+
+    // corpo
+    for VL_PosicaoConciliacao := 1 to VL_ConciliacaoQuantidade do
+    begin
+      F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao, '0036', VL_Bin);
+      // bin
+      F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao,
+        '004D', VL_String);
+      // mensagem com erro
+
+      if VL_String <> '' then
+        VL_Erro := StrToInt(VL_String);
+
+      if VL_Erro <> 0 then
+      begin
+        Writeln(VL_Arquivo);
+        Write(VL_Arquivo, VL_Bin);
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // nsu
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // parcela
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // VALOR
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, IntToStr(VL_Erro)); // erro
+        continue;
+      end;
+
+      F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao,
+        '004A', VL_String);
+      // mensagem com erro
+      VL_String := PChar(trim(VL_String));
+
+      if VL_String <> '' then
+      begin
+        Writeln(VL_Arquivo);
+        Write(VL_Arquivo, VL_Bin);
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // nsu
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // parcela
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // VALOR
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, VL_String); // erro
+        continue;
+      end;
+
+      F_MensagemGetTagPosicao(VL_Mensagem, VL_PosicaoConciliacao,
+        '0117', VL_String);
+      // dados da conciliacao
+
+      VL_Erro := F_MensagemCarregaTags(VL_Venda, VL_String);
+
+      if VL_Erro <> 0 then
+      begin
+        Writeln(VL_Arquivo);
+        Write(VL_Arquivo, VL_Bin);
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // nsu
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // parcela
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, ''); // VALOR
+        Write(VL_Arquivo, ';');
+
+        Write(VL_Arquivo, IntToStr(VL_Erro)); // erro
+        continue;
+      end;
+
+      F_MensagemGetTag(VL_Venda, '0119', VL_String);
+      // quantidade de linha na tabela
+      VL_VendaQuantidade := StrToInt(VL_String);
+
+      for VL_PosicaoVenda := 1 to VL_VendaQuantidade do
+      begin
+        Writeln(VL_Arquivo);
+        Write(VL_Arquivo, VL_Bin);
+        Write(VL_Arquivo, ';');
+
+        F_MensagemGetTagPosicao(VL_Venda, VL_PosicaoVenda, '000B', VL_String);
+        // nsu
+        Write(VL_Arquivo, VL_String);
+        Write(VL_Arquivo, ';');
+
+        F_MensagemGetTagPosicao(VL_Venda, VL_PosicaoVenda, '000F', VL_String);
+        // parcela
+        Write(VL_Arquivo, VL_String);
+        Write(VL_Arquivo, ';');
+
+        F_MensagemGetTagPosicao(VL_Venda, VL_PosicaoVenda, '000E', VL_String);
+        // VALOR
+        Write(VL_Arquivo, VL_String);
+      end;
+    end;
+
+    Flush(VL_Arquivo);
+    CloseFile(VL_Arquivo);
+  end;
+
+  F_MensagemFree(VL_Mensagem);
+  F_MensagemFree(VL_Venda);
+end;
 
 
 end.

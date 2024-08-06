@@ -1,36 +1,36 @@
 object FInterface: TFInterface
-  Left = 679
-  Height = 520
-  Top = 248
-  Width = 785
+  Left = -8
+  Height = 1100
+  Top = -8
+  Width = 1073
   Caption = 'Configurador Open-Tef'
-  ClientHeight = 500
-  ClientWidth = 785
+  ClientHeight = 1061
+  ClientWidth = 1073
   FormStyle = fsMDIForm
   Menu = MMenu
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   WindowState = wsMaximized
   object PStatus: TPanel
     Left = 0
     Height = 26
-    Top = 474
-    Width = 785
+    Top = 1035
+    Width = 1073
     Align = alBottom
     BevelInner = bvLowered
     ClientHeight = 26
-    ClientWidth = 785
+    ClientWidth = 1073
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
     object LStatus: TLabel
-      Left = 131
+      Left = 2
       Height = 19
       Top = 5
-      Width = 518
+      Width = 853
       Align = alLeft
       Alignment = taRightJustify
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -39,10 +39,10 @@ object FInterface: TFInterface
       ParentColor = False
     end
     object EStatus: TLabel
-      Left = 649
+      Left = 984
       Height = 19
       Top = 5
-      Width = 134
+      Width = 87
       Align = alClient
       Alignment = taCenter
       BorderSpacing.Top = 3
@@ -53,7 +53,7 @@ object FInterface: TFInterface
       ParentFont = False
     end
     object LUsuario: TLabel
-      Left = 4
+      Left = 857
       Height = 19
       Top = 5
       Width = 127
@@ -64,40 +64,7 @@ object FInterface: TFInterface
       ParentColor = False
     end
   end
-  object Memo1: TMemo
-    Left = 185
-    Height = 90
-    Top = 176
-    Width = 150
-    Lines.Strings = (
-      'Memo1'
-    )
-    TabOrder = 1
-    Visible = False
-  end
-  object ToggleBox1: TToggleBox
-    Left = 185
-    Height = 25
-    Top = 288
-    Width = 75
-    Caption = '50'
-    OnChange = ToggleBox1Change
-    TabOrder = 2
-    Visible = False
-  end
-  object ToggleBox2: TToggleBox
-    Left = 264
-    Height = 25
-    Top = 288
-    Width = 75
-    Caption = 'PDV'
-    OnChange = ToggleBox1Change
-    OnClick = ToggleBox2Click
-    TabOrder = 3
-    Visible = False
-  end
   object MMenu: TMainMenu
-    Images = fprincipal.ListaImg
     OwnerDraw = True
     Left = 288
     Top = 56

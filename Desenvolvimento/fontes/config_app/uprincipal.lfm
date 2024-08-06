@@ -6,10 +6,9 @@ object fprincipal: Tfprincipal
   Caption = 'Administrador OpenTef'
   ClientHeight = 726
   ClientWidth = 1048
-  OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.4.0'
   object PTopo: TPanel
     Left = 0
     Height = 72
@@ -215,9 +214,9 @@ object fprincipal: Tfprincipal
       Height = 652
       Top = 1
       Width = 1046
-      ActivePage = TabCadastro
+      ActivePage = TabConf
       Align = alClient
-      TabIndex = 0
+      TabIndex = 3
       TabOrder = 0
       object TabCadastro: TTabSheet
         Caption = 'Gerenciador das Lojas'
@@ -366,11 +365,11 @@ object fprincipal: Tfprincipal
                   Top = 19
                   Width = 353
                   CharCase = ecUppercase
-                  OnChange = TabMultLojaEFiltroChange
                   ParentShowHint = False
                   ShowHint = True
                   TabOrder = 0
                   Text = 'TABLOJAEFILTRO1'
+                  OnChange = TabMultLojaEFiltroChange
                 end
                 object TabMultLojaGridFiltro: TDBGrid
                   Left = 5
@@ -578,12 +577,12 @@ object fprincipal: Tfprincipal
                   Left = 469
                   Height = 19
                   Top = 15
-                  Width = 118
+                  Width = 116
                   Caption = 'Habilitar Multiloja'
                   Font.Style = [fsBold]
-                  OnChange = TabMultLojaCkLojaMasterChange
                   ParentFont = False
                   TabOrder = 1
+                  OnChange = TabMultLojaCkLojaMasterChange
                 end
                 object TabMultLojaBAtualizar: TBitBtn
                   Left = 594
@@ -684,9 +683,9 @@ object fprincipal: Tfprincipal
                         Height = 23
                         Top = 147
                         Width = 417
-                        OnChange = TabMultLojaModuloEFiltroChange
                         TabOrder = 0
                         Text = 'TabMultLojaModuloEFiltro'
+                        OnChange = TabMultLojaModuloEFiltroChange
                       end
                       object TabMultLojaModuloGrid: TRxDBGrid
                         Left = 5
@@ -701,7 +700,7 @@ object fprincipal: Tfprincipal
                             Title.Alignment = taCenter
                             Title.Orientation = toHorizontal
                             Title.Caption = 'Módulo'
-                            Width = 284
+                            Width = 285
                             FieldName = 'MODULO'
                             EditButtons = <>
                             Filter.DropDownRows = 0
@@ -716,7 +715,7 @@ object fprincipal: Tfprincipal
                             Title.Alignment = taCenter
                             Title.Orientation = toHorizontal
                             Title.Caption = 'Config Módulo'
-                            Width = 285
+                            Width = 284
                             FieldName = 'MODULO_CONF'
                             EditButtons = <>
                             Filter.DropDownRows = 0
@@ -829,7 +828,7 @@ object fprincipal: Tfprincipal
                           Left = 112
                           Height = 19
                           Top = 27
-                          Width = 193
+                          Width = 191
                           Caption = 'Habilitar Configuração MultiLoja'
                           ParentFont = False
                           TabOrder = 1
@@ -983,20 +982,20 @@ object fprincipal: Tfprincipal
                         Height = 23
                         Top = 66
                         Width = 232
-                        OnChange = TabMultLojaConfFuncaoEFiltroChange
                         TabOrder = 0
                         Text = 'TabMultLojaConfFuncaoEFiltro'
+                        OnChange = TabMultLojaConfFuncaoEFiltroChange
                       end
                       object TabMultLojaConfFuncaoCKSelecionada: TCheckBox
                         Left = 474
                         Height = 19
                         Top = 66
-                        Width = 138
+                        Width = 136
                         Caption = 'Mostrar Selecionadas'
                         Font.Style = [fsBold]
-                        OnChange = TabMultLojaConfFuncaoCKSelecionadaChange
                         ParentFont = False
                         TabOrder = 1
+                        OnChange = TabMultLojaConfFuncaoCKSelecionadaChange
                       end
                       object TabMultLojaConfFuncaoGrid: TRxDBGrid
                         Left = 1
@@ -1159,9 +1158,9 @@ object fprincipal: Tfprincipal
                           'MENU_OPERACIONAL'
                           'PINPAD_FUNC'
                         )
-                        OnChange = TabMultLojaConfFuncaoETipoFiltroChange
                         TabOrder = 3
                         Text = 'TabMultLojaConfFuncaoETipoFiltro'
+                        OnChange = TabMultLojaConfFuncaoETipoFiltroChange
                       end
                     end
                   end
@@ -1187,9 +1186,9 @@ object fprincipal: Tfprincipal
                     Height = 23
                     Top = 65
                     Width = 238
-                    OnChange = TabMultLojaFuncaoEFiltrarChange
                     TabOrder = 0
                     Text = 'TabMultLojaFuncaoEFiltrar'
+                    OnChange = TabMultLojaFuncaoEFiltrarChange
                   end
                   object TabMultLojaFuncaoGrid: TRxDBGrid
                     Left = 4
@@ -1343,12 +1342,12 @@ object fprincipal: Tfprincipal
                     Left = 485
                     Height = 19
                     Top = 64
-                    Width = 138
+                    Width = 136
                     Caption = 'Mostrar Selecionadas'
                     Font.Style = [fsBold]
-                    OnChange = TabMultLojaFuncaoCKSelecionadaChange
                     ParentFont = False
                     TabOrder = 2
+                    OnChange = TabMultLojaFuncaoCKSelecionadaChange
                   end
                   object TabMultLojaFuncaoLTipoFiltrar: TLabel
                     Left = 4
@@ -1373,9 +1372,9 @@ object fprincipal: Tfprincipal
                       'MENU_OPERACIONAL'
                       'PINPAD_FUNC'
                     )
-                    OnChange = TabMultLojaFuncaoETipoFiltrarChange
                     TabOrder = 3
                     Text = 'TabMultLojaFuncaoETipoFiltrar'
+                    OnChange = TabMultLojaFuncaoETipoFiltrarChange
                   end
                 end
               end
@@ -1439,20 +1438,20 @@ object fprincipal: Tfprincipal
                     Top = 70
                     Width = 257
                     CharCase = ecUppercase
-                    OnChange = TabLojaFuncaoEFiltroChange
                     TabOrder = 0
                     Text = 'TABLOJAFUNCAOEFILTRO'
+                    OnChange = TabLojaFuncaoEFiltroChange
                   end
                   object TabLojaFuncaoCKSelecionada: TCheckBox
                     Left = 498
                     Height = 19
                     Top = 71
-                    Width = 138
+                    Width = 136
                     Caption = 'Mostrar Selecionadas'
                     Font.Style = [fsBold]
-                    OnChange = TabLojaFuncaoCKSelecionadaChange
                     ParentFont = False
                     TabOrder = 1
+                    OnChange = TabLojaFuncaoCKSelecionadaChange
                   end
                   object TabLojaFuncaoGrid: TRxDBGrid
                     Left = 4
@@ -1626,9 +1625,9 @@ object fprincipal: Tfprincipal
                       'MENU_OPERACIONAL'
                       'PINPAD_FUNC'
                     )
-                    OnChange = TabLojaFuncaoETipoFiltroChange
                     TabOrder = 3
                     Text = 'TabLojaFuncaoETipoFiltro'
+                    OnChange = TabLojaFuncaoETipoFiltroChange
                   end
                 end
                 object TabLojaTabModulo: TTabSheet
@@ -1665,11 +1664,11 @@ object fprincipal: Tfprincipal
                         Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
                         Top = 149
                         Width = 272
-                        OnChange = TabLojaModuloEFiltroChange
                         ParentShowHint = False
                         ShowHint = True
                         TabOrder = 0
                         Text = 'TabLojaModuloEFiltro'
+                        OnChange = TabLojaModuloEFiltroChange
                       end
                       object TabLojaModuloGrid: TRxDBGrid
                         Left = 3
@@ -1795,7 +1794,7 @@ object fprincipal: Tfprincipal
                           Left = 232
                           Height = 19
                           Top = 43
-                          Width = 181
+                          Width = 179
                           Caption = 'Habilitar Configuração da Loja'
                           ParentFont = False
                           TabOrder = 0
@@ -1997,9 +1996,9 @@ object fprincipal: Tfprincipal
                         Top = 65
                         Width = 238
                         CharCase = ecUppercase
-                        OnChange = TabLojaTabFuncaoDadosEFiltroChange
                         TabOrder = 0
                         Text = 'TABLOJATABFUNCAODADOSEFILTRO'
+                        OnChange = TabLojaTabFuncaoDadosEFiltroChange
                       end
                       object TabLojaTabFuncaoDadosGrid: TRxDBGrid
                         Left = 4
@@ -2143,12 +2142,12 @@ object fprincipal: Tfprincipal
                         Left = 483
                         Height = 19
                         Top = 65
-                        Width = 138
+                        Width = 136
                         Caption = 'Mostrar Selecionadas'
                         Font.Style = [fsBold]
-                        OnChange = TabLojaConfFuncaoCKSelecionadaChange
                         ParentFont = False
                         TabOrder = 2
+                        OnChange = TabLojaConfFuncaoCKSelecionadaChange
                       end
                       object TabLojaTabFuncaoDadosLTipoFiltro: TLabel
                         Left = 4
@@ -2173,9 +2172,9 @@ object fprincipal: Tfprincipal
                           'MENU_OPERACIONAL'
                           'PINPAD_FUNC'
                         )
-                        OnChange = TabLojaTabFuncaoDadosETipoFiltroChange
                         TabOrder = 3
                         Text = 'TabLojaTabFuncaoDadosETipoFiltro'
+                        OnChange = TabLojaTabFuncaoDadosETipoFiltroChange
                       end
                     end
                   end
@@ -2238,6 +2237,7 @@ object fprincipal: Tfprincipal
                   Height = 23
                   Top = 24
                   Width = 177
+                  EnableSets = False
                   MaxLength = 18
                   TabOrder = 1
                   EditMask = '99.999.999/9999-99;0;_'
@@ -2247,7 +2247,7 @@ object fprincipal: Tfprincipal
                   Left = 312
                   Height = 19
                   Top = 37
-                  Width = 155
+                  Width = 153
                   Caption = 'Habilitar Loja Cadastrada'
                   Font.Style = [fsBold]
                   ParentFont = False
@@ -2606,12 +2606,12 @@ object fprincipal: Tfprincipal
                   Left = 312
                   Height = 19
                   Top = 14
-                  Width = 89
+                  Width = 87
                   Caption = 'Pessoa Física'
                   Font.Style = [fsBold]
-                  OnClick = TabLojaCkPessoaClick
                   ParentFont = False
                   TabOrder = 9
+                  OnClick = TabLojaCkPessoaClick
                 end
                 object TabLojaBLimpar: TBitBtn
                   Left = 513
@@ -2733,11 +2733,11 @@ object fprincipal: Tfprincipal
                 Top = 29
                 Width = 300
                 CharCase = ecUppercase
-                OnChange = TabLojaEFiltroChange
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 0
                 Text = 'TABLOJAEFILTRO'
+                OnChange = TabLojaEFiltroChange
               end
               object TabLojaGrid: TDBGrid
                 Left = 7
@@ -2854,9 +2854,9 @@ object fprincipal: Tfprincipal
             Top = 32
             Width = 492
             CharCase = ecUppercase
-            OnChange = TabPinPadEFiltroChange
             TabOrder = 0
             Text = 'TABPINPADEFILTRO'
+            OnChange = TabPinPadEFiltroChange
           end
           object TabPinPadGrid: TDBGrid
             Left = 12
@@ -2868,12 +2868,12 @@ object fprincipal: Tfprincipal
             Columns = <            
               item
                 Title.Caption = 'ID'
-                Width = 229
+                Width = 230
                 FieldName = 'ID'
               end            
               item
                 Title.Caption = 'Modelo'
-                Width = 230
+                Width = 229
                 FieldName = 'FABRICANTE_MODELO'
               end>
             DataSource = DSPinPad
@@ -3190,9 +3190,9 @@ object fprincipal: Tfprincipal
               Height = 23
               Top = 55
               Width = 418
-              OnChange = TabPinPadFuncaoEFiltroChange
               TabOrder = 0
               Text = 'TabPinPadFuncaoEFiltro'
+              OnChange = TabPinPadFuncaoEFiltroChange
             end
             object TabPinPadFuncaoGrid: TRxDBGrid
               Left = 32
@@ -3338,12 +3338,12 @@ object fprincipal: Tfprincipal
               Left = 758
               Height = 19
               Top = 57
-              Width = 202
+              Width = 200
               Caption = 'Mostrar apenas Tag Selecionadas'
               Font.Style = [fsBold]
-              OnChange = TabPinPadFuncaoCKSelecionadaChange
               ParentFont = False
               TabOrder = 2
+              OnChange = TabPinPadFuncaoCKSelecionadaChange
             end
             object TabPinPadFuncaoLTipoFiltro: TLabel
               Left = 32
@@ -3365,9 +3365,9 @@ object fprincipal: Tfprincipal
                 'TODOS'
                 'PINPAD_FUNC'
               )
-              OnChange = TabPinPadFuncaoETipoFiltroChange
               TabOrder = 3
               Text = 'TabPinPadFuncaoETipoFiltro'
+              OnChange = TabPinPadFuncaoETipoFiltroChange
             end
           end
         end
@@ -3654,7 +3654,7 @@ object fprincipal: Tfprincipal
             Left = 472
             Height = 19
             Top = 16
-            Width = 100
+            Width = 98
             Caption = 'Habilitar P.D.V'
             Font.Style = [fsBold]
             ParentFont = False
@@ -4084,11 +4084,11 @@ object fprincipal: Tfprincipal
               Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
               Top = 22
               Width = 264
-              OnChange = TabPDVModuloEFiltroChange
               ParentShowHint = False
               ShowHint = True
               TabOrder = 0
               Text = 'TabPDVModuloEFiltro'
+              OnChange = TabPDVModuloEFiltroChange
             end
             object TabPDVModuloGrid: TRxDBGrid
               Left = 5
@@ -4402,7 +4402,7 @@ object fprincipal: Tfprincipal
               Left = 384
               Height = 19
               Top = 16
-              Width = 196
+              Width = 194
               Caption = 'Habilitar Configuração do  P.D.V'
               Font.Style = [fsBold]
               ParentFont = False
@@ -4450,9 +4450,9 @@ object fprincipal: Tfprincipal
               Top = 58
               Width = 188
               CharCase = ecUppercase
-              OnChange = TabPDVFuncaoEFiltroChange
               TabOrder = 0
               Text = 'TABPDVFUNCAOEFILTRO'
+              OnChange = TabPDVFuncaoEFiltroChange
             end
             object TabPDVFuncaoGrid: TRxDBGrid
               Left = 5
@@ -4596,12 +4596,12 @@ object fprincipal: Tfprincipal
               Left = 448
               Height = 19
               Top = 58
-              Width = 138
+              Width = 136
               Caption = 'Mostrar Selecionadas'
               Font.Style = [fsBold]
-              OnChange = TabPDVFuncaoCKSelecionadaChange
               ParentFont = False
               TabOrder = 2
+              OnChange = TabPDVFuncaoCKSelecionadaChange
             end
             object TabPDVFuncaoLTipoFiltro: TLabel
               Left = 11
@@ -4624,9 +4624,9 @@ object fprincipal: Tfprincipal
                 'MENU_PDV'
                 'MENU_OPERACIONAL'
               )
-              OnChange = TabPDVFuncaoETipoFiltroChange
               TabOrder = 3
               Text = 'TabPDVFuncaoETipoFiltro'
+              OnChange = TabPDVFuncaoETipoFiltroChange
             end
           end
         end
@@ -4849,9 +4849,9 @@ object fprincipal: Tfprincipal
             Top = 32
             Width = 488
             CharCase = ecUppercase
-            OnChange = TabConfEFiltroChange
             TabOrder = 0
             Text = 'TABCONFEFILTRO'
+            OnChange = TabConfEFiltroChange
           end
           object TabConfGrid: TDBGrid
             Left = 12
@@ -4863,7 +4863,7 @@ object fprincipal: Tfprincipal
             Columns = <            
               item
                 Title.Caption = 'ID'
-                Width = 152
+                Width = 153
                 FieldName = 'ID'
               end            
               item
@@ -4873,7 +4873,7 @@ object fprincipal: Tfprincipal
               end            
               item
                 Title.Caption = 'IP'
-                Width = 153
+                Width = 152
                 FieldName = 'IP'
               end>
             DataSource = DSConfigurador
@@ -5581,9 +5581,9 @@ object fprincipal: Tfprincipal
               Top = 27
               Width = 200
               CharCase = ecUppercase
-              OnChange = TabModuloEPesquisaModuloChange
               TabOrder = 0
               Text = 'TABMODULOEPESQUISAMODULO'
+              OnChange = TabModuloEPesquisaModuloChange
             end
           end
         end
@@ -5814,7 +5814,7 @@ object fprincipal: Tfprincipal
                       Left = 3
                       Height = 19
                       Top = 51
-                      Width = 222
+                      Width = 220
                       Caption = 'Bin Estático Configuração do Módulo'
                       TabOrder = 0
                     end
@@ -5822,7 +5822,7 @@ object fprincipal: Tfprincipal
                       Left = 3
                       Height = 19
                       Top = 26
-                      Width = 98
+                      Width = 96
                       Caption = 'Menu Estático'
                       TabOrder = 1
                     end
@@ -5830,7 +5830,7 @@ object fprincipal: Tfprincipal
                       Left = 3
                       Height = 19
                       Top = 2
-                      Width = 205
+                      Width = 203
                       Caption = 'Habilitar Configuração do Módulo'
                       TabOrder = 2
                     end
@@ -5839,7 +5839,7 @@ object fprincipal: Tfprincipal
                       Height = 19
                       Hint = 'Menu Estático Operacional'
                       Top = 26
-                      Width = 133
+                      Width = 131
                       Caption = 'Menu E. Operacional'
                       ParentShowHint = False
                       ShowHint = True
@@ -6256,20 +6256,20 @@ object fprincipal: Tfprincipal
                     Top = 57
                     Width = 269
                     CharCase = ecUppercase
-                    OnChange = TabModuloTabDadosFuncaoEFiltroChange
                     TabOrder = 0
                     Text = 'TABFUNCAOEFILTRO'
+                    OnChange = TabModuloTabDadosFuncaoEFiltroChange
                   end
                   object TabModuloTabDadosFuncaoCKSelecionada: TCheckBox
                     Left = 560
                     Height = 19
                     Top = 60
-                    Width = 207
+                    Width = 205
                     Caption = 'Mostrar apenas Tags Selecionadas'
                     Font.Style = [fsBold]
-                    OnChange = TabModuloTabDadosFuncaoCKSelecionadaChange
                     ParentFont = False
                     TabOrder = 1
+                    OnChange = TabModuloTabDadosFuncaoCKSelecionadaChange
                   end
                   object TabModuloTabDadosFuncaoGrid: TRxDBGrid
                     Left = 8
@@ -6422,9 +6422,9 @@ object fprincipal: Tfprincipal
                       'MENU_OPERACIONAL'
                       'PINPAD_FUNC'
                     )
-                    OnChange = TabModuloTabDadosFuncaoETipoFiltroChange
                     TabOrder = 3
                     Text = 'TabModuloTabDadosFuncaoETipoFiltro'
+                    OnChange = TabModuloTabDadosFuncaoETipoFiltroChange
                   end
                   object TabModuloTabDadosFuncaoLTipoFiltro: TLabel
                     Left = 8
@@ -6471,20 +6471,20 @@ object fprincipal: Tfprincipal
                 Top = 59
                 Width = 293
                 CharCase = ecUppercase
-                OnChange = TabFuncaoModuloEFiltroChange
                 TabOrder = 0
                 Text = 'TABFUNCAOEFILTRO'
+                OnChange = TabFuncaoModuloEFiltroChange
               end
               object TabFuncaoModuloCKSelecionada: TCheckBox
                 Left = 576
                 Height = 19
                 Top = 61
-                Width = 207
+                Width = 205
                 Caption = 'Mostrar apenas Tags Selecionadas'
                 Font.Style = [fsBold]
-                OnChange = TabFuncaoModuloCKSelecionadaChange
                 ParentFont = False
                 TabOrder = 1
+                OnChange = TabFuncaoModuloCKSelecionadaChange
               end
               object TabFuncaoModuloGrid: TRxDBGrid
                 Left = 8
@@ -6637,9 +6637,9 @@ object fprincipal: Tfprincipal
                   'MENU_OPERACIONAL'
                   'PINPAD_FUNC'
                 )
-                OnChange = TabFuncaoModuloETipoFiltroChange
                 TabOrder = 3
                 Text = 'TabFuncaoModuloETipoFiltro'
+                OnChange = TabFuncaoModuloETipoFiltroChange
               end
               object TabFuncaoModuloLTipoFiltro: TLabel
                 Left = 8
@@ -6805,9 +6805,9 @@ object fprincipal: Tfprincipal
             Top = 32
             Width = 248
             CharCase = ecUppercase
-            OnChange = TabTagEFiltroChange
             TabOrder = 0
             Text = 'TABPDVEFILTRO'
+            OnChange = TabTagEFiltroChange
           end
           object TabTagGrid: TDBGrid
             Left = 8
@@ -6862,9 +6862,9 @@ object fprincipal: Tfprincipal
               'DADOS'
               'MODULO'
             )
-            OnChange = TabTagETipoFiltroChange
             TabOrder = 2
             Text = 'TabTagETipoFiltro'
+            OnChange = TabTagETipoFiltroChange
           end
         end
         object TabTagBAdicionar: TBitBtn
@@ -7189,7 +7189,7 @@ object fprincipal: Tfprincipal
             Left = 326
             Height = 19
             Top = 14
-            Width = 170
+            Width = 168
             Caption = 'Tag Padrão para o OpenTef'
             Font.Style = [fsBold]
             ParentFont = False
@@ -7614,9 +7614,9 @@ object fprincipal: Tfprincipal
             Top = 32
             Width = 452
             CharCase = ecUppercase
-            OnChange = TabAdquirenteEFiltroChange
             TabOrder = 0
             Text = 'TABPDVEFILTRO'
+            OnChange = TabAdquirenteEFiltroChange
           end
           object TabAdquirenteGrid: TDBGrid
             Left = 12

@@ -681,10 +681,10 @@ object FCadMultloja: TFCadMultloja
     Height = 308
     Top = 239
     Width = 1174
-    ActivePage = TabMultiLojaModulo
+    ActivePage = TabGuarda
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 2
     object TabMultiLojaModulo: TTabSheet
       Caption = 'Módulo da MultiLoja'

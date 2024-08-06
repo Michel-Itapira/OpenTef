@@ -13,6 +13,7 @@ object FCadPinPad: TFCadPinPad
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
+  LCLVersion = '3.4.0.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75

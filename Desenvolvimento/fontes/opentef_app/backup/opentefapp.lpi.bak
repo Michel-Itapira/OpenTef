@@ -49,6 +49,7 @@
               <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -101,6 +102,8 @@
             <Debugging>
               <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -110,6 +113,55 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dOPEN_TEF
+-dWIN
+-dDEBUG"/>
+            <OtherDefines Count="4">
+              <Define0 Value="OPEN_TEF"/>
+              <Define1 Value="WIN"/>
+              <Define2 Value="DEBUG"/>
+              <Define3 Value="COMUNICADOR"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Win32 Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\opentef\win32\opentefapp.exe" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func;..\opentef_ser"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Cr
+-dOPEN_TEF
 -dWIN
 -dDEBUG"/>
             <OtherDefines Count="4">
@@ -209,10 +261,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
       </Unit>
-      <Unit>
-        <Filename Value="..\opentef_ser\uvbi.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -247,6 +295,7 @@
         <DebugInfoType Value="dsDwarf3"/>
         <UseHeaptrc Value="True"/>
         <TrashVariables Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>
@@ -295,6 +344,12 @@
       </Item>
       <Item>
         <Name Value="EIdNotASocket"/>
+      </Item>
+      <Item>
+        <Name Value="EIdConnectTimeout"/>
+      </Item>
+      <Item>
+        <Name Value="EIdSilentException"/>
       </Item>
     </Exceptions>
   </Debugging>

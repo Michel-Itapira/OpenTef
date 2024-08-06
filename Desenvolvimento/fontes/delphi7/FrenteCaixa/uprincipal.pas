@@ -18,11 +18,12 @@ type
   TImprime                = function(VP_Dados: PChar)                                          : Integer; cdecl;
   TMostraMenu             = function(VP_Menu: PChar;var VO_Botao: PChar)                : Integer; cdecl;
   TMensagemOperador       = function(VP_Dados: PChar)                                 : Integer; cdecl;
+  TStrDispose             = procedure(VP_PChar: PChar); cdecl;
 
   // definicoes das funcoes de inicializacao e conexao
   TTefInicializar = function(var VO_Tef: Pointer;VP_PinPadModelo: Integer;
     VP_PinPadModeloLib, VP_PinPadModeloPorta, VP_PinPadLib, VP_ArquivoLog: PChar;
-    VP_RetornoCliente: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao;
+    VP_StrDispose: TStrDispose;VP_RetornoCliente: TRetorno; VP_SolicitaDadosTransacao: TSolicitaDadosTransacao;
     VP_SolicitaDadosPDV: TSolicitaDadosPDV; VP_Imprime: TImprime;
     VP_MostraMenu: TMostraMenu; VP_MensagemOperador: TMensagemOperador;
     VP_AmbienteTeste: Integer): Integer; cdecl;
@@ -63,8 +64,10 @@ type
   TTMensagemerro          = function(VP_CodigoErro: Integer;var VO_RespostaMensagem: PChar)                                    : Integer; cdecl;
   TTMensagemGetTagPosicao = function(VP_Mensagem: Pointer; VP_Posicao: Integer; VP_Tag: PChar;var VO_Dados: PChar): Integer; cdecl;
   TTMensagemAddTagPosicao = function(VP_Mensagem: Pointer; VP_Posicao: Integer; VP_Tag, VP_Dados: PChar)              : Integer; cdecl;
+  TMensagemDispose        = procedure(VP_PChar: PChar); cdecl;
 
-  TFPrincipal = class(TForm)
+
+  TF_Principal = class(TForm)
     IFundo: TImage;
     PTopo: TPanel;
     lblStatusConexao: TLabel;
@@ -153,9 +156,9 @@ type
   end;
 
 var
-  F_Principal: TFPrincipal;
+  F_Principal: TF_Principal;
   F_ArquivoLog:string;
-  F_Tef: Pointer;     
+  F_Tef: Pointer;
   F_Mensagem  : Pointer;
 
   F_TefLib        : THandle;
@@ -180,6 +183,8 @@ var
   F_MensagemTagToStr     : TTMensagemTagToStr;
   F_MensagemGetTagPosicao: TTMensagemGetTagPosicao;
   F_MensagemAddTagPosicao: TTMensagemAddTagPosicao;
+  F_MensagemDispose      : TMensagemDispose;
+
 
   F_TransacaoCancela        : TTransacaoCancela;
   F_TransacaoCreate         : TTransacaoCreate;
@@ -201,6 +206,8 @@ function SolicitaDadosTransacao(VP_Mensagem: PChar;var VO_Dados: PChar): Integer
 function Imprime(VP_Dados: PChar): Integer; cdecl;
 function MostraMenu(VP_Menu: PChar;var VO_Botao: PChar): Integer; cdecl;
 function MensagemOperador(VP_Dados: PChar): Integer; cdecl;
+procedure StringDispose(VP_PChar: PChar); cdecl;
+
 
 const
   C_VersaoComunicacao = 1;
@@ -220,175 +227,311 @@ uses
 // implementacao das funcoes que serao chamadas pela biblioteca
 
 // quando o opentef envia alguma solicitação ao PDV
+
+procedure mensagem(s: string);
+//var
+//  LogMsgToSend: PLogMsgData;
+begin
+//  New(LogMsgToSend);
+//  LogMsgToSend^.Text := s;
+//
+//  if Application.Terminated then
+//    Exit;
+
+//  Application.QueueAsyncCall(@F_Principal.mostramensagem, PtrInt(LogMsgToSend));
+ShowMessage(s);
+end;
+
 function Retorno(VP_DadosEntrada: PChar;var VO_DadosSaida: PChar): Integer; cdecl;
 var
-  VL_Dados                 : PChar;
-  VL_Comando               : PChar;
-  VL_ComandoDados          : PChar;
-  VL_Mensagem              : Pointer;
-  VL_String                :string;
-  VL_Erro                  : Integer;
-  VL_DescricaoErro         : PChar;
-  VL_TransacaoID           : PChar;
-  VL_DescricaoErroTransacao: PChar;
-  VL_TransacaoChave        : PChar;
-  VL_Bin                   : PChar;
-  VL_TransacaoStatus       : Integer; // numerador  (tsEfetivada,tsNegada,tsCancelada,tsProcessando,tsNaoLocalizada,tsInicializada);
+  VL_Retorno: PChar;
+  VL_Dados: string;
+  VL_Comando: string;
+  VL_ComandoDados: string;
+  VL_Mensagem: Pointer;
+  VL_String: ansistring;
+  VL_Erro: integer;
+  VL_DescricaoErro: string;
+  VL_TransacaoID: string;
+  VL_DescricaoErroTransacao: string;
+  VL_TransacaoChave: string;
+  VL_Bin: string;
+  VL_TransacaoStatus: integer;
+  VL_BotaoSelecionado: integer;
 begin
-  Result                    := 0;
-  VL_Erro                   := 0;
-  VL_String                 := '';
-  VL_Dados                  := '';
-  VL_DescricaoErro          := '';
-  VL_Comando                := '';
-  VL_ComandoDados           := '';
-  VL_Comando                := '';
-  VL_TransacaoID            := '';
+  Result := 0;
+
+  if Application.Terminated then
+    Exit;
+
+  VL_Erro := 0;
+  VL_Retorno := nil;
+  VL_String := '';
+  VL_Mensagem := nil;
+  VL_Dados := '';
+  VL_DescricaoErro := '';
+  VL_Comando := '';
+  VL_ComandoDados := '';
+  VL_Comando := '';
+  VL_TransacaoID := '';
   VL_DescricaoErroTransacao := '';
-  VL_TransacaoChave         := '';
-  VL_Bin                    := '';
-  VL_Mensagem               := nil;
+  VL_TransacaoChave := '';
+  VL_Bin := '';
+  VL_BotaoSelecionado := 0;
   try
     F_MensagemCreate(VL_Mensagem);
 
-    VL_Erro := F_MensagemCarregaTags(VL_Mensagem, VP_DadosEntrada); // carrega a mensagem recebida
+    VL_Erro := F_MensagemCarregaTags(VL_Mensagem, VP_DadosEntrada);
     if VL_Erro <> 0 then
     begin
-      F_MensagemAddComando(VL_Mensagem, '0026', PChar(UTF8Encode(IntToStr(VL_Erro)))); // retorno com erro pois nao conseguiu carregar a mensagem recebida
-      F_MensagemTagAsString(VL_Mensagem, VO_DadosSaida);
+      F_MensagemAddComando(VL_Mensagem, '0026', PChar(IntToStr(VL_Erro)));
+      // retorno com erro
+      F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+      VL_String := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+      StrPCopy(VO_DadosSaida, VL_String);
       Exit;
     end;
 
-    F_MensagemComando(VL_Mensagem, VL_Comando);
-    F_MensagemComandoDados(VL_Mensagem, VL_ComandoDados);
+    F_MensagemComando(VL_Mensagem, VL_Retorno);
 
-    if VL_Comando = '0026' then // retorno com erro
+    VL_Comando := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    F_MensagemComandoDados(VL_Mensagem, VL_Retorno);
+
+    VL_ComandoDados := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    if VL_Comando = '0026' then  // retorno com erro
     begin
       if VL_ComandoDados = '96' then // desconectado
       begin
-        F_Principal.lblStatusConexao.Caption    := 'Desconectado';
+        F_Principal.lblStatusConexao.Caption := 'Desconectado';
         F_Principal.lblStatusConexao.Font.Color := clRed;
       end;
 
-      F_Erro(StrToInt(VL_ComandoDados), VL_DescricaoErro);
-      ShowMessage('Erro: ' + UTF8Decode(VL_ComandoDados)+ #13 + 'Descrição: ' + UTF8Decode(VL_DescricaoErro));
-      Exit;
+      F_Erro(StrToInt(VL_ComandoDados), VL_Retorno);
+
+      VL_DescricaoErro := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+      Mensagem('Erro: ' + UTF8Decode(VL_ComandoDados) + #13 + 'Descrição: ' + UTF8Decode(VL_DescricaoErro));
+      exit;
     end;
 
-    if VL_Comando = '0018' then // Veio pedido de mostrar menu de venda
+    if VL_Comando = '0018' then //Veio pedido de mostrar menu de venda
     begin
-      F_Principal.MontarMenu(VL_Mensagem); // monta o menu e aguarda a escolha pelo operador
-      Exit;
+      // monta o menu e aguarda a escolha pelo operador
+      F_Principal.MontarMenu(VL_Mensagem);
+      exit;
     end;
 
-    if VL_Comando = '010C' then // solicitacao de atualizacao da biblioteca tef
+    if VL_Comando = '010C' then // solicitacao de atualizacao do tef
     begin
       VL_Dados := '';
-      F_MensagemGetTag(VL_Mensagem, '00FD', VL_Dados); // atualizacao obrigatoria
+      F_MensagemGetTag(VL_Mensagem, '00FD', VL_Retorno);  // atualizacao obrigatoria
+
+      VL_Dados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
       if VL_Dados = 'S' then
       begin
-        // comando de retorno deve conter o caminho onde sera baixada a nova versao
-        F_MensagemAddComando(VL_Mensagem, '010C', PChar(UTF8Encode(ExtractFilePath(ParamStr(0))+ '..\..\tef_lib\win64\')));
-        F_MensagemTagAsString(VL_Mensagem, VO_DadosSaida);
+        F_MensagemAddComando(VL_Mensagem, '010C', PChar(UTF8Encode(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\')));
+        // comando de retorno com o caminho
+
+        F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+        VL_String := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+        StrPCopy(VO_DadosSaida, VL_String);
       end;
 
-      VL_Dados := '';
-      F_MensagemGetTag(VL_Mensagem, '010A', VL_Dados); // atualizacao opcional
+      F_MensagemGetTag(VL_Mensagem, '010A', VL_Retorno); // atualizacao opcional
+
+      VL_Dados := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
       if VL_Dados = 'S' then
       begin
-        if Application.MessageBox('Nova atualização do tef, deseja atualizar?', 'PDV', MB_ICONQUESTION + MB_YESNO)= idYes then
+        if Application.MessageBox('Nova atualização do tef, deseja atualizar?', 'PDV', MB_ICONQUESTION + MB_YESNO)=IDYES then
         begin
-          // comando de retorno deve conter o caminho onde sera baixada a nova versao
-          F_MensagemAddComando(VL_Mensagem, '010C', PChar(UTF8Encode(ExtractFilePath(ParamStr(0))+ '..\..\tef_lib\win64\')));
-          F_MensagemTagAsString(VL_Mensagem, VO_DadosSaida);
+          F_MensagemAddComando(VL_Mensagem, '010C', PChar(UTF8Encode(ExtractFilePath(ParamStr(0)) + '..\..\tef_lib\win64\')));
+          // comando de retorno com o caminho
+
+          F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+          VL_String := VL_Retorno;
+          F_MensagemDispose(VL_Retorno);
+
+
+          VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+          StrPCopy(VO_DadosSaida, VL_String);
         end;
       end;
 
-      Exit;
+      exit;
     end;
 
-    if VL_Comando = '00A4' then // houve uma alterarcao no status da transacao
+    if VL_Comando = '00A4' then // status da transacao
     begin
       VL_TransacaoStatus := StrToInt(VL_ComandoDados);
-      F_MensagemGetTag(VL_Mensagem, '0034', VL_TransacaoID);    // transacao id
-      F_MensagemGetTag(VL_Mensagem, '00F1', VL_TransacaoChave); // chave da transacao
+      F_MensagemGetTag(VL_Mensagem, '0034', VL_Retorno);  // transacao id
 
-      if Ord(tsComErro)= VL_TransacaoStatus then
+      VL_TransacaoID := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      F_MensagemGetTag(VL_Mensagem, '00F1', VL_Retorno); // chave da transacao
+
+      VL_TransacaoChave := VL_Retorno;
+      F_MensagemDispose(VL_Retorno);
+
+      if Ord(tsComErro) = VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
-        F_Erro(VL_Erro, VL_DescricaoErro);
-        ShowMessage('Transação com erro ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_Principal.MStatus.Lines.Add('Transação com erro ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(F_Tef,VL_TransacaoID);
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação com erro ' +UTF8Decode(VL_TransacaoID) + ' ' + UTF8Decode(VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao));
+        F_Principal.MStatus.Lines.Add('Transação com erro ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro));
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
       end;
 
-      if Ord(tsCancelada)= VL_TransacaoStatus then
+      if Ord(tsCancelada) = VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
-        F_Erro(VL_Erro, VL_DescricaoErro);
-        ShowMessage('Transação cancelada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_Principal.MStatus.Lines.Add('Transação cancelada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(F_Tef,VL_TransacaoID);
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação cancelada ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao));
+        F_Principal.MStatus.Lines.Add('Transação cancelada ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro));
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
       end;
 
-      if Ord(tsNegada)= VL_TransacaoStatus then
+      if Ord(tsNegada) = VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
-        F_Erro(VL_Erro, VL_DescricaoErro);
-        ShowMessage('Transação negada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_Principal.MStatus.Lines.Add('Transação negada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(F_Tef,VL_TransacaoID);
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação negada ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao));
+        F_Principal.MStatus.Lines.Add('Transação negada ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro));
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
       end;
 
-      if Ord(tsNaoLocalizada)= VL_TransacaoStatus then
+
+      if Ord(tsNaoLocalizada) = VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
-        F_Erro(VL_Erro, VL_DescricaoErro);
-        ShowMessage('Transação não localizada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_Principal.MStatus.Lines.Add('Transação não localizada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(F_Tef,VL_TransacaoID);
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação nao localizada ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao));
+        F_Principal.MStatus.Lines.Add('Transação não localizada ' +UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro));
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
       end;
 
-      if Ord(tsAbortada)= VL_TransacaoStatus then
+      if Ord(tsEfetivada) = VL_TransacaoStatus then
       begin
-        VL_Erro := F_TransacaoStatusDescricao(F_Tef,VL_DescricaoErroTransacao, VL_TransacaoID); // consulta o codigo do erro vindo do opentef e descricao vinda da operadora
-        F_Erro(VL_Erro, VL_DescricaoErro);
-        ShowMessage('Transação abortada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_Principal.MStatus.Lines.Add('Transação abortada ' + UTF8Decode(VL_TransacaoID)+ ' ' + UTF8Decode(VL_DescricaoErro));
-        F_TransacaoFree(F_Tef,VL_TransacaoID);
-      end;
+        Mensagem('Transação aprovada ' + UTF8Decode(VL_TransacaoID));
 
-      if Ord(tsEfetivada)= VL_TransacaoStatus then
-      begin
-        ShowMessage('Transação aprovada ' + VL_TransacaoID);
         F_Principal.MChave.Lines.Add(VL_TransacaoChave);
-        F_Principal.MStatus.Lines.Add('Transacao ID: ' + UTF8Decode(VL_TransacaoID)+ ' Efetivada');
-        F_TransacaoGetTag(F_Tef,VL_TransacaoID, '0036', VL_Bin); // bin do cartao
+        F_Principal.MStatus.Lines.Add('Transacao ID: ' +UTF8Decode(VL_TransacaoID) + ' Efetivada');
+
+        F_TransacaoGetTag(F_Tef, PChar(VL_TransacaoID), '0036', VL_Retorno);
+
+        VL_Bin := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
         F_Principal.MStatus.Lines.Add('Bin: ' + UTF8Decode(VL_Bin));
-        F_TransacaoFree(F_Tef,VL_TransacaoID);
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+        Exit;
       end;
 
-      case VL_TransacaoStatus of // status da transacao em andamento
-        Ord(tsProcessando):
-          F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID)+ 'Estado de processamento');
-        Ord(tsInicializada):
-          F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID)+ 'Estado de inicializada');
-        Ord(tsAguardandoComando):
-          F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID)+ 'Estado de aguardando comando');
-        Ord(tsAguardandoDadosPDV):
-          F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID)+ 'Estado de aguardando dados do pdv');
+      if Ord(tsAbortada) = VL_TransacaoStatus then
+      begin
+        VL_Erro := F_TransacaoStatusDescricao(F_Tef, VL_Retorno, PChar(VL_TransacaoID));
+
+        VL_DescricaoErroTransacao := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        F_Erro(VL_Erro, VL_Retorno);
+
+        VL_DescricaoErro := VL_Retorno;
+        F_MensagemDispose(VL_Retorno);
+
+        Mensagem('Transação abortada ' + UTF8Decode(VL_TransacaoID + ' ' + VL_DescricaoErro + ' ' + VL_DescricaoErroTransacao));
+        F_TransacaoFree(F_Tef, PChar(VL_TransacaoID));
+
+        Exit;
       end;
 
-      Exit;
+      case VL_TransacaoStatus of
+        Ord(tsProcessando): F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID) + 'Estado de processamento');
+        Ord(tsInicializada): F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID) + 'Estado de inicializada');
+        Ord(tsAguardandoComando): F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID) + 'Estado de aguardando comando');
+        Ord(tsAguardandoDadosPDV): F_Principal.MStatus.Lines.Add('Transacao ID:' + UTF8Decode(VL_TransacaoID) + 'Estado de aguardando dados do pdv');
+      end;
+
+      exit;
     end;
 
-    F_MensagemAddComando(VL_Mensagem, '0026', '1'); // retorna erro pois a resposta desse comando ainda nao foi implementada
-    F_MensagemTagAsString(VL_Mensagem, VO_DadosSaida);
+
+    F_MensagemAddComando(VL_Mensagem, '0026', '1'); // retorno com erro
+
+    F_MensagemTagAsString(VL_Mensagem, VL_Retorno);
+
+    VL_String := VL_Retorno;
+    F_MensagemDispose(VL_Retorno);
+
+    vo_DadosSaida := StrAlloc(Length(VL_String) + 1);
+    StrPCopy(VO_DadosSaida, VL_String);
 
   finally
     F_MensagemFree(VL_Mensagem);
   end;
+
 end;
+
+
+
+
 
 // quando o opentef pede informação ao operador do caixa
 function SolicitaDadosPdv(VP_Mensagem: PChar;var VO_Botao, VO_Dados: PChar): Integer; cdecl;
@@ -540,10 +683,14 @@ begin
   VL_MenuVenda.ShowModal;
 
   // devolve os dados informados
-  VO_Dados := PChar(UTF8Encode(VL_MenuVenda.EDados.Text));
+
+  VO_Dados := StrAlloc(Length(UTF8Encode(VL_MenuVenda.EDados.Text))+1);
+  StrPCopy(VO_Dados, UTF8Encode(VL_MenuVenda.EDados.Text));
 
   // devolve a tag do botao selecionado
-  VO_Botao := PChar(UTF8Encode(VL_MenuVenda.V_Botao));
+  VO_Botao := StrAlloc(Length(UTF8Encode(VL_MenuVenda.V_Botao))+1);
+  StrPCopy(VO_Botao, UTF8Encode(VL_MenuVenda.V_Botao));
+
 
   VL_MenuVenda.Free;
 end;
@@ -554,14 +701,12 @@ var
   VL_I                          : Integer;
   VL_Tag                        : PChar;
   VL_Dados                      : PChar;
-  VL_PChar                      : PChar;
   VL_Resposta, VL_TagConciliacao: Pointer;
   VL_DadosEnviados              : PChar;
 begin
   Result           := 0;
   VL_Tag           := '';
   VL_Dados         := '';
-  VL_PChar         := '';
   VL_DadosEnviados := '';
   VL_Resposta      := nil;
   F_MensagemCreate(VL_Resposta);
@@ -626,7 +771,12 @@ begin
       F_MensagemAddTag(VL_Resposta, '0040', PChar(UTF8Encode(F_Principal.EObservacao.Text)));
   end;
 
-  F_MensagemTagAsString(VL_Resposta, VO_Dados);
+  F_MensagemTagAsString(VL_Resposta, VL_DadosEnviados);
+
+  VO_Dados := StrAlloc(Length(UTF8Encode(VL_DadosEnviados))+1);
+  StrPCopy(VO_Dados, UTF8Encode(VL_DadosEnviados));
+
+  F_MensagemDispose(VL_DadosEnviados);
   F_MensagemFree(VL_Resposta);
 end;
 
@@ -705,7 +855,9 @@ begin
   VL_MenuVenda.ShowModal;
 
   // devolve qual a tag do botao selecionado
-  VO_Botao := PChar(UTF8Encode(VL_MenuVenda.V_Botao));
+ VO_Botao := StrAlloc(Length(UTF8Encode(VL_MenuVenda.V_Botao)) + 1);
+ StrPCopy(VO_Botao, UTF8Encode(VL_MenuVenda.V_Botao));
+
 
   VL_MenuVenda.Free;
 end;
@@ -721,7 +873,17 @@ begin
   ShowMessage(VL_String);
 end;
 
-procedure TFPrincipal.BDesconectarClick(Sender: TObject);
+// quando o opentef ja utilizou um char criado pelo pdv e essa memoria ja pode ser liberada
+procedure StringDispose(VP_PChar: PChar); cdecl;
+begin
+  if not Assigned(VP_PChar) then
+    Exit;
+
+  StrDispose(VP_PChar);
+end;
+
+
+procedure TF_Principal.BDesconectarClick(Sender: TObject);
 var
   VL_Codigo       : Integer;
   VL_DescricaoErro: PChar;
@@ -740,7 +902,7 @@ begin
 end;
 
 
-procedure TFPrincipal.BLogGravacaoClick(Sender: TObject);
+procedure TF_Principal.BLogGravacaoClick(Sender: TObject);
 begin
   if not Assigned(F_AlterarNivelLog)then
   begin
@@ -751,7 +913,7 @@ begin
   F_AlterarNivelLog(5);
 end;
 
-procedure TFPrincipal.BLoginClick(Sender: TObject);
+procedure TF_Principal.BLoginClick(Sender: TObject);
 var
   VL_Codigo       : Integer;
   VL_DescricaoErro: PChar;
@@ -780,7 +942,7 @@ begin
 
 end;
 
-procedure TFPrincipal.BVendaClick(Sender: TObject);
+procedure TF_Principal.BVendaClick(Sender: TObject);
 var
   VL_Erro         : Integer;
   VL_Status       : Integer;
@@ -921,7 +1083,7 @@ begin
 
 end;
 
-procedure TFPrincipal.MontarMenu(VP_Mensagem: Pointer);
+procedure TF_Principal.MontarMenu(VP_Mensagem: Pointer);
 var
   VL_btn  : TMButton;
   VL_I    : Integer;
@@ -975,7 +1137,7 @@ begin
   F_MenuVenda.Free;
 end;
 
-procedure TFPrincipal.CliqueDoBotao(VP_Botao: TObject);
+procedure TF_Principal.CliqueDoBotao(VP_Botao: TObject);
 var
   VL_Botao: ansistring;
 begin
@@ -984,7 +1146,7 @@ begin
   TForm(TPanel(TMButton(VP_Botao).Parent).Parent).Close;
 end;
 
-procedure TFPrincipal.BInicializarClick(Sender: TObject);
+procedure TF_Principal.BInicializarClick(Sender: TObject);
 var
   VL_Codigo       : Integer;
   VL_AmbienteTeste: Integer;
@@ -1048,6 +1210,7 @@ begin
     F_MensagemTagToStr      := GetProcAddress(F_TefLib, 'mensagemtagtostr');
     F_MensagemGetTagPosicao := GetProcAddress(F_TefLib, 'mensagemgettagposicao');
     F_MensagemAddTagPosicao := GetProcAddress(F_TefLib, 'mensagemaddtagposicao');
+    F_MensagemDispose       := GetProcAddress(F_TefLib, 'mensagemdispose');
 
     // carregando as funcoes para tratar a transacao
     F_TransacaoCancela         := GetProcAddress(F_TefLib, 'transacaocancela');
@@ -1068,7 +1231,7 @@ begin
     VL_Codigo := F_TefInicializar(F_Tef,VL_PinpadModelo,
       PChar(UTF8Encode(ExtractFilePath(ParamStr(0))+ EPinPadModeloLib.Text)),
       PChar(UTF8Encode(EPinPadModeloPorta.Text)), PChar(UTF8Encode(ExtractFilePath(ParamStr(0))+
-      EPinPadLib.Text)), PChar(UTF8Encode(F_ArquivoLog)),@uprincipal.Retorno,
+      EPinPadLib.Text)), PChar(UTF8Encode(F_ArquivoLog)),@uprincipal.StringDispose,@uprincipal.Retorno,
       @uprincipal.SolicitaDadosTransacao,@uprincipal.SolicitaDadosPdv,
       @uprincipal.Imprime,@uprincipal.MostraMenu,@uprincipal.MensagemOperador,
       VL_AmbienteTeste);
@@ -1084,18 +1247,18 @@ begin
 
   except
     on e: Exception do
-      ShowMessage('Erro ao carregar a Lib ' + e.ClassName + '/' + e.Message);
+      ShowMessage('Erro ao carregar a Lib.'+#13+'Verifique se a Lib esta no mesma pasta do executável.'+#13+'Erro:' + e.ClassName + '/' + e.Message);
   end;
 
 end;
 
-procedure TFPrincipal.FormCreate(Sender: TObject);
+procedure TF_Principal.FormCreate(Sender: TObject);
 begin
   F_ArquivoLog := ExtractFilePath(ParamStr(0))+ 'appopentef.log';
   F_Tef := nil;
 end;
 
-procedure TFPrincipal.FormDblClick(Sender: TObject);
+procedure TF_Principal.FormDblClick(Sender: TObject);
 begin
 
 end;

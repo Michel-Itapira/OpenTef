@@ -64,7 +64,7 @@ type
 
   end;
 
-function iniciarconexao(var VO_MCom: Pointer; VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
+function iniciarconexao(var VO_MCom: Pointer; VP_ArquivoLog: PChar; VP_Chave: PChar; VP_IP_Caixa: PChar; VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
   VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib; VP_Identificacao: PChar; VP_NivelLog: integer): integer; cdecl;
 function finalizaconexao(VP_MCom: Pointer): integer; cdecl;
 function respondecaixa(VP_MCom: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_ID: integer): integer; cdecl;
@@ -75,7 +75,7 @@ implementation
 
 {$R *.lfm}
 
-function iniciarconexao(var VO_MCom: Pointer; VP_ArquivoLog, VP_Chave, VP_IP_Caixa, VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
+function iniciarconexao(var VO_MCom: Pointer; VP_ArquivoLog: PChar; VP_Chave: PChar; VP_IP_Caixa: PChar; VP_IP_Servico: PChar; VP_PortaCaixa, VP_PortaServico: integer;
   VO_RetornoCaixa, VO_RetornoServico: TServidorRecebimentoLib; VP_Identificacao: PChar; VP_NivelLog: integer): integer; cdecl;
 begin
   try

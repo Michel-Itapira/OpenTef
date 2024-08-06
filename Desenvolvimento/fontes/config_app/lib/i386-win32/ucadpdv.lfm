@@ -8,10 +8,11 @@ object FCadPdv: TFCadPdv
   Caption = 'Formulário de Cadastro de PDV'
   ClientHeight = 607
   ClientWidth = 1163
+  FormStyle = fsMDIChild
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object PTitulo: TPanel
     Left = 5
     Height = 57
@@ -726,7 +727,7 @@ object FCadPdv: TFCadPdv
       Left = 652
       Height = 19
       Top = 25
-      Width = 100
+      Width = 98
       Caption = 'Habilitar P.D.V'
       Font.Style = [fsBold]
       ParentFont = False
@@ -946,10 +947,10 @@ object FCadPdv: TFCadPdv
     Height = 284
     Top = 318
     Width = 1153
-    ActivePage = TabPdvFuncao
+    ActivePage = TabPdvModulo
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 3
     object TabPdvModulo: TTabSheet
       Caption = 'Módulo do Pdv'
@@ -967,11 +968,11 @@ object FCadPdv: TFCadPdv
         ClientWidth = 413
         TabOrder = 0
         object TabPdvModuloCkHabilitar: TCheckBox
-          Left = 217
+          Left = 210
           Height = 19
           Top = 28
-          Width = 184
-          Caption = 'Habilitar Configuração do Pdv'
+          Width = 190
+          Caption = 'Habilitar Config do Modulo Pdv'
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 0
@@ -1248,11 +1249,11 @@ object FCadPdv: TFCadPdv
           Hint = 'Para trocar o campo de filtro, clique sobre o '#13#10'campo desejado na tabela, o filtro irá '#13#10'mudar automaticamente'
           Top = 10
           Width = 275
-          OnChange = TabPdvModuloEFiltroChange
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
           Text = 'TabPdvModuloEFiltro'
+          OnChange = TabPdvModuloEFiltroChange
         end
         object TabPdvModuloGrid: TRxDBGrid
           Left = 2
@@ -1392,9 +1393,9 @@ object FCadPdv: TFCadPdv
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabPdvFuncaoETipoFiltroChange
         TabOrder = 0
         Text = 'TabPdvFuncaoETipoFiltro'
+        OnChange = TabPdvFuncaoETipoFiltroChange
       end
       object TabPdvFuncaoLFiltro: TLabel
         Left = 237
@@ -1412,26 +1413,26 @@ object FCadPdv: TFCadPdv
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabPdvFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO'
+        OnChange = TabPdvFuncaoEFiltroChange
       end
       object TabPdvFuncaoCKSelecionada: TCheckBox
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabPdvFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabPdvFuncaoCKSelecionadaChange
       end
       object TabPdvFuncaoGrid: TRxDBGrid
         Left = 4
         Height = 165
         Top = 64
-        Width = 844
+        Width = 764
         ColumnDefValues.BlobText = '(blob)'
         TitleButtons = False
         AutoSort = True

@@ -7,7 +7,6 @@ object FApp: TFApp
   ClientHeight = 618
   ClientWidth = 1248
   OnClose = FormClose
-  LCLVersion = '3.4.0.0'
   object BIniciar: TButton
     Left = 8
     Height = 25
@@ -174,9 +173,9 @@ object FApp: TFApp
     Text = '2600020101021226740014br.gov.bcb.pix210812345678220412342308123456782420001122334455667788995204000053039865406123.455802BR5913FULANO DETAL6008BRASILIA62190515RP12345678-201980720014br.gov.bcb.pix2550bx.com.br/spi/U0VHUkVET1RPVEFMTUVOVEVBTEVBVE9SSU8=630434D1'
   end
   object Button8: TButton
-    Left = 280
+    Left = 209
     Height = 25
-    Top = 80
+    Top = 86
     Width = 75
     Caption = 'Button8'
     TabOrder = 16
@@ -226,5 +225,23 @@ object FApp: TFApp
     Caption = 'crc16'
     TabOrder = 21
     OnClick = Button13Click
+  end
+  object Button14: TButton
+    Left = 304
+    Height = 25
+    Top = 86
+    Width = 152
+    Caption = 'Inicializa/Finaliza Dll'
+    TabOrder = 22
+    OnClick = Button14Click
+  end
+  object Button15: TButton
+    Left = 928
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Zeos to Rx'
+    TabOrder = 23
+    OnClick = Button15Click
   end
 end

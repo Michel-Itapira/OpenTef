@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, LbRSA, StrUtils, LbClass, IdTCPClient,
-  IdTCPServer, funcoes, IdContext, IdComponent, IdGlobal, base64;
+  IdTCPServer, funcoes, IdContext, IdComponent, IdGlobal, base64, IdCustomTCPServer;
 
 type
 
@@ -15,8 +15,7 @@ type
 
   TKey = array [0..31] of byte;
 
-  TTransmissaoComando = function(AOwner: Pointer; VP_Conexao_ID: integer;
-    VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer of object;
+  TTransmissaoComando = function(AOwner: Pointer; VP_Conexao_ID: integer; VP_Transmissao_ID, VP_Comando: string; var VO_Dados: string): integer of object;
 
   { TEventoSocket }
 
@@ -47,7 +46,7 @@ type
     DOC: string;
     Terminal_Tipo: ansistring;
     Terminal_ID: integer;
-    Identificacao: string;
+    Identificador: string;
     //unica em toda configuração do open tef para cada tipo de terminal, para uso como contigencia
 
     ModuloPublico: ansistring;
@@ -67,14 +66,10 @@ type
     procedure setChaveComunicacao(VP_Chave: ansistring);
     function getChavePublica: ansistring;
     function getChaveComunicacao: ansistring;
-    function GetSocketServidor(VP_DComunicador: Pointer;
-      VP_Conexao_ID: integer; var VO_AContext: TIdContext): boolean;
-    function GetSocketServidorIdentificacao(VP_DComunicador: Pointer;
-      VP_TipoTerminal, VP_TerminalIdentificacao: string;
-      var VO_AContext: TIdContext): boolean;
+    function GetSocketServidor(VP_DComunicador: Pointer; VP_Conexao_ID: integer; var VO_AContext: TIdContext): boolean;
+    function GetSocketServidorIdentificacao(VP_DComunicador: Pointer; VP_TipoTerminal, VP_TerminalIdentificador: string; var VO_AContext: TIdContext): boolean;
 
-    property Chave_Comunicacao: ansistring
-      read getChaveComunicacao write setChaveComunicacao;
+    property Chave_Comunicacao: ansistring read getChaveComunicacao write setChaveComunicacao;
   end;
 
 
@@ -105,8 +100,7 @@ type
     f_Dados: string;
     procedure Execute; override;
   public
-    constructor Create(VP_Comunicador: Pointer; VP_Dados: string;
-      VP_TConexao: TTConexao);
+    constructor Create(VP_Comunicador: Pointer; VP_Dados: string; VP_TConexao: TTConexao);
   end;
 
 
@@ -148,34 +142,23 @@ type
     V_ClassePai: pointer;
 
     function DesconectarCliente(VP_DComunicador: Pointer): integer;
-    function DesconectarClienteID(VP_DComunicador: Pointer;
-      VP_Conexao_ID: integer): integer;
+    function DesconectarClienteID(VP_DComunicador: Pointer; VP_Conexao_ID: integer): integer;
     function ConectarCliente(VP_DComunicador: Pointer): integer;
 
     function ClienteVerificaConexao(VP_DComunicador: Pointer): integer;
 
 
-    function ClienteTransmiteDados(VP_DComunicador: Pointer;
-      var VO_Transmissao_ID: string; var VO_DadosO, VO_DadosI: ansistring;
-      VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
+    function ClienteTransmiteDados(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_DadosO, VO_DadosI: ansistring; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
 
-    function ClienteTransmiteSolicitacao(VP_DComunicador: Pointer;
-      var VO_Transmissao_ID: string; var VO_Dados: TMensagem;
-      var VO_Retorno: TMensagem; VP_Procedimento: TRetorno;
-      VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
+    function ClienteTransmiteSolicitacao(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_Dados: TMensagem; var VO_Retorno: TMensagem;
+      VP_Procedimento: TRetorno; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
 
 
-    function ServidorTransmiteSolicitacaoID(VP_DComunicador: Pointer;
-      VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-      VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string;
-      VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem;
-      VP_Conexao_ID: integer): integer;
+    function ServidorTransmiteSolicitacaoID(VP_DComunicador: Pointer; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean; VP_Procedimento: TServidorRecebimento;
+      VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_Conexao_ID: integer): integer;
 
-    function ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer;
-      VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-      VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string;
-      VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem;
-      VP_TerminalIdentificacao: string): integer;
+    function ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
+      VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_TerminalIdentificador: string): integer;
 
     procedure desativartodasconexao(VP_DComunicador: Pointer);
 
@@ -467,8 +450,7 @@ begin
 
 end;
 
-constructor TThServidorProcessaRecebe.Create(VP_Comunicador: Pointer;
-  VP_Dados: string; VP_TConexao: TTConexao);
+constructor TThServidorProcessaRecebe.Create(VP_Comunicador: Pointer; VP_Dados: string; VP_TConexao: TTConexao);
 begin
   inherited Create(True);
   FreeOnTerminate := False;
@@ -497,18 +479,15 @@ begin
         '', 'comunicador', '141120231417',
         'TThClienteProcessaRecebe.Execute', f_Dados, 0, 4);
 
-      if ((TDComunicador(f_DComunicador).V_ConexaoCliente.Status =
-        csDesconectado) and (TDComunicador(
-        f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado)) then
+      if ((TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csDesconectado) and (TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado)) then
       begin
         TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado :=
           csDesconectado;
         if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-          TDComunicador(f_DComunicador).V_ClienteRecebimento(TDComunicador(f_DComunicador).V_ClassePai,'',
+          TDComunicador(f_DComunicador).V_ClienteRecebimento(TDComunicador(f_DComunicador).V_ClassePai, '',
             TDComunicador(f_DComunicador).V_ProcID, 96, PChar(''))
         else
-        if Assigned(TDComunicador(
-          f_DComunicador).V_ClienteRecebimentoModulo) then
+        if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
           TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('',
             0, TDComunicador(f_DComunicador).V_ProcID,
             96, PChar(''), TDComunicador(f_DComunicador).V_Modulo);
@@ -525,8 +504,7 @@ begin
       VL_Dados := f_Dados;
 
 
-      if TDComunicador(f_DComunicador).V_ConexaoCliente.Status =
-        csDesconectado then
+      if TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csDesconectado then
         exit;
 
 
@@ -537,12 +515,11 @@ begin
       if VL_Erro <> 0 then
       begin
         if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-          TDComunicador(f_DComunicador).V_ClienteRecebimento(TDComunicador(f_DComunicador).V_ClassePai,'',
+          TDComunicador(f_DComunicador).V_ClienteRecebimento(TDComunicador(f_DComunicador).V_ClassePai, '',
             TDComunicador(f_DComunicador).V_ProcID,
             VL_Erro, PChar(VL_Dados))
         else
-        if Assigned(TDComunicador(
-          f_DComunicador).V_ClienteRecebimentoModulo) then
+        if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
           TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('',
             0, TDComunicador(f_DComunicador).V_ProcID,
             VL_Erro, PChar(VL_Dados), TDComunicador(f_DComunicador).V_Modulo)
@@ -560,12 +537,11 @@ begin
       if (VL_Mensagem.Comando <> '00D1') then
       begin
         if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimento) then
-          TDComunicador(f_DComunicador).V_ClienteRecebimento(TDComunicador(f_DComunicador).V_ClassePai,'',
+          TDComunicador(f_DComunicador).V_ClienteRecebimento(TDComunicador(f_DComunicador).V_ClassePai, '',
             TDComunicador(f_DComunicador).V_ProcID,
             68, PChar(VL_Dados))
         else
-        if Assigned(TDComunicador(
-          f_DComunicador).V_ClienteRecebimentoModulo) then
+        if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
           TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo('',
             0, TDComunicador(f_DComunicador).V_ProcID,
             VL_Erro, PChar(VL_Dados), TDComunicador(f_DComunicador).V_Modulo)
@@ -590,12 +566,9 @@ begin
       VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
 
       if TDComunicador(f_DComunicador).V_ConexaoCliente.Status > csLink then
-        VL_Dados := Copy(VL_Dados, 1, 5) +
-          TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.DecryptString(
-          Copy(VL_Dados, 6, MaxInt))
+        VL_Dados := Copy(VL_Dados, 1, 5) + TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt))
       else
-        VL_Dados := Copy(VL_Dados, 1, 5) +
-          DecodeStringBase64(Copy(VL_Dados, 6, MaxInt));
+        VL_Dados := Copy(VL_Dados, 1, 5) + DecodeStringBase64(Copy(VL_Dados, 6, MaxInt));
 
       if VL_Dados = '000021400E211S' then  // comando de eco
       begin
@@ -619,20 +592,15 @@ begin
             VL_Mensagem.GetTagAsAstring('0027'));
 
           VL_Desafio :=
-            TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.EncryptString(
-            Formata('OK' + DateTimeToStr(Now) +
-            IntToStr(Random(999999)), ' ', 30, True));
+            TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.EncryptString(Formata('OK' + DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True));
 
           VL_Mensagem.Limpar;
           VL_Mensagem.AddComando('0103', 'S'); // SOLICITA DESAFIO DE CHAVE
-          VL_Mensagem.AddTag('0108',
-            TDComunicador(f_DComunicador).V_ConexaoCliente.Identificacao); // IDENTIFICACAO
+          VL_Mensagem.AddTag('0108', TDComunicador(f_DComunicador).V_ConexaoCliente.Identificador); // IDENTIFICACAO
           VL_Mensagem.AddTag('0106', VL_Desafio); // DESAFIO DA CHAVE
 
-          if TDComunicador(f_DComunicador).V_ConexaoCliente.Identificacao
-            = '' then
-            VL_Mensagem.AddTag('0009',
-              TDComunicador(f_DComunicador).V_ConexaoCliente.getChaveComunicacao); // CHAVE AES
+          if TDComunicador(f_DComunicador).V_ConexaoCliente.Identificador = '' then
+            VL_Mensagem.AddTag('0009', TDComunicador(f_DComunicador).V_ConexaoCliente.getChaveComunicacao); // CHAVE AES
 
           VL_Dados := VL_Mensagem.TagsAsString;
 
@@ -666,8 +634,7 @@ begin
           Exit;
         end;
 
-        VL_Dados := TDComunicador(
-          f_DComunicador).V_ConexaoCliente.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));
+        VL_Dados := TDComunicador(f_DComunicador).V_ConexaoCliente.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));
 
         VL_Mensagem.Limpar;
         VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
@@ -685,8 +652,7 @@ begin
         end;
 
         VL_Desafio :=
-          TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.DecryptString(
-          VL_Mensagem.GetTagAsAstring('0106'));
+          TDComunicador(f_DComunicador).V_ConexaoCliente.Aes.DecryptString(VL_Mensagem.GetTagAsAstring('0106'));
 
         if Copy(VL_Desafio, 1, 4) <> 'OKOK' then
         begin
@@ -695,21 +661,18 @@ begin
 
           VL_Dados := VL_Mensagem.TagsAsString;
 
-          TDComunicador(f_DComunicador).ClienteTransmiteDados(
-            f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
+          TDComunicador(f_DComunicador).ClienteTransmiteDados(f_DComunicador, VL_TransmissaoID, VL_Dados, VL_Dados, 3000, False);
           Exit;
         end;
 
-        if TDComunicador(f_DComunicador).V_ConexaoCliente.Identificacao = '' then
+        if TDComunicador(f_DComunicador).V_ConexaoCliente.Identificador = '' then
           TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csChaveado
         else
-          TDComunicador(f_DComunicador).V_ConexaoCliente.Status :=
-            csChaveadoAssinado;
+          TDComunicador(f_DComunicador).V_ConexaoCliente.Status := csChaveadoAssinado;
 
       end;
 
-      VL_Erro := TDComunicador(
-        f_DComunicador).V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
+      VL_Erro := TDComunicador(f_DComunicador).V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
 
       if VL_Erro <> 0 then
       begin
@@ -719,8 +682,7 @@ begin
             PChar(VL_TransmissaoID),
             TDComunicador(f_DComunicador).V_ProcID, 0, PChar(VL_Dados))
         else
-        if Assigned(TDComunicador(
-          f_DComunicador).V_ClienteRecebimentoModulo) then
+        if Assigned(TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo) then
           TDComunicador(f_DComunicador).V_ClienteRecebimentoModulo(
             PChar(VL_TransmissaoID), 0,
             TDComunicador(f_DComunicador).V_ProcID, 0,
@@ -734,8 +696,7 @@ begin
     except
       on e: Exception do
         GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog,
-          0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
-          e.ClassName + '/' + e.Message, '', 1, 1);
+          0, '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' + e.ClassName + '/' + e.Message, '', 1, 1);
     end;
   finally
     begin
@@ -887,8 +848,7 @@ begin
   //VL_Desafio := '';
   try
     begin
-      if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or
-        (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csLogado) then
+      if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csLogado) then
       begin
         Result := 0;
         exit;
@@ -906,11 +866,9 @@ begin
       try
         begin
           TDComunicador(VP_DComunicador).idTCPCliente.Connect;
-          TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.MaxLineLength
-          :=
+          TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.MaxLineLength :=
             MaxInt;
-          TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.SendBufferSize
-          := MaxInt;
+          TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.SendBufferSize := MaxInt;
         end;
       except
         on e: Exception do
@@ -943,8 +901,7 @@ begin
 
       VL_DadosO := VL_Mensagem.TagsAsString;
 
-      Result := ClienteTransmiteDados(VP_DComunicador,
-        VL_Transmissao_ID, VL_DadosO, VL_DadosI, 15000, True);
+      Result := ClienteTransmiteDados(VP_DComunicador, VL_Transmissao_ID, VL_DadosO, VL_DadosI, 15000, True);
 
       if Result <> 0 then
       begin
@@ -984,8 +941,7 @@ begin
       //TDComunicador(VP_DComunicador).IdTCPCliente.CheckForGracefulDisconnect(True);
       VL_Dados := '00002161400E311S';
       VL_Transmissao_ID := '';
-      Result := ClienteTransmiteDados(VP_DComunicador,
-        VL_Transmissao_ID, VL_Dados, VL_Dados, 30000, True);
+      Result := ClienteTransmiteDados(VP_DComunicador, VL_Transmissao_ID, VL_Dados, VL_Dados, 30000, True);
     end;
 
   except
@@ -1118,8 +1074,7 @@ begin
   Result := s;
 end;
 
-function TTConexao.GetSocketServidor(VP_DComunicador: Pointer;
-  VP_Conexao_ID: integer; var VO_AContext: TIdContext): boolean;
+function TTConexao.GetSocketServidor(VP_DComunicador: Pointer; VP_Conexao_ID: integer; var VO_AContext: TIdContext): boolean;
 var
   VL_I: integer;
   VL_Clientes: TIdContextList;
@@ -1132,8 +1087,7 @@ begin
     VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
     for VL_I := 0 to VL_Clientes.Count - 1 do
-      if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID =
-        VP_Conexao_ID then
+      if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
       begin
         VO_AContext := TIdContext(VL_Clientes.Items[VL_I]);
         Result := True;
@@ -1145,9 +1099,7 @@ begin
 
 end;
 
-function TTConexao.GetSocketServidorIdentificacao(VP_DComunicador: Pointer;
-  VP_TipoTerminal, VP_TerminalIdentificacao: string;
-  var VO_AContext: TIdContext): boolean;
+function TTConexao.GetSocketServidorIdentificacao(VP_DComunicador: Pointer; VP_TipoTerminal, VP_TerminalIdentificador: string; var VO_AContext: TIdContext): boolean;
 var
   VL_I: integer;
   VL_Clientes: TIdContextList;
@@ -1158,9 +1110,8 @@ begin
     VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
     for VL_I := 0 to VL_Clientes.Count - 1 do
-      if (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_Tipo =
-        VP_TipoTerminal) and (TTConexao(
-        TIdContext(VL_Clientes.Items[VL_I]).Data).Identificacao = VP_TerminalIdentificacao) then
+      if (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_Tipo = VP_TipoTerminal) and (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificador =
+        VP_TerminalIdentificador) then
       begin
         VO_AContext := TIdContext(VL_Clientes.Items[VL_I]);
         Result := True;
@@ -1299,10 +1250,9 @@ begin
     if Assigned(V_ServidorRecebimento) then
       if TTConexao(AContext.Data).StatusDesejado = csLogado then
         V_ServidorRecebimento(96, '', '', TTConexao(AContext.Data).ID,
-          TTConexao(AContext.Data).Terminal_Tipo, TTConexao(
-          AContext.Data).Terminal_ID, TTConexao(AContext.Data).DOC,
+          TTConexao(AContext.Data).Terminal_Tipo, TTConexao(AContext.Data).Terminal_ID, TTConexao(AContext.Data).DOC,
           TTConexao(AContext.Data).Status,
-          TTConexao(AContext.Data).Identificacao,
+          TTConexao(AContext.Data).Identificador,
           TTConexao(AContext.Data).Permissao, TTConexao(AContext.Data).ClienteIp);
     TTConexao(AContext.Data).Status := csDesconectado;
     TTConexao(AContext.Data).Free;
@@ -1321,13 +1271,13 @@ var
   VL_TransmissaoID: string;
   VL_Dados: string;
   VL_Desafio: string;
-  VL_Identificacao: string;
+  VL_Identificador: string;
   VL_TConexao: TTConexao;
 begin
   VL_Erro := 0;
   VL_TransmissaoID := '';
   VL_Desafio := '';
-  VL_Identificacao := '';
+  VL_Identificador := '';
   VL_Mensagem := nil;
 
   try
@@ -1362,6 +1312,16 @@ begin
       VL_Mensagem := TMensagem.Create;
 
 
+      if VL_DadosRecebidos = '00002161400E311S' then  // comando de eco
+      begin
+        VL_Mensagem.CarregaTags('00002161400E311R');
+        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil,
+          VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+
+        Exit;
+      end;
+
+
       VL_Erro := VL_Mensagem.CarregaTags(VL_DadosRecebidos);
       if VL_Erro <> 0 then
       begin
@@ -1369,6 +1329,7 @@ begin
           'TThServidorProcessaRecebe.Execute; ', '', VL_Erro, 1);
         Exit;
       end;
+
 
 
       if VL_Mensagem.Comando <> '00D1' then
@@ -1384,18 +1345,8 @@ begin
       VL_Dados := VL_Mensagem.GetTagAsAstring('00D2');
 
       if (VL_TConexao.Status = csChaveado) or (VL_TConexao.Status = csLogado) then
-        VL_Dados := Copy(VL_Dados, 1, 5) +
-          VL_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
+        VL_Dados := Copy(VL_Dados, 1, 5) + VL_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
 
-
-      if VL_Dados = '00002161400E311S' then  // comando de eco
-      begin
-        VL_Mensagem.CarregaTags('00002161400E311R');
-        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil,
-          VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
-
-        Exit;
-      end;
 
 
       if (VL_TransmissaoID = '') then
@@ -1447,8 +1398,7 @@ begin
           Exit;
         end;
 
-        VL_Dados := VL_TConexao.Rsa.DecryptString(
-          VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
+        VL_Dados := VL_TConexao.Rsa.DecryptString(VL_Mensagem.GetTagAsAstring('00E3'));  // transacao criptografada
 
         VL_Mensagem.Limpar;
         VL_Erro := VL_Mensagem.CarregaTags(VL_Dados);
@@ -1465,9 +1415,9 @@ begin
         end;
 
         VL_Mensagem.GetTag('0106', VL_Desafio); // desafio
-        VL_Mensagem.GetTag('0108', VL_Identificacao); // identificacao
+        VL_Mensagem.GetTag('0108', VL_Identificador); // identificacao
 
-        if VL_Identificacao = '' then // identificacao
+        if VL_Identificador = '' then // identificacao
         begin
           VL_TConexao.Aes.GenerateKey(VL_Mensagem.GetTagAsAstring('0009'));
           // chave simetrica aes
@@ -1478,32 +1428,22 @@ begin
           begin
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('0026', '105');
-
-            ServidorTransmiteSolicitacaoID(Self, 3000,
-              False, nil, VL_TransmissaoID,
-              VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+            ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
             Exit;
           end;
 
-          VL_Mensagem.GetTag('0108', VL_Identificacao); // identificador
-
           VL_Mensagem.Limpar;
           VL_Mensagem.AddComando('0022', 'S');
+          VL_Mensagem.AddTag('0108', VL_Identificador); // identificacao
           // SOLICITA DADOS DA IDENTIFICACAO
-          VL_Mensagem.AddTag('0108', VL_Identificacao); // IDENTIFICADOR
 
-          VL_Erro :=
-            V_TransmissaoComando(TDComunicador(Self), VL_TConexao.ID,
-            VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
+          VL_Erro := V_TransmissaoComando(TDComunicador(Self), VL_TConexao.ID, VL_TransmissaoID, VL_Mensagem.TagsAsString, VL_Dados);
 
           if VL_Erro <> 0 then
           begin
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
-
-            ServidorTransmiteSolicitacaoID(Self, 3000,
-              False, nil, VL_TransmissaoID,
-              VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+            ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
             Exit;
           end;
 
@@ -1515,9 +1455,7 @@ begin
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('0026', IntToStr(VL_Erro));
 
-            ServidorTransmiteSolicitacaoID(Self, 3000,
-              False, nil, VL_TransmissaoID,
-              VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+            ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
             Exit;
           end;
 
@@ -1533,17 +1471,13 @@ begin
           VL_Mensagem.Limpar;
           VL_Mensagem.AddComando('0026', '92');
 
-          ServidorTransmiteSolicitacaoID(Self, 3000, False,
-            nil, VL_TransmissaoID,
-            VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+          ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
           Exit;
         end;
 
         VL_Mensagem.Limpar;
         VL_Mensagem.AddComando('0103', 'R'); // retorno do desafio da chave
-        VL_Mensagem.AddTag('0106', VL_TConexao.Aes.EncryptString(
-          Formata('OKOK' + DateTimeToStr(Now) + IntToStr(Random(999999)),
-          ' ', 30, True))); // desafio
+        VL_Mensagem.AddTag('0106', VL_TConexao.Aes.EncryptString(Formata('OKOK' + DateTimeToStr(Now) + IntToStr(Random(999999)), ' ', 30, True))); // desafio
 
         VL_Dados := VL_Mensagem.TagsAsString;
 
@@ -1555,18 +1489,20 @@ begin
         ServidorTransmiteSolicitacaoID(Self, 3000, False, nil, VL_TransmissaoID,
           VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
         if Assigned(VL_TConexao) then
-          if VL_Identificacao = '' then // identificacao
+          if VL_Identificador = '' then // identificacao
             VL_TConexao.Status := csChaveado
           else
+          begin
             VL_TConexao.Status := csChaveadoAssinado;
+            VL_TConexao.Identificador:=VL_Identificador;
+          end;
 
 
         Exit;
 
       end;
 
-      VL_Erro := V_EventoSocketAguardaResposta.SetDados(
-        VL_TransmissaoID, VL_Dados);
+      VL_Erro := V_EventoSocketAguardaResposta.SetDados(VL_TransmissaoID, VL_Dados);
 
       if VL_Erro <> 0 then
       begin
@@ -1574,7 +1510,7 @@ begin
           V_ServidorRecebimento(0, VL_TransmissaoID, VL_Dados,
             VL_TConexao.ID, VL_TConexao.Terminal_Tipo,
             VL_TConexao.Terminal_ID, VL_TConexao.DOC,
-            VL_TConexao.Status, VL_TConexao.Identificacao,
+            VL_TConexao.Status, VL_TConexao.Identificador,
             VL_TConexao.Permissao, VL_TConexao.ClienteIp)
         else
           GravaLog(V_ArquivoLog, 0, '', 'comunicador', '250520221719',
@@ -1585,16 +1521,22 @@ begin
 
     except
       on e: Exception do
+      begin
         GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920222118',
-          'TThServidorProcessaRecebe.Execute ' + e.ClassName +
-          '/' + e.Message, '', 1, 1);
+          'TThServidorProcessaRecebe.Execute ' + e.ClassName + '/' + e.Message, '', 1, 1);
+        if not AContext.Connection.IOHandler.InputBufferIsEmpty then
+          AContext.Connection.IOHandler.InputBuffer.Clear;
+        if not AContext.Connection.Socket.InputBufferIsEmpty then
+          AContext.Connection.Socket.InputBuffer.Clear;
+
+      end;
     end;
 
 
   finally
-    VL_Mensagem.Free;
+    if Assigned(VL_Mensagem) then
+      VL_Mensagem.Free;
   end;
-
 end;
 
 
@@ -1634,7 +1576,7 @@ begin
   begin
     Self.V_ConexaoCliente.StatusDesejado := csDesconectado;
     if Assigned(TDComunicador(SELF.V_DComunicador).V_ClienteRecebimento) then
-      TDComunicador(SELF.V_DComunicador).V_ClienteRecebimento(TDComunicador(SELF.V_DComunicador).V_ClassePai,'',
+      TDComunicador(SELF.V_DComunicador).V_ClienteRecebimento(TDComunicador(SELF.V_DComunicador).V_ClassePai, '',
         0, 96, PChar(''));
   end;
 end;
@@ -1649,8 +1591,7 @@ begin
   end;
   if TDComunicador(VP_DComunicador).idTCPCliente.Connected then
   begin
-    if not TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBufferIsEmpty
-    then
+    if not TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBufferIsEmpty then
       TDComunicador(VP_DComunicador).idTCPCliente.IOHandler.InputBuffer.Clear;
     if not TDComunicador(VP_DComunicador).idTCPCliente.Socket.InputBufferIsEmpty then
       TDComunicador(VP_DComunicador).idTCPCliente.Socket.InputBuffer.Clear;
@@ -1662,8 +1603,7 @@ begin
   end;
 end;
 
-function TDComunicador.DesconectarClienteID(VP_DComunicador: Pointer;
-  VP_Conexao_ID: integer): integer;
+function TDComunicador.DesconectarClienteID(VP_DComunicador: Pointer; VP_Conexao_ID: integer): integer;
 var
   VL_I: integer;
   VL_Clientes: TIdContextList;
@@ -1675,8 +1615,7 @@ begin
     VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
     for VL_I := 0 to VL_Clientes.Count - 1 do
-      if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID =
-        VP_Conexao_ID then
+      if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
       begin
         TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).StatusDesejado :=
           csDesconectado;
@@ -1692,10 +1631,8 @@ begin
 end;
 
 
-function TDComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador: Pointer;
-  VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-  VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string;
-  VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_Conexao_ID: integer): integer;
+function TDComunicador.ServidorTransmiteSolicitacaoID(VP_DComunicador: Pointer; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean; VP_Procedimento: TServidorRecebimento;
+  VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_Conexao_ID: integer): integer;
 var
   VL_I: integer;
   VL_Clientes: TIdContextList;
@@ -1713,13 +1650,11 @@ begin
     if VP_Transmissao_ID = '' then
       VP_Transmissao_ID := CriaID;
     try
-      VL_Clientes := TDComunicador(
-        VP_DComunicador).IdTCPServidor.Contexts.LockList;
+      VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
       for VL_I := 0 to VL_Clientes.Count - 1 do
       begin
-        if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID =
-          VP_Conexao_ID then
+        if TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID = VP_Conexao_ID then
         begin
           VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
           Result := 0;
@@ -1737,11 +1672,9 @@ begin
       VL_Mensagem := TMensagem.Create;
 
       if TTConexao(VL_AContext.Data).Status > csLink then
-        VL_Dados := Copy(VL_Dados, 1, 5) +
-          TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt))
+        VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt))
       else
-        VL_Dados := Copy(VL_Dados, 1, 5) +
-          EncodeStringBase64(Copy(VL_Dados, 6, MaxInt));
+        VL_Dados := Copy(VL_Dados, 1, 5) + EncodeStringBase64(Copy(VL_Dados, 6, MaxInt));
 
       VP_Mensagem.Limpar;
       VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
@@ -1779,8 +1712,7 @@ begin
                 end;
                  }
 
-        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda,
-          False, VL_Temporizador);
+        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, False, VL_Temporizador);
 
         if TDComunicador(VP_DComunicador).V_Parar then
         begin
@@ -1811,7 +1743,7 @@ begin
             TTConexao(VL_AContext.Data).Terminal_Tipo,
             TTConexao(VL_AContext.Data).Terminal_ID,
             TTConexao(VL_AContext.Data).DOC,
-            TTConexao(VL_AContext.Data).Status, TTConexao(VL_AContext.Data).Identificacao,
+            TTConexao(VL_AContext.Data).Status, TTConexao(VL_AContext.Data).Identificador,
             TTConexao(VL_AContext.Data).Permissao,
             TTConexao(VL_AContext.Data).ClienteIp);
 
@@ -1845,12 +1777,8 @@ begin
 
 end;
 
-function TDComunicador.ServidorTransmiteSolicitacaoIdentificacao(
-  VP_DComunicador: Pointer;
-  VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
-  VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string;
-  VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem;
-  VP_TerminalIdentificacao: string): integer;
+function TDComunicador.ServidorTransmiteSolicitacaoIdentificacao(VP_DComunicador: Pointer; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean;
+  VP_Procedimento: TServidorRecebimento; VP_Transmissao_ID: string; VP_Mensagem: TMensagem; var VO_Mensagem: TMensagem; VP_TerminalIdentificador: string): integer;
 var
   VL_I: integer;
   VL_Clientes: TIdContextList;
@@ -1871,12 +1799,10 @@ begin
 
 
     try
-      VL_Clientes := TDComunicador(
-        VP_DComunicador).IdTCPServidor.Contexts.LockList;
+      VL_Clientes := TDComunicador(VP_DComunicador).IdTCPServidor.Contexts.LockList;
 
       for VL_I := 0 to VL_Clientes.Count - 1 do
-        if (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificacao =
-          VP_TerminalIdentificacao) then
+        if (TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Identificador = VP_TerminalIdentificador) then
         begin
           VL_AContext := TIdContext(VL_Clientes.Items[VL_I]);
           Result := 0;
@@ -1891,8 +1817,7 @@ begin
     try
       VL_Mensagem := TMensagem.Create;
 
-      VL_Dados := Copy(VL_Dados, 1, 5) +
-        TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
+      VL_Dados := Copy(VL_Dados, 1, 5) + TTConexao(VL_AContext.Data).Aes.EncryptString(Copy(VL_Dados, 6, MaxInt));
 
       VP_Mensagem.Limpar;
       VP_Mensagem.AddComando('00D1', VP_Transmissao_ID);
@@ -1932,8 +1857,7 @@ begin
                 }
 
 
-        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda,
-          False, VL_Temporizador);
+        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, False, VL_Temporizador);
 
         if TDComunicador(VP_DComunicador).V_Parar then
         begin
@@ -1964,7 +1888,7 @@ begin
             TTConexao(VL_AContext.Data).Terminal_Tipo,
             TTConexao(VL_AContext.Data).Terminal_ID,
             TTConexao(VL_AContext.Data).DOC,
-            TTConexao(VL_AContext.Data).Status, TTConexao(VL_AContext.Data).Identificacao,
+            TTConexao(VL_AContext.Data).Status, TTConexao(VL_AContext.Data).Identificador,
             TTConexao(VL_AContext.Data).Permissao,
             TTConexao(VL_AContext.Data).ClienteIp);
 
@@ -1990,8 +1914,7 @@ begin
     begin
       Result := 1;
       GravaLog(V_ArquivoLog, 0, '', 'comunicador', '260820220820',
-        'ServidorTransmiteSolicitacaoIdentificacao' + e.ClassName +
-        '/' + e.Message, '', 1, 1);
+        'ServidorTransmiteSolicitacaoIdentificacao' + e.ClassName + '/' + e.Message, '', 1, 1);
     end;
 
   end;
@@ -2015,8 +1938,7 @@ begin
   except
     on e: Exception do
       GravaLog(V_ArquivoLog, 0, '', 'comunicador', '120920220835',
-        'Erro na TDComunicador.desativartodasconexao ' + e.ClassName +
-        '/' + e.Message, '', 1, 1);
+        'Erro na TDComunicador.desativartodasconexao ' + e.ClassName + '/' + e.Message, '', 1, 1);
 
   end;
 end;
@@ -2064,10 +1986,7 @@ begin
           VL_Linha := '08122023153905';
         end
         else
-        if ((TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado =
-          csLogado) and (TDComunicador(
-          f_DComunicador).V_ConexaoCliente.Status =
-          csLogado)) then
+        if ((TDComunicador(f_DComunicador).V_ConexaoCliente.StatusDesejado = csLogado) and (TDComunicador(f_DComunicador).V_ConexaoCliente.Status = csLogado)) then
         begin
           VL_Linha := '08122023153906';
           TDComunicador(f_DComunicador).V_ConexaoCliente.Status :=
@@ -2083,8 +2002,7 @@ begin
         if TDComunicador(f_DComunicador).IdTCPCliente.Connected then
         begin
           VL_Linha := '08122023153903';
-          if not TDComunicador(
-            f_DComunicador).IdTCPCliente.IOHandler.InputBufferIsEmpty then
+          if not TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.InputBufferIsEmpty then
           begin
             VL_Linha := '090520221747';
             try
@@ -2117,12 +2035,21 @@ begin
 
       except
         on e: Exception do
-          GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0,
-            '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' +
-            e.ClassName + '/' + e.Message, '', 1, 1);
-      end;
+        begin
 
+          GravaLog(TDComunicador(f_DComunicador).V_ArquivoLog, 0,
+            '', 'comunicador', VL_Linha, 'Erro na TThRecebe.Execute ' + e.ClassName + '/' + e.Message, '', 1, 1);
+
+          if not TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.InputBufferIsEmpty then
+            TDComunicador(f_DComunicador).IdTCPCliente.IOHandler.InputBuffer.Clear;
+          if not TDComunicador(f_DComunicador).IdTCPCliente.Socket.InputBufferIsEmpty then
+            TDComunicador(f_DComunicador).IdTCPCliente.Socket.InputBuffer.Clear;
+
+        end;
+      end;
     end;
+
+
 
   finally
     begin
@@ -2135,9 +2062,8 @@ begin
 end;
 
 
-function TDComunicador.ClienteTransmiteDados(VP_DComunicador: Pointer;
-  var VO_Transmissao_ID: string; var VO_DadosO, VO_DadosI: ansistring;
-  VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
+function TDComunicador.ClienteTransmiteDados(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_DadosO, VO_DadosI: ansistring; VP_TempoAguarda: integer;
+  VP_AguardaRetorno: boolean): integer;
 var
   VL_Evento: TAguardaEvento;
   VL_Temporizador: TTemporizador;
@@ -2155,8 +2081,7 @@ begin
       if VO_Transmissao_ID = '' then
         VO_Transmissao_ID := CriaID;
 
-      if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status =
-        csDesconectado) then
+      if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csDesconectado) then
       begin
         Result := 100;
         Exit;
@@ -2168,13 +2093,10 @@ begin
         Exit;
       end;
 
-      if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or
-        (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csLogado) then
+      if (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csChaveado) or (TDComunicador(VP_DComunicador).V_ConexaoCliente.Status = csLogado) then
       begin
         VL_DadosCriptografado :=
-          Copy(VO_DadosO, 1, 5) + TDComunicador(
-          VP_DComunicador).V_ConexaoCliente.Aes.EncryptString(
-          Copy(VO_DadosO, 6, MaxInt));
+          Copy(VO_DadosO, 1, 5) + TDComunicador(VP_DComunicador).V_ConexaoCliente.Aes.EncryptString(Copy(VO_DadosO, 6, MaxInt));
         VL_DadosEnviar := VL_DadosCriptografado;
       end
       else
@@ -2212,8 +2134,7 @@ begin
                 end;
                 }
 
-        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda,
-          False, VL_Temporizador);
+        VL_Evento := VL_Temporizador.aguarda(VP_TempoAguarda, False, VL_Temporizador);
 
         if TDComunicador(VP_DComunicador).V_Parar then
         begin
@@ -2259,8 +2180,7 @@ begin
       begin
         Result := 83;
         GravaLog(V_ArquivoLog, 0, '', 'comunicador', '0109202219:09',
-          'Erro na TDComunicador.ClienteTransmiteDados' + e.ClassName +
-          '/' + e.Message, '', Result, 1);
+          'Erro na TDComunicador.ClienteTransmiteDados' + e.ClassName + '/' + e.Message, '', Result, 1);
         DesconectarCliente(VP_DComunicador);
 
       end;
@@ -2272,10 +2192,8 @@ begin
 
 end;
 
-function TDComunicador.ClienteTransmiteSolicitacao(VP_DComunicador: Pointer;
-  var VO_Transmissao_ID: string; var VO_Dados: TMensagem;
-  var VO_Retorno: TMensagem; VP_Procedimento: TRetorno; VP_TempoAguarda: integer;
-  VP_AguardaRetorno: boolean): integer;
+function TDComunicador.ClienteTransmiteSolicitacao(VP_DComunicador: Pointer; var VO_Transmissao_ID: string; var VO_Dados: TMensagem; var VO_Retorno: TMensagem;
+  VP_Procedimento: TRetorno; VP_TempoAguarda: integer; VP_AguardaRetorno: boolean): integer;
 var
   VL_Dados: ansistring;
   VL_Mensagem: TMensagem;
@@ -2312,8 +2230,7 @@ begin
         Exit;
       end;
 
-      Result := ClienteTransmiteDados(VP_DComunicador,
-        VO_Transmissao_ID, VL_Dados, VL_Dados, VP_TempoAguarda, VP_AguardaRetorno);
+      Result := ClienteTransmiteDados(VP_DComunicador, VO_Transmissao_ID, VL_Dados, VL_Dados, VP_TempoAguarda, VP_AguardaRetorno);
       if Result <> 0 then
       begin
         GravaLog(V_ArquivoLog, 0, '', 'comunicador', '190520222101',
@@ -2346,8 +2263,7 @@ begin
       begin
         Result := 24;
         GravaLog(V_ArquivoLog, 0, '', 'comunicador', '090520221723',
-          'Erro na TDComunicador.ClienteTransmiteSolicitacao ' +
-          e.ClassName + '/' + e.Message, '', Result, 1);
+          'Erro na TDComunicador.ClienteTransmiteSolicitacao ' + e.ClassName + '/' + e.Message, '', Result, 1);
 
         TDComunicador(VP_DComunicador).V_ConexaoCliente.Status := csDesconectado;
         if TDComunicador(VP_DComunicador).idTCPCliente.Connected then

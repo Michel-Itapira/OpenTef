@@ -1,6 +1,6 @@
 unit app;
 
-{$mode objfpc}{$H+} {$RANGECHECKS OFF}
+{$mode objfpc}{$H+}{$RANGECHECKS OFF}
 
 interface
 
@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ExtCtrls, opentefnucleo, ubarcodes, funcoes,
   ZConnection, ZDataset,
-  rxmemds, IdContext, cadastro, LbClass, md5, base64, FMTBcd, DB, comunicador,bancodados;
+  rxmemds, IdContext, cadastro, LbClass, md5, base64, FMTBcd, DB, comunicador, bancodados;
 
 type
 
@@ -26,6 +26,8 @@ type
     Button11: TButton;
     Button12: TButton;
     Button13: TButton;
+    Button14: TButton;
+    Button15: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -48,6 +50,8 @@ type
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
     procedure Button13Click(Sender: TObject);
+    procedure Button14Click(Sender: TObject);
+    procedure Button15Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -98,8 +102,7 @@ begin
   for VL_I := 0 to DNucleo.VF_MenuOperacional.Count - 1 do
   begin
     VL_Menu := DNucleo.VF_MenuOperacional.Get(VL_I);
-    MMenuOperacional.Lines.Add('Menu TAG:' + VL_Menu.Tag + ' Menu Botao:' +
-      VL_Menu.TextoBotao + ' ModuloConf_ID:' + IntToStr(VL_Menu.ModuloConfID));
+    MMenuOperacional.Lines.Add('Menu TAG:' + VL_Menu.Tag + ' Menu Botao:' + VL_Menu.TextoBotao + ' ModuloConf_ID:' + IntToStr(VL_Menu.ModuloConfID));
   end;
 
 end;
@@ -126,8 +129,7 @@ begin
   for VL_I := 0 to DNucleo.VF_Menu.Count - 1 do
   begin
     VL_Menu := DNucleo.VF_Menu.Get(VL_I);
-    MMenu.Lines.Add('Menu TAG:' + VL_Menu.Tag + ' Menu Botao:' +
-      VL_Menu.TextoBotao + ' ModuloConf_ID:' + IntToStr(VL_Menu.ModuloConfID));
+    MMenu.Lines.Add('Menu TAG:' + VL_Menu.Tag + ' Menu Botao:' + VL_Menu.TextoBotao + ' ModuloConf_ID:' + IntToStr(VL_Menu.ModuloConfID));
   end;
 
 end;
@@ -148,8 +150,7 @@ begin
   for VL_I := 0 to DNucleo.VF_Bin.Count - 1 do
   begin
     VL_RecBin := DNucleo.VF_Bin.Get(VL_I);
-    MBIN.Lines.Add('BIN:' + VL_RecBin.IIN + ' ModuloConf_ID:' +
-      IntToStr(VL_RecBin.ModuloConfID));
+    MBIN.Lines.Add('BIN:' + VL_RecBin.IIN + ' ModuloConf_ID:' + IntToStr(VL_RecBin.ModuloConfID));
   end;
 
 end;
@@ -169,14 +170,11 @@ begin
     for VL_I := 0 to VL_Clientes.Count - 1 do
     begin
       MBIN.Lines.Add('--------------------');
-      MBIN.Lines.Add(IntToStr(
-        TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID));
+      MBIN.Lines.Add(IntToStr(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).ID));
       MBIN.Lines.Add(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).getChaveComunicacao);
       MBIN.Lines.Add(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_Tipo);
-      MBIN.Lines.Add(IntToStr(
-        TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_ID));
-      MBIN.Lines.Add(DateTimeToStr(
-        TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Hora));
+      MBIN.Lines.Add(IntToStr(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Terminal_ID));
+      MBIN.Lines.Add(DateTimeToStr(TTConexao(TIdContext(VL_Clientes.Items[VL_I]).Data).Hora));
     end;
   finally
     DComunicador.IdTCPServidor.Contexts.UnlockList;
@@ -211,7 +209,7 @@ begin
   VL_BancoDados := TDBancoDados.Create(nil);
 
   VL_BancoDados.ConsultaA.Close;
-  VL_BancoDados.ConsultaA.SQL.Text:='SELECT DADOS FROM TAG WHERE TAG_TIPO = ''MENU_PDV'' ';
+  VL_BancoDados.ConsultaA.SQL.Text := 'SELECT DADOS FROM TAG WHERE TAG_TIPO = ''MENU_PDV'' ';
   VL_BancoDados.ConsultaA.Open;
 
   VL_BancoDados.ConsultaA.First;
@@ -226,17 +224,115 @@ end;
 
 procedure TFApp.Button13Click(Sender: TObject);
 var
-s: TLBytes;
+  s: TLBytes;
 begin
-   s := nil;
-  setlength(s,3);
-  s[0]:=65;
-    s[1]:=65;
-      s[2]:=65;
-// mmenu.lines.add(inttostr(crc16(s,length(s))));
+  s := nil;
+  setlength(s, 3);
+  s[0] := 65;
+  s[1] := 65;
+  s[2] := 65;
+  // mmenu.lines.add(inttostr(crc16(s,length(s))));
 
+end;
 
+procedure recebimento(VP_Transmissao_ID: PUtf8Char; VP_Tarefa_ID, VP_ModuloProcID, VP_Erro: integer; VP_Dados: PUtf8Char; VP_Modulo: Pointer); cdecl;
+begin
+  sleep(5);
+end;
 
+procedure dll;
+type
+  TLogin = function(VP_Modulo: Pointer; VP_Host: PUtf8Char; VP_Porta: integer; VP_ChaveComunicacao, VP_TipoConexao, VP_Identificacao: PUtf8Char): integer; cdecl;
+  TFinalizar = function(VP_Modulo: Pointer): integer; cdecl;
+  TModuloInicializar = function(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo; VP_Modulo_ID: integer; VP_ArquivoLog: PUtf8Char): integer; cdecl;
+  TModuloStatus = function(VP_Modulo: Pointer; var VO_Versao: PUtf8Char; var VO_VersaoMensagem: integer; var VO_StatusRetorno: integer): integer; cdecl;
+  TStrDispose = procedure(VP_PChar: PChar); cdecl;
+var
+  lib: TLibHandle;
+  inicializar: TModuloInicializar;
+  finalizar: TFinalizar;
+  moduloStatus: TModuloStatus;
+  strDispose: TStrDispose;
+  login: TLogin;
+
+  moduloServico: pointer;
+  moduloCaixa: pointer;
+  erro: integer;
+  retorno: PUtf8Char;
+
+  VL_VersaoModulo: string;
+  VL_VersaoMensagem: integer;
+  VL_DadosInteger: integer;
+begin
+  erro := 0;
+  retorno := nil;
+  VL_VersaoModulo := '';
+
+  lib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo/0068.dll'));
+
+  if lib <= 0 then
+    Exit;
+
+  Pointer(login) := GetProcAddress(lib, 'login');
+  Pointer(finalizar) := GetProcAddress(lib, 'finalizar');
+  Pointer(inicializar) := GetProcAddress(lib, 'inicializar');
+  Pointer(moduloStatus) := GetProcAddress(lib, 'modulostatus');
+  Pointer(strDispose) := GetProcAddress(lib, 'mensagemdispose');
+
+  inicializar(1, moduloCaixa, @recebimento, 6, PUtf8Char('E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\binarios\opentef\win32\0068_servico.txt'));
+
+  erro := moduloStatus(moduloCaixa, retorno, VL_VersaoMensagem, VL_DadosInteger);
+
+  VL_VersaoModulo := retorno;
+  strDispose(retorno);
+
+  erro := login(moduloCaixa, PUtf8Char('127.0.0.1'), 555, PUtf8Char('321'), PUtf8Char('C'), PUtf8Char('21644664'));
+
+  inicializar(1, moduloServico, @recebimento, 6, PUtf8Char('E:\Projetos\Desenvolvedor\Thiago\Lazarus\OpenTef\publica\binarios\opentef\win32\0068_servico.txt'));
+
+  erro := moduloStatus(moduloServico, retorno, VL_VersaoMensagem, VL_DadosInteger);
+
+  VL_VersaoModulo := retorno;
+  strDispose(retorno);
+
+  erro := login(moduloServico, PUtf8Char('127.0.0.1'), 555, PUtf8Char('321'), PUtf8Char('C'), PUtf8Char('21644664'));
+
+  erro := finalizar(moduloCaixa);
+  erro := finalizar(moduloServico);
+
+  UnloadLibrary(lib);
+
+end;
+
+procedure TFApp.Button14Click(Sender: TObject);
+begin
+  with TThread.CreateAnonymousThread(TProcedure(@dll)) do
+  begin
+    FreeOnTerminate := True;
+    start;
+  end;
+end;
+
+procedure TFApp.Button15Click(Sender: TObject);
+var
+  VL_TTabela: TDBancoDados;
+begin
+  MBin.Lines.Clear;
+
+  VL_TTabela := TDBancoDados.Create(nil);
+
+  VL_TTabela.ConsultaA.Close;
+  VL_TTabela.ConsultaA.SQL.Text := 'SELECT T.ID,T.TAG_NUMERO,T.TAG_TIPO,T.TIPO_DADOS,T.DEFINICAO FROM TAG T';
+  VL_TTabela.ConsultaA.Open;
+
+  VL_TTabela.ConsultaA.First;
+  while not VL_TTabela.ConsultaA.EOF do
+  begin
+    MBin.Lines.Add(VL_TTabela.ConsultaA.FieldByName('DEFINICAO').AsString);
+    VL_TTabela.ConsultaA.Next;
+  end;
+
+  VL_TTabela.Free;
 end;
 
 procedure TFApp.Button1Click(Sender: TObject);

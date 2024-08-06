@@ -11,7 +11,6 @@ object FCadModulo: TFCadModulo
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
@@ -716,9 +715,9 @@ object FCadModulo: TFCadModulo
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )
-        OnChange = TabModuloFuncaoETipoFiltroChange
         TabOrder = 0
         Text = 'TabModuloFuncaoETipoFiltro'
+        OnChange = TabModuloFuncaoETipoFiltroChange
       end
       object TabModuloFuncaoLFiltro: TLabel
         Left = 237
@@ -736,20 +735,20 @@ object FCadModulo: TFCadModulo
         Top = 30
         Width = 257
         CharCase = ecUppercase
-        OnChange = TabModuloFuncaoEFiltroChange
         TabOrder = 1
         Text = 'TABLOJAFUNCAOEFILTRO1'
+        OnChange = TabModuloFuncaoEFiltroChange
       end
       object TabModuloFuncaoCKSelecionada: TCheckBox
         Left = 498
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
-        OnChange = TabModuloFuncaoCKSelecionadaChange
         ParentFont = False
         TabOrder = 2
+        OnChange = TabModuloFuncaoCKSelecionadaChange
       end
       object TabModuloFuncaoGrid: TRxDBGrid
         Left = 0

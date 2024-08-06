@@ -75,8 +75,163 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="Linux64 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\com_lib\linux64\com_lib.so" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dLINUX"/>
+            <OtherDefines Count="2">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Win64 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\com_lib\win64\com_lib.dll" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="win64"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dWIN"/>
+            <OtherDefines Count="2">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Win32 Debug">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\com_lib\win32\com_lib.dll" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dDEBUG
+-dWIN"/>
+            <OtherDefines Count="6">
+              <Define0 Value="CLIENTE"/>
+              <Define1 Value="COM_LIB"/>
+              <Define2 Value="OPEN_TEF"/>
+              <Define3 Value="LINUX"/>
+              <Define4 Value="DEBUG"/>
+              <Define5 Value="WIN"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <SharedMatrixOptions Count="1">
-        <Item1 ID="126330619313" Modes="Linux64 Debug,Win64 Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+        <Item1 ID="126330619313" Modes="Linux64 Debug,Win64 Debug,Linux64 Release,Win64 Release,Win32 Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>

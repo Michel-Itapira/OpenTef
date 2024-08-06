@@ -15,13 +15,107 @@
       <Icon Value="0"/>
     </General>
     <BuildModes>
-      <Item Name="Default" Default="True"/>
-      <Item Name="Debug">
+      <Item Name="Win64 Debug" Default="True"/>
+      <Item Name="Win64 Release">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\config_app\win64\config_app"/>
+            <Filename Value="..\..\binarios\config_app\win64\config_app.exe" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="win64"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dWIN
+-dUSADLL"/>
+            <OtherDefines Count="5">
+              <Define0 Value="DEBUG"/>
+              <Define1 Value="RELEASE"/>
+              <Define2 Value="OPEN_TEF"/>
+              <Define3 Value="WIN"/>
+              <Define4 Value="USADLL"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux64 Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\config_app\linux64\config_app" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dOPEN_TEF
+-dLINUX
+-dUSADLL"/>
+            <OtherDefines Count="5">
+              <Define0 Value="DEBUG"/>
+              <Define1 Value="RELEASE"/>
+              <Define2 Value="OPEN_TEF"/>
+              <Define3 Value="LINUX"/>
+              <Define4 Value="USADLL"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Linux64 Debug">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\binarios\config_app\linux64\config_app" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -41,10 +135,12 @@
               <StackChecks Value="True"/>
             </Checks>
             <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2Set"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
               <UseExternalDbgSyms Value="True"/>
@@ -56,33 +152,57 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dDEBUG"/>
+            <CustomOptions Value="-dDEBUG
+-dOPEN_TEF
+-dLINUX
+-dUSADLL"/>
+            <OtherDefines Count="4">
+              <Define0 Value="DEBUG"/>
+              <Define1 Value="OPEN_TEF"/>
+              <Define2 Value="LINUX"/>
+              <Define3 Value="USADLL"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="Release">
+      <Item Name="Win32 Debug">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\config_app\win64\release\config_app"/>
+            <Filename Value="..\..\binarios\config_app\win32\config_app.exe"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
             <OtherUnitFiles Value="..\libs\func"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
           <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
             <Optimizations>
-              <OptimizationLevel Value="3"/>
+              <OptimizationLevel Value="0"/>
             </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
-            <LinkSmart Value="True"/>
             <Options>
               <Win32>
                 <GraphicApplication Value="True"/>
@@ -90,10 +210,15 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dRELEASE"/>
-            <OtherDefines Count="2">
+            <CustomOptions Value="-dDEBUG
+-dOPEN_TEF
+-dWIN
+-dUSADLL"/>
+            <OtherDefines Count="4">
               <Define0 Value="DEBUG"/>
-              <Define1 Value="RELEASE"/>
+              <Define1 Value="OPEN_TEF"/>
+              <Define2 Value="WIN"/>
+              <Define3 Value="USADLL"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>
@@ -151,14 +276,6 @@
       <Unit>
         <Filename Value="config_app.lpr"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="uprincipal.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fprincipal"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uPrincipal"/>
       </Unit>
       <Unit>
         <Filename Value="upesquisatags.pas"/>
@@ -305,16 +422,34 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\binarios\config_app\win64\config_app"/>
+      <Filename Value="..\..\binarios\config_app\win64\config_app.exe" ApplyConventions="False"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\libs\func"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+      <TargetCPU Value="x86_64"/>
+      <TargetOS Value="win64"/>
+    </CodeGeneration>
     <Linking>
       <Debugging>
-        <DebugInfoType Value="dsDwarf2"/>
+        <DebugInfoType Value="dsDwarf3"/>
+        <UseHeaptrc Value="True"/>
+        <TrashVariables Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
@@ -325,11 +460,14 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dDEBUG
--dWIN"/>
-      <OtherDefines Count="3">
+-dOPEN_TEF
+-dWIN
+-dUSADLL"/>
+      <OtherDefines Count="4">
         <Define0 Value="DEBUG"/>
         <Define1 Value="OPEN_TEF"/>
         <Define2 Value="WIN"/>
+        <Define3 Value="USADLL"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>

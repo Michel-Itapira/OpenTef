@@ -947,10 +947,10 @@ object FCadPdv: TFCadPdv
     Height = 284
     Top = 318
     Width = 1153
-    ActivePage = TabPdvFuncao
+    ActivePage = TabPdvModulo
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 3
     object TabPdvModulo: TTabSheet
       Caption = 'Módulo do Pdv'

@@ -11,7 +11,6 @@ uses
     Interfaces, // this includes the LCL widgetset
     Forms,
     memdslaz,
-    uPrincipal,
     rxnew,
     zcomponent,
     indylaz,
@@ -32,13 +31,13 @@ uses
     ucadadquirente,
     ucadmultloja,
     upesquisamultiloja,
-    ucadmodulo, upesquisamodulo, umoduloconfig, com;
+    ucadmodulo, upesquisamodulo, umoduloconfig;
 
 {$R *.res}
 begin
   Application.Scaled:=True;
     Application.Initialize;
-    Application.CreateForm(TFInterface, FInterface);
-    //    Application.CreateForm(Tfprincipal, F_Principal);
+   Application.CreateForm(TFInterface, FInterface);
+   // Application.CreateForm(Tfprincipal, F_Principal);
     Application.Run;
 end.

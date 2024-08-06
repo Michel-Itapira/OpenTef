@@ -4,14 +4,15 @@
     <Targets>
       <Target FileName="fontes\opentef_ser\opentef.lpi">
         <BuildModes>
-          <Mode Name="Linux64"/>
-          <Mode Name="Win64"/>
+          <Mode Name="Linux64 Release"/>
+          <Mode Name="Win64 Release"/>
         </BuildModes>
       </Target>
       <Target FileName="fontes\opentef_app\opentefapp.lpi">
         <BuildModes>
           <Mode Name="Win32 Debug"/>
           <Mode Name="Linux64 Debug"/>
+          <Mode Name="Win64 Debug"/>
         </BuildModes>
       </Target>
       <Target FileName="fontes\modulo_lib\modulo_padrao\modulo_padrao.lpi">
@@ -28,6 +29,7 @@
           <Mode Name="Win64 Debug"/>
           <Mode Name="Win64 Release"/>
           <Mode Name="Win32 Release"/>
+          <Mode Name="Win32 Debug"/>
         </BuildModes>
       </Target>
       <Target FileName="fontes\tef_lib\tef_lib.lpi">
@@ -38,6 +40,7 @@
           <Mode Name="Linux64 Debug"/>
           <Mode Name="Linux64 Release"/>
           <Mode Name="Linux32 Release"/>
+          <Mode Name="Win32 Debug"/>
         </BuildModes>
       </Target>
       <Target FileName="fontes\pinpad_lib\pinpad_lib.lpi">
@@ -48,6 +51,7 @@
           <Mode Name="Linux64 Debug"/>
           <Mode Name="Linux64 Release"/>
           <Mode Name="Linux32 Release"/>
+          <Mode Name="Win32 Debug"/>
         </BuildModes>
       </Target>
       <Target FileName="fontes\config_app\config_app.lpi">

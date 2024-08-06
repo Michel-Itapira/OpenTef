@@ -13,6 +13,7 @@ object FCadLoja: TFCadLoja
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
+  LCLVersion = '3.4.0.0'
   object PTitulo: TPanel
     Left = 5
     Height = 75
@@ -694,10 +695,10 @@ object FCadLoja: TFCadLoja
     Height = 261
     Top = 264
     Width = 1099
-    ActivePage = TabModuloFuncao
+    ActivePage = TabLojaModulo
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 2
     object TabLojaModulo: TTabSheet
       Caption = 'Módulo da Loja'

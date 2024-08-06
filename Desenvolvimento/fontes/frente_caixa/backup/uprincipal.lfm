@@ -6,11 +6,11 @@ object F_Principal: TF_Principal
   Caption = 'Caixa'
   ClientHeight = 688
   ClientWidth = 943
-  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDesktopCenter
+  LCLVersion = '3.4.0.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 602
@@ -834,7 +834,7 @@ object F_Principal: TF_Principal
           Top = 16
           Width = 288
           TabOrder = 0
-          Text = 'opentef.ioiosoftware.com.br'
+          Text = 'homologacao.opentef.com.br'
         end
         object EPorta: TEdit
           Left = 88
@@ -842,7 +842,7 @@ object F_Principal: TF_Principal
           Top = 50
           Width = 72
           TabOrder = 1
-          Text = '39000'
+          Text = '39001'
         end
         object Label5: TLabel
           Left = 46
@@ -1012,25 +1012,6 @@ object F_Principal: TF_Principal
         Caption = 'Servidor Local'
         TabOrder = 7
         OnChange = RServidorLocalChange
-      end
-      object BTestaTag: TButton
-        Left = 514
-        Height = 25
-        Top = 453
-        Width = 126
-        Caption = 'TestaTag'
-        TabOrder = 8
-        OnClick = BTestaTagClick
-      end
-      object Memo1: TMemo
-        Left = 648
-        Height = 90
-        Top = 456
-        Width = 150
-        Lines.Strings = (
-          '000022514010C11S14010A11S'
-        )
-        TabOrder = 9
       end
     end
     object TabSheet3: TTabSheet

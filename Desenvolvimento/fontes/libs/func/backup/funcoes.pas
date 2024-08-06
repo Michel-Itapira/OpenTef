@@ -133,9 +133,9 @@ type
   TRetorno = procedure(VP_ClassePai: pointer; VP_Transmissao_ID: PChar; VP_ProcID, VP_Erro: integer; VP_Dados: PChar); cdecl;
 
   TRetornoDoCliente = function(VP_DadosEntrada: PChar; var VO_DadosSaida: PChar): integer; cdecl;
-  TStrDispose = procedure(VP_PChar: PChar): integer; cdecl;
+  TStrDispose = procedure(VP_PChar: PChar); cdecl;
   TServidorRecebimento = procedure(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: string; VP_Conexao_ID: integer; VP_Terminal_Tipo: string;
-    VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string);
+    VP_Terminal_ID: integer; VP_DOC: string; VP_Terminal_Status: TConexaoStatus; VP_Terminal_Identificacao: string; VP_Permissao: TPermissao; VP_ClienteIP: string) of object;
   TServidorRecebimentoLib = function(VP_Erro: integer; VP_Transmissao_ID, VP_DadosRecebidos: PChar; VP_IP: PChar; VP_Conexao_ID: integer; VP_Chave: PChar): integer; cdecl;
   TTransacaoStatus = (tsEfetivada, tsNegada, tsCancelada, tsProcessando,
     tsAguardandoComando, tsNaoLocalizada, tsInicializada,
@@ -197,6 +197,7 @@ type
     fcomando: string;
     fTemporizador: TTemporizador;
     fAbortada: boolean;
+    frodando: boolean;
   private
     function GetErro: integer;
     function GetErroDescricao: string;
@@ -1013,10 +1014,10 @@ end;
 procedure mensagemdispose(VP_PChar: PChar); cdecl;
 begin
   if not Assigned(VP_PChar) then
-     Exit;
+    Exit;
 
   if MemSize(VP_PChar) <= 0 then
-     Exit;
+    Exit;
 
   StrDispose(VP_PChar);
 end;
@@ -1182,6 +1183,9 @@ begin
           'Não é possível enviar mais de uma conciliacao para a mesma operadora';
       124: VL_String := 'Erro insperado na lib do pinpad';
       125: VL_String := 'Ponteiro do tef informado está nulo';
+      126: VL_String := 'Ponteiro do mcom informado está nulo';
+      127: VL_String := 'A função strDispose não foi informada';
+      128: VL_String := 'A transação foi abortada';
       else
       begin
         Result := 1;
@@ -1471,6 +1475,7 @@ begin
   fcomando := VP_Comando;
   fMensagem := TMensagem.Create;
   fAbortada := False;
+  frodando := True;
 
   if VP_TransacaoString <> '' then
   begin
@@ -1493,6 +1498,7 @@ end;
 
 destructor TTransacao.Destroy;
 begin
+  frodando := False;
   fMensagem.Free;
   fTemporizador.Free;
   inherited Destroy;
@@ -1593,6 +1599,7 @@ end;
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: string; VP_CodigoErro: integer; VP_NivelLog: integer);
 var
   VL_Arquivo: TextFile;
+  VL_File: TFileStream;
 begin
   if VP_Arquivo = '' then
     exit;
@@ -1615,6 +1622,17 @@ begin
       IntToStr(C_Versao[1]) + '] -  [ CodigoErro:' + IntToStr(VP_CodigoErro) + ']  - [ Ocorrencia:' + VP_Ocorrencia + '] - [ TMensagem:' + VP_Tag + ']');
 
     CloseFile(VL_Arquivo);
+
+    VL_File := TFileStream.Create(VP_Arquivo, fmOpenRead);
+    if VL_File.Size > 5000 then
+    begin
+      VL_File.Free;
+      DeleteFile(VP_Arquivo + '.old');
+      RenameFile(VP_Arquivo,VP_Arquivo + '.old');
+      DeleteFile(VP_Arquivo);
+    end
+    else
+      VL_File.Free;
 
   finally
     LeaveCriticalSection(VF_CriticoLog);
@@ -2433,51 +2451,49 @@ begin
 
     (pos(' SELECT ', VL_String) = 0) and (pos('SELECT ', VL_String) = 0) and (pos('(SELECT:', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and
     (pos('(SELECT' + #13, VL_String) = 0) and (pos('(SELECT--', VL_String) = 0) and (pos('(SELECT/', VL_String) = 0) and (pos('(SELECT(', VL_String) = 0) and
-    (pos(' SELECT' + #13, VL_String) = 0) and (pos(' (SELECT' + #13, VL_String) = 0) and (pos(#$A + 'SELECT(', VL_String) = 0) and
-    (pos(#$A + 'SELECT' + #13, VL_String) = 0) and (pos(#$A + 'SELECT ' + #13, VL_String) = 0) and (pos(#$A + 'SELECT ', VL_String) = 0) and
-    (pos(#$A + 'SELECT/', VL_String) = 0) and (pos(#$A + 'SELECT:', VL_String) = 0) and (pos(' SELECT:', VL_String) = 0) and (pos(' SELECT(', VL_String) = 0) and
-    (pos('/SELECT', VL_String) = 0) and (pos('SELECT/', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and (pos('SELECT--', VL_String) = 0) and
-    (pos('SELECT --', VL_String) = 0) and (pos(' SELECT--', VL_String) = 0) and (pos(' DELETE ', VL_String) = 0) and (pos('DELETE ', VL_String) = 0) and
-    (pos('(DELETE:', VL_String) = 0) and (pos('(DELETE ', VL_String) = 0) and (pos('(DELETE' + #13, VL_String) = 0) and (pos('(DELETE--', VL_String) = 0) and
-    (pos('(DELETE/', VL_String) = 0) and (pos('(DELETE(', VL_String) = 0) and (pos(' DELETE' + #13, VL_String) = 0) and (pos('DELETE' + #13, VL_String) = 0) and
-    (pos('DELETE ' + #13, VL_String) = 0) and (pos(' (DELETE' + #13, VL_String) = 0) and (pos(#$A + 'DELETE(', VL_String) = 0) and
-    (pos(#$A + 'DELETE' + #13, VL_String) = 0) and (pos(#$A + 'DELETE ', VL_String) = 0) and (pos(#$A + 'DELETE/', VL_String) = 0) and
-    (pos(#$A + 'DELETE:', VL_String) = 0) and (pos(' DELETE:', VL_String) = 0) and (pos(' DELETE(', VL_String) = 0) and (pos('/DELETE', VL_String) = 0) and
-    (pos('DELETE/', VL_String) = 0) and (pos('(DELETE ', VL_String) = 0) and (pos('DELETE--', VL_String) = 0) and (pos('DELETE --', VL_String) = 0) and
-    (pos(' DELETE--', VL_String) = 0) and (pos(' UPDATE ', VL_String) = 0) and (pos('UPDATE ', VL_String) = 0) and (pos('(UPDATE:', VL_String) = 0) and
-    (pos('(UPDATE ', VL_String) = 0) and (pos('(UPDATE' + #13, VL_String) = 0) and (pos('(UPDATE--', VL_String) = 0) and (pos('(UPDATE/', VL_String) = 0) and
-    (pos('(UPDATE(', VL_String) = 0) and (pos(' UPDATE' + #13, VL_String) = 0) and (pos(' (UPDATE' + #13, VL_String) = 0) and (pos('UPDATE' + #13, VL_String) = 0) and
-    (pos('UPDATE ' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE(', VL_String) = 0) and (pos(#$A + 'UPDATE' + #13, VL_String) = 0) and
-    (pos(#$A + 'UPDATE ' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE ', VL_String) = 0) and (pos(#$A + 'UPDATE/', VL_String) = 0) and
-    (pos(#$A + 'UPDATE:', VL_String) = 0) and (pos(' UPDATE:', VL_String) = 0) and (pos(' UPDATE(', VL_String) = 0) and (pos('/UPDATE', VL_String) = 0) and
-    (pos('UPDATE/', VL_String) = 0) and (pos('UPDATE /', VL_String) = 0) and (pos('(UPDATE ', VL_String) = 0) and (pos('UPDATE--', VL_String) = 0) and
-    (pos('UPDATE --', VL_String) = 0) and (pos(' UPDATE--', VL_String) = 0) and (pos(' INSERT ', VL_String) = 0) and (pos('INSERT ', VL_String) = 0) and
-    (pos('(INSERT:', VL_String) = 0) and (pos('(INSERT ', VL_String) = 0) and (pos('(INSERT' + #13, VL_String) = 0) and (pos('(INSERT--', VL_String) = 0) and
-    (pos('(INSERT/', VL_String) = 0) and (pos('(INSERT(', VL_String) = 0) and (pos(' INSERT' + #13, VL_String) = 0) and (pos(' (INSERT' + #13, VL_String) = 0) and
-    (pos('INSERT' + #13, VL_String) = 0) and (pos('INSERT ' + #13, VL_String) = 0) and (pos(#$A + 'INSERT(', VL_String) = 0) and (pos(#$A + 'INSERT' + #13, VL_String) = 0) and
-    (pos(#$A + 'INSERT ', VL_String) = 0) and (pos(#$A + 'INSERT/', VL_String) = 0) and (pos(#$A + 'INSERT:', VL_String) = 0) and
-    (pos(' INSERT:', VL_String) = 0) and (pos(' INSERT(', VL_String) = 0) and (pos('/INSERT', VL_String) = 0) and (pos('INSERT/', VL_String) = 0) and
-    (pos('(INSERT ', VL_String) = 0) and (pos('INSERT--', VL_String) = 0) and (pos('INSERT --', VL_String) = 0) and (pos(' INSERT--', VL_String) = 0) and
-    (pos(' DROP ', VL_String) = 0) and (pos('DROP ', VL_String) = 0) and (pos('(DROP:', VL_String) = 0) and (pos('(DROP ', VL_String) = 0) and
-    (pos('(DROP' + #13, VL_String) = 0) and (pos('(DROP--', VL_String) = 0) and (pos('(DROP/', VL_String) = 0) and (pos('(DROP(', VL_String) = 0) and
-    (pos(' DROP' + #13, VL_String) = 0) and (pos(' (DROP' + #13, VL_String) = 0) and (pos('DROP' + #13, VL_String) = 0) and (pos('DROP ' + #13, VL_String) = 0) and
-    (pos(#$A + 'DROP(', VL_String) = 0) and (pos(#$A + 'DROP' + #13, VL_String) = 0) and (pos(#$A + 'DROP ', VL_String) = 0) and (pos(#$A + 'DROP/', VL_String) = 0) and
-    (pos(#$A + 'DROP:', VL_String) = 0) and (pos(' DROP:', VL_String) = 0) and (pos(' DROP(', VL_String) = 0) and (pos('/DROP', VL_String) = 0) and
-    (pos('DROP/', VL_String) = 0) and (pos('(DROP ', VL_String) = 0) and (pos('DROP--', VL_String) = 0) and (pos('DROP --', VL_String) = 0) and
-    (pos(' DROP--', VL_String) = 0) and (pos(' ALTER ', VL_String) = 0) and (pos('ALTER ', VL_String) = 0) and (pos('(ALTER:', VL_String) = 0) and
-    (pos('(ALTER ', VL_String) = 0) and (pos('(ALTER' + #13, VL_String) = 0) and (pos('(ALTER--', VL_String) = 0) and (pos('(ALTER/', VL_String) = 0) and
-    (pos('(ALTER(', VL_String) = 0) and (pos(' ALTER' + #13, VL_String) = 0) and (pos(' (ALTER' + #13, VL_String) = 0) and (pos('ALTER' + #13, VL_String) = 0) and
-    (pos('ALTER ' + #13, VL_String) = 0) and (pos(#$A + 'ALTER(', VL_String) = 0) and (pos(#$A + 'ALTER' + #13, VL_String) = 0) and
+    (pos(' SELECT' + #13, VL_String) = 0) and (pos(' (SELECT' + #13, VL_String) = 0) and (pos(#$A + 'SELECT(', VL_String) = 0) and (pos(#$A + 'SELECT' + #13, VL_String) = 0) and
+    (pos(#$A + 'SELECT ' + #13, VL_String) = 0) and (pos(#$A + 'SELECT ', VL_String) = 0) and (pos(#$A + 'SELECT/', VL_String) = 0) and
+    (pos(#$A + 'SELECT:', VL_String) = 0) and (pos(' SELECT:', VL_String) = 0) and (pos(' SELECT(', VL_String) = 0) and (pos('/SELECT', VL_String) = 0) and
+    (pos('SELECT/', VL_String) = 0) and (pos('(SELECT ', VL_String) = 0) and (pos('SELECT--', VL_String) = 0) and (pos('SELECT --', VL_String) = 0) and
+    (pos(' SELECT--', VL_String) = 0) and (pos(' DELETE ', VL_String) = 0) and (pos('DELETE ', VL_String) = 0) and (pos('(DELETE:', VL_String) = 0) and
+    (pos('(DELETE ', VL_String) = 0) and (pos('(DELETE' + #13, VL_String) = 0) and (pos('(DELETE--', VL_String) = 0) and (pos('(DELETE/', VL_String) = 0) and
+    (pos('(DELETE(', VL_String) = 0) and (pos(' DELETE' + #13, VL_String) = 0) and (pos('DELETE' + #13, VL_String) = 0) and (pos('DELETE ' + #13, VL_String) = 0) and
+    (pos(' (DELETE' + #13, VL_String) = 0) and (pos(#$A + 'DELETE(', VL_String) = 0) and (pos(#$A + 'DELETE' + #13, VL_String) = 0) and
+    (pos(#$A + 'DELETE ', VL_String) = 0) and (pos(#$A + 'DELETE/', VL_String) = 0) and (pos(#$A + 'DELETE:', VL_String) = 0) and (pos(' DELETE:', VL_String) = 0) and
+    (pos(' DELETE(', VL_String) = 0) and (pos('/DELETE', VL_String) = 0) and (pos('DELETE/', VL_String) = 0) and (pos('(DELETE ', VL_String) = 0) and
+    (pos('DELETE--', VL_String) = 0) and (pos('DELETE --', VL_String) = 0) and (pos(' DELETE--', VL_String) = 0) and (pos(' UPDATE ', VL_String) = 0) and
+    (pos('UPDATE ', VL_String) = 0) and (pos('(UPDATE:', VL_String) = 0) and (pos('(UPDATE ', VL_String) = 0) and (pos('(UPDATE' + #13, VL_String) = 0) and
+    (pos('(UPDATE--', VL_String) = 0) and (pos('(UPDATE/', VL_String) = 0) and (pos('(UPDATE(', VL_String) = 0) and (pos(' UPDATE' + #13, VL_String) = 0) and
+    (pos(' (UPDATE' + #13, VL_String) = 0) and (pos('UPDATE' + #13, VL_String) = 0) and (pos('UPDATE ' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE(', VL_String) = 0) and
+    (pos(#$A + 'UPDATE' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE ' + #13, VL_String) = 0) and (pos(#$A + 'UPDATE ', VL_String) = 0) and
+    (pos(#$A + 'UPDATE/', VL_String) = 0) and (pos(#$A + 'UPDATE:', VL_String) = 0) and (pos(' UPDATE:', VL_String) = 0) and (pos(' UPDATE(', VL_String) = 0) and
+    (pos('/UPDATE', VL_String) = 0) and (pos('UPDATE/', VL_String) = 0) and (pos('UPDATE /', VL_String) = 0) and (pos('(UPDATE ', VL_String) = 0) and
+    (pos('UPDATE--', VL_String) = 0) and (pos('UPDATE --', VL_String) = 0) and (pos(' UPDATE--', VL_String) = 0) and (pos(' INSERT ', VL_String) = 0) and
+    (pos('INSERT ', VL_String) = 0) and (pos('(INSERT:', VL_String) = 0) and (pos('(INSERT ', VL_String) = 0) and (pos('(INSERT' + #13, VL_String) = 0) and
+    (pos('(INSERT--', VL_String) = 0) and (pos('(INSERT/', VL_String) = 0) and (pos('(INSERT(', VL_String) = 0) and (pos(' INSERT' + #13, VL_String) = 0) and
+    (pos(' (INSERT' + #13, VL_String) = 0) and (pos('INSERT' + #13, VL_String) = 0) and (pos('INSERT ' + #13, VL_String) = 0) and (pos(#$A + 'INSERT(', VL_String) = 0) and
+    (pos(#$A + 'INSERT' + #13, VL_String) = 0) and (pos(#$A + 'INSERT ', VL_String) = 0) and (pos(#$A + 'INSERT/', VL_String) = 0) and
+    (pos(#$A + 'INSERT:', VL_String) = 0) and (pos(' INSERT:', VL_String) = 0) and (pos(' INSERT(', VL_String) = 0) and (pos('/INSERT', VL_String) = 0) and
+    (pos('INSERT/', VL_String) = 0) and (pos('(INSERT ', VL_String) = 0) and (pos('INSERT--', VL_String) = 0) and (pos('INSERT --', VL_String) = 0) and
+    (pos(' INSERT--', VL_String) = 0) and (pos(' DROP ', VL_String) = 0) and (pos('DROP ', VL_String) = 0) and (pos('(DROP:', VL_String) = 0) and
+    (pos('(DROP ', VL_String) = 0) and (pos('(DROP' + #13, VL_String) = 0) and (pos('(DROP--', VL_String) = 0) and (pos('(DROP/', VL_String) = 0) and
+    (pos('(DROP(', VL_String) = 0) and (pos(' DROP' + #13, VL_String) = 0) and (pos(' (DROP' + #13, VL_String) = 0) and (pos('DROP' + #13, VL_String) = 0) and
+    (pos('DROP ' + #13, VL_String) = 0) and (pos(#$A + 'DROP(', VL_String) = 0) and (pos(#$A + 'DROP' + #13, VL_String) = 0) and (pos(#$A + 'DROP ', VL_String) = 0) and
+    (pos(#$A + 'DROP/', VL_String) = 0) and (pos(#$A + 'DROP:', VL_String) = 0) and (pos(' DROP:', VL_String) = 0) and (pos(' DROP(', VL_String) = 0) and
+    (pos('/DROP', VL_String) = 0) and (pos('DROP/', VL_String) = 0) and (pos('(DROP ', VL_String) = 0) and (pos('DROP--', VL_String) = 0) and
+    (pos('DROP --', VL_String) = 0) and (pos(' DROP--', VL_String) = 0) and (pos(' ALTER ', VL_String) = 0) and (pos('ALTER ', VL_String) = 0) and
+    (pos('(ALTER:', VL_String) = 0) and (pos('(ALTER ', VL_String) = 0) and (pos('(ALTER' + #13, VL_String) = 0) and (pos('(ALTER--', VL_String) = 0) and
+    (pos('(ALTER/', VL_String) = 0) and (pos('(ALTER(', VL_String) = 0) and (pos(' ALTER' + #13, VL_String) = 0) and (pos(' (ALTER' + #13, VL_String) = 0) and
+    (pos('ALTER' + #13, VL_String) = 0) and (pos('ALTER ' + #13, VL_String) = 0) and (pos(#$A + 'ALTER(', VL_String) = 0) and (pos(#$A + 'ALTER' + #13, VL_String) = 0) and
     (pos(#$A + 'ALTER ', VL_String) = 0) and (pos(#$A + 'ALTER/', VL_String) = 0) and (pos(#$A + 'ALTER:', VL_String) = 0) and (pos(' ALTER:', VL_String) = 0) and
     (pos(' ALTER(', VL_String) = 0) and (pos('/ALTER', VL_String) = 0) and (pos('ALTER/', VL_String) = 0) and (pos('(ALTER ', VL_String) = 0) and
     (pos('ALTER--', VL_String) = 0) and (pos('ALTER --', VL_String) = 0) and (pos(' ALTER--', VL_String) = 0) and (pos(' CREATE ', VL_String) = 0) and
     (pos('CREATE ', VL_String) = 0) and (pos('(CREATE:', VL_String) = 0) and (pos('(CREATE ', VL_String) = 0) and (pos('(CREATE' + #13, VL_String) = 0) and
     (pos('(CREATE--', VL_String) = 0) and (pos('(CREATE/', VL_String) = 0) and (pos('(CREATE(', VL_String) = 0) and (pos(' CREATE' + #13, VL_String) = 0) and
-    (pos(' (CREATE' + #13, VL_String) = 0) and (pos('CREATE' + #13, VL_String) = 0) and (pos('CREATE ' + #13, VL_String) = 0) and
-    (pos(#$A + 'CREATE(', VL_String) = 0) and (pos(#$A + 'CREATE' + #13, VL_String) = 0) and (pos(#$A + 'CREATE ', VL_String) = 0) and
-    (pos(#$A + 'CREATE/', VL_String) = 0) and (pos(#$A + 'CREATE:', VL_String) = 0) and (pos(' CREATE:', VL_String) = 0) and (pos(' CREATE(', VL_String) = 0) and
-    (pos('/CREATE', VL_String) = 0) and (pos('CREATE/', VL_String) = 0) and (pos('(CREATE ', VL_String) = 0) and (pos('CREATE--', VL_String) = 0) and
-    (pos('CREATE --', VL_String) = 0) and (pos(' CREATE--', VL_String) = 0)) then
+    (pos(' (CREATE' + #13, VL_String) = 0) and (pos('CREATE' + #13, VL_String) = 0) and (pos('CREATE ' + #13, VL_String) = 0) and (pos(#$A + 'CREATE(', VL_String) = 0) and
+    (pos(#$A + 'CREATE' + #13, VL_String) = 0) and (pos(#$A + 'CREATE ', VL_String) = 0) and (pos(#$A + 'CREATE/', VL_String) = 0) and
+    (pos(#$A + 'CREATE:', VL_String) = 0) and (pos(' CREATE:', VL_String) = 0) and (pos(' CREATE(', VL_String) = 0) and (pos('/CREATE', VL_String) = 0) and
+    (pos('CREATE/', VL_String) = 0) and (pos('(CREATE ', VL_String) = 0) and (pos('CREATE--', VL_String) = 0) and (pos('CREATE --', VL_String) = 0) and (pos(' CREATE--', VL_String) = 0)) then
 
     Result := 'OK'
   else

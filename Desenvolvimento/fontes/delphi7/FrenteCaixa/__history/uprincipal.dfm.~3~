@@ -11,6 +11,7 @@ object FPrincipal: TFPrincipal
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object IFundo: TImage
@@ -5847,7 +5848,7 @@ object FPrincipal: TFPrincipal
     object LTitulo: TLabel
       Left = 0
       Top = 0
-      Width = 864
+      Width = 514
       Height = 57
       Align = alLeft
       Alignment = taCenter
@@ -5859,6 +5860,7 @@ object FPrincipal: TFPrincipal
       Font.Style = [fsBold]
       ParentFont = False
       Layout = tlCenter
+      ExplicitHeight = 37
     end
   end
   object PageControl1: TPageControl
@@ -5866,7 +5868,7 @@ object FPrincipal: TFPrincipal
     Top = 102
     Width = 1044
     Height = 482
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alCustom
     TabOrder = 1
     object TabSheet1: TTabSheet
@@ -6080,12 +6082,13 @@ object FPrincipal: TFPrincipal
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 0
+        OnClick = BVendaClick
       end
       object ENSU: TEdit
         Left = 626
         Top = 13
         Width = 135
-        Height = 23
+        Height = 21
         TabOrder = 1
         Text = '123654'
       end
@@ -6093,7 +6096,7 @@ object FPrincipal: TFPrincipal
         Left = 126
         Top = 55
         Width = 116
-        Height = 23
+        Height = 21
         TabOrder = 2
         Text = '0'
       end
@@ -6101,7 +6104,7 @@ object FPrincipal: TFPrincipal
         Left = 507
         Top = 55
         Width = 60
-        Height = 23
+        Height = 21
         TabOrder = 3
         Text = '10'
       end
@@ -6109,7 +6112,7 @@ object FPrincipal: TFPrincipal
         Left = 120
         Top = 194
         Width = 482
-        Height = 23
+        Height = 21
         TabOrder = 4
         Text = 'Compra feita pelo Filho'
       end
@@ -6117,7 +6120,7 @@ object FPrincipal: TFPrincipal
         Left = 326
         Top = 55
         Width = 89
-        Height = 23
+        Height = 21
         TabOrder = 5
         Text = '00012'
       end
@@ -6125,7 +6128,7 @@ object FPrincipal: TFPrincipal
         Left = 933
         Top = 13
         Width = 60
-        Height = 23
+        Height = 21
         TabOrder = 6
         Text = '1'
       end
@@ -6133,7 +6136,7 @@ object FPrincipal: TFPrincipal
         Left = 377
         Top = 13
         Width = 128
-        Height = 23
+        Height = 21
         TabOrder = 7
         Text = '10.86'
       end
@@ -6156,7 +6159,7 @@ object FPrincipal: TFPrincipal
         Left = 711
         Top = 194
         Width = 306
-        Height = 23
+        Height = 21
         TabOrder = 10
         Text = '123'
       end
@@ -6164,7 +6167,7 @@ object FPrincipal: TFPrincipal
         Left = 120
         Top = 231
         Width = 482
-        Height = 23
+        Height = 21
         TabOrder = 11
         Text = 'https://www.validador.com.br/?nota=123'
       end
@@ -6263,14 +6266,19 @@ object FPrincipal: TFPrincipal
           Text = '5.00'
         end
       end
+      object EDataHora: TDateTimePicker
+        Left = 126
+        Top = 13
+        Width = 116
+        Height = 21
+        Date = 45467.700169062500000000
+        Time = 45467.700169062500000000
+        TabOrder = 14
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
-      ExplicitLeft = 100
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object LTefLib: TLabel
         Left = 56
         Top = 22
@@ -6534,6 +6542,7 @@ object FPrincipal: TFPrincipal
         Height = 33
         Caption = 'Inicializar Libs'
         TabOrder = 8
+        OnClick = BInicializarClick
       end
       object EHost: TEdit
         Left = 664
@@ -6541,7 +6550,7 @@ object FPrincipal: TFPrincipal
         Width = 288
         Height = 21
         TabOrder = 9
-        Text = '192.168.1.237'
+        Text = 'homologacao.opentef.com.br'
       end
       object EPorta: TEdit
         Left = 664
@@ -6549,7 +6558,7 @@ object FPrincipal: TFPrincipal
         Width = 72
         Height = 21
         TabOrder = 10
-        Text = '39000'
+        Text = '39001'
       end
       object EID: TEdit
         Left = 872
@@ -6590,6 +6599,7 @@ object FPrincipal: TFPrincipal
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 14
+        OnClick = BLoginClick
       end
       object BDesconectar: TButton
         Left = 664
@@ -6604,6 +6614,7 @@ object FPrincipal: TFPrincipal
         Font.Style = [fsBold]
         ParentFont = False
         TabOrder = 15
+        OnClick = BDesconectarClick
       end
       object cbxAmbienteTeste: TCheckBox
         Left = 192
@@ -6620,16 +6631,8 @@ object FPrincipal: TFPrincipal
         Height = 33
         Caption = 'Iniciar Grava'#231#227'o de Logs'
         TabOrder = 17
+        OnClick = BLogGravacaoClick
       end
     end
-  end
-  object EDataHora: TDateTimePicker
-    Left = 180
-    Top = 142
-    Width = 116
-    Height = 21
-    Date = 45467.700169062500000000
-    Time = 45467.700169062500000000
-    TabOrder = 2
   end
 end

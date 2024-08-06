@@ -1,7 +1,9 @@
 object DFuncoes: TDFuncoes
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 312
-  HorizontalOffset = 847
-  VerticalOffset = 492
+  HorizontalOffset = 941
+  VerticalOffset = 406
   Width = 375
 end

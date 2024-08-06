@@ -10,7 +10,6 @@ object FModuloConfig: TFModuloConfig
   ClientWidth = 1290
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
   object PModulo: TPanel
     Left = 5
     Height = 59
@@ -979,7 +978,7 @@ object FModuloConfig: TFModuloConfig
         Left = 10
         Height = 19
         Top = 59
-        Width = 222
+        Width = 220
         Caption = 'Bin Estático Configuração do Módulo'
         TabOrder = 0
       end
@@ -987,7 +986,7 @@ object FModuloConfig: TFModuloConfig
         Left = 10
         Height = 19
         Top = 34
-        Width = 98
+        Width = 96
         Caption = 'Menu Estático'
         TabOrder = 1
       end
@@ -995,7 +994,7 @@ object FModuloConfig: TFModuloConfig
         Left = 10
         Height = 19
         Top = 10
-        Width = 205
+        Width = 203
         Caption = 'Habilitar Configuração do Módulo'
         TabOrder = 2
       end
@@ -1004,7 +1003,7 @@ object FModuloConfig: TFModuloConfig
         Height = 19
         Hint = 'Menu Estático Operacional'
         Top = 34
-        Width = 133
+        Width = 131
         Caption = 'Menu E. Operacional'
         ParentShowHint = False
         ShowHint = True
@@ -1039,11 +1038,11 @@ object FModuloConfig: TFModuloConfig
     Height = 254
     Top = 381
     Width = 1280
-    ActivePage = TabConfigFuncao
+    ActivePage = TabBin
     Align = alClient
     BorderSpacing.Left = 5
     BorderSpacing.Right = 5
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 3
     object TabBin: TTabSheet
       Caption = 'Cadastro e Vinculação de B.I.N'
@@ -1084,7 +1083,7 @@ object FModuloConfig: TFModuloConfig
             Title.Alignment = taCenter
             Title.Orientation = toHorizontal
             Title.Caption = 'IIN'
-            Width = 1230
+            Width = 1209
             FieldName = 'IIN'
             EditButtons = <>
             Filter.DropDownRows = 0
@@ -1383,7 +1382,7 @@ object FModuloConfig: TFModuloConfig
         Left = 560
         Height = 19
         Top = 31
-        Width = 138
+        Width = 136
         Caption = 'Mostrar Selecionadas'
         Font.Style = [fsBold]
         ParentFont = False

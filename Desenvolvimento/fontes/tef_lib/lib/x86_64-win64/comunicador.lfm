@@ -3,8 +3,8 @@ object DComunicador: TDComunicador
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 479
-  HorizontalOffset = 1892
-  VerticalOffset = 564
+  HorizontalOffset = 624
+  VerticalOffset = 239
   Width = 692
   object CriptoRsa: TLbRSA
     PrimeTestIterations = 20

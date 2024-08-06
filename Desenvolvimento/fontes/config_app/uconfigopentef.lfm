@@ -8,7 +8,6 @@ object FConfigOpenTef: TFConfigOpenTef
   Caption = 'Configurador porta de acesso Open-Tef'
   ClientHeight = 309
   ClientWidth = 437
-  LCLVersion = '2.2.4.0'
   object BGravar: TSpeedButton
     Left = 128
     Height = 40
@@ -135,7 +134,7 @@ object FConfigOpenTef: TFConfigOpenTef
         Left = 296
         Height = 25
         Top = 83
-        Width = 105
+        Width = 103
         Caption = 'Porta Ativa'
         Font.Height = -16
         Font.Style = [fsBold]

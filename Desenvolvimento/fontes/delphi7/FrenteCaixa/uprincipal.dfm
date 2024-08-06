@@ -1,4 +1,4 @@
-object FPrincipal: TFPrincipal
+object F_Principal: TF_Principal
   Left = 0
   Top = 0
   Caption = 'PDV SUPERMERCADO MODERNO'
@@ -5849,7 +5849,7 @@ object FPrincipal: TFPrincipal
       Left = 0
       Top = 0
       Width = 514
-      Height = 57
+      Height = 37
       Align = alLeft
       Alignment = taCenter
       Caption = 'PDV SUPERMERCADO MODERNO'
@@ -5860,7 +5860,6 @@ object FPrincipal: TFPrincipal
       Font.Style = [fsBold]
       ParentFont = False
       Layout = tlCenter
-      ExplicitHeight = 37
     end
   end
   object PageControl1: TPageControl
@@ -5874,6 +5873,10 @@ object FPrincipal: TFPrincipal
     object TabSheet1: TTabSheet
       Caption = 'Venda'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label3: TLabel
         Left = 27
         Top = 16
@@ -6279,6 +6282,10 @@ object FPrincipal: TFPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LTefLib: TLabel
         Left = 56
         Top = 22
@@ -6550,7 +6557,7 @@ object FPrincipal: TFPrincipal
         Width = 288
         Height = 21
         TabOrder = 9
-        Text = '127.0.0.1'
+        Text = 'homologacao.opentef.com.br'
       end
       object EPorta: TEdit
         Left = 664

@@ -259,9 +259,11 @@
           <Other>
             <CustomOptions Value="-dpinpad_lib
 -dLINUX"/>
-            <OtherDefines Count="2">
+            <OtherDefines Count="4">
               <Define0 Value="pinpad_lib"/>
-              <Define1 Value="LINUX"/>
+              <Define1 Value="WIN32"/>
+              <Define2 Value="WIN"/>
+              <Define3 Value="DEBUG"/>
             </OtherDefines>
           </Other>
         </CompilerOptions>

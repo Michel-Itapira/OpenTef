@@ -174,14 +174,39 @@
   <Debugging>
     <Exceptions>
       <Item>
-        <Name Value="EAbort"/>
-      </Item>
-      <Item>
         <Name Value="ECodetoolError"/>
       </Item>
       <Item>
-        <Name Value="EFOpenError"/>
+        <Name Value="EAbort"/>
+      </Item>
+      <Item>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item>
+      <Item>
+        <Name Value="EIdSocketError"/>
+      </Item>
+      <Item>
+        <Name Value="EIdClosedSocket"/>
+      </Item>
+      <Item>
+        <Name Value="EIdNotConnected"/>
+      </Item>
+      <Item>
+        <Name Value="EIdCouldNotBindSocket"/>
+      </Item>
+      <Item>
+        <Name Value="RunError(201)"/>
+      </Item>
+      <Item>
+        <Name Value="ERangeError"/>
+      </Item>
+      <Item>
+        <Name Value="EIdNotASocket"/>
+      </Item>
+      <Item>
+        <Name Value="EIdConnectTimeout"/>
       </Item>
     </Exceptions>
+
   </Debugging>
 </CONFIG>

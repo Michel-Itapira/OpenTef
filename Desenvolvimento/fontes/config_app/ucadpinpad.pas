@@ -116,7 +116,7 @@ begin
     VL_Tag := '';
     VL_Mensagem := TMensagem.Create;
 
-    F_OpenTefStatus(VL_Status);
+    F_OpenTefStatus(F_Com,VL_Status);
     if VL_Status <> Ord(csLogado) then
     begin
         ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
@@ -204,7 +204,7 @@ begin
     VL_Retorno := '';
     VL_Tag := '';
     try
-        F_OpenTefStatus(VL_Status);
+        F_OpenTefStatus(F_Com,VL_Status);
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
@@ -309,7 +309,7 @@ begin
     VL_Retorno := '';
     VL_Tag := '';
     try
-        F_OpenTefStatus(VL_Status);
+        F_OpenTefStatus(F_Com,VL_Status);
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
@@ -496,7 +496,7 @@ begin
     if TabPinPadFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
         TabPinPadFuncaoLFiltro.Caption := 'Filtrar por ' + TabPinPadFuncaoGrid.SelectedColumn.Title.Caption;
     try
-        F_OpenTefStatus(VL_Status);
+        F_OpenTefStatus(F_Com,VL_Status);
         if VL_Status <> Ord(csLogado) then
         begin
             ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');

@@ -62,7 +62,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function GetRecOpeTef(VP_Idex: integer): TRecOpeTef;
+    function GetRecOpeTef(VP_Index: integer): TRecOpeTef;
     function Count: integer;
     function Add(VP_ID: integer; VP_ConexaoID, VP_Tipo, VP_Chave, VP_IP: string): integer;
     function Remove(VP_ID: integer): integer;
@@ -1934,7 +1934,7 @@ end;
 procedure TForm1.BInicializaDllClick(Sender: TObject);
 begin
   {$IF DEFINED(WIN64)}
-           FMCom := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\mcom_lib\win64\mcom_lib.dll'));
+           FMComLib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + '..\..\mcom_lib\win64\mcom_lib.dll'));
   {$ENDIF}
 
   {$IF DEFINED(WIN32)}

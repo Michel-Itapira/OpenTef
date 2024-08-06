@@ -1356,6 +1356,8 @@ begin
             VL_PinPadCarregado := True;
           end;
 
+          VL_Retorno := nil;
+
           TDTEf(ftef).F_PinPadMensagem(TDTEf(ftef).F_TPinPad, 'Aguarde... gerando IMAGEM!');
 
           VL_Erro := TDTEf(ftef).F_PinPadComando(TDTEf(ftef).F_TPinPad, -1, PChar(VL_Mensagem.TagsAsString), VL_Retorno, nil);
@@ -1946,7 +1948,7 @@ begin
   try
     if not TDTEf(VP_Tef).F_Inicializado then
     begin
-      Result := 119;
+      Result := 130;
       exit;
     end;
 
