@@ -46,11 +46,11 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    procedure CarregarAdquirente(VP_AdquirenteID: integer);
     function GravaRegistros(VP_Tab: string; VP_Incluir: boolean = False): boolean;
   public
     procedure LimpaTela;
     procedure CarregaCampos;
+    procedure CarregarAdquirente(VP_AdquirenteID: integer);
   end;
 
 var
@@ -72,30 +72,20 @@ end;
 
 procedure TFCadAdquirente.BModificarClick(Sender: TObject);
 var
-  VL_Status, VL_Codigo: integer;
+  VL_Codigo: integer;
   VL_Retorno, VL_Tag: string;
   VL_Mensagem: TMensagem;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
-  VL_Status := 0;
+  VL_Mensagem:=nil;
   VL_Codigo := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
 
   try
     VL_Mensagem := TMensagem.Create;
 
-    F_OpenTefStatus(F_Com, VL_Status);
-
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FINTERFACE.Desconecta;
-      Exit;
-    end;
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
     if MDAdquirente.Active = False then
     begin
@@ -109,20 +99,20 @@ begin
       Exit;
     end;
 
+     if length(ETagID.Text)=0 then
+    begin
+      ShowMessage(LTag.Caption + ' é um campo obrigatório, pois é o identificador do Módulo do Adquirente');
+      Exit;
+    end;
+
     if GravaRegistros('TabAdquirente', False) then
     begin
       VL_Codigo := FINTERFACE.AlterarRegistro('0082', MDAdquirente, '006F', StrToInt(EID.Text), '00DF', 'S', VL_Tag);
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
-
+        ShowMessage(erro(VL_Codigo));
         finterface.Desconecta;
-
         exit;
       end;
 
@@ -133,12 +123,9 @@ begin
         '0026':
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
 
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
+          ShowMessage(erro(StrToInt(VL_Tag)));
 
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
           // CarregarTabelas;
           MDAdquirente.Locate('ID', StrToInt(EID.Text), []);
           CarregaCampos;
@@ -150,12 +137,7 @@ begin
           if VL_Tag <> 'R' then
           begin
             VL_Mensagem.GetTag('004D', VL_Tag);
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(erro(StrToInt(VL_Tag)));
             Exit;
           end;
           VL_Mensagem.GetTag('004D', VL_Tag);
@@ -163,18 +145,13 @@ begin
             ShowMessage('Registro alterado com sucesso')
           else
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(erro(StrToInt(VL_Tag)));
             LimpaTela;
             Exit;
           end;
         end;
       end;
-      MDAdquirente.Locate('ID', StrToInt(EID.Text), []);
+      MDAdquirente.Locate('ID', StrToInt(EID.Text),[]);
       CarregaCampos;
     end;
   finally
@@ -184,30 +161,22 @@ end;
 
 procedure TFCadAdquirente.BAdicionarClick(Sender: TObject);
 var
-  VL_Status: integer;
   VL_Mensagem: TMensagem;
   VL_Codigo: integer;
   VL_ID: int64;
   VL_Retorno, VL_Tag: string;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
-  VL_Mensagem := TMensagem.Create;
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  try
-    F_OpenTefStatus(F_Com, VL_Status);
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FINTERFACE.Desconecta;
-      Exit;
-    end;
+  try
+    VL_Mensagem := TMensagem.Create;
+
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
     if MDAdquirente.Active = False then
     begin
@@ -221,17 +190,26 @@ begin
       Exit;
     end;
 
+    if (Length(EID.text)>0)and(EID.Text<>'0') then
+    begin
+      ShowMessage('Limpe a tela para incluir um Adquirente.');
+      exit;
+    end;
+
+    if length(ETagID.Text)=0 then
+    begin
+      ShowMessage(LTag.Caption + ' é um campo obrigatório, pois é o identificador do Módulo do Adquirente');
+      Exit;
+    end;
+
     if GravaRegistros('TabAdquirente', True) then
     begin
       VL_Codigo := FINTERFACE.IncluirRegistro(MDAdquirente, '00DE', 'S', '0082', VL_Tag);
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
 
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(vl_codigo));
 
         if MDAdquirente.Locate('ID', 0, []) then
           MDAdquirente.Delete;
@@ -247,12 +225,8 @@ begin
         '0026':
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
 
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(erro(StrToInt(VL_Tag)));
 
           if MDAdquirente.Locate('ID', 0, []) then
             MDAdquirente.Delete;
@@ -272,19 +246,17 @@ begin
           VL_Mensagem.GetTag('004D', VL_Tag);
           if vl_tag <> '0' then
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
 
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(erro(StrToInt(VL_Tag)));
 
             if MDAdquirente.Locate('ID', 0, []) then
               MDAdquirente.Delete;
             Exit;
           end;
+
           VL_Mensagem.GetTag('006F', VL_ID); //RETORNO DO ID DO ADQUIRENTE
           F_Navegar := False;
+
           if MDAdquirente.Locate('ID', 0, []) then
           begin
             MDAdquirente.Edit;
@@ -294,6 +266,7 @@ begin
           F_Navegar := True;
         end;
       end;
+
       CarregarAdquirente(VL_ID);
       CarregaCampos;
       ShowMessage('Registro incluido com sucesso');
@@ -307,7 +280,6 @@ end;
 
 procedure TFCadAdquirente.BExcluirClick(Sender: TObject);
 var
-  VL_Status: integer;
   VL_Codigo: integer;
   VL_Mensagem: TMensagem;
   VL_Retorno, VL_Tag: string;
@@ -325,14 +297,9 @@ begin
   VL_Mensagem := TMensagem.Create;
 
   try
-    F_OpenTefStatus(F_Com, VL_Status);
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FINTERFACE.Desconecta;
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
       Exit;
-    end;
 
     if MDAdquirente.Active = False then
     begin
@@ -417,7 +384,7 @@ procedure TFCadAdquirente.BPesquisarClick(Sender: TObject);
 var
   VL_FPesquisaAdquirente: TFPesquisaAdquirente;
 begin
-  if F_Permissao = False then
+  if not FInterface.VerificaPermissao(F_TipoConfigurador,false,true) then
     exit;
   CarregarAdquirente(0);
   VL_FPesquisaAdquirente := TFPesquisaAdquirente.Create(Self);
@@ -435,11 +402,11 @@ procedure TFCadAdquirente.BPesquisaTagClick(Sender: TObject);
 var
   VL_FPesquisaTag: TFTags;
 begin
-  if F_Permissao = False then
+  if not (FInterface.VerificaPermissao(F_TipoConfigurador))then
     exit;
   VL_FPesquisaTag := TFTags.Create(Self);
   VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-  VL_FPesquisaTag.F_TagTipo := TipoTagToStr(Ord(ttNDF));  //TIPO NENHUM
+  VL_FPesquisaTag.F_TagTipo := TipoTagToStr(Ord(ttMODULO));  //TIPO MODULO
   VL_FPesquisaTag.ShowModal;
   if VL_FPesquisaTag.F_Carregado then
   begin
@@ -472,17 +439,17 @@ var
   VL_Tag: string;
   VL_Retorno: string;
   VL_Tabela: TRxMemoryData;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
   VL_Tag := '';
   VL_Retorno := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
+  VL_Mensagem:=nil;
+  VL_Tabela:=nil;
 
-  VL_Tabela := TRxMemoryData.Create(nil);
-  VL_Mensagem := TMensagem.Create;
   try
+
+    VL_Tabela := TRxMemoryData.Create(nil);
+    VL_Mensagem := TMensagem.Create;
+
     VL_Mensagem.Limpar;
     VL_Mensagem.AddComando('0070', 'S');
     VL_Mensagem.AddTag('006F', 0); //adquirente_id
@@ -503,12 +470,7 @@ begin
       '0026':
       begin
         VL_Mensagem.GetTag('0026', VL_Tag);
-        mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(strtoint(vl_tag)));
         Exit;
       end;
       '0070':
@@ -517,12 +479,7 @@ begin
         if VL_Tag <> 'R' then
         begin
           VL_Mensagem.GetTag('004D', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(strtoint(vl_tag)));
           Exit;
         end;
         //TABELA ADQUIRENTE
@@ -532,6 +489,8 @@ begin
             MDAdquirente.EmptyTable;
           StrToRxMemData(VL_Tag, MDAdquirente);
           MDAdquirente.Open;
+          if MDAdquirente.RecordCount<1 then
+             ShowMessage('Nenhum adquirente foi localizado!');
         end;
         //TABELA TAG
         if VL_Mensagem.GetTag('0081', VL_Tag) = 0 then
@@ -560,21 +519,19 @@ begin
     //GRAVA ADQUIRENTE
     if VP_Tab = 'TabAdquirente' then
     begin
-      if not (F_Permissao) then
-      begin
-        ShowMessage('Sem Permissão de Gravação, usuário não é um Configurador');
-        F_Navegar := True;
-        exit;
-      end;
-      if VP_Incluir then
-        VL_ID := 0
-      else
-        VL_ID := MDAdquirente.FieldByName('ID').AsInteger;
+      if not FInterface.VerificaPermissao(F_TipoConfigurador,false,false) then
+          exit;
 
       if VP_Incluir then
+      begin
+        VL_ID := 0;
         MDAdquirente.Insert
+      end
       else
+      begin
+        VL_ID := MDAdquirente.FieldByName('ID').AsInteger;
         MDAdquirente.Edit;
+      end;
 
       MDAdquirente.FieldByName('ID').AsInteger := VL_ID;
       MDAdquirente.FieldByName('DESCRICAO').AsString := EDescricao.Text;

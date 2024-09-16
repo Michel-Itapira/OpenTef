@@ -65,7 +65,8 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="641"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="1111"/>
         <CursorPos Y="660"/>
         <UsageCount Value="244"/>
         <Loaded Value="True"/>
@@ -114,9 +115,8 @@
         <ComponentName Value="DComunicador"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="1324"/>
+        <TopLine Value="1239"/>
         <CursorPos Y="1335"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
@@ -216,7 +216,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="1935"/>
         <CursorPos Y="1958"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
@@ -288,7 +288,7 @@
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\fcl-base\src\base64.pp"/>
         <EditorIndex Value="1"/>
         <CursorPos X="61" Y="48"/>
-        <UsageCount Value="44"/>
+        <UsageCount Value="46"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -304,7 +304,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="39"/>
         <CursorPos X="58" Y="51"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -313,7 +313,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="4"/>
         <CursorPos Y="12"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>

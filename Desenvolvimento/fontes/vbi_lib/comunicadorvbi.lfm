@@ -1,0 +1,15 @@
+object DComunicadorVBI: TDComunicadorVBI
+  OnCreate = DataModuleCreate
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 454
+  VerticalOffset = 250
+  Width = 150
+  object IdTCPClient: TIdTCPClient
+    ConnectTimeout = 0
+    Port = 0
+    ReadTimeout = -1
+    Left = 57
+    Top = 58
+  end
+end

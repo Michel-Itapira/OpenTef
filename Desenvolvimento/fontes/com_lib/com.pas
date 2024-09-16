@@ -210,12 +210,12 @@ begin
     end;
 
     if ((TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.ServidorHost <> VP_Host) or (TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.ServidorPorta <> VP_Porta) or
-      (F_Comunicacao <> VP_ChaveComunicacao) or (TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.Identificacao <> VP_Identificacao) or (F_Versao_Comunicacao <> VP_Versao_Comunicacao)) then
+      (F_Comunicacao <> VP_ChaveComunicacao) or (TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.Identificador <> VP_Identificacao) or (F_Versao_Comunicacao <> VP_Versao_Comunicacao)) then
     begin
       TDCom(VP_Com).F_Comunicador.DesconectarCliente(TDCom(VP_Com).F_Comunicador);
       TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.ServidorHost := VP_Host;
       TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.ServidorPorta := VP_Porta;
-      TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.Identificacao := VP_Identificacao;
+      TDCom(VP_Com).F_Comunicador.V_ConexaoCliente.Identificador := VP_Identificacao;
       F_Comunicacao := VP_ChaveComunicacao;
     end;
 

@@ -2610,19 +2610,17 @@ begin
         begin
           VL_TTabela.ConsultaA.Close;
           VL_TTabela.ConsultaA.SQL.Text := 'SELECT AD.*,T.DEFINICAO FROM ADQUIRENTE AD ' + ' LEFT OUTER JOIN TAG T ON T.TAG_NUMERO=AD.TAG_NUMERO' +
-            ' WHERE ((AD.ID=' + IntToSql(VL_Dados) + ') or (' + IntToSql(VL_Dados) + ' is not null) and ' + '((' +
-            IntToSql(VL_Dados) + ' is null) or (' + IntToSql(VL_Dados) + '=0)))';
+            ' WHERE ((AD.ID=' + IntToSql(VL_Dados,TRUE) + ') or (' + IntToSql(VL_Dados,TRUE) + ' is null))';
           VL_TTabela.ConsultaA.Open;
 
           VL_Tag := ZQueryToStrRxMemData(VL_TTabela.ConsultaA);
           VL_Mensagem.AddTag('0082', VL_Tag); //TABELA ADQUIRENTE
         end;
         //pesquisa tabela bin
-        if VP_Mensagem.GetTag('0076', VL_Dados) = 0 then //bin_ID 0=todas
+        if VP_Mensagem.GetTag('0076', VL_Dados) = 0 then //bin_ID 0=todos os BIN´s vinculado a um modulo_conf
         begin
           VL_TTabela.ConsultaA.Close;
-          VL_TTabela.ConsultaA.SQL.Text := 'SELECT * FROM BIN WHERE ((ID=' + IntToSql(VL_Dados) + ') or (' + IntToSql(VL_Dados) +
-            ' is not null) and ((' + IntToSql(VL_Dados) + ' is null) or (' + IntToSql(VL_Dados) + '=0)))';
+          VL_TTabela.ConsultaA.SQL.Text := 'SELECT * FROM BIN WHERE ((ID=' + IntToSql(VL_Dados,TRUE) + ') or (' + IntToSql(VL_Dados,TRUE)+ ' is  null))';
           VL_TTabela.ConsultaA.Open;
 
           VL_Tag := ZQueryToStrRxMemData(VL_TTabela.ConsultaA);
@@ -2703,8 +2701,9 @@ begin
         if VP_Mensagem.GetTag('006C', VL_Dados) = 0 then //pesquisa o modulo pelo MODULO_ID 0=todas
         begin
           VL_TTabela.ConsultaA.Close;
-          VL_TTabela.ConsultaA.SQL.Text := 'SELECT * FROM MODULO WHERE ((ID=' + IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) +
-            ' is not null) and ' + '((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
+          VL_TTabela.ConsultaA.SQL.Text := 'SELECT MO.*,T.DEFINICAO FROM MODULO MO '+' LEFT OUTER JOIN TAG T ON T.TAG_NUMERO=MO.TAG_NUMERO '+
+          ' WHERE ((MO.ID=' + IntToSQL(VL_Dados,true) + ') or (' + IntToSQL(VL_Dados,true) +
+            ' is null))';
           VL_TTabela.ConsultaA.Open;
           VL_Tag := ZQueryToStrRxMemData(VL_TTabela.ConsultaA);
           VL_Mensagem.AddTag('0090', VL_TAG); //TABELA MODULO
@@ -2724,7 +2723,7 @@ begin
             'SELECT MC.*,AD.DESCRICAO AS ADQUIRENTE_DESCRICAO,CHAVE.CHAVE_COMUNICACAO,IDENTIFICACAO.IDENTIFICADOR FROM MODULO_CONF MC' +
             ' LEFT OUTER JOIN ADQUIRENTE AD ON AD.ID=MC.ADQUIRENTE_ID' + ' LEFT OUTER JOIN CHAVE ON CHAVE.ID=MC.CHAVE_ID' +
             ' LEFT OUTER JOIN IDENTIFICACAO ON IDENTIFICACAO.ID=MC.IDENTIFICACAO_ID' + ' WHERE ' + '((MC.MODULO_ID=' +
-            IntToStr(VL_Dados) + ') or (' + IntToStr(VL_Dados) + ' is not null) and ' + '((' + IntToStr(VL_Dados) + ' is null) or (' + IntToStr(VL_Dados) + '=0)))';
+            IntToSQL(VL_Dados,true) + ') or (' + IntToSQL(VL_Dados,true) + ' is null))';
 
           VL_TTabela.ConsultaA.Open;
           VL_Tag := ZQueryToStrRxMemData(VL_TTabela.ConsultaA);
@@ -2734,10 +2733,10 @@ begin
           VL_TTabela.ConsultaA.SQL.Text :=
             'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MODULO_ID AS MODULO_ID,' +
             'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, MODULO_FUNCAO M where ' +
-            'M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MODULO_ID=' + IntToStr(VL_Dados) +
+            'M.TAG_NUMERO=T.TAG_NUMERO and T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MODULO_ID=' + IntToSQL(VL_Dados) +
             ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
             't.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MODULO_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MODULO_ID=' +
-            IntToStr(VL_Dados) + ' AND t2.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+            IntToSQL(VL_Dados) + ' AND t2.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
           VL_TTabela.ConsultaA.Open;
           VL_Tag := ZQueryToStrRxMemData(VL_TTabela.ConsultaA);
           VL_Mensagem.AddTag('0092', VL_TAG); //TABELA MODULO_FUNCAO
@@ -2748,10 +2747,10 @@ begin
           VL_TTabela.ConsultaA.SQL.Text :=
             'SELECT (CASE WHEN (M.TAG_NUMERO) IS NULL THEN  ''F'' ELSE ''T'' END) AS VALIDADO,M.ID,M.MODULO_CONF_ID AS MODULO_CONF_ID,' +
             'T.ID AS TAG_ID,T.TAG_NUMERO,T.DEFINICAO,M.HABILITADO,T.TAG_TIPO from TAG T, MODULO_CONF_FUNCAO M where M.TAG_NUMERO=T.TAG_NUMERO and ' +
-            'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MODULO_CONF_ID=' + IntToStr(VL_Dados) +
+            'T.TAG_TIPO<>''DADOS'' AND T.PADRAO=''T'' AND M.MODULO_CONF_ID=' + IntToSQL(VL_Dados) +
             ' UNION ALL SELECT ''F'', NULL, NULL, T.ID AS TAG_ID, T.TAG_NUMERO, T.DEFINICAO,''F'',T.TAG_TIPO from TAG T where ' +
             't.TAG_TIPO<>''DADOS'' AND (select COUNT(*) from MODULO_CONF_FUNCAO M2,TAG T2 where T.TAG_NUMERO=T2.TAG_NUMERO AND M2.MODULO_CONF_ID=' +
-            IntToStr(VL_Dados) + ' AND t2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
+            IntToSQL(VL_Dados) + ' AND t2.TAG_TIPO<>''DADOS'' AND T2.PADRAO=''T'' AND M2.TAG_NUMERO=t2.TAG_NUMERO )=0 ORDER BY 4 desc ';
 
           VL_TTabela.ConsultaA.Open;
           VL_Tag := ZQueryToStrRxMemData(VL_TTabela.ConsultaA);
@@ -8234,7 +8233,7 @@ begin
         if VL_Tabela.FieldByName('ID').AsInteger = 0 then
         begin
           //valida campos necessários
-          if ((VL_Tabela.FieldByName('DESCRICAO').AsString = '') and (VL_Tabela.FieldByName('TAG_NUMERO').AsString = '')) then
+          if ((VL_Tabela.FieldByName('DESCRICAO').AsString = '') or (VL_Tabela.FieldByName('TAG_NUMERO').AsString = '')) then
           begin
             VL_Mensagem.Limpar;
             VL_Mensagem.AddComando('00DE', 'R');

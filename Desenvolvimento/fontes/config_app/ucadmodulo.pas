@@ -111,25 +111,18 @@ var
   VL_Status, VL_Codigo: integer;
   VL_Retorno, VL_Tag: string;
   VL_Mensagem: TMensagem;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
+  VL_Mensagem := nil;
   VL_Status := 0;
   VL_Codigo := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  VL_Mensagem := TMensagem.Create;
-  try
-    F_OpenTefStatus(F_Com, VL_Status);
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      finterface.Desconecta;
-      Exit;
-    end;
+  try
+    VL_Mensagem := TMensagem.Create;
+
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
     if MDModulo.Active = False then
     begin
@@ -137,10 +130,16 @@ begin
       Exit;
     end;
 
-    if ((EID.Text = '') or (EID.Text = '0')) then
+    if ((length(EID.Text)<1) or (EID.Text = '0')) then
     begin
       ShowMessage('Operação cancelada, selecione um Módulo para alterar');
       exit;
+    end;
+
+    if length(ETagID.Text)=0 then
+    begin
+      ShowMessage(TabPdvModuloLTag.Caption + ' é um campo obrigatório!');
+      Exit;
     end;
 
     if GravaRegistros('TabModulo', False) then
@@ -149,12 +148,7 @@ begin
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
-
+        ShowMessage(Erro(VL_Codigo));
         finterface.Desconecta;
         exit;
       end;
@@ -166,13 +160,8 @@ begin
         '0026':
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
+          ShowMessage(Erro(StrToInt(VL_Tag)));
 
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
           // CarregarTabelas;
           MDModulo.Locate('ID', StrToInt(EID.Text), []);
           CarregaCampos;
@@ -184,13 +173,7 @@ begin
           if VL_Tag <> 'R' then
           begin
             VL_Mensagem.GetTag('004D', VL_Tag);
-
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             Exit;
           end;
           VL_Mensagem.GetTag('004D', VL_Tag);
@@ -198,12 +181,7 @@ begin
             ShowMessage('Registro alterado com sucesso')
           else
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             LimpaTela;
             Exit;
           end;
@@ -223,8 +201,8 @@ procedure TFCadModulo.BPesquisarClick(Sender: TObject);
 var
   VL_FPesquisaModulo: TFPesquisaModulo;
 begin
-  if F_Permissao = False then
-    exit;
+  if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
   CarregarModulo(0);
   VL_FPesquisaModulo := TFPesquisaModulo.Create(Self);
   VL_FPesquisaModulo.F_Tabela := RxMemDataToStr(MDModulo);
@@ -245,7 +223,7 @@ begin
     exit;
   VL_FPesquisaTag := TFTags.Create(Self);
   VL_FPesquisaTag.F_Tabela := RxMemDataToStr(MDTags);
-  VL_FPesquisaTag.F_TagTipo := TipoTagToStr(Ord(ttNDF));  //TIPO NENHUM
+  VL_FPesquisaTag.F_TagTipo := TipoTagToStr(Ord(ttMODULO));  //TIPO modulo
   VL_FPesquisaTag.ShowModal;
   if VL_FPesquisaTag.F_Carregado then
   begin
@@ -257,8 +235,11 @@ end;
 
 procedure TFCadModulo.BFuncaoLojaClick(Sender: TObject);
 begin
-  if (EID.Text = '') then
-    exit;
+  if length(eid.Text) < 1 then
+  begin
+    ShowMessage('Voce deve selecionar um Módulo para abrir as funções do módulo');
+    Exit;
+  end;
 
   if ((F_Navegar) and (F_Permissao) and (MDModulo.RecordCount > 0)) then
   begin
@@ -276,30 +257,23 @@ end;
 
 procedure TFCadModulo.BAdicionarClick(Sender: TObject);
 var
-  VL_Status: integer;
   VL_Mensagem: TMensagem;
   VL_Codigo: integer;
   VL_ID: int64;
   VL_Retorno, VL_Tag: string;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
+
 begin
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  VL_Mensagem := TMensagem.Create;
-  try
-    F_OpenTefStatus(F_Com, VL_Status);
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FInterface.Desconecta;
-      Exit;
-    end;
+  try
+    VL_Mensagem := TMensagem.Create;
+
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
     if MDModulo.Active = False then
     begin
@@ -315,8 +289,14 @@ begin
 
     if LENGTH(EID.Text) > 0 then
     begin
-      ShowMessage('Limpe o cadastro antes de Adicionar uma loja');
+      ShowMessage('Limpe o cadastro antes de Adicionar um módulo');
       exit;
+    end;
+
+    if length(ETagID.Text)=0 then
+    begin
+      ShowMessage(TabPdvModuloLTag.Caption + ' é um campo obrigatório!');
+      Exit;
     end;
 
     if GravaRegistros('TabModulo', True) then
@@ -325,11 +305,7 @@ begin
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(VL_Codigo));
 
         if MDModulo.Locate('ID', 0, []) then
           MDModulo.Delete;
@@ -346,12 +322,7 @@ begin
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
 
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(StrToInt(VL_Tag)));
 
           if MDModulo.Locate('ID', 0, []) then
             MDModulo.Delete;
@@ -370,12 +341,7 @@ begin
           VL_Mensagem.GetTag('004D', VL_Tag);
           if vl_tag <> '0' then
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
 
             if MDModulo.Locate('ID', 0, []) then
               MDModulo.Delete;
@@ -412,6 +378,7 @@ begin
     ShowMessage('Voce deve selecionar um Módulo para abrir a configuração do mesmo');
     Exit;
   end;
+
   VL_FModuloConfig := TFModuloConfig.Create(SELF);
   VL_FModuloConfig.V_ModuloID := StrToInt(EID.Text);
   VL_FModuloConfig.ShowModal;
@@ -424,25 +391,18 @@ var
   VL_Mensagem: TMensagem;
   VL_Retorno, VL_Tag: string;
   VL_ID: int64;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  VL_Mensagem := TMensagem.Create;
-  try
-    F_OpenTefStatus(F_Com, VL_Status);
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      finterface.Desconecta;
-      Exit;
-    end;
+  try
+    VL_Mensagem := TMensagem.Create;
+
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
     if MDModulo.Active = False then
     begin
@@ -460,30 +420,20 @@ begin
 
     if VL_Codigo <> 0 then
     begin
-      mensagemerro(VL_Codigo, VL_RDescricaoErro);
-      VL_DescricaoErro := VL_RDescricaoErro;
-      F_MensagemDispose(VL_RDescricaoErro);
-
-      ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
-
+      ShowMessage(Erro(VL_Codigo));
       finterface.Desconecta;
-
       exit;
     end;
 
     VL_Mensagem.Limpar;
     VL_Mensagem.CarregaTags(VL_Tag);
     VL_Mensagem.GetComando(VL_Retorno, VL_Tag);
+
     case VL_Retorno of
       '0026':
       begin
         VL_Mensagem.GetTag('0026', VL_ID);
-        mensagemerro(VL_ID, VL_RDescricaoErro);
-
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_DescricaoErro);
+        ShowMessage(ERRO(VL_ID));
         Exit;
       end;
       '002B':
@@ -498,12 +448,7 @@ begin
         if vl_tag <> '0' then
         begin
           VL_Mensagem.GetTag('004D', VL_ID);
-          mensagemerro(VL_ID, VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_DescricaoErro);
+          ShowMessage(ERRO(VL_ID));
           Exit;
         end;
         VL_Mensagem.GetTag('006C', VL_ID); //MODULO_ID
@@ -600,8 +545,7 @@ var
   VL_Codigo: integer;
   VL_ID: int64;
   VL_Retorno, VL_Tag: string;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
+
 label
   sair;
 begin
@@ -609,23 +553,16 @@ begin
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-
-  if TabModuloFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
-    TabModuloFuncaoLFiltro.Caption := 'Filtrar por ' + TabModuloFuncaoGrid.SelectedColumn.Title.Caption;
-
-  VL_Mensagem := TMensagem.Create;
+  VL_Mensagem := nil;
 
   try
-    F_OpenTefStatus(F_Com, VL_Status);
+    VL_Mensagem := TMensagem.Create;
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      finterface.Desconecta;
-      Exit;
-    end;
+    if TabModuloFuncaoGrid.SelectedColumn.FieldName <> 'VALIDADO_F' then
+        TabModuloFuncaoLFiltro.Caption := 'Filtrar por ' + TabModuloFuncaoGrid.SelectedColumn.Title.Caption;
+
+    if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
     if ((MDModulo.Active = False) or (MDModulo.RecordCount < 1)) then
       exit;
@@ -634,6 +571,7 @@ begin
       exit;
 
     F_Navegar := False;
+
     if ((Column.FieldName = 'VALIDADO_F') or (Column.FieldName = 'HABILITADO_F')) then
     begin
       VL_ID := MDModuloFuncID.AsInteger;
@@ -671,11 +609,7 @@ begin
 
         if VL_Codigo <> 0 then
         begin
-          mensagemerro(VL_Codigo, VL_RDescricaoErro);
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(VL_Codigo));
 
           if MDModuloFunc.Locate('ID', 0, []) then
             MDModuloFunc.Delete;
@@ -691,12 +625,7 @@ begin
           '0026':
           begin
             VL_Mensagem.GetTag('0026', VL_Tag);
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             if MDModuloFunc.Locate('ID', 0, []) then
               MDModuloFunc.Delete;
             Exit;
@@ -714,13 +643,7 @@ begin
             VL_Mensagem.GetTag('004D', VL_Tag);
             if vl_tag <> '0' then
             begin
-              mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-              VL_DescricaoErro := VL_RDescricaoErro;
-              F_MensagemDispose(VL_RDescricaoErro);
-
-              ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
-
+              ShowMessage(Erro(StrToInt(VL_Tag)));
               if MDModuloFunc.Locate('ID', 0, []) then
                 MDModuloFunc.Delete;
               Exit;
@@ -750,11 +673,7 @@ begin
 
         if VL_Codigo <> 0 then
         begin
-          mensagemerro(VL_Codigo, VL_RDescricaoErro);
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(VL_Codigo));
           exit;
         end;
 
@@ -766,12 +685,7 @@ begin
           '0026':
           begin
             VL_Mensagem.GetTag('0026', VL_Tag);
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             Exit;
           end;
           '00B9':
@@ -785,12 +699,7 @@ begin
             VL_Mensagem.GetTag('004D', VL_Tag);
             if vl_tag <> '0' then
             begin
-              mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-              VL_DescricaoErro := VL_RDescricaoErro;
-              F_MensagemDispose(VL_RDescricaoErro);
-
-              ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+              ShowMessage(Erro(StrToInt(VL_Tag)));
               Exit;
             end;
           end;
@@ -803,11 +712,7 @@ begin
 
         if VL_Codigo <> 0 then
         begin
-          mensagemerro(VL_Codigo, VL_RDescricaoErro);
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(VL_Codigo));
           goto sair;
         end;
 
@@ -818,12 +723,7 @@ begin
           '0026':
           begin
             VL_Mensagem.GetTag('0026', VL_Tag);
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
           end;
           '007F':
           begin
@@ -835,12 +735,7 @@ begin
             VL_Mensagem.GetTag('004D', VL_Tag);
             if vl_tag <> '0' then
             begin
-              mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-              VL_DescricaoErro := VL_RDescricaoErro;
-              F_MensagemDispose(VL_RDescricaoErro);
-
-              ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+              ShowMessage(Erro(StrToInt(VL_Tag)));
             end;
           end;
         end;
@@ -866,16 +761,16 @@ var
   VL_Tag: string;
   VL_Retorno: string;
   VL_Tabela: TRxMemoryData;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
+  VL_Mensagem := nil;
+  VL_Tabela := nil;
   VL_Tag := '';
   VL_Retorno := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  VL_Mensagem := TMensagem.Create;
-  VL_Tabela := TRxMemoryData.Create(nil);
+
   try
+    VL_Mensagem := TMensagem.Create;
+    VL_Tabela := TRxMemoryData.Create(nil);
+
     VL_Mensagem.Limpar;
     VL_Mensagem.AddComando('0070', 'S');
     VL_Mensagem.AddTag('006E', 0); //tag_id
@@ -883,7 +778,7 @@ begin
 
     VL_Mensagem.TagToStr(VL_Tag);
 
-    if VP_ModuloID = 0 then
+    if (VP_ModuloID = 0)or(VP_ModuloID = -1) then
       VL_Tag := FInterface.PesquisaTabelas('0070', 'S', '006C', VP_ModuloID, VL_Tag)
     else
       VL_Tag := FInterface.PesquisaTabelas('0070', 'S', '006C', VP_ModuloID, '');
@@ -896,12 +791,7 @@ begin
       '0026':
       begin
         VL_Mensagem.GetTag('0026', VL_Tag);
-        mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(StrToInt(VL_Tag)));
         Exit;
       end;
       '0070':
@@ -910,12 +800,7 @@ begin
         if VL_Tag <> 'R' then
         begin
           VL_Mensagem.GetTag('004D', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(erro(StrToInt(VL_Tag)));
           Exit;
         end;
         //TABELA TAG
@@ -967,25 +852,24 @@ begin
     //grava TabModulo
     if VP_Tab = 'TabModulo' then
     begin
-      if not (F_Permissao) then
-      begin
-        ShowMessage('Sem Permissão de Gravação, usuário não é um Configurador');
-        F_Navegar := True;
-        exit;
-      end;
-      if VP_Incluir then
-        VL_ID := 0
-      else
-        VL_ID := MDModulo.FieldByName('ID').AsInteger;
+      if not(FInterface.VerificaPermissao(F_TipoConfigurador)) then
+       Exit;
 
       if VP_Incluir then
-        MDModulo.Insert
+      begin
+        VL_ID := 0;
+        MDModulo.Insert;
+      end
       else
+      begin
+        VL_ID := MDModulo.FieldByName('ID').AsInteger;
         MDModulo.Edit;
+      end;
 
       MDModulo.FieldByName('ID').AsInteger := VL_ID;
       MDModulo.FieldByName('DESCRICAO').AsString := EDescricao.Text;
       MDModulo.FieldByName('TAG_NUMERO').AsString := ETagID.Text;
+      MDModulo.FieldByName('DEFINICAO').AsString := ETag.Text;
       MDModulo.Post;
       Result := True;
     end;
@@ -1023,11 +907,9 @@ begin
   //CARREGA MODULO
   EID.Text := MDModulo.FieldByName('ID').AsString;
   EDescricao.Text := MDModulo.FieldByName('DESCRICAO').AsString;
-  if MDTags.Locate('TAG_NUMERO', MDModulo.FieldByName('TAG_NUMERO').AsString, []) then
-  begin
-    ETagID.Text := MDTags.FieldByName('TAG_NUMERO').AsString;
-    ETag.Text := MDTags.FieldByName('DEFINICAO').AsString;
-  end;
+  ETagID.Text := MDModulo.FieldByName('TAG_NUMERO').AsString;
+  ETag.Text := MDModulo.FieldByName('DEFINICAO').AsString;
+
 end;
 
 end.

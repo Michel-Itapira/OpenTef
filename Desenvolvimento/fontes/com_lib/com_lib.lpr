@@ -15,6 +15,7 @@ exports
       opentefstatus,
       versao,
       alterarnivellog,
+      mensagemerro,
       mensagemdispose;
 
 begin

@@ -51,8 +51,10 @@ procedure TFPesquisaModulo.FormShow(Sender: TObject);
 begin
   EID.Text := '';
   EDescricao.Text := '';
-  if MDModulo.Active then
-      MDModulo.EmptyTable;
+    if MDModulo.Active then
+        MDModulo.EmptyTable;
+    StrToRxMemData(F_Tabela, MDModulo);
+    MDModulo.Open;
   F_Carregado := False;
 end;
 
@@ -63,19 +65,22 @@ end;
 
 procedure TFPesquisaModulo.BCarregarClick(Sender: TObject);
 begin
+   if (MDModulo.RecordCount=0) OR (MDModulo.IsEmpty) then
+    begin
+       ShowMessage('Nenhum registro foi selecionado');
+       EXIT;
+    end;
+
   F_Carregado := True;
   Close;
-end;
+ end;
+
 
 procedure TFPesquisaModulo.BPesquisarClick(Sender: TObject);
 var
     VL_Filtro: string;
 begin
     VL_Filtro := '';
-    if MDModulo.Active then
-        MDModulo.EmptyTable;
-    StrToRxMemData(F_Tabela, MDModulo);
-    MDModulo.Open;
 
     if length(EID.Text) > 0 then
         if VL_Filtro = '' then

@@ -52,14 +52,10 @@ type
     MConectar: TMenuItem;
     PStatus: TPanel;
     MDTabela: TRxMemoryData;
-    procedure ComboBox1Click(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FormDblClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure MCadAdquirenteClick(Sender: TObject);
-    procedure MCadClick(Sender: TObject);
     procedure MCadLojaClick(Sender: TObject);
     procedure MCadMultClick(Sender: TObject);
     procedure MCadPinPadClick(Sender: TObject);
@@ -69,10 +65,13 @@ type
     procedure MConfigModuloClick(Sender: TObject);
   private
     procedure IniciarLib;
+    procedure MostraMenu;
+    procedure OcultaMenu;
   public
     V_Erro: PChar;
     procedure Conectar(VP_Tipo, VP_Senha: string);
     procedure Desconecta;
+    function VerificaPermissao(VP_Tipo: TPermissao;VP_UsuarioLivre : Boolean=false;VP_AdministradorLivre: Boolean=false):Boolean;
     function SolicitacaoBloc(VP_Dados: ansistring; var VO_Retorno: ansistring; VP_Tempo: integer): integer;
     function PesquisaTabelas(VP_TagComando, VP_DadosComando, VP_Tag: ansistring; VP_ID: integer; VP_TagLote: ansistring): ansistring;
     function FiltrarTabela(VP_DBGrid: TRxDBGrid; var VO_RotuloCaption: string; VP_EditFiltrado: TEdit): string;
@@ -81,7 +80,7 @@ type
     function ExcluirRegistro(VP_Tag: string; VP_ID: integer; VP_TagComando, VP_TagComandoDados: string; var VO_Retorno: ansistring): integer;
     function AlterarRegistro(VP_TagTabela: string; VP_Tabela: TRxMemoryData; VP_Tag: string; VP_ID: int64; VP_TagComando, VP_TagComandoDados: string; var VO_Retorno: ansistring): integer;
     function ValidarChave(VP_TagChave: string; VP_Chave: ansistring; VP_TagComando, VP_TagComandoDados: string; var VO_Retorno: ansistring): integer;
-    procedure Desconectar;
+   // procedure Desconectar;
   end;
 
   TTefInicializar = function(var VO_Com: Pointer; VP_Procedimento: TRetorno; VP_ArquivoLog: PChar): integer; cdecl;
@@ -127,6 +126,8 @@ const
   {$ELSE}
   C_TempoSolicitacao = 20000;
   {$ENDIF}
+
+  function Erro(VP_Erro: LongInt): string;
 
 implementation
 
@@ -224,6 +225,7 @@ begin
     Pointer(F_SolicitacaoBlocante) := GetProcAddress(F_ComLib, 'solicitacaoblocante');
     Pointer(F_OpenTefStatus) := GetProcAddress(F_ComLib, 'opentefstatus');
     Pointer(F_MensagemDispose) := GetProcAddress(F_ComLib, 'mensagemdispose');
+    Pointer(F_Erro) := GetProcAddress(F_ComLib, 'mensagemerro');
 
     F_Inicializar(F_Com,@Retorno, PChar(ExtractFilePath(ParamStr(0)) + 'config_app_com_lib.log'));
 
@@ -240,6 +242,20 @@ begin
   {$ENDIF}
 
 end;
+function Erro(VP_Erro : LongInt): string;
+var
+   VL_Retorno : Pchar;
+begin
+  VL_Retorno:= nil;
+  Result:='';
+  try
+    F_Erro(VP_Erro,VL_Retorno);
+    Result:=VL_Retorno
+  finally
+    F_MensagemDispose(VL_Retorno);
+  end;
+end;
+
 
 procedure TFInterface.Conectar(VP_Tipo, VP_Senha: string);
 var
@@ -277,10 +293,11 @@ begin
     //conecta
     VL_Codigo := F_Login(F_Com, PChar(F_Host), F_Porta, PChar(F_Chave), C_Mensagem, PChar(VP_Senha), PChar(VP_Tipo), F_Terminal_ID, PChar(F_Identificador));
 
-    if VL_Codigo > 0 then
+    if VL_Codigo <> 0 then
     begin
-      mensagemerro(VL_Codigo, V_Erro);
-      ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + V_Erro);
+    //  mensagemerro(VL_Codigo, V_Erro);
+    //  ShowMessage('Erro:' + IntToStr(VL_Codigo) + #13 + V_Erro);
+      ShowMessage(erro(vl_codigo));
       Exit;
     end;
     //carrega status
@@ -299,6 +316,8 @@ begin
     end;
     LUsuario.Caption := 'Usuário:' + PermissaoToStrFormatada(StrToPermissao(VP_Tipo));
     F_TipoConfigurador := StrToPermissao(VP_Tipo);
+
+    MostraMenu;
   finally
     VL_TMensagem.Free;
     if Assigned(VL_Conf) then
@@ -323,6 +342,7 @@ begin
   EStatus.Font.Color := clRed;
   F_Permissao := False;
   F_TipoConfigurador := pmS;
+  OcultaMenu;
 end;
 
 function TFInterface.SolicitacaoBloc(VP_Dados: ansistring; var VO_Retorno: ansistring; VP_Tempo: integer): integer;
@@ -343,15 +363,18 @@ var
   VL_Mensagem: TMensagem;
   VL_Codigo: integer;
   VL_Tag: ansistring;
-  VL_Retorno: ansistring;
 begin
-  VL_Mensagem := TMensagem.Create;
+
+  VL_Mensagem:=nil;
   VL_Codigo := 0;
   VL_Tag := '';
-  VL_Retorno := '';
+
   try
-    if F_Permissao = False then
-      exit;
+   VL_Mensagem := TMensagem.Create;
+
+    if not(VerificaPermissao(F_TipoConfigurador,true,true)) then
+       Exit;
+
     F_Navegar := False;
 
     //carrega tabela
@@ -366,11 +389,13 @@ begin
 
     VL_Mensagem.TagToStr(VL_Tag);
     VL_Codigo := SolicitacaoBloc(VL_Tag, VL_Tag, C_TempoSolicitacao);
+
     if VL_Codigo <> 0 then
     begin
-      ShowMessage(IntToStr(VL_Codigo));
+      ShowMessage(erro(VL_Codigo));
       exit;
     end;
+
     Result := VL_Tag;
     F_Navegar := True;
   finally
@@ -431,10 +456,12 @@ var
   VL_Mensagem: TMensagem;
   VL_Tag: ansistring;
 begin
-  VL_Mensagem := TMensagem.Create;
+  VL_Mensagem := nil;
   VL_Tabela := '';
   VL_Tag := '';
+
   try
+    VL_Mensagem := TMensagem.Create;
     VL_Tabela := RxMemDataToStr(VP_Tabela);
 
     VL_Mensagem.AddComando(VP_TagComando, VP_TagComandoDados);
@@ -483,19 +510,22 @@ var
   VL_Tabela: string;
   VL_Tag: ansistring;
 begin
-  VL_Mensagem := TMensagem.Create;
+  VL_Mensagem := nil;
   VL_Tag := '';
   VL_Tabela := '';
   F_Navegar := False;
   try
+    VL_Mensagem := TMensagem.Create;
     VL_Tabela := RxMemDataToStr(VP_Tabela);
+
     VL_Mensagem.Limpar;
     VL_Mensagem.AddComando(VP_TagComando, VP_TagComandoDados);
     VL_Mensagem.AddTag(VP_TagTabela, VL_Tabela);
     VL_Mensagem.AddTag(VP_Tag, VP_ID);
 
-
     VL_Mensagem.TagToStr(VL_Tag);
+
+
     Result := SolicitacaoBloc(VL_Tag, VO_Retorno, C_TempoSolicitacao);
 
   finally
@@ -531,7 +561,7 @@ begin
   if VL_Status <> Ord(csLogado) then
   begin
     ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-    Desconectar;
+    Desconecta;
     Exit;
   end;
   if F_Permissao = False then
@@ -544,10 +574,10 @@ begin
   VL_FCadPinPad.Show;
 end;
 
-procedure TFInterface.Desconectar;
-begin
-  F_Desconectar(F_Com);
-end;
+//procedure TFInterface.Desconectar;
+//begin
+//  F_Desconectar(F_Com);
+//end;
 
 procedure TFInterface.MConectarClick(Sender: TObject);
 var
@@ -576,7 +606,7 @@ begin
   if VL_Status <> Ord(csLogado) then
   begin
     ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-    Desconectar;
+    Desconecta;
     Exit;
   end;
   if F_Permissao = False then
@@ -597,30 +627,40 @@ begin
   F_TipoConfigurador := pmS;
   IniciarLib;
   F_Titulo := 'Configurador OpenTef versão ' + C_Versao_ConfTef;
+  OcultaMenu;
+end;
+procedure TFInterface.MostraMenu;
+begin
+  case F_TipoConfigurador of
+       pmU :
+       begin
+         MCad.Visible:=true;
+       end;
+       pmA :
+       begin
+         MCad.Visible:=true;
+       end;
+       pmC :
+         begin
+          MCad.Visible:=true;
+          MGerModulo.Visible:=true;
+         end;
+  end;
 end;
 
-procedure TFInterface.FormDblClick(Sender: TObject);
+procedure TFInterface.OcultaMenu;
 begin
-
+    MCad.Visible:=false;
+    MGerModulo.Visible:=false;
 end;
 
 procedure TFInterface.FormDestroy(Sender: TObject);
 begin
-
-end;
-
-procedure TFInterface.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  if Assigned(F_Finalizar) then
-    F_Finalizar(F_Com);
+  if Assigned(F_Com) then
+     F_Finalizar(F_Com);
 
   if F_ComLib > 0 then
     UnloadLibrary(F_ComLib);
-end;
-
-procedure TFInterface.ComboBox1Click(Sender: TObject);
-begin
-
 end;
 
 procedure TFInterface.FormShow(Sender: TObject);
@@ -632,29 +672,53 @@ end;
 procedure TFInterface.MCadAdquirenteClick(Sender: TObject);
 var
   VL_FCadAdquirente: TFCadAdquirente;
-  VL_Status: integer;
 begin
-  F_OpenTefStatus(F_Com, VL_Status);
-  if VL_Status <> Ord(csLogado) then
-  begin
-    ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-    Desconectar;
-    Exit;
-  end;
-  if F_Permissao = False then
-  begin
-    ShowMessage('Voce não tem permissão para acessar este menu');
-    exit;
-  end;
+
+  if not VerificaPermissao(F_TipoConfigurador,false,true)then
+     exit;
 
   VL_FCadAdquirente := TFCadAdquirente.Create(self);
   VL_FCadAdquirente.Show;
 
 end;
-
-procedure TFInterface.MCadClick(Sender: TObject);
+function TFInterface.VerificaPermissao(VP_Tipo :TPermissao;VP_UsuarioLivre : Boolean=false;VP_AdministradorLivre: Boolean=false):Boolean;
+var
+   VL_Status : Integer;
 begin
-
+  Result:=false;
+  //verifica se esta logado
+  F_OpenTefStatus(F_Com, VL_Status);
+   if VL_Status <> Ord(csLogado) then
+   begin
+     ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
+     Desconecta;
+     exit;
+   end;
+   //verifica permissao
+   case VP_Tipo of
+      pmS :
+        begin
+         ShowMessage('Voce não tem permissão para acessar esta rotina');
+         Exit;
+        end;
+      pmU :
+        begin
+          if not VP_UsuarioLivre then
+            begin
+              ShowMessage('Voce não tem permissão para acessar esta rotina');
+              Exit;
+            end;
+        end;
+        pmA :
+          begin
+            if not VP_AdministradorLivre then
+              begin
+                ShowMessage('Voce não tem permissão para acessar esta rotina');
+                Exit;
+              end;
+          end;
+   end;
+   Result:=true;
 end;
 
 procedure TFInterface.MCadLojaClick(Sender: TObject);
@@ -666,7 +730,7 @@ begin
   if VL_Status <> Ord(csLogado) then
   begin
     ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-    Desconectar;
+    Desconecta;
     Exit;
   end;
   if F_Permissao = False then
@@ -689,7 +753,7 @@ begin
   if VL_Status <> Ord(csLogado) then
   begin
     ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-    Desconectar;
+    Desconecta;
     Exit;
   end;
   if F_Permissao = False then

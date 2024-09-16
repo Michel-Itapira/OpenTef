@@ -56,6 +56,32 @@ type
     fID: integer;
     ftransmissaoID: ansistring;
     ftef: Pointer;
+
+    VL_Dados: string;
+    VL_RDados: PChar;
+    VL_Retorno: PChar;
+    VL_Botao: string;
+    VL_Erro: integer;
+
+    VL_DiretoOpeTef: boolean;
+    VL_Mensagem, VL_TransacaoDadosPublicos, VL_Chave, VL_MensagemRetornada, VL_Conciliacao: TMensagem;
+    VL_Tag, VL_TagDados, VL_String: ansistring;
+    VL_DadosEnviados, VL_DadosRecebidos: ansistring;
+    VL_PinPadCarregado: boolean;
+    VL_Criptografa: boolean;
+    VL_ChaveTamanho: integer;
+    VL_ChaveExpoente: ansistring;
+    VL_ChaveModulo: ansistring;
+    VL_ChaveComunicacao: ansistring;
+    VL_Rsa: TLbRSA;
+    VL_Aes: TLbRijndael;
+    VL_Transacao: TTransacao;
+    VL_TempoLimite: longint;
+    VL_Linha: ansistring;
+
+
+    procedure MostraMenu;
+
   protected
     procedure Execute; override;
   public
@@ -633,43 +659,17 @@ end;
 
 { ThTransacao }
 
+procedure TThTransacao.MostraMenu;
+begin
+ VL_Erro := TDTEf(ftef).F_MostraMenu(PChar(VL_Mensagem.TagsAsString), VL_Retorno);
+end;
+
 procedure TThTransacao.Execute;
 var
-  VL_Dados: string;
-  VL_RDados: PChar;
-  VL_Retorno: PChar;
-  VL_Botao: string;
-  VL_Erro: integer;
-  VL_I: integer;
-  VL_DiretoOpeTef: boolean;
-  VL_Mensagem, VL_TransacaoDadosPublicos, VL_Chave, VL_MensagemRetornada, VL_Conciliacao: TMensagem;
-  VL_Tag, VL_TagDados, VL_String: ansistring;
-  VL_DadosEnviados, VL_DadosRecebidos: ansistring;
-  VL_PinPadCarregado: boolean;
-  VL_Criptografa: boolean;
-  VL_ChaveTamanho: integer;
-  VL_ChaveExpoente: ansistring;
-  VL_ChaveModulo: ansistring;
-  VL_ChaveComunicacao: ansistring;
-  VL_Rsa: TLbRSA;
-  VL_Aes: TLbRijndael;
-  VL_Transacao: TTransacao;
-  VL_TempoLimite: longint;
-  VL_Linha: ansistring;
+ VL_I: integer;
 
-  //function tmkEY(VP_Tamanho: Integer): TLbAsymKeySize;
-  //begin
-  //    Result := aks128;
-  //    case VP_Tamanho of
-  //        0: Result := aks128;
-  //        1: Result := aks256;
-  //        2: Result := aks512;
-  //        3: Result := aks768;
-  //        4: Result := aks1024;
-  //    end;
-
-  //end;
 begin
+
   if not Assigned(ftef) then
     Exit;
 
@@ -959,7 +959,8 @@ begin
         if (VL_Mensagem.Comando() = '00F5') then  // SOLICITACAO DE CAPTURA OPÇÃO DO MENU OPERACIONAL
         begin
           GravaLog(TDTEf(ftef).F_ArquivoLog, 0, '', 'tef', '110620240931', 'SOLICITACAO DE CAPTURA OPÇÃO DO MENU OPERACIONAL', VL_Mensagem.TagsAsString, 0, 3);
-          VL_Erro := TDTEf(ftef).F_MostraMenu(PChar(VL_Mensagem.TagsAsString), VL_Retorno);
+
+          MostraMenu;
 
           VL_Botao := VL_Retorno;
           TDTEf(ftef).F_StrDispose(VL_Retorno);
@@ -994,7 +995,10 @@ begin
         begin
           GravaLog(TDTEf(ftef).F_ArquivoLog, 0, '', 'tef', '110620240932', 'SOLICITACAO DE CAPTURA OPÇÃO DO VENDA', VL_Mensagem.TagsAsString, 0, 3);
 
-          VL_Erro := TDTEf(ftef).F_MostraMenu(PChar(VL_Mensagem.TagsAsString), VL_Retorno);
+
+          MostraMenu;
+
+
 
           VL_Botao := VL_Retorno;
           TDTEf(ftef).F_StrDispose(VL_Retorno);
@@ -2019,14 +2023,14 @@ begin
       end;
 
       if ((TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.ServidorHost <> VP_Host) or (TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.ServidorPorta <> VP_Porta) or
-        (TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.Chave_Comunicacao <> VP_ChaveComunicacao) or (TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.Identificacao <>
+        (TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.Chave_Comunicacao <> VP_ChaveComunicacao) or (TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.Identificador <>
         VP_Identificador) or (TDTef(VP_Tef).F_Comunicador.V_Versao_Comunicacao <> VP_Versao_Comunicacao)) then
       begin
         TDTef(VP_Tef).F_Comunicador.DesconectarCliente(TDTef(VP_Tef).F_Comunicador);
         TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.ServidorHost := VP_Host;
         TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.ServidorPorta := VP_Porta;
         TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.setChaveComunicacao(VP_ChaveComunicacao);
-        TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.Identificacao := VP_Identificador;
+        TDTef(VP_Tef).F_Comunicador.V_ConexaoCliente.Identificador := VP_Identificador;
         TDTef(VP_Tef).F_Comunicador.V_Versao_Comunicacao := VP_Versao_Comunicacao;
       end;
 

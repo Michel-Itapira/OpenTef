@@ -22,6 +22,7 @@ type
         procedure BDesconectarClick(Sender: TObject);
         procedure BConectarClick(Sender: TObject);
     private
+      procedure VerificaConexao(VP_Status: integer);
 
     public
         V_Conectar : Boolean;
@@ -78,16 +79,39 @@ end;
 
 procedure TFLogin.BDesconectarClick(Sender: TObject);
 begin
-    V_Conectar:=false;
+  V_Conectar:=false;
   close;
 end;
+procedure TFLogin.VerificaConexao(VP_Status:integer);
+begin
+    if VP_Status = Ord(csLogado) then
+    begin
+       BConectar.Enabled:=false;
+       CTipo.Enabled:=false;
+       Esenha.Text:='***';
+       ESenha.Enabled:=false;
+    end
+    else
+    begin
+        BConectar.Enabled:=true;
+        CTipo.Enabled:=true;
+        Esenha.Text:='';
+        ESenha.Enabled:=true;
+    end;
+end;
+
 
 constructor TFLogin.Create(AOwner: TComponent; VP_PermissaoFormatada: string);
+var
+   VL_Status : integer;
 begin
     inherited Create(AOwner);
     ESenha.Text := '';
     CTipo.Items.Text := VP_PermissaoFormatada;
     CTipo.ItemIndex:=1;
+    F_OpenTefStatus(F_Com, VL_Status);
+    VerificaConexao(VL_Status);
+
 end;
 
 end.

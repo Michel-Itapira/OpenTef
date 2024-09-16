@@ -10,7 +10,7 @@ uses
   	CThreads,
   {$ENDIF}
   Classes, SysUtils, IniFiles, comunicador, ZConnection, ZDataset,
-  funcoes, rxmemds, IdContext, cadastro, LbClass, md5, base64,
+  funcoes, rxmemds, IdContext, cadastro, LbClass, base64,
   FMTBcd, DB, bancodados, Forms;
 
 type
@@ -109,7 +109,7 @@ type
     Identificador: string;
   end;
 
-  TRecBin = record
+  TRecModulo = record
     IIN: ansistring;
     ModuloConfID: integer;
     ModuloTag: string;
@@ -122,19 +122,19 @@ type
   end;
 
   { TBin }
-  TBin = class
+  TModulo = class
   public
     ListaBin: TList;
     constructor Create; overload;
     destructor Destroy; override;
     function Add(VP_IIN: ansistring; VP_ModuloConfID: integer; VP_Tag: string): integer;
     procedure Limpar;
-    function Get(VP_Posicao: integer): TRecBin;
+    function Get(VP_Posicao: integer): TRecModulo;
     function Count: integer;
     procedure RemovePorModuloConf(VP_ModuloConfID: integer);
     function RetornaModuloConfId(VP_IIN: ansistring): integer;
-    function RetornaBIN(VP_IIN: ansistring): TRecBin;
-    function RetornaBINPorTag(VP_Tag: ansistring): TRecBin;
+    function RetornaModulo(VP_IIN,VP_Tag: ansistring): TRecModulo;
+    function RetornaBINPorTag(VP_Tag: ansistring): TRecModulo;
   end;
 
   { TMenu }
@@ -178,7 +178,7 @@ type
     VF_Rodando: boolean;
     VF_ArquivoLog: string;
     VF_DNucleo: Pointer;
-    VF_Bin: TRecBin;
+    VF_Modulo: TRecModulo;
     VF_Dados: string;
     VF_Transacao_ID: string;
     VF_TempoEspera: integer;
@@ -191,13 +191,13 @@ type
     VF_Status: TSolicitacaoStatus;
     VF_Transmissao_ID: string;
 
-    constructor Create(VP_Suspenso: boolean; VP_Bin: TRecBin; VP_Dados: string; VP_Transacao_ID: string; VP_ArquivoLog: string; VP_DNucleo: Pointer;
+    constructor Create(VP_Suspenso: boolean; VP_Modulo: TRecModulo; VP_Dados: string; VP_Transacao_ID: string; VP_ArquivoLog: string; VP_DNucleo: Pointer;
       VP_Conexao_ID: integer; VP_TempoEspera: integer = 60000);
     destructor Destroy; override;
   end;
 
   TRecConciliacao = record
-    bin: TRecBin;
+    modulo: TRecModulo;
     transacao_id: string;
     dados: string;
     ThConciliacao: TThConciliacao;
@@ -211,7 +211,7 @@ type
     TransmissaoID: string;
     Conexao_ID: integer;
 
-    function add(VP_RecBin: TRecBin; VP_Transacao_ID, VP_Dados: string): integer;
+    function add(VP_RecModulo: TRecModulo; VP_Transacao_ID, VP_Dados: string): integer;
     function consultar: ansistring;
     constructor Create(VP_Transmissao_ID: string; VP_Conexao_ID: integer; VP_TempoEspera: integer = 60000); overload;
     destructor Destroy; override;
@@ -247,7 +247,7 @@ type
     // comando enviados pelo comunicador do servidor diretamente para o opentef
 
   public
-    VF_Bin: TBin;
+    VF_Modulo: TModulo;
     VF_Menu: TMenu;
     VF_MenuOperacional: TMenu;
     VF_DLL: TDLL;
@@ -263,6 +263,8 @@ type
     function ModuloAddSolicitacao(VP_Transmissao_ID: string; VP_TempoEspera, VP_ModuloProcID: integer; VP_Mensagem: TMensagem): integer;
     function ModuloAddSolicitacaoIdentificacaoAdquirente(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64; VP_Adquirente_Identificacao: string;
       VP_Mensagem: TMensagem; VP_ConexaoTipo: TConexaoTipo): integer;
+    function ModuloSolicitacaoBlocante(VP_MensagemEntrada: TMensagem; var VO_MensagemSaida: TMensagem; VP_Transmissao_ID: string; VP_TempoEspera: int64;
+      VP_ModuloConfig_ID: integer; VP_ConexaoTipo: TConexaoTipo): integer;
     function ModuloValida(VP_RegModulo: TRegModulo): integer;
     function ModuloTarefaDel(VP_ModuloProcID, VP_Tarefa_ID: integer): integer;
     function ModuloTarefaGet(VP_ModuloProcID, VP_Tarefa_ID: integer): TTarefa;
@@ -272,6 +274,7 @@ type
     function AtualizaBIN(VP_RegModulo: TRegModulo; VP_Mensagem: TMensagem): integer;
     function AtualizaMENU(VP_RegModulo: TRegModulo; VP_Mensagem: TMensagem; VP_Sistema: boolean): integer;
     function AtualizaMENU_OPERACIONAL(VP_RegModulo: TRegModulo; VP_Mensagem: TMensagem; VP_Sistema: boolean): integer;
+
 
   var
     VF_ListaTRegModulo: TList;
@@ -907,7 +910,7 @@ begin
         if VF_ConexaoTipo = cnServico then
         begin
           VL_Linha := '24062024154500';
-          DNucleo.VF_Bin.RemovePorModuloConf(TRegModulo(VF_RegModulo^).ModuloConfig_ID);
+          DNucleo.VF_Modulo.RemovePorModuloConf(TRegModulo(VF_RegModulo^).ModuloConfig_ID);
           VL_Linha := '24062024154501';
         end;
 
@@ -1097,7 +1100,7 @@ begin
       F_Modulo_ID_Contador := F_Modulo_ID_Contador + 1;
       VL_BancoDados.ConsultaA.Close;
       VL_BancoDados.ConsultaA.SQL.Text :=
-        'SELECT ' + ' MC.ID AS ID,MC.MODULO_ID,MC.ADQUIRENTE_ID,MC.SERVICO_HOST, ' + ' MC.SERVICO_PORTA,MC.CAIXA_HOST,MC.CAIXA_PORTA,MC.DESCRICAO,MC.BIN_ESTATICO,MC.MENU_ESTATICO, ' +
+        'SELECT MC.ID AS ID,MC.MODULO_ID,MC.ADQUIRENTE_ID,MC.SERVICO_HOST, ' + ' MC.SERVICO_PORTA,MC.CAIXA_HOST,MC.CAIXA_PORTA,MC.DESCRICAO,MC.BIN_ESTATICO,MC.MENU_ESTATICO, ' +
         ' MC.MENU_ESTATICO_OPERACIONAL,M.TAG_NUMERO, A.TAG_NUMERO AS ADQUIRENTE_TAG_NUMERO,C.CHAVE_COMUNICACAO,I.IDENTIFICADOR' + ' FROM MODULO_CONF MC ' +
         ' INNER JOIN MODULO M ON M.ID=MC.MODULO_ID ' + ' INNER JOIN ADQUIRENTE A ON MC.ADQUIRENTE_ID=A.ID ' + ' LEFT OUTER JOIN CHAVE C ' +
         ' ON MC.CHAVE_ID = C.ID ' + ' LEFT OUTER JOIN IDENTIFICACAO I ' + ' ON MC.IDENTIFICACAO_ID = I.ID ' + ' WHERE MC.HABILITADO=''T'' AND ((MC.ID=' +
@@ -1204,7 +1207,7 @@ begin
     GravaLog(F_ArquivoLog, 0, 'ModuloDescarrega', 'opentefnucleo',
       '141120231631', 'comeco do  ModuloDescarrega', '', 0, 3);
 
-    DNucleo.VF_Bin.RemovePorModuloConf(VP_ModuloConfig_ID);
+    DNucleo.VF_Modulo.RemovePorModuloConf(VP_ModuloConfig_ID);
     if VP_ModuloConfig_ID = 0 then
     begin
       if Assigned(VF_ListaTRegModulo) then
@@ -1352,8 +1355,8 @@ begin
   end;
 end;
 
-function TDNucleo.ModuloAddSolicitacao(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64; VP_ModuloConfig_ID: integer;
-  VP_Mensagem: TMensagem; VP_ConexaoTipo: TConexaoTipo): integer;
+function TDNucleo.ModuloAddSolicitacao(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64; VP_ModuloConfig_ID: integer; VP_Mensagem: TMensagem;
+  VP_ConexaoTipo: TConexaoTipo): integer;
 var
   VL_I: integer;
   VL_RegModulo: ^TRegModulo;
@@ -1525,6 +1528,48 @@ begin
 
 end;
 
+function TDNucleo.ModuloSolicitacaoBlocante(VP_MensagemEntrada: TMensagem; var VO_MensagemSaida: TMensagem; VP_Transmissao_ID: string; VP_TempoEspera: int64;
+  VP_ModuloConfig_ID: integer; VP_ConexaoTipo: TConexaoTipo): integer;
+var
+  VL_I: integer;
+  VL_RegModulo: ^TRegModulo;
+  VL_PDadosRecebidos: PUTf8Char;
+  VL_DadosRecebidos: string;
+begin
+  Result := -1;
+  VL_PDadosRecebidos := nil;
+  VL_DadosRecebidos := '';
+
+  VO_MensagemSaida.Limpar;
+
+  for VL_I := 0 to VF_ListaTRegModulo.Count - 1 do
+  begin
+    VL_RegModulo := VF_ListaTRegModulo[VL_I];
+    if ((VL_RegModulo^.ModuloConfig_ID = VP_ModuloConfig_ID) and (VL_RegModulo^.ConexaoTipo = VP_ConexaoTipo)) then
+    begin
+      Result := ModuloValida(VL_RegModulo^);
+
+      if Result <> 0 then
+        Exit;
+
+      Result := VL_RegModulo^.Solicitacaoblocante(VL_RegModulo^.PModulo, PUtf8Char(VP_Transmissao_ID), PUtf8Char(VP_MensagemEntrada.TagsAsString), VL_PDadosRecebidos, VP_TempoEspera);
+
+      if Result <> 0 then
+        Exit;
+
+      VL_DadosRecebidos := VL_PDadosRecebidos;
+      VL_RegModulo^.StrDispose(VL_PDadosRecebidos);
+
+      VO_MensagemSaida.CarregaTags(VL_DadosRecebidos);
+
+      Result := 0;
+      Exit;
+    end;
+  end;
+
+  Result := 70;
+end;
+
 
 function TDNucleo.AtualizaBIN(VP_RegModulo: TRegModulo; VP_Mensagem: TMensagem): integer;
 var
@@ -1558,7 +1603,7 @@ begin
       VL_BancoDados := TDBancoDados.Create(nil);
       VL_Bins := TStringList.Create;
 
-      VF_Bin.RemovePorModuloConf(VP_RegModulo.ModuloConfig_ID);
+      VF_Modulo.RemovePorModuloConf(VP_RegModulo.ModuloConfig_ID);
 
       VL_BancoDados.ConsultaA.Close;
       VL_BancoDados.ConsultaA.SQL.Text :=
@@ -1568,7 +1613,7 @@ begin
 
       while not VL_BancoDados.ConsultaA.EOF do
       begin
-        VF_Bin.Add(VL_BancoDados.ConsultaA.FieldByName('BIN').AsString,
+        VF_Modulo.Add(VL_BancoDados.ConsultaA.FieldByName('BIN').AsString,
           VP_RegModulo.ModuloConfig_ID,
           VL_BancoDados.ConsultaA.FieldByName('TAG_NUMERO').AsString);
         VL_BancoDados.ConsultaA.Next;
@@ -1583,11 +1628,11 @@ begin
           VL_Bin := VP_Mensagem.GetTagAsAstring('0036');         //BIN UNICO
           if VL_Bin <> '' then
           begin
-            VL_ModuloConfID := VF_Bin.RetornaModuloConfId(VL_Bin);
+            VL_ModuloConfID := VF_Modulo.RetornaModuloConfId(VL_Bin);
             if VL_ModuloConfID = -1 then
             begin
               Result :=
-                VF_Bin.Add(VL_Bin, VP_RegModulo.ModuloConfig_ID, VP_RegModulo.Tag);
+                VF_Modulo.Add(VL_Bin, VP_RegModulo.ModuloConfig_ID, VP_RegModulo.Tag);
               if Result <> 0 then
                 Exit;
             end
@@ -1607,7 +1652,7 @@ begin
             VL_Bin := VL_Bins[VL_I];
             if VL_Bin <> '' then
             begin
-              VL_ModuloConfID := VF_Bin.RetornaModuloConfId(VL_Bin);
+              VL_ModuloConfID := VF_Modulo.RetornaModuloConfId(VL_Bin);
               if (VL_ModuloConfID <> VP_RegModulo.ModuloConfig_ID) and (VL_ModuloConfID <> -1) then
               begin
                 Result := 63;
@@ -1624,7 +1669,7 @@ begin
             if VL_Bin <> '' then
             begin
               Result :=
-                VF_Bin.Add(VL_Bin, VP_RegModulo.ModuloConfig_ID, VP_RegModulo.Tag);
+                VF_Modulo.Add(VL_Bin, VP_RegModulo.ModuloConfig_ID, VP_RegModulo.Tag);
               if Result <> 0 then
                 Exit;
             end;
@@ -2078,24 +2123,22 @@ begin
 
 end;
 
-
-
 { TBin }
 
-constructor TBin.Create;
+constructor TModulo.Create;
 begin
   inherited;
   ListaBin := TList.Create;
 end;
 
-destructor TBin.Destroy;
+destructor TModulo.Destroy;
 var
-  VL_Bin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
 begin
   while ListaBin.Count > 0 do
   begin
-    VL_Bin := ListaBin[0];
-    Dispose(VL_Bin);
+    VL_RecModulo := ListaBin[0];
+    Dispose(VL_RecModulo);
     ListaBin.Delete(0);
   end;
 
@@ -2104,9 +2147,9 @@ begin
   inherited Destroy;
 end;
 
-function TBin.Add(VP_IIN: ansistring; VP_ModuloConfID: integer; VP_Tag: string): integer;
+function TModulo.Add(VP_IIN: ansistring; VP_ModuloConfID: integer; VP_Tag: string): integer;
 var
-  VL_Bin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
   VL_ModuloConfID: integer;
 begin
   Result := 0;
@@ -2121,43 +2164,43 @@ begin
     Result := 63;
     Exit;
   end;
-  new(VL_Bin);
-  VL_Bin^.IIN := VP_IIN;
-  VL_Bin^.ModuloTag := VP_Tag;
-  VL_Bin^.ModuloConfID := VP_ModuloConfID;
-  ListaBin.Add(VL_Bin);
+  new(VL_RecModulo);
+  VL_RecModulo^.IIN := VP_IIN;
+  VL_RecModulo^.ModuloTag := VP_Tag;
+  VL_RecModulo^.ModuloConfID := VP_ModuloConfID;
+  ListaBin.Add(VL_RecModulo);
 end;
 
-procedure TBin.Limpar;
+procedure TModulo.Limpar;
 var
-  VL_Bin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
 begin
   while ListaBin.Count > 0 do
   begin
-    VL_Bin := ListaBin[0];
-    Dispose(VL_Bin);
+    VL_RecModulo := ListaBin[0];
+    Dispose(VL_RecModulo);
     ListaBin.Delete(0);
   end;
 
 end;
 
-function TBin.Get(VP_Posicao: integer): TRecBin;
+function TModulo.Get(VP_Posicao: integer): TRecModulo;
 var
-  VL_RecBin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
 begin
-  VL_RecBin := ListaBin.Items[VP_Posicao];
-  Result := VL_RecBin^;
+  VL_RecModulo := ListaBin.Items[VP_Posicao];
+  Result := VL_RecModulo^;
 end;
 
 
-function TBin.Count: integer;
+function TModulo.Count: integer;
 begin
   Result := ListaBin.Count;
 end;
 
-procedure TBin.RemovePorModuloConf(VP_ModuloConfID: integer);
+procedure TModulo.RemovePorModuloConf(VP_ModuloConfID: integer);
 var
-  VL_Bin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
   VL_Continua: boolean;
   VL_I: integer;
 begin
@@ -2174,12 +2217,12 @@ begin
 
     for VL_I := 0 to Self.ListaBin.Count - 1 do
     begin
-      VL_Bin := Self.ListaBin.Items[VL_I];
-      if VL_Bin^.ModuloConfID = VP_ModuloConfID then
+      VL_RecModulo := Self.ListaBin.Items[VL_I];
+      if VL_RecModulo^.ModuloConfID = VP_ModuloConfID then
       begin
         VL_Continua := True;
-        Self.ListaBin.Remove(VL_Bin);
-        Dispose(VL_Bin);
+        Self.ListaBin.Remove(VL_RecModulo);
+        Dispose(VL_RecModulo);
         Break;
       end;
 
@@ -2188,9 +2231,9 @@ begin
   end;
 end;
 
-function TBin.RetornaModuloConfId(VP_IIN: ansistring): integer;
+function TModulo.RetornaModuloConfId(VP_IIN: ansistring): integer;
 var
-  VL_Bin: ^TRecBin;
+  VL_Modulo: ^TRecModulo;
   VL_I: integer;
 begin
   Result := -1;
@@ -2200,19 +2243,19 @@ begin
 
   for VL_I := 0 to ListaBin.Count - 1 do
   begin
-    VL_Bin := ListaBin.Items[VL_I];
-    if VL_Bin^.IIN = VP_IIN then
+    VL_Modulo := ListaBin.Items[VL_I];
+    if VL_Modulo^.IIN = VP_IIN then
     begin
-      Result := VL_Bin^.ModuloConfID;
+      Result := VL_Modulo^.ModuloConfID;
       Exit;
     end;
   end;
 
 end;
 
-function TBin.RetornaBIN(VP_IIN: ansistring): TRecBin;
+function TModulo.RetornaModulo(VP_IIN,VP_Tag: ansistring): TRecModulo;
 var
-  VL_Bin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
   VL_I: integer;
 begin
   Result.ModuloConfID := -1;
@@ -2224,19 +2267,19 @@ begin
 
   for VL_I := 0 to ListaBin.Count - 1 do
   begin
-    VL_Bin := ListaBin.Items[VL_I];
-    if VL_Bin^.IIN = VP_IIN then
+    VL_RecModulo := ListaBin.Items[VL_I];
+    if VL_RecModulo^.IIN = VP_IIN then
     begin
-      Result := VL_Bin^;
+      Result := VL_RecModulo^;
       Exit;
     end;
   end;
 
 end;
 
-function TBin.RetornaBINPorTag(VP_Tag: ansistring): TRecBin;
+function TModulo.RetornaBINPorTag(VP_Tag: ansistring): TRecModulo;
 var
-  VL_Bin: ^TRecBin;
+  VL_RecModulo: ^TRecModulo;
   VL_I: integer;
 begin
   Result.ModuloConfID := -1;
@@ -2248,10 +2291,10 @@ begin
 
   for VL_I := 0 to ListaBin.Count - 1 do
   begin
-    VL_Bin := ListaBin.Items[VL_I];
-    if VL_Bin^.ModuloTag = VP_Tag then
+    VL_RecModulo := ListaBin.Items[VL_I];
+    if VL_RecModulo^.ModuloTag = VP_Tag then
     begin
-      Result := VL_Bin^;
+      Result := VL_RecModulo^;
       Exit;
     end;
   end;
@@ -2278,7 +2321,7 @@ begin
   inherited Destroy;
 end;
 
-function TConciliacao.add(VP_RecBin: TRecBin; VP_Transacao_ID, VP_Dados: string): integer;
+function TConciliacao.add(VP_RecModulo: TRecModulo; VP_Transacao_ID, VP_Dados: string): integer;
 var
   VL_RecConciliacao: ^TRecConciliacao;
   VL_I: integer;
@@ -2286,7 +2329,7 @@ begin
   Result := 0;
 
   new(VL_RecConciliacao);
-  VL_RecConciliacao^.bin := VP_RecBin;
+  VL_RecConciliacao^.modulo := VP_RecModulo;
   VL_RecConciliacao^.transacao_id := VP_Transacao_ID;
   VL_RecConciliacao^.dados := VP_Dados;
   VL_RecConciliacao^.ThConciliacao := nil;
@@ -2335,7 +2378,7 @@ begin
     begin
       VL_RecConciliacao := ListaConciliacao.Items[VL_I];
       VL_RecConciliacao^.ThConciliacao :=
-        TThConciliacao.Create(True, VL_RecConciliacao^.bin, VL_RecConciliacao^.dados, VL_RecConciliacao^.transacao_id, F_ArquivoLog, DNucleo, self.Conexao_ID);
+        TThConciliacao.Create(True, VL_RecConciliacao^.modulo, VL_RecConciliacao^.dados, VL_RecConciliacao^.transacao_id, F_ArquivoLog, DNucleo, self.Conexao_ID);
       VL_RecConciliacao^.ThConciliacao.VF_Transmissao_ID := self.TransmissaoID;
       VL_RecConciliacao^.ThConciliacao.Start;
     end;
@@ -2357,18 +2400,18 @@ begin
           if ((VL_RecConciliacao^.ThConciliacao.VF_Status = ssCriada) or (VL_RecConciliacao^.ThConciliacao.VF_Status = ssAguardandoResposta)) then
           begin
             VL_Mensagem.AddTag(VL_Posicao, '0000',
-              VL_RecConciliacao^.transacao_id + VL_RecConciliacao^.bin.IIN);
+              VL_RecConciliacao^.transacao_id + VL_RecConciliacao^.modulo.IIN);
             VL_Mensagem.AddTag(VL_Posicao, '0036',
-              VL_RecConciliacao^.bin.IIN);
+              VL_RecConciliacao^.modulo.IIN);
             VL_Mensagem.AddTag(VL_Posicao, '004D', '67');
           end
           else
           begin
             VL_Posicao := VL_Posicao + 1;
             VL_Mensagem.AddTag(VL_Posicao, '0000',
-              VL_RecConciliacao^.transacao_id + VL_RecConciliacao^.bin.IIN);
+              VL_RecConciliacao^.transacao_id + VL_RecConciliacao^.modulo.IIN);
             VL_Mensagem.AddTag(VL_Posicao, '0036',
-              VL_RecConciliacao^.bin.IIN);
+              VL_RecConciliacao^.modulo.IIN);
 
             VL_Retorno.Limpar;
             VL_Retorno.CarregaTags(
@@ -2396,8 +2439,8 @@ begin
 
         VL_Posicao := VL_Posicao + 1;
         VL_Mensagem.AddTag(VL_Posicao, '0000',
-          VL_RecConciliacao^.transacao_id + VL_RecConciliacao^.bin.IIN);
-        VL_Mensagem.AddTag(VL_Posicao, '0036', VL_RecConciliacao^.bin.IIN);
+          VL_RecConciliacao^.transacao_id + VL_RecConciliacao^.modulo.IIN);
+        VL_Mensagem.AddTag(VL_Posicao, '0036', VL_RecConciliacao^.modulo.IIN);
 
         VL_Retorno.Limpar;
         VL_Retorno.CarregaTags(VL_RecConciliacao^.ThConciliacao.VF_Retorno);
@@ -2421,7 +2464,7 @@ begin
   end;
 end;
 
-constructor TThConciliacao.Create(VP_Suspenso: boolean; VP_Bin: TRecBin; VP_Dados: string; VP_Transacao_ID: string; VP_ArquivoLog: string; VP_DNucleo: Pointer;
+constructor TThConciliacao.Create(VP_Suspenso: boolean; VP_Modulo: TRecModulo; VP_Dados: string; VP_Transacao_ID: string; VP_ArquivoLog: string; VP_DNucleo: Pointer;
   VP_Conexao_ID: integer; VP_TempoEspera: integer = 60000);
 begin
   inherited Create(VP_Suspenso);
@@ -2432,7 +2475,7 @@ begin
   VF_ArquivoLog := VP_ArquivoLog;
   VF_Dados := VP_Dados;
   VF_Transacao_ID := VP_Transacao_ID;
-  VF_Bin := VP_Bin;
+  VF_Modulo := VP_Modulo;
   VF_Retorno := '';
   VF_Status := ssCriada;
   VF_TempoEspera := VP_TempoEspera;
@@ -2487,7 +2530,7 @@ begin
           if VF_Status = ssCriada then
           begin
             VL_TRegModulo :=
-              DNucleo.ModuloGetModuloConfigID(VF_Bin.ModuloConfID, cnServico);
+              DNucleo.ModuloGetModuloConfigID(VF_Modulo.ModuloConfID, cnServico);
 
             if VL_TRegModulo.ModuloConfig_ID = -1 then
               // modulo da operadora nao carregado
@@ -2516,7 +2559,7 @@ begin
 
             VL_Mensagem.AddComando('008C', 'S');
             // solicita atualizacao da tag
-            VL_Mensagem.AddTag('0036', VF_Bin.IIN); // bin
+            VL_Mensagem.AddTag('0036', VF_Modulo.IIN); // bin
 
             VL_Retorno.Limpar;
 
@@ -3081,7 +3124,7 @@ begin
       V_ListaTarefas := nil;
     end;
     if ((Assigned(VF_DNucleo)) and (VF_ConexaoTipo = cnServico)) then
-      TDNucleo(VF_DNucleo).VF_Bin.RemovePorModuloConf(
+      TDNucleo(VF_DNucleo).VF_Modulo.RemovePorModuloConf(
         TRegModulo(VF_RegModulo^).ModuloConfig_ID);
   except
     on e: Exception do
@@ -3100,7 +3143,7 @@ procedure TDNucleo.DataModuleCreate(Sender: TObject);
 begin
   F_BloqueiaDLL := TMultiReadExclusiveWriteSynchronizer.Create;
   VF_ListaTRegModulo := TList.Create;
-  VF_Bin := TBin.Create;
+  VF_Modulo := TModulo.Create;
   VF_Menu := TMenu.Create;
   VF_MenuOperacional := TMenu.Create;
   VF_DLL := TDLL.Create;
@@ -3115,7 +3158,7 @@ begin
 
     VF_ListaTRegModulo.Free;
     VF_ListaTRegModulo := nil;
-    VF_Bin.Free;
+    VF_Modulo.Free;
     VF_Menu.Free;
     VF_MenuOperacional.Free;
     VF_DLL.Free;
@@ -3771,7 +3814,7 @@ function TDNucleo.comando000A(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
 var
   VL_Chave00F1, VL_Mensagem, VL_Transacao: TMensagem;
   VL_BancoDados: TDBancoDados;
-  VL_RecBin: TRecBin;
+  VL_RecModulo: TRecModulo;
   VL_TempoEmperaComandao: int64;
   VL_String: string;
   VL_Erro: integer;
@@ -3963,13 +4006,11 @@ begin
           Exit;
         end
         else
-        if VL_Transacao.GetTagAsAstring('00D5') = '00E7' then
-          // RETONRO OPCAO DE CARTAO DIGITADO
+        if VL_Transacao.GetTagAsAstring('00D5') = '00E7' then // RETONRO OPCAO DE CARTAO DIGITADO
         begin
           VL_Mensagem.Limpar;
           VL_Mensagem.AddComando('008C', 'S');  // solicita atualizacao da tag
-          VL_Mensagem.AddTag('00D9', VL_Transacao.GetTagAsAstring('0033'));
-          // pan
+          VL_Mensagem.AddTag('00D9', VL_Transacao.GetTagAsAstring('0033')); // pan
           VL_Mensagem.AddTag('0062', '0000' + Copy(VL_Transacao.GetTagAsAstring('0033'), 7, 12));  //pan mascarado
           VL_Mensagem.AddTag('0036', Copy(VL_Transacao.GetTagAsAstring('0033'), 1, 6)); //bin
 
@@ -3980,10 +4021,7 @@ begin
 
         end;
 
-        // mostra menu venda
-        VL_Mensagem.AddComando('0018', 'S');
-        comando0018(VP_Transmissao_ID, VL_Mensagem, VP_Conexao_ID, VP_Terminal_Status, VP_Terminal_ID);
-        Exit;
+
       end;
 
       // tenta mandar a mensagem para o modulo ativo
@@ -3992,8 +4030,7 @@ begin
         // tem identificacao do adquirente então tenta localizar o modulo
       begin
         VL_Mensagem.AddComando('000A', 'S'); // retorno do comando para pdv
-        VL_Mensagem.AddTag('007D', VL_Transacao.TagsAsString);
-        // TRANSACAO
+        VL_Mensagem.AddTag('007D', VL_Transacao.TagsAsString); // TRANSACAO
         VL_Erro := DNucleo.ModuloAddSolicitacaoIdentificacaoAdquirente(VP_Conexao_ID, VP_Transmissao_ID, VL_TempoEmperaComandao, VL_Adquirente_Identificacao, VL_Mensagem, cnCaixa);
 
         if VL_Erro <> 0 then
@@ -4015,8 +4052,8 @@ begin
 
       if (VL_Bin <> '') then // tem bin então tenta localizar o modulo
       begin
-        VL_RecBin := VF_Bin.RetornaBIN(VL_Bin);
-        if VL_RecBin.ModuloConfID = -1 then
+        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,'');
+        if VL_RecModulo.ModuloConfID = -1 then
           //MODULO NAO CARREGADO PARA ESSE BIN
         begin
           VL_Mensagem.AddComando('000A', 'R');  // retorno
@@ -4038,16 +4075,16 @@ begin
           VL_BancoDados.ConsultaA.Close;
           VL_BancoDados.ConsultaA.SQL.Text :=
             'SELECT S_HABILITADO,S_TAG_NUMERO,S_LOJA_CODIGO, S_PDV_CODIGO FROM P_TAG_FUNCAO(' + StrToSql(IntToStr(VP_Terminal_ID)) + ',''MODULO'')' +
-            ' WHERE S_HABILITADO=''T'' AND S_TAG_NUMERO=''' + VL_RecBin.ModuloTag + '''';
+            ' WHERE S_HABILITADO=''T'' AND S_TAG_NUMERO=''' + VL_RecModulo.ModuloTag + '''';
           VL_BancoDados.ConsultaA.Open;
 
           if VL_BancoDados.ConsultaA.FieldByName('S_HABILITADO').AsString <> 'T' then
           begin
             VL_Mensagem.AddComando('000A', 'R'); // retorno
-            VL_Mensagem.AddTag('004D', 79);  // resposta com erro
-            Result := 79;
+            VL_Mensagem.AddTag('004D', 133);  // resposta com erro
+            Result := 133;
 
-            GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '101120231314', 'Mensagem enviada no comando000A', VL_Mensagem.TagsAsString, 0, 2);
+            GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '101120231314', 'Mensagem enviada no comando000A', VL_Mensagem.TagsAsString, 133, 2);
 
             DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VL_Mensagem, VL_Mensagem, VP_Conexao_ID);
             Exit;
@@ -4057,8 +4094,8 @@ begin
           if VL_Transacao.GetTagAsAstring('00F1') = '' then
           begin
             VL_Chave00F1.AddComando('0000', '');
-            VL_Chave00F1.AddTag('00F2', VL_RecBin.ModuloTag); // tag do modulo
-            VL_Chave00F1.AddTag('0036', VL_RecBin.IIN);   // bin
+            VL_Chave00F1.AddTag('00F2', VL_RecModulo.ModuloTag); // tag do modulo
+            VL_Chave00F1.AddTag('0036', VL_RecModulo.IIN);   // bin
             VL_Chave00F1.AddTag('0034', VL_Transacao.GetTagAsAstring('0034'));// id da transacao
             VL_Chave00F1.AddTag('0091', VP_Doc);  // documento(cpf ou cnpj)
             VL_Chave00F1.AddTag('00F9', VL_BancoDados.ConsultaA.FieldByName('S_LOJA_CODIGO').AsString); // codigo da loja
@@ -4082,9 +4119,6 @@ begin
             Exit;
 
           end;
-          // encaminha para o modulo a solicitação
-          // falta fazer as outras verificacoes como
-          // venda parcelada, venda por cartao digitado...
 
 
           VL_Mensagem.AddComando('000A', 'S');   // solicita aprovacao
@@ -4092,7 +4126,7 @@ begin
 
           GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '101120231316', 'Mensagem enviada no comando000A', VL_Mensagem.TagsAsString, 0, 2);
 
-          VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, VL_TempoEmperaComandao, VL_RecBin.ModuloConfID, VL_Mensagem, cnCaixa);
+          VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, VL_TempoEmperaComandao, VL_RecModulo.ModuloConfID, VL_Mensagem, cnCaixa);
 
           if VL_Erro <> 0 then
           begin
@@ -4106,6 +4140,7 @@ begin
             DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VL_Mensagem, VL_Mensagem, VP_Conexao_ID);
             Exit;
           end;
+
           Exit;
         end;
       end
@@ -4121,16 +4156,14 @@ begin
         Exit;
       end;
 
-
       VL_Mensagem.AddComando('000A', 'R'); // retorno
       VL_Mensagem.AddTag('004D', 80);  // retorno com erro
       Result := 80;
 
       GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '101120231319', 'Mensagem enviada no comando000A', VL_Mensagem.TagsAsString, 0, 2);
 
-      DComunicador.ServidorTransmiteSolicitacaoID(DComunicador,
-        VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID,
-        VP_Mensagem, VP_Mensagem, VP_Conexao_ID);
+      DComunicador.ServidorTransmiteSolicitacaoID(DComunicador,VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID,VP_Mensagem, VP_Mensagem, VP_Conexao_ID);
+
     except
       on E: Exception do
         GravaLog(F_ArquivoLog, 0, '000A', 'opentefnucleo', '141120231637', 'Excecao: ' + E.ClassName + '/' + E.Message, '', 1, 1);
@@ -4150,7 +4183,7 @@ var
   VL_BancoDados: TDBancoDados;
   VL_Erro, VL_I: integer;
   VL_Bin: string;
-  VL_RecBin: TRecBin;
+  VL_RecModulo: TRecModulo;
   VL_AContext: TIdContext;
   VL_TConciliacao: TConciliacao;
   VL_DadosSolicitacao, VL_VersaoConciliacao: ansistring;
@@ -4430,10 +4463,9 @@ begin
 
           while not VL_BancoDados.ConsultaA.EOF do
           begin
-            VL_RecBin :=
-              VF_Bin.RetornaBINPorTag(VL_BancoDados.ConsultaA.FieldByName('S_TAG_NUMERO').AsString);
+            VL_RecModulo := VF_Modulo.RetornaBINPorTag(VL_BancoDados.ConsultaA.FieldByName('S_TAG_NUMERO').AsString);
 
-            if VL_RecBin.ModuloConfID = -1 then
+            if VL_RecModulo.ModuloConfID = -1 then
               //MODULO NAO CARREGADO PARA ESSE BIN
             begin
               Result := 79;
@@ -4461,7 +4493,7 @@ begin
             // codigo do comercio para adquirente
 
             Result :=
-              VL_TConciliacao.add(VL_RecBin, VL_Transacao_ID, VL_TagLinha.TagsAsString);
+              VL_TConciliacao.add(VL_RecModulo, VL_Transacao_ID, VL_TagLinha.TagsAsString);
 
             if Result <> 0 then
             begin
@@ -4489,9 +4521,9 @@ begin
         end
         else // enviar para operadora especifica
         begin
-          VL_RecBin := VF_Bin.RetornaBIN(VL_Bin);
+          VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,'');
 
-          if VL_RecBin.ModuloConfID = -1 then
+          if VL_RecModulo.ModuloConfID = -1 then
             //MODULO NAO CARREGADO PARA ESSE BIN
           begin
             Result := 79;
@@ -4514,7 +4546,7 @@ begin
             Exit;
           end;
 
-          if not VL_BancoDados.ConsultaA.Locate('S_TAG_NUMERO', VL_RecBin.ModuloTag, []) then // VERIFICA SE O PDV TEM ACESSO A ESTE MODULO
+          if not VL_BancoDados.ConsultaA.Locate('S_TAG_NUMERO', VL_RecModulo.ModuloTag, []) then // VERIFICA SE O PDV TEM ACESSO A ESTE MODULO
           begin
             Result := 79;
             GravaLog(F_ArquivoLog, 0, '.comando0113', 'opentefnucleo',
@@ -4540,7 +4572,7 @@ begin
             VL_BancoDados.ConsultaA.FieldByName('S_LOJA_CODIGO').AsLargeInt);
           // codigo do comercio para adquirente
 
-          Result := VL_TConciliacao.add(VL_RecBin, VL_Transacao_ID, VL_TagLinha.TagsAsString);
+          Result := VL_TConciliacao.add(VL_RecModulo, VL_Transacao_ID, VL_TagLinha.TagsAsString);
 
           if Result <> 0 then
           begin
@@ -4600,7 +4632,7 @@ function TDNucleo.comando00F4(VP_Transmissao_ID: string; VP_Mensagem: TMensagem;
 var
   VL_Chave00F1, VL_Transacao, VL_Mensagem: TMensagem;
   VL_BancoDados: TDBancoDados;
-  VL_RecBin: TRecBin;
+  VL_RecModulo: TRecModulo;
   VL_TempoEmperaComandao: int64;
   VL_String: string;
   VL_ChaveTransacao: string;
@@ -4756,9 +4788,9 @@ begin
           Exit;
         end;
 
-        VL_RecBin := VF_Bin.RetornaBIN(VL_Bin); // carrega dados do bin
+        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,''); // carrega dados do bin
 
-        if VL_RecBin.ModuloConfID = -1 then  //MODULO NAO CARREGADO PARA ESSE BIN
+        if VL_RecModulo.ModuloConfID = -1 then  //MODULO NAO CARREGADO PARA ESSE BIN
         begin
           VL_Mensagem.AddComando('00F4', 'R'); // retorno
           VL_Mensagem.AddTag('004D', 79);  // retorno com erro
@@ -4783,9 +4815,7 @@ begin
           '101120231326', 'Mensagem enviada no comando00F4',
           VL_Mensagem.TagsAsString, 0, 2);
 
-        DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID,
-          VL_TempoEmperaComandao,
-          VL_RecBin.ModuloConfID, VL_Mensagem, cnCaixa);
+        DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID,VL_TempoEmperaComandao,VL_RecModulo.ModuloConfID, VL_Mensagem, cnCaixa);
         Exit;
 
       end;
@@ -4935,8 +4965,8 @@ begin
 
       if (VL_Bin <> '') then // tem bin então tenta localizar o modulo
       begin
-        VL_RecBin := VF_Bin.RetornaBIN(VL_Bin);
-        if VL_RecBin.ModuloConfID = -1 then
+        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,'');
+        if VL_RecModulo.ModuloConfID = -1 then
           //MODULO NAO CARREGADO PARA ESSE BIN
         begin
           VL_Mensagem.AddComando('00F4', 'R'); // retorno
@@ -4957,7 +4987,7 @@ begin
           VL_BancoDados.ConsultaA.Close;
           VL_BancoDados.ConsultaA.SQL.Text :=
             'SELECT S_HABILITADO,S_TAG_NUMERO,S_LOJA_CODIGO, S_PDV_CODIGO FROM P_TAG_FUNCAO(' + StrToSql(IntToStr(VP_Terminal_ID)) + ',''MODULO'')' +
-            ' WHERE S_HABILITADO=''T'' AND S_TAG_NUMERO=''' + VL_RecBin.ModuloTag + '''';
+            ' WHERE S_HABILITADO=''T'' AND S_TAG_NUMERO=''' + VL_RecModulo.ModuloTag + '''';
 
           VL_BancoDados.ConsultaA.Open;
 
@@ -4982,9 +5012,9 @@ begin
           begin
 
             VL_Chave00F1.AddComando('0000', '');
-            VL_Chave00F1.AddTag('00F2', VL_RecBin.ModuloTag);
+            VL_Chave00F1.AddTag('00F2', VL_RecModulo.ModuloTag);
             // tag do modulo
-            VL_Chave00F1.AddTag('0036', VL_RecBin.IIN);   // bin
+            VL_Chave00F1.AddTag('0036', VL_RecModulo.IIN);   // bin
             VL_Chave00F1.AddTag('0034',
               VL_Transacao.GetTagAsAstring('0034'));
             // id da transacao
@@ -5028,8 +5058,7 @@ begin
             VL_Mensagem.TagsAsString, 0, 2);
 
           // TRANSACAO
-          VL_Erro :=
-            DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, VL_TempoEmperaComandao, VL_RecBin.ModuloConfID, VL_Mensagem, cnCaixa);
+          VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, VL_TempoEmperaComandao, VL_RecModulo.ModuloConfID, VL_Mensagem, cnCaixa);
 
           if VL_Erro <> 0 then
           begin
@@ -5394,7 +5423,7 @@ var
   VL_Mensagem: TMensagem;
   VL_Erro: integer;
   VL_Adquirente_Identificacao: string;
-  VL_Bin: TRecBin;
+  VL_RecModulo: TRecModulo;
   VL_RegModulo: TRegModulo;
 begin
   Result := 0;
@@ -5422,8 +5451,8 @@ begin
     if (VL_Mensagem.GetTagAsAstring('0036') <> '') then
       // tem bin então tenta localizar o modulo
     begin
-      VL_Bin := VF_Bin.RetornaBIN(VL_Mensagem.GetTagAsAstring('0036'));
-      if VL_Bin.ModuloConfID = -1 then
+      VL_RecModulo := VF_Modulo.RetornaModulo(VL_Mensagem.GetTagAsAstring('0036'),'');
+      if VL_RecModulo.ModuloConfID = -1 then
         //MODULO NAO CARREGADO PARA ESSE BIN
       begin
         VL_Mensagem.AddComando('0111', 'R');  // retorno
@@ -5449,7 +5478,7 @@ begin
           '101120231412', 'Mensagem enviada para o caixa no comando0111',
           VL_Mensagem.TagsAsString, 0, 2);
 
-        VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, 30000, vl_bin.ModuloConfID, VP_Mensagem, cnCaixa);
+        VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, 30000, VL_RecModulo.ModuloConfID, VP_Mensagem, cnCaixa);
       end
       else    // tipo servico
       begin
@@ -5457,7 +5486,7 @@ begin
           '101120231413', 'Mensagem enviada para o servico no comando0111',
           VL_Mensagem.TagsAsString, 0, 2);
 
-        VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, 30000, vl_bin.ModuloConfID, VP_Mensagem, cnServico);
+        VL_Erro := DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, 30000, VL_RecModulo.ModuloConfID, VP_Mensagem, cnServico);
       end;
 
       if VL_Erro <> 0 then

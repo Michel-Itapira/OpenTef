@@ -104,15 +104,22 @@ begin
             VL_Filtro := VL_Filtro + ' and ADQUIRENTE_DESCRICAO=(''*' + EAdquirente.Text + '*'')';
 
     if CKModuloAtivo.Checked then
-    BEGIN
+    begin
         if VL_Filtro = '' then
             VL_Filtro := 'HABILITADO=''T'''
         else
             VL_Filtro := VL_Filtro + ' and HABILITADO=''T''';
+    end;
+
+    if F_ModuloID>0 then
+       if VL_Filtro = '' then
+          VL_Filtro := 'ID='+IntToStr(F_ModuloID)
+       else
+          VL_Filtro := VL_Filtro + ' and ID='+IntToStr(F_ModuloID);
 
     MDPesquisaModulo.Filter := VL_Filtro;
     MDPesquisaModulo.Filtered := True;
-    end;
+
 
 
 

@@ -15,7 +15,7 @@ uses
   Math,
   typinfo,
 
-  {$IFNDEF PINPAD_LIB}
+  {$IF not(defined(PINPAD_LIB)) AND not(defined(MODULO_VBI)) AND not(defined(VBI_LIB))}
   ZDataset,
   ZConnection,
   DB,
@@ -89,6 +89,7 @@ type
     function AddTag(VP_Tag, VP_Dados: string): integer;
     function AddTag(VP_Tag: string; VP_Dados: integer): integer;
     function AddTag(VP_Posicao: integer; VP_Tag, VP_Dados: string): integer;
+    function DeleteTag(VP_Tag: string): integer;
     procedure Limpar;
     constructor Create;
   end;
@@ -234,7 +235,7 @@ type
     function objetoGet(VP_ID: integer): Pointer;
   end;
 
-{$IFNDEF PINPAD_LIB}
+  {$IF not(defined(PINPAD_LIB)) AND not(defined(MODULO_VBI)) AND not(defined(VBI_LIB))}
 procedure StrToRxMemData(VP_Dados: string; var VO_MemDataSet: TRxMemoryData);
 function RxMemDataToStr(VO_MemDataSet: TRxMemoryData): string;
 function ZQueryToStrRxMemData(VO_ZQuery: TZQuery): string;
@@ -249,6 +250,7 @@ procedure CriarChaveTerminal(VP_TipoChave: TTipoChave; VP_ValorChave: string; va
 {$IF DEFINED(OPEN_TEF) OR DEFINED(TEF_LIB) OR DEFINED(com_lib) or DEFINED(pinpad_lib) OR  DEFINED(MCOM)}
 procedure GravaLog(VP_Arquivo: string; VP_Modulo_ID: integer; VP_Tag_Comando, VP_Unit, VP_Linha, VP_Ocorrencia, VP_Tag: string; VP_CodigoErro: integer; VP_NivelLog: integer);
 function versao(var VO_Dados: PChar): integer; cdecl;
+function versaoAsString(): string;
 {$ENDIF }
 function CalculaDigito(Texto: string): string;
 function PermissaoToStr(VP_Permissao: TPermissao): string;
@@ -335,7 +337,7 @@ const
 
 implementation
 
-{$IFNDEF PINPAD_LIB}
+{$IF not(defined(PINPAD_LIB)) AND not(defined(MODULO_VBI)) AND not(defined(VBI_LIB))}
 
 function GerarQRCodeAsString(QrCode: string): string;
 var
@@ -1173,6 +1175,16 @@ begin
       130: VL_String := 'Ponteiro do com informado está nulo';
       131: VL_String := 'A biblioteca Tef já foi finalizada';
       132: VL_String := 'A biblioteca Com já foi finalizada';
+      133: VL_String := 'PDV não habilitado para essa operadora';
+      134: VL_String := 'Essa conexão não permite realizar venda';
+      135: VL_String := 'Host do tef informado no cadastro não é válido';
+      136: VL_String := 'Porta do tef informado no cadastro não é válido';
+      137: VL_String := 'Estabelecimento do tef informado no cadastro não é válido';
+      138: VL_String := 'Loja do tef informado no cadastro não é válido';
+      139: VL_String := 'Terminal do informado no cadastro tef não é válido';
+      140: VL_String := 'Aplicação do informado no cadastro tef não é válido';
+      141: VL_String := 'vbi_lib não carregado';
+      142: VL_String := 'Ponteiro do vbi informado está nulo';
       else
       begin
         Result := 1;
@@ -1637,6 +1649,12 @@ begin
     Result := 1;
   end;
 
+end;
+
+function versaoAsString(): string;
+begin
+    Result := '';
+    Result := IntToStr(C_Versao[0]) + '.' + IntToStr(C_Versao[1]) + '.' + IntToStr(C_Versao[2]);
 end;
 
 {$ENDIF}
@@ -2257,6 +2275,22 @@ function TMensagem.AddTag(VP_Posicao: integer; VP_Tag, VP_Dados: string): intege
 begin
   Result := 0;
   AddTag(Formata(IntToStr(VP_Posicao), '0', 10, False) + VP_Tag, VP_Dados);
+end;
+
+function TMensagem.DeleteTag(VP_Tag: string): integer;
+var
+  VL_I: integer;
+begin
+  Result := 29;
+
+  for VL_I := 0 to length(fTags) - 1 do
+  begin
+    if fTags[VL_I].Tag = VP_Tag then
+    begin
+      Delete(fTags,VL_I,1);
+      Exit;
+    end;
+  end;
 end;
 
 procedure TMensagem.Limpar;

@@ -62,6 +62,7 @@ type
     Button1: TButton;
     BFinalizarTef: TButton;
     Button2: TButton;
+    Button3: TButton;
     BVenda: TButton;
     cbxAmbienteTeste: TCheckBox;
     CSalvarCSV: TCheckBox;
@@ -165,7 +166,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Label20Click(Sender: TObject);
-    procedure MontarMenu(VP_Mensagem: Pointer);
+    function MontarMenu(VP_Mensagem: Pointer):String;
     procedure RServidorLocalChange(Sender: TObject);
     procedure RServidorOficialChange(Sender: TObject);
   private
@@ -497,7 +498,9 @@ begin
     if VL_Comando = '0018' then //Veio pedido de mostrar menu de venda
     begin
       // monta o menu e aguarda a escolha pelo operador
-      F_Principal.MontarMenu(VL_Mensagem);
+      VL_String:= F_Principal.MontarMenu(VL_Mensagem);
+      VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+      StrPCopy(VO_DadosSaida, VL_String);
       exit;
     end;
 
@@ -1099,7 +1102,6 @@ begin
 
   VL_MenuVenda.ShowModal;
 
-  {01/07/2024 17:31}
   VO_Botao := StrAlloc(Length(VL_MenuVenda.V_Botao) + 1);
   StrPCopy(VO_Botao, VL_MenuVenda.V_Botao);
 
@@ -1138,7 +1140,7 @@ begin
 
 end;
 
-procedure TF_Principal.MontarMenu(VP_Mensagem: Pointer);
+function TF_Principal.MontarMenu(VP_Mensagem: Pointer):string;
 var
   VL_btn: TMButton;
   VL_I: integer;
@@ -1189,10 +1191,10 @@ begin
       F_MenuVenda.Height := F_MenuVenda.Height + 40;
     end;
   end;
-
   F_MenuVenda.Height := F_MenuVenda.Height + 40;
   F_MenuVenda.Position := poDesktopCenter;
   F_MenuVenda.ShowModal;
+  Result:=F_MenuVenda.V_Botao;
   F_MenuVenda.Free;
 
 end;
@@ -1466,7 +1468,19 @@ begin
 end;
 
 procedure TF_Principal.Button3Click(Sender: TObject);
+var
+VL_Retorno: PChar;
+VL_Mensagem:Pointer;
 begin
+  VL_Mensagem:=nil;
+  VL_Retorno:=nil;
+  F_MensagemCreate(VL_Mensagem);
+  F_MensagemAddComando(VL_Mensagem,Pchar('1001'),Pchar('teste'));
+  F_MensagemComandoDados(VL_Mensagem,VL_Retorno);
+  Caption:=VL_Retorno;
+  F_MensagemFree(VL_Mensagem);
+  F_MensagemDispose(VL_Retorno);
+
 end;
 
 

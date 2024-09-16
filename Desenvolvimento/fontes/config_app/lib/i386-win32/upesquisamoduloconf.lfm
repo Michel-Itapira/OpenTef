@@ -11,7 +11,6 @@ object FPesquisaModuloConf: TFPesquisaModuloConf
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object pnlBase: TPanel
     Left = 0
     Height = 656
@@ -106,7 +105,7 @@ object FPesquisaModuloConf: TFPesquisaModuloConf
         Left = 324
         Height = 19
         Top = 107
-        Width = 208
+        Width = 206
         Caption = 'Filtrar apenas Módulos Habilitados'
         Font.Style = [fsBold]
         ParentFont = False

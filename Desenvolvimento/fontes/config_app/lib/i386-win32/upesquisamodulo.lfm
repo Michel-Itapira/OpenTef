@@ -10,7 +10,6 @@ object FPesquisaModulo: TFPesquisaModulo
   ClientWidth = 576
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.2.0'
   object pnlBase: TPanel
     Left = 0
     Height = 593

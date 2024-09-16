@@ -703,7 +703,7 @@ object FModuloConfig: TFModuloConfig
       Top = 60
       Width = 93
       ReadOnly = True
-      TabOrder = 0
+      TabOrder = 12
       Text = 'Edit1'
     end
     object EDescricao: TEdit
@@ -712,7 +712,7 @@ object FModuloConfig: TFModuloConfig
       Top = 60
       Width = 340
       CharCase = ecUppercase
-      TabOrder = 2
+      TabOrder = 1
       Text = 'EDIT2'
     end
     object LDescricao: TLabel
@@ -751,7 +751,7 @@ object FModuloConfig: TFModuloConfig
       Top = 100
       Width = 244
       CharCase = ecUppercase
-      TabOrder = 1
+      TabOrder = 2
       Text = 'EDIT4'
     end
     object BGeraChave: TSpeedButton
@@ -810,7 +810,7 @@ object FModuloConfig: TFModuloConfig
         'TABPDVECHAVE'
       )
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 6
     end
     object LPortaServico: TLabel
       Left = 265
@@ -830,14 +830,14 @@ object FModuloConfig: TFModuloConfig
       Top = 100
       Width = 187
       CharCase = ecUppercase
-      TabOrder = 4
+      TabOrder = 3
       Text = 'EDIT1'
     end
     object BFuncaoModuloConfig: TBitBtn
       Left = 481
       Height = 80
       Top = 152
-      Width = 258
+      Width = 276
       Caption = 'Função Módulo Configuração'
       Font.Style = [fsBold]
       NumGlyphs = 2
@@ -846,7 +846,7 @@ object FModuloConfig: TFModuloConfig
       ImageWidth = 22
       OnClick = BFuncaoModuloConfigClick
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 9
     end
     object LAdquirente: TLabel
       Left = 11
@@ -863,7 +863,9 @@ object FModuloConfig: TFModuloConfig
       Height = 23
       Top = 22
       Width = 93
-      TabOrder = 6
+      NumbersOnly = True
+      ReadOnly = True
+      TabOrder = 10
       Text = 'EAdquirenteID'
     end
     object EAdquirente: TEdit
@@ -871,12 +873,14 @@ object FModuloConfig: TFModuloConfig
       Height = 23
       Top = 22
       Width = 310
-      TabOrder = 7
+      NumbersOnly = True
+      ReadOnly = True
+      TabOrder = 11
       Text = 'EAdquirente'
     end
     object BPesquisaAdquirente: TBitBtn
       Left = 422
-      Height = 26
+      Height = 25
       Top = 21
       Width = 30
       Font.Style = [fsBold]
@@ -921,7 +925,7 @@ object FModuloConfig: TFModuloConfig
       ImageWidth = 16
       OnClick = BPesquisaAdquirenteClick
       ParentFont = False
-      TabOrder = 8
+      TabOrder = 0
     end
     object LHostCaixa: TLabel
       Left = 11
@@ -939,7 +943,7 @@ object FModuloConfig: TFModuloConfig
       Top = 140
       Width = 244
       CharCase = ecUppercase
-      TabOrder = 9
+      TabOrder = 4
       Text = 'EDIT4'
     end
     object LPortaCaixa: TLabel
@@ -960,32 +964,32 @@ object FModuloConfig: TFModuloConfig
       Top = 140
       Width = 187
       CharCase = ecUppercase
-      TabOrder = 10
+      TabOrder = 5
       Text = 'EDIT1'
     end
     object GParametro: TGroupBox
       Left = 483
       Height = 114
       Top = 22
-      Width = 256
+      Width = 274
       Caption = 'Parâmetros da Configuração do Módulo'
       ClientHeight = 94
-      ClientWidth = 252
+      ClientWidth = 270
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 11
+      TabOrder = 8
       object CKBin: TCheckBox
         Left = 10
         Height = 19
-        Top = 59
+        Top = 71
         Width = 220
         Caption = 'Bin Estático Configuração do Módulo'
-        TabOrder = 0
+        TabOrder = 3
       end
       object CKMenu: TCheckBox
         Left = 10
         Height = 19
-        Top = 34
+        Top = 41
         Width = 96
         Caption = 'Menu Estático'
         TabOrder = 1
@@ -996,18 +1000,18 @@ object FModuloConfig: TFModuloConfig
         Top = 10
         Width = 203
         Caption = 'Habilitar Configuração do Módulo'
-        TabOrder = 2
+        TabOrder = 0
       end
       object CKMenuOp: TCheckBox
-        Left = 116
+        Left = 114
         Height = 19
         Hint = 'Menu Estático Operacional'
-        Top = 34
-        Width = 131
-        Caption = 'Menu E. Operacional'
+        Top = 41
+        Width = 149
+        Caption = 'Menu Est. (Operacional)'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 3
+        TabOrder = 2
       end
     end
     object LIdentificador: TLabel
@@ -1030,7 +1034,7 @@ object FModuloConfig: TFModuloConfig
         'TABPDVECHAVE'
       )
       ParentFont = False
-      TabOrder = 12
+      TabOrder = 7
     end
   end
   object PagePrincipal: TPageControl
@@ -1166,7 +1170,7 @@ object FModuloConfig: TFModuloConfig
         DataSource = DSBin
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
         ReadOnly = True
-        TabOrder = 1
+        TabOrder = 3
       end
       object TabBinBAdicionar: TBitBtn
         Left = 272
@@ -1259,7 +1263,7 @@ object FModuloConfig: TFModuloConfig
         ImageWidth = 22
         OnClick = TabBinBAdicionarClick
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 1
       end
       object TabBinBExcluir: TBitBtn
         Left = 376
@@ -1351,7 +1355,7 @@ object FModuloConfig: TFModuloConfig
         ImageWidth = 22
         OnClick = TabBinBExcluirClick
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 2
       end
     end
     object TabConfigFuncao: TTabSheet
@@ -1771,6 +1775,7 @@ object FModuloConfig: TFModuloConfig
   end
   object DSModuloConfFuncao: TDataSource
     DataSet = MDModuloConfFuncao
+    OnDataChange = DSModuloConfFuncaoDataChange
     Left = 1047
     Top = 376
   end

@@ -407,6 +407,7 @@
         <Filename Value="upesquisamodulo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPesquisaModulo"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>

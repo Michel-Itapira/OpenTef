@@ -82,18 +82,15 @@ begin
         4: F_TagTipo := 'PINPAD_FUNC';
         5: F_TagTipo := 'MODULO';
         else
-            if F_TagTipo = '' then
-                VL_Filtro := '';
+          begin
+              F_TagTipo :='NDF';
+              VL_Filtro := '';
+          end;
     end;
     if ((F_TagTipo = '') or (F_TagTipo = 'NDF')) then
         VL_Filtro := ''
     else
         VL_Filtro := 'TAG_TIPO=(''*' + F_TagTipo + '*'')';
-
-    if MDTags.Active then
-        MDTags.EmptyTable;
-    StrToRxMemData(F_Tabela, MDTags);
-    MDTags.Open;
 
     if length(ETag.Text) > 0 then
         if VL_Filtro = '' then
@@ -105,6 +102,7 @@ begin
             VL_Filtro := 'DEFINICAO=(''*' + EDefinicao.Text + '*'')'
         else
             VL_Filtro := VL_Filtro + ' and DEFINICAO=(''*' + EDefinicao.Text + '*'')';
+
     MDTags.Filter := VL_Filtro;
     MDTags.Filtered := True;
 end;
@@ -128,6 +126,7 @@ begin
     LimpaTela;
     F_Carregado := False;
     vl_tipo := StrToTipoTag(F_TagTipo);
+
     case VL_TIPO of
         Ord(ttNDF): ETipoFuncao.ItemIndex := 0;
         Ord(ttCOMANDO): ETipoFuncao.ItemIndex := 1;
@@ -135,9 +134,18 @@ begin
         Ord(ttMENU_OPERACIONAL): ETipoFuncao.ItemIndex := 3;
         Ord(ttPINPAD_FUNC): ETipoFuncao.ItemIndex := 4;
         Ord(ttMODULO): ETipoFuncao.ItemIndex := 5;
-    ELSE
+    else
         ETipoFuncao.ItemIndex := 0;
     end;
+
+    if MDTags.Active then
+        MDTags.EmptyTable;
+
+    StrToRxMemData(F_Tabela, MDTags);
+    MDTags.Open;
+
+    BPesquisarClick(BPesquisar);
+
 end;
 
 procedure TFTags.MDTagsFilterRecord(DataSet: TDataSet; var Accept: Boolean);

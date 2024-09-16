@@ -10,7 +10,6 @@ object F_Principal: TF_Principal
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '3.4.0.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 602
@@ -1012,6 +1011,15 @@ object F_Principal: TF_Principal
         Caption = 'Servidor Local'
         TabOrder = 7
         OnChange = RServidorLocalChange
+      end
+      object Button3: TButton
+        Left = 456
+        Height = 25
+        Top = 488
+        Width = 75
+        Caption = 'Button3'
+        TabOrder = 8
+        OnClick = Button3Click
       end
     end
     object TabSheet3: TTabSheet

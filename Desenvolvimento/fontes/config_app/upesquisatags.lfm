@@ -10,7 +10,6 @@ object FTags: TFTags
   ClientWidth = 484
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.2.4.0'
   object pnlBase: TPanel
     Left = 0
     Height = 598

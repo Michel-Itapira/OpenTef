@@ -947,10 +947,10 @@ object FCadPdv: TFCadPdv
     Height = 284
     Top = 318
     Width = 1153
-    ActivePage = TabPdvModulo
+    ActivePage = TabPdvFuncao
     Align = alClient
     BorderSpacing.Around = 5
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     object TabPdvModulo: TTabSheet
       Caption = 'Módulo do Pdv'
@@ -1390,6 +1390,7 @@ object FCadPdv: TFCadPdv
           'TODOS'
           'COMANDO'
           'MENU_PDV'
+          'MENU_PDV_011C'
           'MENU_OPERACIONAL'
           'PINPAD_FUNC'
         )

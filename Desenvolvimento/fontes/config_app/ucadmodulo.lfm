@@ -587,6 +587,7 @@ object FCadModulo: TFCadModulo
       Height = 23
       Top = 33
       Width = 54
+      Enabled = False
       TabOrder = 2
       Text = 'ETagID'
     end
@@ -595,6 +596,7 @@ object FCadModulo: TFCadModulo
       Height = 23
       Top = 33
       Width = 257
+      Enabled = False
       TabOrder = 3
       Text = 'ETag'
     end
@@ -1067,7 +1069,7 @@ object FCadModulo: TFCadModulo
   end
   object DSModuloFunc: TDataSource
     DataSet = MDModuloFunc
-    Left = 83
+    Left = 216
     Top = 232
   end
   object MDTags: TRxMemoryData

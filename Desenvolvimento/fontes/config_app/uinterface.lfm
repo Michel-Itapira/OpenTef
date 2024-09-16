@@ -2,13 +2,12 @@ object FInterface: TFInterface
   Left = -8
   Height = 1100
   Top = -8
-  Width = 1073
+  Width = 1153
   Caption = 'Configurador Open-Tef'
   ClientHeight = 1061
-  ClientWidth = 1073
+  ClientWidth = 1153
   FormStyle = fsMDIForm
   Menu = MMenu
-  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -18,11 +17,11 @@ object FInterface: TFInterface
     Left = 0
     Height = 26
     Top = 1035
-    Width = 1073
+    Width = 1153
     Align = alBottom
     BevelInner = bvLowered
     ClientHeight = 26
-    ClientWidth = 1073
+    ClientWidth = 1153
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
@@ -30,19 +29,20 @@ object FInterface: TFInterface
       Left = 2
       Height = 19
       Top = 5
-      Width = 853
+      Width = 870
       Align = alLeft
       Alignment = taRightJustify
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Top = 3
+      BorderSpacing.Right = 2
       Caption = 'Status de Conexão:  '
       ParentColor = False
     end
     object EStatus: TLabel
-      Left = 984
+      Left = 1003
       Height = 19
       Top = 5
-      Width = 87
+      Width = 148
       Align = alClient
       Alignment = taCenter
       BorderSpacing.Top = 3
@@ -53,13 +53,14 @@ object FInterface: TFInterface
       ParentFont = False
     end
     object LUsuario: TLabel
-      Left = 857
+      Left = 874
       Height = 19
       Top = 5
       Width = 127
       Align = alLeft
       BorderSpacing.Left = 2
       BorderSpacing.Top = 3
+      BorderSpacing.Right = 2
       Caption = 'Usuário: Administrador'
       ParentColor = False
     end
@@ -70,7 +71,6 @@ object FInterface: TFInterface
     Top = 56
     object MCad: TMenuItem
       Caption = 'Cadastros'
-      OnClick = MCadClick
       object MCadLojaMult: TMenuItem
         Caption = 'Lojas / Mult-lojas'
         object MCadLoja: TMenuItem

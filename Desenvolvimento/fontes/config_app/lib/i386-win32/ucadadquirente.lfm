@@ -595,7 +595,7 @@ object FCadAdquirente: TFCadAdquirente
         ''
       )
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 5
     end
     object LTag: TLabel
       Left = 455
@@ -612,6 +612,7 @@ object FCadAdquirente: TFCadAdquirente
       Height = 23
       Top = 32
       Width = 54
+      Enabled = False
       TabOrder = 3
       Text = 'ETagID'
     end
@@ -620,6 +621,7 @@ object FCadAdquirente: TFCadAdquirente
       Height = 23
       Top = 32
       Width = 219
+      Enabled = False
       TabOrder = 4
       Text = 'ETag'
     end
@@ -670,7 +672,7 @@ object FCadAdquirente: TFCadAdquirente
       ImageWidth = 16
       OnClick = BPesquisaTagClick
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 2
     end
   end
   object MDAdquirente: TRxMemoryData

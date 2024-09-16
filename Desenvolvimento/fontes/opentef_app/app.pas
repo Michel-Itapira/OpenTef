@@ -137,20 +137,20 @@ end;
 procedure TFApp.BBinClick(Sender: TObject);
 var
   VL_I: integer;
-  VL_RecBin: TRecBin;
+  VL_RecModulo: TRecModulo;
 begin
   MBIN.Lines.Clear;
 
   if not Assigned(DNucleo) then
     Exit;
 
-  if DNucleo.VF_Bin.Count = 0 then
+  if DNucleo.VF_Modulo.Count = 0 then
     Exit;
 
-  for VL_I := 0 to DNucleo.VF_Bin.Count - 1 do
+  for VL_I := 0 to DNucleo.VF_Modulo.Count - 1 do
   begin
-    VL_RecBin := DNucleo.VF_Bin.Get(VL_I);
-    MBIN.Lines.Add('BIN:' + VL_RecBin.IIN + ' ModuloConf_ID:' + IntToStr(VL_RecBin.ModuloConfID));
+    VL_RecModulo := DNucleo.VF_Modulo.Get(VL_I);
+    MBIN.Lines.Add('BIN:' + VL_RecModulo.IIN + ' ModuloConf_ID:' + IntToStr(VL_RecModulo.ModuloConfID));
   end;
 
 end;

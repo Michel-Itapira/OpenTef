@@ -98,6 +98,7 @@ type
     procedure BPesquisaAdquirenteClick(Sender: TObject);
     procedure BPesquisarClick(Sender: TObject);
     procedure BVinculoClick(Sender: TObject);
+    procedure DSModuloConfFuncaoDataChange(Sender: TObject; Field: TField);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure MDAdquirenteFilterRecord(DataSet: TDataSet; var Accept: boolean);
@@ -139,7 +140,6 @@ begin
   V_ModuloID := 0;
   Width := 773;
   Height := 635;
-
 end;
 
 procedure TFModuloConfig.BVinculoClick(Sender: TObject);
@@ -154,6 +154,12 @@ begin
     vincular(True)
   else
     vincular(False);
+end;
+
+procedure TFModuloConfig.DSModuloConfFuncaoDataChange(Sender: TObject;
+  Field: TField);
+begin
+
 end;
 
 procedure TFModuloConfig.BPesquisaAdquirenteClick(Sender: TObject);
@@ -270,26 +276,19 @@ var
   VL_Codigo: integer;
   VL_ID: int64;
   VL_Retorno, VL_Tag: string;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
+
 begin
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
 
-  VL_Mensagem := TMensagem.Create;
   try
-    F_OpenTefStatus(F_Com, VL_Status);
+    VL_Mensagem := TMensagem.Create;
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FInterface.Desconecta;
-      Exit;
-    end;
+    if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
 
     if MDModuloConfig.Active = False then
     begin
@@ -333,11 +332,7 @@ begin
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(VL_Codigo));
 
         if MDModuloConfig.Locate('ID', 0, []) then
           MDModuloConfig.Delete;
@@ -354,12 +349,7 @@ begin
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
 
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(StrToInt(VL_Tag)));
 
           if MDModuloConfig.Locate('ID', 0, []) then
             MDModuloConfig.Delete;
@@ -378,12 +368,7 @@ begin
           VL_Mensagem.GetTag('004D', VL_Tag);
           if vl_tag <> '0' then
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
 
             if MDModuloConfig.Locate('ID', 0, []) then
               MDModuloConfig.Delete;
@@ -418,25 +403,19 @@ var
   VL_Mensagem: TMensagem;
   VL_Retorno, VL_Tag: string;
   VL_ID: int64;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
+
 begin
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  VL_Mensagem := TMensagem.Create;
-  try
-    F_OpenTefStatus(F_Com, VL_Status);
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FINTERFACE.Desconecta;
-      Exit;
-    end;
+  try
+    VL_Mensagem := TMensagem.Create;
+
+    if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
 
     if MDModuloConfig.Active = False then
     begin
@@ -454,13 +433,7 @@ begin
 
     if VL_Codigo <> 0 then
     begin
-      mensagemerro(VL_Codigo, VL_RDescricaoErro);
-
-      VL_DescricaoErro := VL_RDescricaoErro;
-      F_MensagemDispose(VL_RDescricaoErro);
-
-      ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
-
+      ShowMessage(Erro(VL_Codigo));
       FINTERFACE.Desconecta;
       exit;
     end;
@@ -472,12 +445,7 @@ begin
       '0026':
       begin
         VL_Mensagem.GetTag('0026', VL_ID);
-        mensagemerro(VL_ID, VL_RDescricaoErro);
-
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_DescricaoErro);
+        ShowMessage(ERRO(VL_ID));
         Exit;
       end;
       '00BA':
@@ -492,12 +460,7 @@ begin
         if vl_tag <> '0' then
         begin
           VL_Mensagem.GetTag('004D', VL_ID);
-          mensagemerro(VL_ID, VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_DescricaoErro);
+          ShowMessage(ERRO(VL_ID));
           Exit;
         end;
         VL_Mensagem.GetTag('007B', VL_ID);
@@ -518,8 +481,6 @@ end;
 procedure TFModuloConfig.BLimparClick(Sender: TObject);
 begin
   LimpaTela;
-  if MDBin.RecordCount > 0 then
-    MDBIN.EmptyTable;
 end;
 
 procedure TFModuloConfig.BModificarClick(Sender: TObject);
@@ -527,26 +488,18 @@ var
   VL_Status, VL_Codigo: integer;
   VL_Retorno, VL_Tag: string;
   VL_Mensagem: TMensagem;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
+  VL_Mensagem := nil;
   VL_Status := 0;
   VL_Codigo := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
 
-  VL_Mensagem := TMensagem.Create;
   try
-    F_OpenTefStatus(F_Com, VL_Status);
+    VL_Mensagem := TMensagem.Create;
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FINTERFACE.Desconecta;
-      Exit;
-    end;
+    if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
 
     if MDModuloConfig.Active = False then
     begin
@@ -554,9 +507,27 @@ begin
       Exit;
     end;
 
-    if ((EID.Text = '') or (EID.Text = '0')) then
+    if ((Length(EID.Text)=0) or (EID.Text = '0')) then
     begin
       ShowMessage('Operação cancelada, selecione uma configuração para alterar');
+      exit;
+    end;
+
+    if LENGTH(EAdquirenteID.Text) = 0 then
+    begin
+      ShowMessage(LAdquirente.Caption + ' é um campo obrigatório,não pode ser vazio para a alteração');
+      exit;
+    end;
+
+    if LENGTH(EIdentificador.Text) = 0 then
+    begin
+      ShowMessage(LIdentificador.Caption + ' é um campo obrigatório,não pode ser vazio para a alteração');
+      exit;
+    end;
+
+    if LENGTH(EChave.Text) = 0 then
+    begin
+      ShowMessage(LChave.Caption + ' é um campo obrigatório,não pode ser vazio para a alteração');
       exit;
     end;
 
@@ -566,11 +537,7 @@ begin
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(VL_Codigo));
         finterface.Desconecta;
         exit;
       end;
@@ -582,12 +549,9 @@ begin
         '0026':
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
 
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
+          ShowMessage(Erro(StrToInt(VL_Tag)));
 
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
           // CarregarTabelas;
           MDModuloConfig.Locate('ID', StrToInt(EID.Text), []);
           CarregaCampos;
@@ -599,12 +563,7 @@ begin
           if VL_Tag <> 'R' then
           begin
             VL_Mensagem.GetTag('004D', VL_Tag);
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             Exit;
           end;
           VL_Mensagem.GetTag('004D', VL_Tag);
@@ -612,12 +571,7 @@ begin
             ShowMessage('Registro alterado com sucesso')
           else
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             LimpaTela;
             Exit;
           end;
@@ -635,9 +589,9 @@ procedure TFModuloConfig.BPesquisarClick(Sender: TObject);
 var
   VL_FPesquisaModuloConf: TFPesquisaModuloConf;
 begin
-  if F_Permissao = False then
-    exit;
-  CarregarModulo(0);
+  if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
+
   VL_FPesquisaModuloConf := TFPesquisaModuloConf.Create(Self);
   VL_FPesquisaModuloConf.F_Tabela := RxMemDataToStr(MDPesquisaModulo);
 
@@ -646,6 +600,7 @@ begin
   VL_FPesquisaModuloConf.EDescricaoModulo.ReadOnly := True;
   VL_FPesquisaModuloConf.EDescricaoModulo.Color := clHighlight;
   VL_FPesquisaModuloConf.EDescricaoModulo.Font.Color := clWhite;
+
   LimpaTela;
 
   VL_FPesquisaModuloConf.ShowModal;
@@ -709,25 +664,20 @@ var
   VL_Codigo: integer;
   VL_ID: int64;
   VL_Retorno, VL_Tag: string;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_Mensagem := TMensagem.Create;
+
   try
-    F_OpenTefStatus(F_Com, VL_Status);
+    VL_Mensagem := TMensagem.Create;
 
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FINTERFACE.Desconecta;
-      Exit;
-    end;
+    if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
 
-    if LENGTH(EID.Text) < 1 then
+    if Length(EID.Text) < 1 then
     begin
       ShowMessage('Para adicionar um Bin, pesquise antes uma configuração');
       Exit;
@@ -739,7 +689,7 @@ begin
       Exit;
     end;
 
-    if TabBinEBin.Text = '' then
+    if (Length(trim(TabBinEBin.Text))=0) or (trim(TabBinEBin.Text) = '0') then
     begin
       ShowMessage('Número do B.I.N é um campo obrigatório');
       exit;
@@ -751,11 +701,7 @@ begin
 
       if VL_Codigo <> 0 then
       begin
-        mensagemerro(VL_Codigo, VL_RDescricaoErro);
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(VL_Codigo));
         if MDBin.Locate('ID', 0, []) then
           MDBin.Delete;
         exit;
@@ -769,12 +715,7 @@ begin
         '0026':
         begin
           VL_Mensagem.GetTag('0026', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(StrToInt(VL_Tag)));
 
           if MDBin.Locate('ID', 0, []) then
             MDBin.Delete;
@@ -785,13 +726,7 @@ begin
           if VL_Tag <> 'R' then
           begin
             VL_Mensagem.GetTag('004D', VL_Tag);
-
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
             if MDBin.Locate('ID', 0, []) then
               MDBin.Delete;
             Exit;
@@ -800,12 +735,7 @@ begin
           VL_Mensagem.GetTag('004D', VL_Tag);
           if vl_tag <> '0' then
           begin
-            mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-            VL_DescricaoErro := VL_RDescricaoErro;
-            F_MensagemDispose(VL_RDescricaoErro);
-
-            ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+            ShowMessage(Erro(StrToInt(VL_Tag)));
 
             if MDBin.Locate('ID', 0, []) then
               MDBin.Delete;
@@ -840,43 +770,37 @@ var
   VL_Mensagem: TMensagem;
   VL_Retorno, VL_Tag: string;
   VL_ID: int64;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
+
 begin
-  VL_Mensagem := TMensagem.Create;
+  VL_Mensagem := nil;
   VL_Codigo := 0;
   VL_ID := 0;
   VL_Retorno := '';
   VL_Tag := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
+
   try
-    F_OpenTefStatus(F_Com, VL_Status);
-    if VL_Status <> Ord(csLogado) then
-    begin
-      ShowMessage('Voce não esta logado com o terminal, efetue o login para continuar');
-      FInterface.Desconecta;
-      Exit;
-    end;
+    VL_Mensagem := TMensagem.Create;
+
+    if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+      exit;
+
     if MDBin.Active = False then
     begin
       ShowMessage('MDBin não está ativo');
       Exit;
     end;
+
     if TabBinGrid.DataSource.DataSet.IsEmpty then
     begin
       ShowMessage('Não existe Bin para ser excluido');
       exit;
     end;
+
     VL_Codigo := finterface.ExcluirRegistro('0076', StrToInt(MDBin.FieldByName('ID').AsString), '0078', 'S', VL_Tag);
 
     if VL_Codigo <> 0 then
     begin
-      mensagemerro(VL_Codigo, VL_RDescricaoErro);
-      VL_DescricaoErro := VL_RDescricaoErro;
-      F_MensagemDispose(VL_RDescricaoErro);
-
-      ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+      ShowMessage(Erro(VL_Codigo));
       exit;
     end;
 
@@ -887,12 +811,7 @@ begin
       '0026':
       begin
         VL_Mensagem.GetTag('0026', VL_ID);
-        mensagemerro(VL_ID, VL_RDescricaoErro);
-
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_DescricaoErro);
+        ShowMessage(ERRO(VL_ID));
         Exit;
       end;
       '0078':
@@ -907,12 +826,7 @@ begin
         if vl_tag <> '0' then
         begin
           VL_Mensagem.GetTag('004D', VL_ID);
-          mensagemerro(VL_ID, VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('ERRO: ' + IntToStr(VL_ID) + #13 + VL_DescricaoErro);
+          ShowMessage(ERRO(VL_ID));
           Exit;
         end;
         VL_Mensagem.GetTag('0076', VL_ID); //BIN_ID
@@ -1259,19 +1173,19 @@ end;
 procedure TFModuloConfig.CarregarModulo(VP_ModuloID: integer);
 var
   VL_Mensagem: TMensagem;
+  VL_Tabela: TRxMemoryData;
   VL_Tag: string;
   VL_Retorno: string;
-  VL_Tabela: TRxMemoryData;
-  VL_RDescricaoErro: PChar;
-  VL_DescricaoErro: string;
 begin
   VL_Tag := '';
   VL_Retorno := '';
-  VL_DescricaoErro := '';
-  VL_RDescricaoErro := nil;
-  VL_Tabela := TRxMemoryData.Create(nil);
-  VL_Mensagem := TMensagem.Create;
+  VL_Tabela := nil;
+  VL_Mensagem := nil;
+
   try
+    VL_Tabela := TRxMemoryData.Create(nil);
+    VL_Mensagem := TMensagem.Create;
+
     VL_Mensagem.Limpar;
     VL_Mensagem.AddComando('0070', 'S');
     VL_Mensagem.AddTag('006F', 0); //adquirente_id
@@ -1298,12 +1212,7 @@ begin
       '0026':
       begin
         VL_Mensagem.GetTag('0026', VL_Tag);
-        mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-        VL_DescricaoErro := VL_RDescricaoErro;
-        F_MensagemDispose(VL_RDescricaoErro);
-
-        ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+        ShowMessage(Erro(StrToInt(VL_Tag)));
         Exit;
       end;
       '0070':
@@ -1312,12 +1221,7 @@ begin
         if VL_Tag <> 'R' then
         begin
           VL_Mensagem.GetTag('004D', VL_Tag);
-          mensagemerro(StrToInt(VL_Tag), VL_RDescricaoErro);
-
-          VL_DescricaoErro := VL_RDescricaoErro;
-          F_MensagemDispose(VL_RDescricaoErro);
-
-          ShowMessage('Erro: ' + VL_Tag + #13 + VL_DescricaoErro);
+          ShowMessage(Erro(StrToInt(VL_Tag)));
           Exit;
         end;
         //TABELA ADQUIRENTE
@@ -1413,24 +1317,25 @@ begin
   VL_Bool := 'F';
   VL_Tabela := '';
   try
+
+     if not FInterface.VerificaPermissao(F_TipoConfigurador) then
+
+        exit;
+
     //grava TabModuloConf
     if VP_Tab = 'TabModuloConf' then
     begin
-      if not (F_Permissao) then
+      if VP_Incluir then
       begin
-        ShowMessage('Sem Permissão de Gravação, usuário não é um Configurador');
-        F_Navegar := True;
-        exit;
-      end;
-      if VP_Incluir then
-        VL_ID := 0
-      else
-        VL_ID := MDModuloConfig.FieldByName('ID').AsInteger;
-
-      if VP_Incluir then
+        VL_ID := 0;
         MDModuloConfig.Insert
+      end
       else
+      begin
+        VL_ID := MDModuloConfig.FieldByName('ID').AsInteger;
         MDModuloConfig.Edit;
+      end;
+
 
       MDModuloConfig.FieldByName('ID').AsInteger := VL_ID;
       MDModuloConfig.FieldByName('MODULO_ID').AsString := MDModulo.FieldByName('ID').AsString;
@@ -1469,21 +1374,17 @@ begin
     //grava TabBin
     if VP_Tab = 'TabBin' then
     begin
-      if not (F_Permissao) then
-      begin
-        ShowMessage('Sem Permissão de Gravação, usuário não é um Configurador');
-        F_Navegar := True;
-        exit;
-      end;
-      if VP_Incluir then
-        VL_ID := 0
-      else
-        VL_ID := MDBin.FieldByName('ID').AsInteger;
 
       if VP_Incluir then
-        MDBin.Insert
+      begin
+        VL_ID := 0;
+        MDBin.Insert;
+      end
       else
+      begin
+        VL_ID := MDBin.FieldByName('ID').AsInteger;
         MDBin.Edit;
+      end;
 
       MDBin.FieldByName('ID').AsInteger := VL_ID;
       MDBin.FieldByName('MODULO_CONF_ID').AsString := MDModuloConfig.FieldByName('ID').AsString;
@@ -1513,7 +1414,7 @@ begin
       if Components[i] is TRxMemoryData then
         if TRxMemoryData(Components[i]).Active then
           if ((TRxMemoryData(Components[i]) <> TRxMemoryData(MDModulo)) and (TRxMemoryData(Components[i]) <> TRxMemoryData(MDPesquisaModulo)) and
-            (TRxMemoryData(Components[i]) <> TRxMemoryData(MDBin)) and (TRxMemoryData(Components[i]) <> TRxMemoryData(MDAdquirente))) then
+             (TRxMemoryData(Components[i]) <> TRxMemoryData(MDAdquirente))) then
             TRxMemoryData(Components[i]).EmptyTable;
     end;
   end;
