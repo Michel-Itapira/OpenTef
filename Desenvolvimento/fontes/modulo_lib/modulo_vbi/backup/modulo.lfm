@@ -1,0 +1,8 @@
+object DModulo: TDModulo
+  OnCreate = DataModuleCreate
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 985
+  VerticalOffset = 568
+  Width = 331
+end

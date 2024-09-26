@@ -635,7 +635,7 @@ begin
         F_Erro(StrToInt(VL_ComandoDados), VL_Retorno);
 
         VL_DescricaoErro := VL_Retorno;
-        Dispose(VL_Retorno);
+        F_MensagemDispose(VL_Retorno);
 
         ShowMessage('Erro: ' + VL_ComandoDados + #13 + 'Descrição: ' + VL_DescricaoErro);
       end;

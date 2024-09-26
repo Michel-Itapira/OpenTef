@@ -62,7 +62,6 @@ type
     Button1: TButton;
     BFinalizarTef: TButton;
     Button2: TButton;
-    Button3: TButton;
     BVenda: TButton;
     cbxAmbienteTeste: TCheckBox;
     CSalvarCSV: TCheckBox;
@@ -159,14 +158,13 @@ type
     procedure BSolicitacaoClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure BVendaClick(Sender: TObject);
     procedure cbxAmbienteTesteChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Label20Click(Sender: TObject);
-    function MontarMenu(VP_Mensagem: Pointer):String;
+//    function MontarMenu(VP_Mensagem: Pointer):String;
     procedure RServidorLocalChange(Sender: TObject);
     procedure RServidorOficialChange(Sender: TObject);
   private
@@ -498,9 +496,9 @@ begin
     if VL_Comando = '0018' then //Veio pedido de mostrar menu de venda
     begin
       // monta o menu e aguarda a escolha pelo operador
-      VL_String:= F_Principal.MontarMenu(VL_Mensagem);
-      VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
-      StrPCopy(VO_DadosSaida, VL_String);
+      mostramenu(VP_DadosEntrada,VP_DadosEntrada);
+//      VO_DadosSaida := StrAlloc(Length(VL_String) + 1);
+//      StrPCopy(VO_DadosSaida, VL_String);
       exit;
     end;
 
@@ -803,7 +801,7 @@ begin
   VL_MenuVenda := TF_MenuVenda.Create(F_Principal);
   VL_MenuVenda.Height := 120;
 
-  F_MensagemGetTag(F_Mensagem, '00DA', VL_RDados);
+  F_MensagemGetTag(F_Mensagem, '00DA', VL_RDados); //TEXTO A SER MOSTRATO NO PDV
 
   VL_Dados := VL_RDados;
   F_MensagemDispose(VL_RDados);
@@ -1139,7 +1137,7 @@ procedure TF_Principal.Label20Click(Sender: TObject);
 begin
 
 end;
-
+{
 function TF_Principal.MontarMenu(VP_Mensagem: Pointer):string;
 var
   VL_btn: TMButton;
@@ -1198,7 +1196,7 @@ begin
   F_MenuVenda.Free;
 
 end;
-
+ }
 procedure TF_Principal.RServidorLocalChange(Sender: TObject);
 begin
   EHost.Caption := '127.0.0.1';
@@ -1467,22 +1465,6 @@ begin
   MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
 end;
 
-procedure TF_Principal.Button3Click(Sender: TObject);
-var
-VL_Retorno: PChar;
-VL_Mensagem:Pointer;
-begin
-  VL_Mensagem:=nil;
-  VL_Retorno:=nil;
-  F_MensagemCreate(VL_Mensagem);
-  F_MensagemAddComando(VL_Mensagem,Pchar('1001'),Pchar('teste'));
-  F_MensagemComandoDados(VL_Mensagem,VL_Retorno);
-  Caption:=VL_Retorno;
-  F_MensagemFree(VL_Mensagem);
-  F_MensagemDispose(VL_Retorno);
-
-end;
-
 
 procedure TF_Principal.BInicializarClick(Sender: TObject);
 var
@@ -1748,7 +1730,7 @@ begin
   end;
 
   MChave.Lines.Clear;  // limpando memo para nao gerar conflitos entre chaves
-  MChave.Lines.Text := VL_TransacaoID;
+  MStatus.Lines.Add('Transacao_ID'+VL_TransacaoID);
     {
     while ((TimeStampToMSecs(DateTimeToTimeStamp(now)) - TimeStampToMSecs(DateTimeToTimeStamp(VL_Data))) < VL_Tempo) do
     begin

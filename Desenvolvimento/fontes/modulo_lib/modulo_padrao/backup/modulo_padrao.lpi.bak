@@ -157,6 +157,9 @@
         </CompilerOptions>
       </Item>
       <Item Name="Win32 Debug">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
@@ -208,8 +211,59 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="Win32 Release">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="nogui"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\binarios\opentef\win32\modulo\0068.dll" ApplyConventions="False"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\..\libs\func"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dWIN
+-dOPEN_TEF"/>
+            <OtherDefines Count="4">
+              <Define0 Value="TEF_LIB"/>
+              <Define1 Value="DEBUG"/>
+              <Define2 Value="WIN"/>
+              <Define3 Value="OPEN_TEF"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <SharedMatrixOptions Count="1">
-        <Item1 ID="592077647640" Modes="Win64 Release,Win64 Debug,Linux64 Release,Linux64 Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
+        <Item1 ID="592077647640" Modes="Win64 Release,Win64 Debug,Linux64 Release,Linux64 Debug,Win32 Debug,Win32 Release" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>

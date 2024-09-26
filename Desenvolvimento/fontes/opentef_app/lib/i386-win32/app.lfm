@@ -202,7 +202,7 @@ object FApp: TFApp
   object Button11: TButton
     Left = 798
     Height = 25
-    Top = 521
+    Top = 520
     Width = 75
     Caption = 'Teste dll'
     TabOrder = 19

@@ -939,7 +939,7 @@ begin
       //    result:=0;
       //   exit;
       //TDComunicador(VP_DComunicador).IdTCPCliente.CheckForGracefulDisconnect(True);
-      VL_Dados := '00002161400E311S';
+      VL_Dados := '00002161400E211S';
       VL_Transmissao_ID := '';
       Result := ClienteTransmiteDados(VP_DComunicador, VL_Transmissao_ID, VL_Dados, VL_Dados, 30000, True);
     end;
@@ -1312,9 +1312,9 @@ begin
       VL_Mensagem := TMensagem.Create;
 
 
-      if VL_DadosRecebidos = '00002161400E311S' then  // comando de eco
+      if VL_DadosRecebidos = '00002161400E211S' then  // comando de eco
       begin
-        VL_Mensagem.CarregaTags('00002161400E311R');
+        VL_Mensagem.CarregaTags('00002161400E211R');
         ServidorTransmiteSolicitacaoID(Self, 3000, False, nil,
           VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
 
@@ -1347,6 +1347,15 @@ begin
       if (VL_TConexao.Status = csChaveado) or (VL_TConexao.Status = csLogado) then
         VL_Dados := Copy(VL_Dados, 1, 5) + VL_TConexao.Aes.DecryptString(Copy(VL_Dados, 6, MaxInt));
 
+
+      if VL_Dados = '00002161400E211S' then  // comando de eco
+      begin
+        VL_Mensagem.CarregaTags('00002161400E211R');
+        ServidorTransmiteSolicitacaoID(Self, 3000, False, nil,
+          VL_TransmissaoID, VL_Mensagem, VL_Mensagem, VL_TConexao.ID);
+
+        Exit;
+      end;
 
 
       if (VL_TransmissaoID = '') then

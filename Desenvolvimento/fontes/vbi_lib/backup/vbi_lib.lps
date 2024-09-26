@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Win32 Debug"/>
+    <Units>
+      <Unit>
+        <Filename Value="vbi_lib.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="15" Y="19"/>
+        <UsageCount Value="38"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="def.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="22"/>
+        <UsageCount Value="38"/>
+      </Unit>
+      <Unit>
+        <Filename Value="vbi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="104"/>
+        <CursorPos X="66" Y="130"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="lib.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DVbiLib"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="147"/>
+        <CursorPos X="5" Y="168"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="comunicadorvbi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DComunicadorVBI"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="comunicadorVbi"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="19"/>
+        <CursorPos X="42" Y="16"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="vbi_lib.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="52" Y="13"/>
+        <UsageCount Value="18"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\libs\func\funcoes.pas"/>
+        <ComponentName Value="DFuncoes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="278"/>
+        <CursorPos X="64" Y="327"/>
+        <UsageCount Value="17"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="lib.lfm"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="comunicadorvbi.pas"/>
+        <Caret Line="314" Column="19" TopLine="299"/>
+      </Position>
+      <Position>
+        <Filename Value="comunicadorvbi.pas"/>
+        <Caret Line="41" Column="16" TopLine="23"/>
+      </Position>
+      <Position>
+        <Filename Value="comunicadorvbi.pas"/>
+        <Caret Line="323" Column="14" TopLine="299"/>
+      </Position>
+      <Position>
+        <Filename Value="comunicadorvbi.pas"/>
+        <Caret Line="352" Column="24" TopLine="332"/>
+      </Position>
+      <Position>
+        <Filename Value="comunicadorvbi.pas"/>
+        <Caret Line="426" Column="14" TopLine="409"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="30" Column="60" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="61" Column="61" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="73" Column="4"/>
+      </Position>
+      <Position>
+        <Filename Value="comunicadorvbi.pas"/>
+        <Caret Line="63" Column="59" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="10" Column="15"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="76" Column="3" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="117" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="27" Column="16" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="26" Column="154" TopLine="13"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="106" Column="36" TopLine="77"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="166" Column="31" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="26" Column="18" TopLine="9"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="24" Column="13" TopLine="4"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="70" Column="14" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="26" Column="16" TopLine="20"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="70" Column="9" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi_lib.lpr"/>
+        <Caret Line="19" Column="15"/>
+      </Position>
+      <Position>
+        <Filename Value="lib.pas"/>
+        <Caret Line="157" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="128" TopLine="98"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="93" Column="21" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="31" Column="17" TopLine="7"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="99" Column="3" TopLine="106"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="31" Column="22" TopLine="13"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="94" Column="75" TopLine="88"/>
+      </Position>
+      <Position>
+        <Filename Value="vbi.pas"/>
+        <Caret Line="130" Column="71" TopLine="102"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

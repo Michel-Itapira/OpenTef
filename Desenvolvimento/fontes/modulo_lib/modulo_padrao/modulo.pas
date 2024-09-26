@@ -46,7 +46,7 @@ type
 
 function inicializar(VP_ModuloProcID: integer; var VO_Modulo: Pointer; VP_Recebimento: TRetornoModulo; VP_ModuloConf_ID: integer; VP_ArquivoLog: PChar): integer; cdecl;
 function finalizar(VP_Modulo: Pointer): integer; cdecl;
-function login(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveComunicacao, VP_TipoConexao, VP_Identificacao: PChar): integer; cdecl;
+function login(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveComunicacao, VP_TipoConexao, VP_Identificador: PChar): integer; cdecl;
 function solicitacao(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; VP_Procedimento: TRetornoModulo; VP_TarefaID, VP_TempoAguarda: integer): integer; cdecl;
 function solicitacaoblocante(VP_Modulo: Pointer; VP_Transmissao_ID, VP_Dados: PChar; var VO_Retorno: PChar; VP_TempoAguarda: integer): integer; cdecl;
 function modulostatus(VP_Modulo: Pointer; var VO_Versao: PChar; var VO_VersaoMensagem: integer; var VO_StatusRetorno: integer): integer; cdecl;
@@ -145,8 +145,6 @@ begin
 
     VL_Modulo := TDModulo.Create(nil);
 
-    VO_Modulo := AllocMem(SizeOf(VL_Modulo) + 1);
-
     Pointer(VO_Modulo) := Pointer(VL_Modulo);
     TDModulo(VO_Modulo).V_Modulo := VO_Modulo;
     TDModulo(VO_Modulo).V_ModuloProcID := VP_ModuloProcID;
@@ -173,7 +171,7 @@ begin
   try
     TDModulo(VP_Modulo).V_DComunicador.Free;
     TDModulo(VP_Modulo).Free;
-    VP_Modulo := nil;
+    VP_Modulo:= nil;
   except
     on e: Exception do
     begin
@@ -183,7 +181,7 @@ begin
   end;
 end;
 
-function login(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveComunicacao, VP_TipoConexao, VP_Identificacao: PChar): integer; cdecl;
+function login(VP_Modulo: Pointer; VP_Host: PChar; VP_Porta: integer; VP_ChaveComunicacao, VP_TipoConexao, VP_Identificador: PChar): integer; cdecl;
 var
   VL_MensagemIN, VL_MensagemOUT: TMensagem;
   VL_Transmissao_ID: string;
@@ -215,14 +213,14 @@ begin
         exit;
       end;
       if ((TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.ServidorHost <> VP_Host) or (TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.ServidorPorta <> VP_Porta) or
-        (TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Identificacao <> VP_Identificacao) or (TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Chave_Comunicacao <>
+        (TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Identificador <> VP_Identificador) or (TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Chave_Comunicacao <>
         VP_ChaveComunicacao)) then
       begin
         TDModulo(VP_Modulo).V_DComunicador.DesconectarCliente(TDModulo(VP_Modulo).V_DComunicador);
         TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.ServidorHost := VP_Host;
         TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.ServidorPorta := VP_Porta;
         TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Chave_Comunicacao := VP_ChaveComunicacao;
-        TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Identificacao := VP_Identificacao;
+        TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Identificador := VP_Identificador;
       end;
 
       TDModulo(VP_Modulo).V_DComunicador.V_ConexaoCliente.Aes.GenerateKey(VP_ChaveComunicacao);

@@ -12,7 +12,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib" ApplyConventions="False"/>
+            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib.so" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -64,7 +64,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib" ApplyConventions="False"/>
+            <Filename Value="..\..\binarios\mcom_lib\linux64\mcom_lib.so" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -109,7 +109,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\binarios\mcom_lib\linux32\mcom_lib" ApplyConventions="False"/>
+            <Filename Value="..\..\binarios\mcom_lib\linux32\mcom_lib.so" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -157,8 +157,8 @@
         <Filename Value="mcom_lib.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="13"/>
-        <CursorPos X="14" Y="22"/>
+        <TopLine Value="9"/>
+        <CursorPos X="36" Y="3"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -170,8 +170,8 @@
         <ResourceBaseClass Value="DataModule"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="519"/>
-        <CursorPos X="15" Y="525"/>
+        <TopLine Value="389"/>
+        <CursorPos X="44" Y="398"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -183,8 +183,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="119"/>
-        <CursorPos Y="125"/>
+        <TopLine Value="123"/>
+        <CursorPos X="115" Y="140"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -196,8 +196,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="117"/>
-        <CursorPos X="5" Y="134"/>
+        <TopLine Value="142"/>
+        <CursorPos X="14" Y="157"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -216,7 +216,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="28"/>
         <CursorPos X="7" Y="33"/>
-        <UsageCount Value="127"/>
+        <UsageCount Value="125"/>
       </Unit>
       <Unit>
         <Filename Value="..\frente_caixa\uprincipal.pas"/>
@@ -226,7 +226,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="191"/>
         <CursorPos X="30" Y="203"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="31"/>
       </Unit>
       <Unit>
         <Filename Value="..\tef_lib\tef.pas"/>
@@ -236,19 +236,19 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="246"/>
         <CursorPos X="30" Y="281"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="33"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbasym.pas"/>
         <UnitName Value="LbAsym"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="6" Y="34"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="30"/>
       </Unit>
       <Unit>
         <Filename Value="..\com_lib\com.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="..\modulo_lib\modulo_padrao\modulo.pas"/>
@@ -258,33 +258,33 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="288"/>
         <CursorPos Y="250"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1173"/>
         <CursorPos X="13" Y="1204"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\sstrings.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1150"/>
         <CursorPos X="3" Y="1156"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\inc\threadh.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="72" Y="12"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\Indy10\System\IdGlobal.pas"/>
         <TopLine Value="751"/>
         <CursorPos Y="785"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="78"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
@@ -293,14 +293,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="245"/>
         <CursorPos X="24" Y="263"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2132"/>
         <CursorPos X="17" Y="2153"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="19"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbclass.pas"/>
@@ -308,7 +308,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="197"/>
         <CursorPos X="39" Y="220"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -317,7 +317,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="98"/>
         <CursorPos X="3" Y="120"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -325,7 +325,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="77"/>
         <CursorPos X="4" Y="99"/>
-        <UsageCount Value="58"/>
+        <UsageCount Value="69"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -333,7 +333,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="148"/>
         <CursorPos X="10" Y="122"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -341,133 +341,136 @@
         <UnitName Value="StrUtils"/>
         <EditorIndex Value="6"/>
         <CursorPos X="14" Y="18"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="30"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <OtherDefines Count="1">
+    <OtherDefines Count="4">
       <Define0 Value="CLIENTE"/>
+      <Define1 Value="MCOM"/>
+      <Define2 Value="DEBUG"/>
+      <Define3 Value="WIN"/>
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="113" Column="29" TopLine="88"/>
+        <Caret Line="50" Column="67" TopLine="34"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="98" Column="90" TopLine="81"/>
+        <Caret Line="93" Column="52" TopLine="65"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="151" Column="45" TopLine="127"/>
+        <Caret Line="407" Column="58" TopLine="379"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="195" Column="18" TopLine="177"/>
+        <Caret Line="50" Column="67" TopLine="32"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="304" Column="34" TopLine="286"/>
+        <Caret Line="93" Column="52" TopLine="65"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="296" Column="34" TopLine="289"/>
+        <Caret Line="304" Column="25" TopLine="279"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="359" Column="58" TopLine="333"/>
+        <Caret Line="377" Column="67" TopLine="349"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="393" Column="34" TopLine="377"/>
+        <Caret Line="390" Column="71" TopLine="362"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="406" Column="38" TopLine="390"/>
+        <Caret Line="402" Column="71" TopLine="374"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="414" Column="40" TopLine="398"/>
+        <Caret Line="442" Column="65" TopLine="414"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="419" Column="38" TopLine="403"/>
+        <Caret Line="457" Column="67" TopLine="429"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="431" Column="40" TopLine="415"/>
+        <Caret Line="71" Column="25" TopLine="54"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="453" Column="32" TopLine="437"/>
+        <Caret Line="304" Column="25" TopLine="276"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="459" Column="34" TopLine="443"/>
+        <Caret Line="377" Column="67" TopLine="349"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="72" Column="23" TopLine="51"/>
+        <Caret Line="390" Column="71" TopLine="362"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="49" Column="5" TopLine="38"/>
+        <Caret Line="402" Column="71" TopLine="374"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="142" Column="21" TopLine="119"/>
+        <Caret Line="442" Column="65" TopLine="414"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="224" Column="46" TopLine="207"/>
+        <Caret Line="457" Column="67" TopLine="429"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="244" Column="99" TopLine="228"/>
+        <Caret Line="71" Column="25" TopLine="54"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="290" Column="99" TopLine="274"/>
+        <Caret Line="393" Column="68" TopLine="367"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="387" Column="46" TopLine="370"/>
+        <Caret Line="304" Column="93" TopLine="286"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="407" Column="98" TopLine="391"/>
+        <Caret Line="70" Column="91" TopLine="49"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="485" Column="5" TopLine="474"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\funcoes.pas"/>
-        <Caret Line="1162" Column="78" TopLine="1136"/>
+        <Caret Line="148" Column="91" TopLine="131"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="516" Column="47" TopLine="500"/>
-      </Position>
-      <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="134" Column="5" TopLine="118"/>
+        <Caret Line="231" Column="185" TopLine="215"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="512" Column="58" TopLine="494"/>
+        <Caret Line="277" Column="203" TopLine="260"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="53" Column="26" TopLine="37"/>
+        <Caret Line="392" Column="186" TopLine="375"/>
       </Position>
       <Position>
         <Filename Value="mcom.pas"/>
-        <Caret Line="538" Column="3" TopLine="505"/>
+        <Caret Line="445" Column="56" TopLine="428"/>
       </Position>
       <Position>
-        <Filename Value="..\libs\func\comunicador.pas"/>
-        <Caret Line="134" Column="5" TopLine="117"/>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="406" Column="61" TopLine="381"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="657" Column="40" TopLine="629"/>
+      </Position>
+      <Position>
+        <Filename Value="mcom.pas"/>
+        <Caret Line="406" Column="150" TopLine="390"/>
       </Position>
     </JumpHistory>
     <RunParams>

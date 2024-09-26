@@ -188,16 +188,25 @@ var
   Finalizar: TFinalizar;
   Inicializar: TModuloInicializar;
   PModulo: Pointer;
+
+  procedure dll;
+  begin
+
+    lib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\0068.dll'));
+
+    Pointer(Finalizar) := GetProcAddress(lib, 'finalizar');
+    Pointer(Inicializar) := GetProcAddress(lib, 'inicializar');
+
+    //Inicializar(1, PModulo, nil, 1, PChar(ExtractFilePath(ParamStr(0)) + 'teste.log'));
+    //Finalizar(PModulo);
+
+    FreeLibrary(lib);
+  end;
+
 begin
-  lib := LoadLibrary(PChar(ExtractFilePath(ParamStr(0)) + 'modulo\0068.dll'));
 
-  Pointer(Finalizar) := GetProcAddress(lib, 'finalizar');
-  Pointer(Inicializar) := GetProcAddress(lib, 'inicializar');
+  TThread.CreateAnonymousThread(  tprocedure( @dll)).Start;
 
-  Inicializar(1, PModulo, nil, 1, PChar(ExtractFilePath(ParamStr(0)) + 'teste.log'));
-  Finalizar(PModulo);
-
-  UnloadLibrary(lib);
 end;
 
 procedure TFApp.Button12Click(Sender: TObject);

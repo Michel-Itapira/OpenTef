@@ -15,8 +15,8 @@ object F_Principal: TF_Principal
     Height = 602
     Top = 16
     Width = 947
-    ActivePage = TabSheet2
-    TabIndex = 1
+    ActivePage = TabSheet1
+    TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Venda'
@@ -87,8 +87,8 @@ object F_Principal: TF_Principal
           Left = 280
           Height = 15
           Top = 55
-          Width = 115
-          Caption = '*Nunero de Parcelas:'
+          Width = 119
+          Caption = '*Numero de Parcelas:'
           Font.Color = clBlack
           Font.Style = [fsBold]
           ParentColor = False
@@ -1011,15 +1011,6 @@ object F_Principal: TF_Principal
         Caption = 'Servidor Local'
         TabOrder = 7
         OnChange = RServidorLocalChange
-      end
-      object Button3: TButton
-        Left = 456
-        Height = 25
-        Top = 488
-        Width = 75
-        Caption = 'Button3'
-        TabOrder = 8
-        OnClick = Button3Click
       end
     end
     object TabSheet3: TTabSheet

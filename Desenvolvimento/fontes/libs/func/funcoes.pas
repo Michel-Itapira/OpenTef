@@ -195,10 +195,10 @@ type
 
   TTransacao = class
     fMensagem: TMensagem;
-    fcomando: string;
+    fComando: string;
     fTemporizador: TTemporizador;
     fAbortada: boolean;
-    frodando: boolean;
+    fRodando: boolean;
   private
     function GetErro: integer;
     function GetErroDescricao: string;
@@ -230,6 +230,7 @@ type
     ListaObjetos: TList;
     indice: integer;
   public
+    F_ArquivoLog:String;
     function objetoAdd(VP_Objeto: Pointer): integer;
     function objetoDelete(VP_ID: integer): integer;
     function objetoGet(VP_ID: integer): Pointer;
@@ -296,13 +297,13 @@ function copiaTagPosicao(VP_Posicao: integer; VP_TagEntrada, VO_TagSaida: TMensa
 procedure copiaTag(VP_TagEntrada, VP_TagSaida: TMensagem; VP_LimparTagSaida: boolean);
 
 
-function mensagemcreate_id(var VO_ID: integer): integer; cdecl;
-function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
+function mensagemcreate_id(VP_DFuncoes: Pointer; var VO_ID: integer): integer; cdecl;
+function mensagemcreate(var VO_Mensagem: Pointer): integer; cdecl;
 function mensagemcarregatags(VP_Mensagem: Pointer; VP_Dados: PChar): integer; cdecl;
 function mensagemcomando(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 function mensagemcomandodados(VP_Mensagem: Pointer; var VO_Dados: PChar): integer; cdecl;
 procedure mensagemfree(VP_Mensagem: Pointer); cdecl;
-function mensagemfree_id(VP_ID: integer): integer; cdecl;
+function mensagemfree_id(VP_DFuncoes: Pointer; VP_ID: integer): integer; cdecl;
 function mensagemaddtag(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 function mensagemaddcomando(VP_Mensagem: Pointer; VP_Tag, VP_Dados: PChar): integer; cdecl;
 function mensagemaddtagposicao(VP_Mensagem: Pointer; VP_Posicao: integer; VP_Tag, VP_Dados: PChar): integer; cdecl;
@@ -321,7 +322,6 @@ procedure HexToByte(Value: string; var VO_Retorno: TLBytes);
 function CriaChave(Tamanho: int64): string;
 
 var
-  DFuncoes: TDFuncoes;
 
   VF_Sequencia: longint;
   VF_CriticoLog: TRTLCriticalSection;
@@ -844,22 +844,23 @@ begin
   Sm.Free;
 end;
 
-function mensagemcreate_id(var VO_ID: integer): integer; cdecl;
+function mensagemcreate_id(VP_DFuncoes: Pointer; var VO_ID: integer): integer; cdecl;
 var
   VL_Mensagem: ^TMensagem;
 begin
+  VL_Mensagem:=nil;
   Result := mensagemcreate(VL_Mensagem);
 
   if Result <> 0 then
     Exit;
 
-  VO_ID := DFuncoes.objetoAdd(VL_Mensagem);
+  VO_ID := TDFuncoes(VP_DFuncoes).objetoAdd(VL_Mensagem);
 end;
 
-function mensagemcreate(var VP_Mensagem: Pointer): integer; cdecl;
+function mensagemcreate(var VO_Mensagem: Pointer): integer; cdecl;
 begin
   Result := 0;
-  Pointer(VP_Mensagem) := pointer(TMensagem.Create);
+  Pointer(VO_Mensagem) := pointer(TMensagem.Create);
 end;
 
 
@@ -908,12 +909,12 @@ begin
 end;
 
 
-function mensagemfree_id(VP_ID: integer): integer; cdecl;
+function mensagemfree_id(VP_DFuncoes: Pointer;VP_ID: integer): integer; cdecl;
 var
   VL_Mensagem: ^Tmensagem;
 begin
   try
-    VL_Mensagem := DFuncoes.objetoGet(VP_ID);
+    VL_Mensagem := TDFuncoes(VP_DFuncoes).objetoGet(VP_ID);
     if not Assigned(VL_Mensagem) then
     begin
       Result := 1;
@@ -921,7 +922,7 @@ begin
     end;
 
     VL_Mensagem^.Free;
-    Result := DFuncoes.objetoDelete(VP_ID);
+    Result := TDFuncoes(VP_DFuncoes).objetoDelete(VP_ID);
   except
     on e: Exception do
     begin
@@ -1020,7 +1021,6 @@ begin
 
   if MemSize(VP_PChar) <= 0 then
     Exit;
-
   StrDispose(VP_PChar);
 end;
 

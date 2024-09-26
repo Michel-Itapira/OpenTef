@@ -223,6 +223,15 @@
       <Item>
         <Name Value="EFOpenError"/>
       </Item>
+      <Item>
+        <Name Value="EIdClosedSocket"/>
+      </Item>
+      <Item>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item>
+      <Item>
+        <Name Value="EIdSocketError"/>
+      </Item>
     </Exceptions>
   </Debugging>
 </CONFIG>

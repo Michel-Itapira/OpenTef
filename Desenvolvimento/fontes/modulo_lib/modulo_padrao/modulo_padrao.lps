@@ -3,13 +3,13 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Linux64 Release"/>
+    <BuildModes Active="Linux64 Debug"/>
     <Units>
       <Unit>
         <Filename Value="modulo_padrao.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos Y="9"/>
+        <CursorPos X="40" Y="14"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -19,9 +19,8 @@
         <ComponentName Value="DModulo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="306"/>
-        <CursorPos X="83" Y="335"/>
+        <TopLine Value="142"/>
+        <CursorPos X="44" Y="147"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -33,8 +32,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="151"/>
-        <CursorPos X="5" Y="54"/>
+        <TopLine Value="23"/>
+        <CursorPos X="95" Y="38"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -52,9 +51,10 @@
         <ComponentName Value="DFuncoes"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="67"/>
-        <CursorPos X="3" Y="1035"/>
+        <TopLine Value="839"/>
+        <CursorPos X="26" Y="845"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,7 +67,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="175"/>
         <CursorPos X="3" Y="186"/>
-        <UsageCount Value="114"/>
+        <UsageCount Value="113"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\com_lib\com.pas"/>
@@ -77,14 +77,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10"/>
         <CursorPos X="32" Y="191"/>
-        <UsageCount Value="84"/>
+        <UsageCount Value="83"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\ccr\zeos\src\core\ZFunctionsStrings.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="639"/>
         <CursorPos X="40" Y="656"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="82"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas"/>
@@ -92,28 +92,28 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="231"/>
         <CursorPos X="21" Y="241"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\opentef_ser\cadastro.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="4769"/>
         <CursorPos X="38" Y="4785"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\opentef_ser\opentefnucleo.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="466"/>
         <CursorPos X="14" Y="471"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\ccr\indy\Lib\Core\IdLogBase.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="25"/>
         <CursorPos X="51" Y="57"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\components\lazreport\source\lr_view.pas"/>
@@ -123,7 +123,7 @@
         <UnitName Value="LR_View"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="34" Y="9"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\components\lazreport\source\lr_funct_editor_unit.pas"/>
@@ -133,14 +133,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="20"/>
         <CursorPos X="43" Y="45"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\rtl\objpas\objpas.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="137"/>
         <CursorPos X="13" Y="159"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\config_lazarus\onlinepackagemanager\packages\ct4laz\pl_components\pl_lockbox\source\lbclass.pas"/>
@@ -148,14 +148,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="264"/>
         <CursorPos X="3" Y="286"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\fpcsrc\packages\hash\src\md5.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="218"/>
         <CursorPos Y="23"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="E:\Lazarus_IDE\lazarus\components\lazreport\source\lr_fmted.pas"/>
@@ -163,7 +163,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="163"/>
         <CursorPos X="75" Y="200"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\..\..\lazarus\lazarus\lcl\interfaces\nogui\noguiint.pp"/>
@@ -171,7 +171,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="128"/>
         <CursorPos Y="164"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
     </Units>
     <OtherDefines Count="4">
@@ -182,124 +182,124 @@
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="133" Column="20" TopLine="102"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="135" Column="54" TopLine="104"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="136" Column="29" TopLine="105"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="143" Column="62" TopLine="112"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="144" Column="44" TopLine="113"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\libs\func\funcoes.pas"/>
-        <Caret Line="319" Column="26" TopLine="288"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="155" Column="53" TopLine="149"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="49" Column="16" TopLine="33"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="20" Column="31"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="36" Column="14" TopLine="13"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="49" Column="17" TopLine="31"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="36" Column="28" TopLine="16"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="47" Column="19" TopLine="37"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="297" Column="18" TopLine="283"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="28" Column="20" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="70" Column="3" TopLine="52"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="26" Column="18"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="113" Column="19" TopLine="89"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="19" Column="5"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="47" Column="14" TopLine="31"/>
-      </Position>
-      <Position>
-        <Filename Value="def.pas"/>
-        <Caret Line="17" Column="26"/>
-      </Position>
-      <Position>
-        <Filename Value="def.pas"/>
-        <Caret Line="22" Column="50"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="47" Column="18" TopLine="22"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="150" Column="65" TopLine="139"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="47" Column="15" TopLine="30"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="153" Column="53" TopLine="139"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="47" Column="20" TopLine="31"/>
-      </Position>
-      <Position>
-        <Filename Value="modulo.pas"/>
-        <Caret Line="360" Column="85" TopLine="342"/>
-      </Position>
-      <Position>
         <Filename Value="..\..\libs\func\comunicador.pas"/>
         <Caret Line="54" Column="5" TopLine="37"/>
       </Position>
       <Position>
         <Filename Value="..\..\libs\func\funcoes.pas"/>
         <Caret Line="315" Column="19" TopLine="288"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="312" Column="25" TopLine="306"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="218" Column="63" TopLine="202"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="127" Column="5" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="37" Column="3" TopLine="23"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="218" Column="75" TopLine="201"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="186" Column="124" TopLine="168"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="49" Column="13" TopLine="48"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="186" Column="106" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="250" Column="53" TopLine="222"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="49" Column="124" TopLine="32"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="48" Column="12" TopLine="27"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="177" Column="14" TopLine="143"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo.pas"/>
+        <Caret Line="145" Column="12" TopLine="132"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\comunicador.pas"/>
+        <Caret Line="38" Column="95" TopLine="23"/>
+      </Position>
+      <Position>
+        <Filename Value="modulo_padrao.lpr"/>
+        <Caret Line="24" Column="94"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="325" TopLine="310"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="847" Column="14" TopLine="837"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="234" Column="23" TopLine="214"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="856" Column="30" TopLine="825"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="1225" Column="29" TopLine="1216"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="236" Column="23" TopLine="215"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="918" Column="38" TopLine="896"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="1240" Column="29" TopLine="1227"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="236" Column="23" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="918" Column="38" TopLine="910"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="1240" Column="29" TopLine="1209"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="237" TopLine="217"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\libs\func\funcoes.pas"/>
+        <Caret Line="236" TopLine="230"/>
       </Position>
     </JumpHistory>
     <RunParams>

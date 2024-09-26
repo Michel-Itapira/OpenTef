@@ -52,6 +52,7 @@ type
   public
     V_ListaTarefas: TList;
     VF_Sair: boolean;
+    procedure carregardll;
     constructor Create(VP_Suspenso: boolean; VP_RegModulo: Pointer; VP_ConexaoTipo: TConexaoTipo; VP_ArquivoLog: string; VP_DNucleo: Pointer);
     destructor Destroy; override;
   end;
@@ -133,7 +134,7 @@ type
     function Count: integer;
     procedure RemovePorModuloConf(VP_ModuloConfID: integer);
     function RetornaModuloConfId(VP_IIN: ansistring): integer;
-    function RetornaModulo(VP_IIN,VP_Tag: ansistring): TRecModulo;
+    function RetornaModulo(VP_IIN: ansistring): TRecModulo;
     function RetornaBINPorTag(VP_Tag: ansistring): TRecModulo;
   end;
 
@@ -635,6 +636,11 @@ begin
   end;
 end;
 
+procedure TThModulo.carregardll;
+begin
+  TRegModulo(VF_RegModulo^).Handle := DNucleo.VF_DLL.carregarDLL(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca);
+end;
+
 
 procedure TThModulo.Execute;
 var
@@ -674,8 +680,7 @@ begin
 
           if TRegModulo(VF_RegModulo^).Handle = 0 then
           begin
-            TRegModulo(VF_RegModulo^).Handle := DNucleo.VF_DLL.carregarDLL(ExtractFilePath(ParamStr(0)) + 'modulo/' + TRegModulo(VF_RegModulo^).Biblioteca);
-
+            Synchronize(@carregardll);
             if TRegModulo(VF_RegModulo^).Handle = 0 then
             begin
               GravaLog(VF_ArquivoLog, TRegModulo(VF_RegModulo^).ModuloConfig_ID, TRegModulo(VF_RegModulo^).Tag, 'opentefnucleo', '12082022143300',
@@ -950,11 +955,12 @@ procedure TDNucleo.iniciar;
 var
   VL_RegModulo: TRegModulo;
   VL_Conf: TIniFile;
+  VL_Linha: string;
 begin
   VL_Conf := nil;
   try
     try
-
+      VL_Linha := '18/09/2024 12:32:00';
       GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '2024061911261230',
         'TDNucleo.iniciar Iniciando', '', 0, 3);
 
@@ -963,7 +969,7 @@ begin
       VL_RegModulo.Menu_estatico := True;
       VL_RegModulo.ModuloConfig_ID := 0;
 
-
+      VL_Linha := '18/09/2024 12:32:01';
       if not FileExists(ExtractFilePath(ParamStr(0)) + 'open_tef.ini') then
       begin
         VL_Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0)) + 'open_tef.ini'));
@@ -986,7 +992,7 @@ begin
         {$ENDIF}
         VL_Conf.Free;
       end;
-
+      VL_Linha := '18/09/2024 12:32:02';
       VL_Conf := TIniFile.Create(PChar(ExtractFilePath(ParamStr(0)) + 'open_tef.ini'));
 
       ZConexao.LibraryLocation := VL_Conf.ReadString('BancoDados', 'LibraryLocation', '');
@@ -997,7 +1003,7 @@ begin
       ZConexao.Password := VL_Conf.ReadString('BancoDados', 'Password', 'masterkey');
 
       C_Debug := VL_Conf.ReadBool('Servidor', 'Debug', False);
-
+      VL_Linha := '18/09/2024 12:32:03';
       GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '2022110812319', 'TDNucleo.iniciar ' + 'Tentando Conectar Banco de dados LIB:' + ZConexao.LibraryLocation +
         ' banco:' + ZConexao.Database, '', 0, 3);
 
@@ -1012,7 +1018,7 @@ begin
       DComunicador.V_ArquivoLog := F_ArquivoLog;
       DComunicador.V_ServidorRecebimento := @comando;
       DComunicador.V_TransmissaoComando := @TransmissaoComando;
-
+      VL_Linha := '18/09/2024 12:32:04';
       if VL_Conf.ReadInteger('Servidor', 'Porta', 0) <> 0 then
       begin
         DComunicador.IdTCPServidor.DefaultPort := VL_Conf.ReadInteger('Servidor', 'Porta', 0);
@@ -1025,7 +1031,7 @@ begin
       AtualizaMENU_OPERACIONAL(VL_RegModulo, nil, True);
       AtualizaMENU(VL_RegModulo, nil, True);
       ModuloCarrega(0);
-
+      VL_Linha := '18/09/2024 12:32:05';
       GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '202211081230',
         'TDNucleo.iniciar Iniciado', '', 0, 3);
 
@@ -1036,7 +1042,7 @@ begin
     end;
   except
     on e: Exception do
-      GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '202211081229',
+      GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', VL_Linha,
         'TDNucleo.iniciar ' + e.ClassName + '/' + e.Message, '', 0, 1);
   end;
 end;
@@ -1355,8 +1361,8 @@ begin
   end;
 end;
 
-function TDNucleo.ModuloAddSolicitacao(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64; VP_ModuloConfig_ID: integer; VP_Mensagem: TMensagem;
-  VP_ConexaoTipo: TConexaoTipo): integer;
+function TDNucleo.ModuloAddSolicitacao(VP_ConexaoID: integer; VP_Transmissao_ID: string; VP_TempoEspera: int64; VP_ModuloConfig_ID: integer;
+  VP_Mensagem: TMensagem; VP_ConexaoTipo: TConexaoTipo): integer;
 var
   VL_I: integer;
   VL_RegModulo: ^TRegModulo;
@@ -2161,9 +2167,16 @@ begin
   VL_ModuloConfID := RetornaModuloConfId(VP_IIN);
   if (VL_ModuloConfID <> VP_ModuloConfID) and (VL_ModuloConfID <> -1) then
   begin
-    Result := 63;
+    Result := 63;  //bin ja cadstrado para outro modulo
     Exit;
   end;
+
+  if (VL_ModuloConfID = VP_ModuloConfID)  then
+  begin
+    Exit; //ja estava cadastrdo esse bin
+  end;
+
+
   new(VL_RecModulo);
   VL_RecModulo^.IIN := VP_IIN;
   VL_RecModulo^.ModuloTag := VP_Tag;
@@ -2253,7 +2266,7 @@ begin
 
 end;
 
-function TModulo.RetornaModulo(VP_IIN,VP_Tag: ansistring): TRecModulo;
+function TModulo.RetornaModulo(VP_IIN: ansistring): TRecModulo;
 var
   VL_RecModulo: ^TRecModulo;
   VL_I: integer;
@@ -2464,8 +2477,8 @@ begin
   end;
 end;
 
-constructor TThConciliacao.Create(VP_Suspenso: boolean; VP_Modulo: TRecModulo; VP_Dados: string; VP_Transacao_ID: string; VP_ArquivoLog: string; VP_DNucleo: Pointer;
-  VP_Conexao_ID: integer; VP_TempoEspera: integer = 60000);
+constructor TThConciliacao.Create(VP_Suspenso: boolean; VP_Modulo: TRecModulo; VP_Dados: string; VP_Transacao_ID: string; VP_ArquivoLog: string;
+  VP_DNucleo: Pointer; VP_Conexao_ID: integer; VP_TempoEspera: integer = 60000);
 begin
   inherited Create(VP_Suspenso);
   VF_Sair := False;
@@ -2710,11 +2723,11 @@ begin
     while ListaDLL.Count > 0 do
     begin
       VL_RecDLL := ListaDLL[0];
-      if VL_RecDLL^.instancia <= 0 then
-      begin
-        UnloadLibrary(VL_RecDLL^.handle);
-        Dispose(VL_RecDLL);
-      end;
+      //      if VL_RecDLL^.instancia <= 0 then
+      //      begin
+      UnloadLibrary(VL_RecDLL^.handle);
+      Dispose(VL_RecDLL);
+      //      end;
       ListaDLL.Delete(0);
     end;
 
@@ -2805,13 +2818,13 @@ begin
         if VL_RecDLL^.nome = VP_DLL_Nome then
         begin
           VL_RecDLL^.instancia := VL_RecDLL^.instancia - 1;
-          if VL_RecDLL^.instancia <= 0 then
-          begin
-            VL_RecDLL^.instancia := 0;
-            UnloadLibrary(VL_RecDLL^.handle);
-            ListaDLL.Delete(VL_I);
-            Dispose(VL_RecDLL);
-          end;
+          //          if VL_RecDLL^.instancia <= 0 then
+          //          begin
+          //           VL_RecDLL^.instancia := 0;
+          //            UnloadLibrary(VL_RecDLL^.handle);
+    //      ListaDLL.Delete(VL_I);
+    //      Dispose(VL_RecDLL);
+          //          end;
           Result := 0;
           Exit;
         end;
@@ -4021,7 +4034,6 @@ begin
 
         end;
 
-
       end;
 
       // tenta mandar a mensagem para o modulo ativo
@@ -4052,7 +4064,7 @@ begin
 
       if (VL_Bin <> '') then // tem bin então tenta localizar o modulo
       begin
-        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,'');
+        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin);
         if VL_RecModulo.ModuloConfID = -1 then
           //MODULO NAO CARREGADO PARA ESSE BIN
         begin
@@ -4162,7 +4174,7 @@ begin
 
       GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo', '101120231319', 'Mensagem enviada no comando000A', VL_Mensagem.TagsAsString, 0, 2);
 
-      DComunicador.ServidorTransmiteSolicitacaoID(DComunicador,VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID,VP_Mensagem, VP_Mensagem, VP_Conexao_ID);
+      DComunicador.ServidorTransmiteSolicitacaoID(DComunicador, VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VP_Mensagem, VP_Mensagem, VP_Conexao_ID);
 
     except
       on E: Exception do
@@ -4521,7 +4533,7 @@ begin
         end
         else // enviar para operadora especifica
         begin
-          VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,'');
+          VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin);
 
           if VL_RecModulo.ModuloConfID = -1 then
             //MODULO NAO CARREGADO PARA ESSE BIN
@@ -4788,7 +4800,7 @@ begin
           Exit;
         end;
 
-        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,''); // carrega dados do bin
+        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin); // carrega dados do bin
 
         if VL_RecModulo.ModuloConfID = -1 then  //MODULO NAO CARREGADO PARA ESSE BIN
         begin
@@ -4815,7 +4827,7 @@ begin
           '101120231326', 'Mensagem enviada no comando00F4',
           VL_Mensagem.TagsAsString, 0, 2);
 
-        DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID,VL_TempoEmperaComandao,VL_RecModulo.ModuloConfID, VL_Mensagem, cnCaixa);
+        DNucleo.ModuloAddSolicitacao(VP_Conexao_ID, VP_Transmissao_ID, VL_TempoEmperaComandao, VL_RecModulo.ModuloConfID, VL_Mensagem, cnCaixa);
         Exit;
 
       end;
@@ -4965,7 +4977,7 @@ begin
 
       if (VL_Bin <> '') then // tem bin então tenta localizar o modulo
       begin
-        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin,'');
+        VL_RecModulo := VF_Modulo.RetornaModulo(VL_Bin);
         if VL_RecModulo.ModuloConfID = -1 then
           //MODULO NAO CARREGADO PARA ESSE BIN
         begin
@@ -5330,22 +5342,22 @@ begin
 
       Result := DComunicador.ServidorTransmiteSolicitacaoIdentificacao(DComunicador, VL_TempoEmperaComandao, False, nil, VP_Transmissao_ID, VL_Mensagem, VL_Mensagem, VL_Identificacao);
 
-      if Result <> 0 then
-      begin
-        VL_Mensagem.Limpar;
-        GravaLog(F_ArquivoLog, 0, '.comando0105', 'opentefnucleo',
-          '050920221433', '', '', Result, 1);
-        VL_Mensagem.AddComando('0026', IntToStr(Result)); // retorno com erro
-
-        GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo',
-          '101120231407', 'Mensagem enviada no comando0105',
-          VL_Mensagem.TagsAsString, 0, 2);
-
-        VL_PRegModulo^.Solicitacao(VL_PRegModulo^.PModulo,
-          PUtf8Char(VP_Transmissao_ID), PUtf8Char(VL_Mensagem.TagsAsString), nil,
-          VP_Tarefa_ID, VL_TempoEmperaComandao);
-        Exit;
-      end;
+      //if Result <> 0 then
+      //begin
+      //  VL_Mensagem.Limpar;
+      //  GravaLog(F_ArquivoLog, 0, '.comando0105', 'opentefnucleo',
+      //    '050920221433', '', '', Result, 1);
+      //  VL_Mensagem.AddComando('0026', IntToStr(Result)); // retorno com erro
+      //
+      //  GravaLog(F_ArquivoLog, 0, '', 'opentefnucleo',
+      //    '101120231407', 'Mensagem enviada no comando0105',
+      //    VL_Mensagem.TagsAsString, 0, 2);
+      //
+      //  VL_PRegModulo^.Solicitacao(VL_PRegModulo^.PModulo,
+      //    PUtf8Char(VP_Transmissao_ID), PUtf8Char(VL_Mensagem.TagsAsString), nil,
+      //    VP_Tarefa_ID, VL_TempoEmperaComandao);
+      //  Exit;
+      //end;
       Exit;
 
     except
@@ -5451,7 +5463,7 @@ begin
     if (VL_Mensagem.GetTagAsAstring('0036') <> '') then
       // tem bin então tenta localizar o modulo
     begin
-      VL_RecModulo := VF_Modulo.RetornaModulo(VL_Mensagem.GetTagAsAstring('0036'),'');
+      VL_RecModulo := VF_Modulo.RetornaModulo(VL_Mensagem.GetTagAsAstring('0036'));
       if VL_RecModulo.ModuloConfID = -1 then
         //MODULO NAO CARREGADO PARA ESSE BIN
       begin
