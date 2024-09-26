@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="opentef/opentef"/>
-	<classpathentry kind="lib" path="jna.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jna"/>
+	<classpathentry kind="lib" path="E:/Projetos/Desenvolvedor/Michel/Lazarus/OpenTef/publica/fontes/java/FrenteCaixa/Lib/jna.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
